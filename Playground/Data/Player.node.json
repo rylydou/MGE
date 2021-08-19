@@ -1,0 +1,69 @@
+{
+  "$type": "Playground.Nodes.Player, Playground",
+  "jumpRem": 0.275,
+  "groundedRem": 0.1,
+  "smallJumpVel": -6.0,
+  "bigJumpVel": -14.0,
+  "maxGroundSpeed": 6.0,
+  "groundAcceleration": 47.5,
+  "groundFriction": 0.1,
+  "maxAirSpeed": 7.0,
+  "airAcceleration": 30.0,
+  "airFriction": 0.95,
+  "velGroundFriction": 0.5,
+  "velAirFriction": 0.95,
+  "gravity": "0 35",
+  "maxFallSpeed": 45.0,
+  "rayCount": "0 0",
+  "collisionMask": [
+    "Wall"
+  ],
+  "layer": [
+    "Player"
+  ],
+  "enabled": true,
+  "visible": true,
+  "name": "Player",
+  "id": 5,
+  "collider": {
+    "$type": "MGE.HitboxCollider, MGE",
+    "_size": "0.5 0.5",
+    "position": "0.25 0.5"
+  },
+  "position": "4.814453 19.999744",
+  "rotation": 0.0,
+  "scale": "1 1",
+  "_nodes": [
+    {
+      "$type": "MGE.CollidableNode, MGE",
+      "layer": [],
+      "enabled": true,
+      "visible": true,
+      "name": "Ground Check",
+      "id": 6,
+      "collider": {
+        "$type": "MGE.HitboxCollider, MGE",
+        "_size": "0.5 0.0625",
+        "position": "0 1"
+      },
+      "position": "0 0",
+      "rotation": 0.0,
+      "scale": "1 1",
+      "_nodes": []
+    },
+    {
+      "$type": "MGE.SpriteRenderer, MGE",
+      "texturePath": "Icon 16px",
+      "color": "#FFFFFF",
+      "depth": 0.0,
+      "enabled": true,
+      "visible": true,
+      "name": "SpriteRenderer",
+      "id": 7,
+      "position": "0 0",
+      "rotation": 0.0,
+      "scale": "1 1",
+      "_nodes": []
+    }
+  ]
+}
