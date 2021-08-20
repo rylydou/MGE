@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Runtime;
 using MGE.Debug;
 using Microsoft.Xna.Framework;
@@ -14,17 +15,18 @@ namespace MGE
 
 		public static void Setup(Game game, Config settings)
 		{
-			if (game is null)
-				throw new System.ArgumentNullException("game", "`game` cannot be null!");
+			if (game is null) throw new System.ArgumentNullException(nameof(game));
 			Engine.game = game;
-
-			if (settings is null)
-				throw new System.ArgumentNullException("settings", "`settings` cannot be null!");
+			if (settings is null) throw new System.ArgumentNullException(nameof(settings));
 			Engine.config = settings;
 
 			Logger.Log(System.DateTime.Now.ToString(@"yyyy-MM-dd hh\:mm\:ss"));
-			Logger.Log($"{settings.gameName} {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}");
-			Logger.Log($"Mangrove Game Engine {System.Reflection.Assembly.GetAssembly(typeof(Engine))?.GetName()?.Version}");
+
+			var gameAsm = Assembly.GetExecutingAssembly().GetName();
+			Logger.Log($"{settings.gameName}:{gameAsm.Name} {gameAsm.Version}");
+
+			var engineAsm = Assembly.GetAssembly(typeof(Engine)).GetName();
+			Logger.Log($"{engineAsm.Name} {engineAsm.Version}");
 
 			Logger.StartHeader("Enviorment");
 			Logger.LogVar("CWD", System.Environment.CurrentDirectory);
@@ -32,7 +34,7 @@ namespace MGE
 			Logger.LogVar("64bit Process?", System.Environment.Is64BitProcess);
 			Logger.LogVar("Command Line Args", System.Environment.GetCommandLineArgs());
 
-			Logger.StartHeader("Computation");
+			Logger.StartHeader("Specs");
 			Logger.LogVar("OS", System.Environment.OSVersion + (System.Environment.Is64BitOperatingSystem ? " 64bit" : " 32bit"));
 			Logger.LogVar("Processor", $"{System.Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER")} {System.Environment.ProcessorCount} threads");
 
@@ -72,8 +74,10 @@ namespace MGE
 
 			Terminal.RegisterCommand<Commands>();
 
-			Logger.StartHeader("Initialize Hierarchy");
-			Hierarchy.root.DoInit();
+			using (new Stopwatch("Init Scene"))
+			{
+				Hierarchy.root.DoInit();
+			}
 		}
 
 		public static void Load() { }

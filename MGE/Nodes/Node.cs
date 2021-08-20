@@ -76,7 +76,7 @@ namespace MGE
 		}
 		public Node AttachNode(Node node)
 		{
-			if (!node) throw new ArgumentNullException("node", "`node` cannot be null");
+			if (!node) throw new ArgumentNullException(nameof(node));
 			if (node.parent) throw new Exception($"Can't Attach Node - {node} already has an owner");
 			if (node.initialized) throw new Exception($"Can't Attach Node - {node} already has already been initialized");
 			if (node.destroyed) throw new Exception($"Can't Attach Node - {node} has been destroyed");
@@ -116,7 +116,7 @@ namespace MGE
 		}
 		public Node DeatachNode(Node node)
 		{
-			if (!node) throw new ArgumentNullException("node", "`node` cannot be null");
+			if (!node) throw new ArgumentNullException(nameof(node));
 			if (node.parent != this) throw new Exception($"Can't Deatach Node - {this} doesn't own {node}");
 
 			QueueAction(() =>
@@ -138,20 +138,6 @@ namespace MGE
 			return this;
 		}
 
-		// public Node MoveNode(Node node, Node destination)
-		// {
-		// 	if (!node)
-		// 		throw new ArgumentNullException("node", "`node` cannot be null");
-
-		// 	if (node.parent != this)
-		// 		throw new Exception($"Can't Move Node - {this} doesn't own {node}");
-
-		// 	DeatachNode(node);
-		// 	destination.AttachNode(node);
-
-		// 	return this;
-		// }
-
 		#endregion
 
 		#region Node Finding
@@ -161,7 +147,7 @@ namespace MGE
 		public T GetNode<T>() where T : Node => (T)_nodes.Find(n => !n.destroyed && n is T);
 		public Node GetNode(Type type)
 		{
-			if (type is null) throw new System.ArgumentNullException("type", "`type` cannot be null");
+			if (type is null) throw new ArgumentNullException(nameof(type));
 			return _nodes.Find(n => !n.destroyed && n.GetType().Equals(type));
 		}
 
@@ -170,7 +156,7 @@ namespace MGE
 		public T[] GetNodes<T>() where T : Node => _nodes.FindAll(n => !n.destroyed && n is T).Select(n => (T)n).ToArray();
 		public Node[] GetNodes(Type type)
 		{
-			if (type is null) throw new System.ArgumentNullException("type", "`type` cannot be null");
+			if (type is null) throw new ArgumentNullException(nameof(type));
 			return _nodes.FindAll(n => !n.destroyed && n.GetType().Equals(type)).ToArray();
 		}
 
@@ -186,7 +172,7 @@ namespace MGE
 		}
 		public Node GetNodeRecursive(Type type)
 		{
-			if (type is null) throw new System.ArgumentNullException("type", "`type` cannot be null");
+			if (type is null) throw new ArgumentNullException(nameof(type));
 			var node = GetNode(type);
 			foreach (var child in _nodes)
 			{
@@ -233,7 +219,7 @@ namespace MGE
 		}
 		public Node GetParentNode(Type type)
 		{
-			if (type is null) throw new System.ArgumentNullException("type", "`type` cannot be null");
+			if (type is null) throw new ArgumentNullException(nameof(type));
 			var node = parent;
 			while (true)
 			{
@@ -249,7 +235,7 @@ namespace MGE
 		}
 		public bool GetParentNode(Type type, out Node result)
 		{
-			if (type is null) throw new System.ArgumentNullException("type", "`type` cannot be null");
+			if (type is null) throw new ArgumentNullException(nameof(type));
 			result = GetParentNode(type);
 			return result is object;
 		}
@@ -278,7 +264,7 @@ namespace MGE
 		}
 		public Node[] GetParentNodes(Type type)
 		{
-			if (type is null) throw new System.ArgumentNullException("type", "`type` cannot be null");
+			if (type is null) throw new ArgumentNullException(nameof(type));
 			var node = parent;
 			var nodes = new List<Node>();
 			while (node)
@@ -295,8 +281,8 @@ namespace MGE
 
 		internal void DoInit()
 		{
-			if (initialized) throw new System.Exception("Can't Init Node - Node has already been initialized");
-			if (destroyed) throw new System.Exception("Can't Init Node - Node is destroyed try cloning it instead");
+			if (initialized) throw new Exception("Can't Init Node - Node has already been initialized");
+			if (destroyed) throw new Exception("Can't Init Node - Node is destroyed try cloning it instead");
 
 			initialized = true;
 
@@ -407,7 +393,7 @@ namespace MGE
 		{
 			Log("Destroying...");
 
-			if (!initialized) throw new System.Exception("Can't Destroy Node - Node hasn't been initialized");
+			if (!initialized) throw new Exception("Can't Destroy Node - Node hasn't been initialized");
 			if (destroyed) return;
 			destroyed = true;
 

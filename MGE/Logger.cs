@@ -100,8 +100,7 @@ namespace MGE
 					Write(" - ");
 				}
 				Write(string.IsNullOrEmpty(name) ? value?.GetType()?.ToString() : name.ToString());
-				if (!name.EndsWith('?')) Write(":");
-				Write(" ");
+				Write(value is bool ? "? " : ": ");
 				Write(value is object ? value.ToString() : "(null)");
 
 				WriteNewline();
