@@ -1,0 +1,3 @@
+[submodule "Thirdparty/MemlDotNet"]
+	path = Thirdparty/MemlDotNet
+	url = https://github.com/CiberTurtle/MemlDotNet.git
