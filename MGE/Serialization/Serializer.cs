@@ -19,6 +19,7 @@ namespace MGE.Serialization
 					{
 						TypeNameHandling = TypeNameHandling.Objects,
 						Formatting = Formatting.Indented,
+						ContractResolver = new JsonContractResolver(),
 					};
 					AddConverter(new Vector2JsonConverter());
 					AddConverter(new Vector2IntJsonConverter());

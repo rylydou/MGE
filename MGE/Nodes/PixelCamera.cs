@@ -1,14 +1,13 @@
-using System.Runtime.Serialization;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MGE
 {
-	[DataContract]
 	public class PixelCamera : Camera
 	{
 		public Vector2Int _targetResolution = new Vector2Int(320, 180);
-		[DataMember]
+		[Prop]
 		public Vector2Int targetResolution
 		{
 			get => _targetResolution;
@@ -35,7 +34,7 @@ namespace MGE
 		}
 
 		int _pixelsPerUnit = 16;
-		[DataMember] public int pixelsPerUnit { get => _pixelsPerUnit; set { if (_pixelsPerUnit != value) { _pixelsPerUnit = value; dirty = true; } } }
+		[Prop] public int pixelsPerUnit { get => _pixelsPerUnit; set { if (_pixelsPerUnit != value) { _pixelsPerUnit = value; dirty = true; } } }
 
 		public float renderScale { get; private set; }
 

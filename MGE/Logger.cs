@@ -32,12 +32,12 @@ namespace MGE
 #if MGE_ENABLE_LOGGING
 			StartEntry();
 
-			if (source is object)
+			if (source is not null)
 			{
 				Write(source.ToString());
 				Write(" - ");
 			}
-			Write(obj is object ? obj.ToString() : "(null)");
+			Write(obj is not null ? obj.ToString() : "(null)");
 			WriteNewline();
 
 			EndEntry();
@@ -58,7 +58,7 @@ namespace MGE
 
 			if (value is IEnumerable enumerable && !(value is string))
 			{
-				if (source is object)
+				if (source is not null)
 				{
 					Write(source.ToString());
 					Write(" - ");
@@ -78,7 +78,7 @@ namespace MGE
 					isEmpty = false;
 					WriteNewline();
 					WriteIndent();
-					Write(item is object ? item.ToString() : "(null)");
+					Write(item is not null ? item.ToString() : "(null)");
 				}
 
 				if (isEmpty)
@@ -94,14 +94,14 @@ namespace MGE
 			}
 			else
 			{
-				if (source is object)
+				if (source is not null)
 				{
 					Write(source.ToString());
 					Write(" - ");
 				}
 				Write(string.IsNullOrEmpty(name) ? value?.GetType()?.ToString() : name.ToString());
 				Write(value is bool ? "? " : ": ");
-				Write(value is object ? value.ToString() : "(null)");
+				Write(value is not null ? value.ToString() : "(null)");
 
 				WriteNewline();
 			}
@@ -115,7 +115,7 @@ namespace MGE
 #if MGE_ENABLE_LOGGING
 			StartEntry();
 
-			if (source is object)
+			if (source is not null)
 			{
 				Write(source.ToString());
 				Write(" ");
@@ -135,7 +135,7 @@ namespace MGE
 #if MGE_ENABLE_LOGGING
 			StartEntry();
 
-			if (source is object)
+			if (source is not null)
 			{
 				Write(source.ToString());
 				Write(" ");

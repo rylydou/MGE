@@ -1,5 +1,5 @@
 using System;
-using System.Runtime.Serialization;
+
 using Newtonsoft.Json;
 
 namespace MGE
@@ -19,7 +19,7 @@ namespace MGE
 		}
 	}
 
-	[System.Serializable, DataContract]
+	[System.Serializable]
 	public struct Vector2 : IEquatable<Vector2>
 	{
 		public static readonly Vector2 zero = new Vector2(0, 0);
@@ -121,8 +121,8 @@ namespace MGE
 
 		////////////////////////////////////////////////////////////
 
-		[DataMember] public float x;
-		[DataMember] public float y;
+		[Prop] public float x;
+		[Prop] public float y;
 
 		public Vector2(float value)
 		{

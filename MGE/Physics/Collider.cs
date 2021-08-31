@@ -1,13 +1,12 @@
-using System.Runtime.Serialization;
+
 
 namespace MGE
 {
-	[DataContract]
 	public abstract class Collider
 	{
 		public CollidableNode node { get; internal set; }
 
-		[DataMember] public Vector2 position;
+		[Prop] public Vector2 position;
 
 		public virtual bool ignoreBounds { get => false; }
 

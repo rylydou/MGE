@@ -1,4 +1,4 @@
-using System.Runtime.Serialization;
+
 using Microsoft.Xna.Framework;
 
 namespace MGE
@@ -7,14 +7,13 @@ namespace MGE
 		TODO: Make all the on_____Changed events
 		TODO: Allow changing absolutePosition (and maybe others)
 	*/
-	[DataContract]
 	public class Transform : Node
 	{
 		public bool _needsAbsoluteUpdate = true;
 		public bool _needsLocalUpdate = true;
 
 		Vector2 _localPosition = Vector2.zero;
-		[DataMember]
+		[Prop]
 		public Vector2 position
 		{
 			get => _localPosition;
@@ -34,7 +33,7 @@ namespace MGE
 		public Vector2 absolutePosition => UpdateAbsoluteAndGet(ref _absolutePosition);
 
 		float _localRotation = 0;
-		[DataMember]
+		[Prop]
 		public float rotation
 		{
 			get => _localRotation;
@@ -52,7 +51,7 @@ namespace MGE
 		public float absoluteRotation => UpdateAbsoluteAndGet(ref _absoluteRotation);
 
 		Vector2 _localScale = Vector2.one;
-		[DataMember]
+		[Prop]
 		public Vector2 scale
 		{
 			get => _localScale;

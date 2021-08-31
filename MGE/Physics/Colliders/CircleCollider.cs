@@ -1,11 +1,10 @@
-using System.Runtime.Serialization;
+
 
 namespace MGE
 {
-	[DataContract]
 	public class CircleCollider : Collider
 	{
-		[DataMember] public float radius;
+		[Prop] public float radius;
 
 		public CircleCollider(float radius, Vector2? position = null) : base(position)
 		{

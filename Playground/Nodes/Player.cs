@@ -1,31 +1,30 @@
-using System.Runtime.Serialization;
+
 using MGE;
 
 namespace Playground.Nodes
 {
-	[DataContract]
 	public class Player : KinematicNode
 	{
-		[DataMember] public float jumpRem = 0.275f;
-		[DataMember] public float groundedRem = 0.1f;
-		[DataMember] public float smallJumpVel = -6f;
-		[DataMember] public float bigJumpVel = -14f;
+		[Prop] public float jumpRem = 0.275f;
+		[Prop] public float groundedRem = 0.1f;
+		[Prop] public float smallJumpVel = -6f;
+		[Prop] public float bigJumpVel = -14f;
 
-		[DataMember] public float maxGroundSpeed = 6f;
-		[DataMember] public float groundAcceleration = 47.5f;
-		[DataMember] public float groundFriction = 0.1f;
+		[Prop] public float maxGroundSpeed = 6f;
+		[Prop] public float groundAcceleration = 47.5f;
+		[Prop] public float groundFriction = 0.1f;
 
-		[DataMember] public float maxAirSpeed = 7f;
-		[DataMember] public float airAcceleration = 30f;
-		[DataMember] public float airFriction = 0.95f;
+		[Prop] public float maxAirSpeed = 7f;
+		[Prop] public float airAcceleration = 30f;
+		[Prop] public float airFriction = 0.95f;
 
-		// [DataMember] public float maxVelSpeedAir = 6.5f;
-		[DataMember] public float velGroundFriction = 0.5f;
-		[DataMember] public float velAirFriction = 0.95f;
+		// [Prop] public float maxVelSpeedAir = 6.5f;
+		[Prop] public float velGroundFriction = 0.5f;
+		[Prop] public float velAirFriction = 0.95f;
 
-		[DataMember] public Vector2 gravity = new Vector2(0, 35);
-		[DataMember] public float maxFallSpeed = 45f;
-		// [DataMember] public float maxFallSpeed = float.PositiveInfinity;
+		[Prop] public Vector2 gravity = new Vector2(0, 35);
+		[Prop] public float maxFallSpeed = 45f;
+		// [Prop] public float maxFallSpeed = float.PositiveInfinity;
 
 		float move;
 		float extraVel;

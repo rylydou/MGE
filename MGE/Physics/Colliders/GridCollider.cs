@@ -1,14 +1,13 @@
-using System.Runtime.Serialization;
+
 using System.Text;
 
 namespace MGE
 {
-	[DataContract]
 	public class GridCollider : Collider
 	{
-		[DataMember] public VirtualMap<bool> data;
+		[Prop] public VirtualMap<bool> data;
 
-		[DataMember] public float cellSize { get; private set; }
+		[Prop] public float cellSize { get; private set; }
 
 		public GridCollider(Vector2Int mapSize, float cellSize, Vector2? position = null) : base(position)
 		{

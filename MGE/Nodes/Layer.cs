@@ -1,15 +1,14 @@
-using System.Runtime.Serialization;
+
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MGE
 {
-	[DataContract]
 	public class Layer : Node
 	{
-		[DataMember] public bool transparent = true;
-		[DataMember] public bool sortDepth = false;
-		[DataMember] public int pixlesPerUnit = 16;
-		[DataMember] public Effect effect = null;
+		[Prop] public bool transparent = true;
+		[Prop] public bool sortDepth = false;
+		[Prop] public int pixlesPerUnit = 16;
+		[Prop] public Effect effect = null;
 
 		public Layer() { }
 

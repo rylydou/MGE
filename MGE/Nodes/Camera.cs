@@ -1,22 +1,21 @@
-using System.Runtime.Serialization;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MGE
 {
-	[DataContract]
 	public class Camera : Node
 	{
 		protected bool dirty = true;
 
 		protected Vector2 _position = Vector2.zero;
-		[DataMember] public Vector2 position { get => _position; set { if (_position != value) { _position = value; dirty = true; } } }
+		[Prop] public Vector2 position { get => _position; set { if (_position != value) { _position = value; dirty = true; } } }
 
 		protected float _rotation = 0;
-		[DataMember] public float rotation { get => _rotation; set { if (_rotation != value) { _rotation = value; dirty = true; } } }
+		[Prop] public float rotation { get => _rotation; set { if (_rotation != value) { _rotation = value; dirty = true; } } }
 
 		protected float _zoom = 1;
-		[DataMember] public float zoom { get => _zoom; set { if (_zoom != value) { _zoom = value; dirty = true; } } }
+		[Prop] public float zoom { get => _zoom; set { if (_zoom != value) { _zoom = value; dirty = true; } } }
 
 		protected Matrix _transform;
 		public Matrix transform
@@ -29,12 +28,12 @@ namespace MGE
 			}
 		}
 
-		[DataMember] public bool clearScreen = true;
-		[DataMember] public Color screenClearColor = new Color("#122020");
+		[Prop] public bool clearScreen = true;
+		[Prop] public Color screenClearColor = new Color("#122020");
 
-		[DataMember] public bool renderToScreenWithTransparency = false;
-		[DataMember] public Effect postProcessEffect = null;
-		[DataMember] public Color renderTint = Color.white;
+		[Prop] public bool renderToScreenWithTransparency = false;
+		[Prop] public Effect postProcessEffect = null;
+		[Prop] public Color renderTint = Color.white;
 
 		public RenderTarget2D renderTexture;
 

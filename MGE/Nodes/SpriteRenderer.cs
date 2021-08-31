@@ -1,14 +1,13 @@
-using System.Runtime.Serialization;
+
 
 namespace MGE
 {
-	[DataContract]
 	public class SpriteRenderer : Transform
 	{
 		public Texture texture;
-		[DataMember] public string texturePath;
-		[DataMember] public Color color = Color.white;
-		[DataMember] public float depth;
+		[Prop] public string texturePath;
+		[Prop] public Color color = Color.white;
+		[Prop] public float depth;
 
 		public SpriteRenderer() { }
 
@@ -36,7 +35,7 @@ namespace MGE
 
 		protected override void Draw()
 		{
-			if (color.intA > 0 && texture?.texture is object)
+			if (color.intA > 0 && texture?.texture is not null)
 				GFX.Draw(texture, absolutePosition, null, color, absoluteRotation, Vector2.zero, absoluteScale, depth);
 			// GFX.Draw(texture, absolutePosition, null, color, absoluteRotation, texture.size / 2f, absoluteScale, depth);
 

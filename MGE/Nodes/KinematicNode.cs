@@ -1,14 +1,13 @@
-using System.Runtime.Serialization;
+
 
 namespace MGE
 {
-	[DataContract]
 	public class KinematicNode : Actor
 	{
 		const int STEPS = 16;
 
-		[DataMember] public Vector2Int rayCount;
-		[DataMember] public LayerMask collisionMask = new LayerMask("Wall");
+		[Prop] public Vector2Int rayCount;
+		[Prop] public LayerMask collisionMask = new LayerMask("Wall");
 
 		public bool hitTop;
 		public bool hitBottom;
@@ -122,11 +121,11 @@ namespace MGE
 			}
 		}
 
-		[DataMember] public float maxSlopeAngle = 80;
-		[DataMember] public float skinWidth = 0.015f;
-		[DataMember] public int horizontalRayCount = 4;
-		[DataMember] public int verticalRayCount = 4;
-		[DataMember] public LayerMask collisionMask = new LayerMask("Wall");
+		[Prop] public float maxSlopeAngle = 80;
+		[Prop] public float skinWidth = 0.015f;
+		[Prop] public int horizontalRayCount = 4;
+		[Prop] public int verticalRayCount = 4;
+		[Prop] public LayerMask collisionMask = new LayerMask("Wall");
 
 		public CollisionInfo collisions;
 
@@ -222,7 +221,7 @@ namespace MGE
 
 				// if (DEBUG) Debug.DrawRay(rayOrigin, Vector2.right * directionX, new Color(0, 1, 0, 0.1f));
 
-				if (hit is object)
+				if (hit is not null)
 				{
 					if (hit.distance == 0) continue;
 
@@ -276,7 +275,7 @@ namespace MGE
 
 				// if (DEBUG) Debug.DrawRay(rayOrigin, Vector2.up * directionY, new Color(0, 1, 0, 0.1f));
 
-				if (hit is object)
+				if (hit is not null)
 				{
 					// if (hit.collider.tag == "Through")
 					// {
@@ -316,7 +315,7 @@ namespace MGE
 				var rayOrigin = ((directionX == -1) ? raycastOrigins.bottomLeft : raycastOrigins.bottomRight) + Vector2.up * moveAmount.y;
 				var hit = world.RaycastOnGrid(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
 
-				if (hit is object)
+				if (hit is not null)
 				{
 					var slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
 					if (slopeAngle != collisions.slopeAngle)
@@ -365,7 +364,7 @@ namespace MGE
 				var rayOrigin = (directionX == -1) ? raycastOrigins.bottomRight : raycastOrigins.bottomLeft;
 				var hit = world.RaycastOnGrid(rayOrigin, -Vector2.up, float.PositiveInfinity, collisionMask);
 
-				if (hit is object)
+				if (hit is not null)
 				{
 					var slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
 					if (slopeAngle != 0 && slopeAngle <= maxSlopeAngle)
@@ -392,7 +391,7 @@ namespace MGE
 
 		void SlideDownMaxSlope(RaycastHit hit, ref Vector2 moveAmount)
 		{
-			if (hit is object)
+			if (hit is not null)
 			{
 				var slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
 				if (slopeAngle > maxSlopeAngle)

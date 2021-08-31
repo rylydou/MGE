@@ -1,12 +1,10 @@
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+
 
 namespace MGE
 {
-	[DataContract]
 	public class PhysicsWorld : Node
 	{
-		[DataContract]
 		public class Layer
 		{
 			public readonly string name;
@@ -21,8 +19,8 @@ namespace MGE
 			}
 		}
 
-		[DataMember] public Vector2 gravity = new Vector2(0, 20);
-		[DataMember] public float stepsPerUnit = 1f / 64;
+		[Prop] public Vector2 gravity = new Vector2(0, 20);
+		[Prop] public float stepsPerUnit = 1f / 64;
 
 		AutoDictionary<string, Layer> _layers = new AutoDictionary<string, Layer>(l => l.name);
 
@@ -52,7 +50,7 @@ namespace MGE
 
 		void ChangeActorLayer(CollidableNode actor, LayerMask from, LayerMask to)
 		{
-			if (from is object)
+			if (from is not null)
 			{
 				foreach (var layer in from)
 				{
@@ -60,7 +58,7 @@ namespace MGE
 				}
 			}
 
-			if (to is object)
+			if (to is not null)
 			{
 				foreach (var layer in to)
 				{
@@ -151,7 +149,7 @@ namespace MGE
 			foreach (var layer in layermask)
 			{
 				var raycast = _layers[layer].grid.Raycast(position, direction);
-				if (raycast is object) return raycast;
+				if (raycast is not null) return raycast;
 			}
 			return null;
 		}

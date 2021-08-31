@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+
 
 namespace MGE
 {
-	[DataContract]
 	public class LayerMask : IEnumerable<string>
 	{
-		[DataMember] List<string> layers;
+		[Prop] List<string> layers;
 
 		public LayerMask() => layers = new List<string>();
 		public LayerMask(params string[] layers) => this.layers = new List<string>(layers);

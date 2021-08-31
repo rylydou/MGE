@@ -1,15 +1,13 @@
-using System.Runtime.Serialization;
 using MGE;
 
 namespace Playground.Nodes
 {
-	[DataContract]
 	public class TestNode : CollidableNode
 	{
 		// Params
-		[DataMember] public float walkSpeed = 5;
-		[DataMember] public float runSpeed = 8;
-		// [DataMember] string actionMsg = "Spawning Apple";
+		[Prop] public float walkSpeed = 5;
+		[Prop] public float runSpeed = 8;
+		// [Prop] string actionMsg = "Spawning Apple";
 
 		// Cache
 		// PixelCamera _camera;

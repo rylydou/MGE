@@ -13,20 +13,17 @@ namespace MGE
 		}
 	}
 
-	[DataContract]
 	public class Node : Object
 	{
-		// [DataMember] public string name;
-
-		[DataMember] public bool enabled = true;
-		[DataMember] public bool visible = true;
+		[Prop] public bool enabled = true;
+		[Prop] public bool visible = true;
 
 		public bool initialized { get; private set; } = false;
 		public bool destroyed { get; private set; } = false;
 
 		public Node parent { get; private set; }
 
-		[DataMember(Order = int.MaxValue)] List<Node> _nodes = new List<Node>();
+		[Prop("nodes", order = int.MaxValue)] List<Node> _nodes = new List<Node>();
 		public int childCount { get => _nodes.Count; }
 		public Action<Node> onNodeAddedDirectly = (n) => { };
 		public Action<Node> onNodeAdded = (n) => { };
@@ -84,8 +81,8 @@ namespace MGE
 			var directAttr = (DirectChildOfAttribute)Attribute.GetCustomAttribute(node.GetType(), typeof(DirectChildOfAttribute));
 			var indirectAttr = (IndirectChildOfAttribute)Attribute.GetCustomAttribute(node.GetType(), typeof(IndirectChildOfAttribute));
 
-			if (directAttr is object && !directAttr.type.Equals(this.GetType())) throw new Exception($"Can't Attach Node - Node must be directly attached to {directAttr.type}");
-			if (indirectAttr is object && !GetParentNode(indirectAttr.type)) throw new Exception($"Can't Attach Node - Node must be indirectly attached to {indirectAttr.type}");
+			if (directAttr is not null && !directAttr.type.Equals(this.GetType())) throw new Exception($"Can't Attach Node - Node must be directly attached to {directAttr.type}");
+			if (indirectAttr is not null && !GetParentNode(indirectAttr.type)) throw new Exception($"Can't Attach Node - Node must be indirectly attached to {indirectAttr.type}");
 
 			QueueAction(() =>
 			{
@@ -231,13 +228,13 @@ namespace MGE
 		public bool GetParentNode<T>(out T result) where T : Node
 		{
 			result = GetParentNode<T>();
-			return result is object;
+			return result is not null;
 		}
 		public bool GetParentNode(Type type, out Node result)
 		{
 			if (type is null) throw new ArgumentNullException(nameof(type));
 			result = GetParentNode(type);
-			return result is object;
+			return result is not null;
 		}
 
 		public Node[] GetParentNodes()
@@ -579,6 +576,6 @@ namespace MGE
 
 		// public override string ToString() => name;
 
-		// public static implicit operator bool(Node node) => node is object;
+		// public static implicit operator bool(Node node) => node is not null;
 	}
 }

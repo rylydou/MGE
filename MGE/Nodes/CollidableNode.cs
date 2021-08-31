@@ -3,11 +3,10 @@ using System.Runtime.Serialization;
 
 namespace MGE
 {
-	[DataContract]
 	public class CollidableNode : Transform
 	{
-		[DataMember] public Collider collider { get; private set; }
-		[DataMember] public LayerMask layer = new LayerMask();
+		[Prop] public Collider collider { get; private set; }
+		[Prop] public LayerMask layer = new LayerMask();
 
 		public PhysicsWorld world { get; internal set; }
 
@@ -38,7 +37,7 @@ namespace MGE
 		[OnDeserialized]
 		void OnDeserialized(StreamingContext context)
 		{
-			if (collider is object)
+			if (collider is not null)
 				collider.node = this;
 		}
 	}

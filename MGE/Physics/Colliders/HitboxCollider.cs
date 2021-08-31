@@ -1,11 +1,10 @@
-using System.Runtime.Serialization;
+
 
 namespace MGE
 {
-	[DataContract]
 	public class HitboxCollider : Collider
 	{
-		[DataMember] Vector2 _size;
+		[Prop] Vector2 _size;
 		public override Vector2 size => _size;
 
 		public override bool ignoreBounds => true;

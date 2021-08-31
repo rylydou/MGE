@@ -27,43 +27,9 @@
   "id": 5,
   "collider": {
     "$type": "MGE.HitboxCollider, MGE",
-    "_size": "0.5 0.5",
     "position": "0.25 0.5"
   },
-  "position": "4.693741 19.999744",
+  "position": "6.858368 19.999744",
   "rotation": 0.0,
-  "scale": "1 1",
-  "_nodes": [
-    {
-      "$type": "MGE.CollidableNode, MGE",
-      "layer": [],
-      "enabled": true,
-      "visible": true,
-      "name": "Ground Check",
-      "id": 6,
-      "collider": {
-        "$type": "MGE.HitboxCollider, MGE",
-        "_size": "0.5 0.0625",
-        "position": "0 1"
-      },
-      "position": "0 0",
-      "rotation": 0.0,
-      "scale": "1 1",
-      "_nodes": []
-    },
-    {
-      "$type": "MGE.SpriteRenderer, MGE",
-      "texturePath": "Icon 16px",
-      "color": "#FFFFFF",
-      "depth": 0.0,
-      "enabled": true,
-      "visible": true,
-      "name": "SpriteRenderer",
-      "id": 7,
-      "position": "0 0",
-      "rotation": 0.0,
-      "scale": "1 1",
-      "_nodes": []
-    }
-  ]
+  "scale": "1 1"
 }

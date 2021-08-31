@@ -1,5 +1,5 @@
 using System;
-using System.Runtime.Serialization;
+
 using Newtonsoft.Json;
 
 namespace MGE
@@ -22,7 +22,7 @@ namespace MGE
 		}
 	}
 
-	[System.Serializable, DataContract]
+	[System.Serializable]
 	public struct Vector2Int : IEquatable<Vector2Int>
 	{
 		public static readonly Vector2Int zero = new Vector2Int(0, 0);
@@ -52,8 +52,8 @@ namespace MGE
 
 		////////////////////////////////////////////////////////////
 
-		[DataMember] public int x;
-		[DataMember] public int y;
+		[Prop] public int x;
+		[Prop] public int y;
 
 		public Vector2Int(int value)
 		{

@@ -1,14 +1,13 @@
-using System.Runtime.Serialization;
+
 using MGE;
 
 namespace Playground.Nodes
 {
-	[DataContract]
 	public class Heart : KinematicNode
 	{
-		[DataMember] public float moveSpeed = 2f;
-		[DataMember] public float moveTime = 1f;
-		[DataMember] public float moveDelay = 1f;
+		[Prop] public float moveSpeed = 2f;
+		[Prop] public float moveTime = 1f;
+		[Prop] public float moveDelay = 1f;
 
 		Vector2 _direction;
 		float _timeMoving;

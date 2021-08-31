@@ -1,6 +1,6 @@
 using System;
 using System.Globalization;
-using System.Runtime.Serialization;
+
 using Newtonsoft.Json;
 
 namespace MGE
@@ -19,7 +19,7 @@ namespace MGE
 		}
 	}
 
-	[Serializable, DataContract]
+	[Serializable]
 	public struct Color : IEquatable<Color>
 	{
 		public static readonly Color red = new Color(1f, 0f, 0f);
@@ -71,7 +71,7 @@ namespace MGE
 		public float b { get => (float)intB / 255; set => intB = (byte)(value * 255); }
 		public float a { get => (float)intA / 255; set => intA = (byte)(value * 255); }
 
-		[DataMember] public string hex { get => ToHex(); set => this = new Color(value); }
+		[Prop] public string hex { get => ToHex(); set => this = new Color(value); }
 
 		public Color(float r, float g, float b, float a = 1.0f) : this()
 		{

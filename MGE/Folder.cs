@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
+
 using System.Threading.Tasks;
 using MGE.Serialization;
 using Newtonsoft.Json;
@@ -21,7 +21,6 @@ namespace MGE
 		}
 	}
 
-	[DataContract]
 	public class Folder : IEquatable<Folder>
 	{
 		public static Folder root = string.Empty;

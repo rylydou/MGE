@@ -3,10 +3,9 @@ using System.Runtime.Serialization;
 
 namespace MGE
 {
-	[DataContract]
 	public class LootTable<T> where T : ILootItem, IEnumerable<T>
 	{
-		[DataMember] public List<T> items;
+		[Prop] public List<T> items;
 		List<T> _combinedItems = new List<T>();
 
 		public int count => items.Count;
