@@ -2,30 +2,40 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			// Use IntelliSense to find out which attributes exist for C# debugging
-			// Use hover for the description of the existing attributes
-			// For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
-			"name": ".NET Core Launch (console)",
+			"name": "Game DEBUG",
 			"type": "coreclr",
 			"request": "launch",
-			"preLaunchTask": "build",
-			// If you have changed target frameworks, make sure to update the program path.
-			"program": "${workspaceFolder}/Playground/bin/Debug/net5.0/Playground.dll",
+			"preLaunchTask": "build game",
+			"program": "${workspaceFolder}/src/Playground/bin/Debug/net5.0/Playground.dll",
 			"args": [],
-			"cwd": "${workspaceFolder}/Playground",
-			// For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+			"cwd": "${workspaceFolder}/src/Playground",
 			"console": "internalConsole",
 			"stopAtEntry": false,
-			"logging": {
-				"browserStdOut": false,
-				"elapsedTiming": false,
-				"engineLogging": false,
-				"exceptions": false,
-				"moduleLoad": false,
-				"processExit": false,
-				"programOutput": true,
-				"threadExit": false
-			}
+			"logging": { "browserStdOut": false, "elapsedTiming": false, "engineLogging": false, "exceptions": false, "moduleLoad": false, "processExit": false, "programOutput": true, "threadExit": false }
+		},
+		{
+			"name": "Editor GTK DEBUG",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build editor gtk",
+			"program": "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Gtk/bin/Debug/net5.0/MGE.Editor.Gtk.exe",
+			"args": [],
+			"cwd": "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Gtk",
+			"console": "internalConsole",
+			"stopAtEntry": false,
+			"logging": { "browserStdOut": false, "elapsedTiming": false, "engineLogging": false, "exceptions": false, "moduleLoad": false, "processExit": false, "programOutput": true, "threadExit": false }
+		},
+		{
+			"name": "Editor WPF DEBUG",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build editor wpf",
+			"program": "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Wpf/bin/Debug/net5.0-windows/MGE.Editor.Wpf.exe",
+			"args": [],
+			"cwd": "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Wpf",
+			"console": "internalConsole",
+			"stopAtEntry": false,
+			"logging": { "browserStdOut": false, "elapsedTiming": false, "engineLogging": false, "exceptions": false, "moduleLoad": false, "processExit": false, "programOutput": true, "threadExit": false }
 		},
 		{
 			"name": ".NET Core Attach",

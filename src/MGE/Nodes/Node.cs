@@ -78,11 +78,11 @@ namespace MGE
 			if (node.initialized) throw new Exception($"Can't Attach Node - {node} already has already been initialized");
 			if (node.destroyed) throw new Exception($"Can't Attach Node - {node} has been destroyed");
 
-			var directAttr = (DirectChildOfAttribute)Attribute.GetCustomAttribute(node.GetType(), typeof(DirectChildOfAttribute));
-			var indirectAttr = (IndirectChildOfAttribute)Attribute.GetCustomAttribute(node.GetType(), typeof(IndirectChildOfAttribute));
+			// var directAttr = (DirectChildOfAttribute)Attribute.GetCustomAttribute(node.GetType(), typeof(DirectChildOfAttribute));
+			// var indirectAttr = (IndirectChildOfAttribute)Attribute.GetCustomAttribute(node.GetType(), typeof(IndirectChildOfAttribute));
 
-			if (directAttr is not null && !directAttr.type.Equals(this.GetType())) throw new Exception($"Can't Attach Node - Node must be directly attached to {directAttr.type}");
-			if (indirectAttr is not null && !GetParentNode(indirectAttr.type)) throw new Exception($"Can't Attach Node - Node must be indirectly attached to {indirectAttr.type}");
+			// if (directAttr is not null && !directAttr.type.Equals(this.GetType())) throw new Exception($"Can't Attach Node - Node must be directly attached to {directAttr.type}");
+			// if (indirectAttr is not null && !GetParentNode(indirectAttr.type)) throw new Exception($"Can't Attach Node - Node must be indirectly attached to {indirectAttr.type}");
 
 			QueueAction(() =>
 			{

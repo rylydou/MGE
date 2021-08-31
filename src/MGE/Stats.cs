@@ -27,7 +27,10 @@ namespace MGE
 		public static int maxFPS { get => Math.RoundToInt(rawMaxFPS); }
 
 		public static long memUsed { get; private set; }
+		// public static Queue<double> memUsedHistory { get; private set; } = new Queue<double>();
+
 		public static long memAllocated { get; private set; }
+		// public static Queue<double> memAllocatedHistory { get; private set; } = new Queue<double>();
 
 		internal static void Update()
 		{

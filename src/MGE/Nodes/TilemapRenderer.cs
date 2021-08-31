@@ -1,6 +1,6 @@
 namespace MGE
 {
-	[DirectChildOf(typeof(Tilemap))]
+	// [DirectChildOf(typeof(Tilemap))]
 	public class TilemapRenderer
 	{
 
