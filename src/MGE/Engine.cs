@@ -1,6 +1,5 @@
 using System.Reflection;
 using System.Runtime;
-using MGE.Debug;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

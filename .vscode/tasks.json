@@ -9,19 +9,26 @@
 			"problemMatcher": "$msCompile"
 		},
 		{
-			"label": "build editor gtk",
+			"label": "build editor",
 			"command": "dotnet",
 			"type": "process",
-			"args": ["build", "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Gtk/MGE.Editor.Gtk.csproj", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
+			"args": ["build", "${workspaceFolder}/src/MGE.Editor/MGE.Editor.csproj", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
 			"problemMatcher": "$msCompile"
 		},
-		{
-			"label": "build editor wpf",
-			"command": "dotnet",
-			"type": "process",
-			"args": ["build", "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Wpf/MGE.Editor.Wpf.csproj", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
-			"problemMatcher": "$msCompile"
-		},
+		// {
+		// 	"label": "build editor gtk",
+		// 	"command": "dotnet",
+		// 	"type": "process",
+		// 	"args": ["build", "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Gtk/MGE.Editor.Gtk.csproj", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
+		// 	"problemMatcher": "$msCompile"
+		// },
+		// {
+		// 	"label": "build editor wpf",
+		// 	"command": "dotnet",
+		// 	"type": "process",
+		// 	"args": ["build", "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Wpf/MGE.Editor.Wpf.csproj", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
+		// 	"problemMatcher": "$msCompile"
+		// },
 		{
 			"label": "publish",
 			"command": "dotnet",

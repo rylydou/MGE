@@ -23,7 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<!-- <ProjectReference Include="..\MGE\MGE.csproj" /> -->
+		<ProjectReference Include="..\MGE\MGE.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

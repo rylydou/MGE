@@ -14,33 +14,45 @@
 			"logging": { "browserStdOut": false, "elapsedTiming": false, "engineLogging": false, "exceptions": false, "moduleLoad": false, "processExit": false, "programOutput": true, "threadExit": false }
 		},
 		{
-			"name": "Editor GTK DEBUG",
+			"name": "Editor DEBUG",
 			"type": "coreclr",
 			"request": "launch",
-			"preLaunchTask": "build editor gtk",
-			"program": "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Gtk/bin/Debug/net5.0/MGE.Editor.Gtk.exe",
+			"preLaunchTask": "build editor",
+			"program": "${workspaceFolder}/src/MGE.Editor/bin/Debug/net5.0/MGE.Editor.exe",
 			"args": [],
-			"cwd": "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Gtk",
+			"cwd": "${workspaceFolder}/src/MGE.Editor",
 			"console": "internalConsole",
 			"stopAtEntry": false,
 			"logging": { "browserStdOut": false, "elapsedTiming": false, "engineLogging": false, "exceptions": false, "moduleLoad": false, "processExit": false, "programOutput": true, "threadExit": false }
-		},
-		{
-			"name": "Editor WPF DEBUG",
-			"type": "coreclr",
-			"request": "launch",
-			"preLaunchTask": "build editor wpf",
-			"program": "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Wpf/bin/Debug/net5.0-windows/MGE.Editor.Wpf.exe",
-			"args": [],
-			"cwd": "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Wpf",
-			"console": "internalConsole",
-			"stopAtEntry": false,
-			"logging": { "browserStdOut": false, "elapsedTiming": false, "engineLogging": false, "exceptions": false, "moduleLoad": false, "processExit": false, "programOutput": true, "threadExit": false }
-		},
-		{
-			"name": ".NET Core Attach",
-			"type": "coreclr",
-			"request": "attach"
 		}
+		// {
+		// 	"name": "Editor GTK DEBUG",
+		// 	"type": "coreclr",
+		// 	"request": "launch",
+		// 	"preLaunchTask": "build editor gtk",
+		// 	"program": "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Gtk/bin/Debug/net5.0/MGE.Editor.Gtk.exe",
+		// 	"args": [],
+		// 	"cwd": "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Gtk",
+		// 	"console": "internalConsole",
+		// 	"stopAtEntry": false,
+		// 	"logging": { "browserStdOut": false, "elapsedTiming": false, "engineLogging": false, "exceptions": false, "moduleLoad": false, "processExit": false, "programOutput": true, "threadExit": false }
+		// },
+		// {
+		// 	"name": "Editor WPF DEBUG",
+		// 	"type": "coreclr",
+		// 	"request": "launch",
+		// 	"preLaunchTask": "build editor wpf",
+		// 	"program": "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Wpf/bin/Debug/net5.0-windows/MGE.Editor.Wpf.exe",
+		// 	"args": [],
+		// 	"cwd": "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Wpf",
+		// 	"console": "internalConsole",
+		// 	"stopAtEntry": false,
+		// 	"logging": { "browserStdOut": false, "elapsedTiming": false, "engineLogging": false, "exceptions": false, "moduleLoad": false, "processExit": false, "programOutput": true, "threadExit": false }
+		// },
+		// {
+		// 	"name": ".NET Core Attach",
+		// 	"type": "coreclr",
+		// 	"request": "attach"
+		// }
 	]
 }
