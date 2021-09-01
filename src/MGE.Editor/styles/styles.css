@@ -1,26 +1,73 @@
-/* PANEL COLOR rgb(10, 10, 10) */
+@define-color base rgb(1, 4, 9);
+
+@define-color background rgb(13, 17, 23);
+
+@define-color element rgb(22, 27, 34);
+
+@define-color text rgb(201, 209, 217);
+@define-color text-dark rgb(139, 148, 158);
+
+@define-color accent rgb(88, 166, 255);
 
 * {
-	color: rgb(200, 200, 205);
-	font-family: Arial, Helvetica, sans-serif;
-	/* border: 1px solid; */
+	color: @text;
+	font-family: 
+		/* Windows */
+		Segoe UI Semibold,
+
+		/* Lunix */
+		Ubuntu,
+
+		/* Mac */
+		Lucida Grande,
+		Helvetica Neue,
+		San Francisco,
+
+		/* Fallback */
+		Verdana
+	;
+
+	font-size: 14px;
+	
+	transition: color 100ms;
+	transition: background-color 50ms;
 }
 
 window {
-	background-color: rgb(0, 0, 0);
+	background-color: @base;
+}
+
+stack {
+	/* border: solid 2px rgb(0, 0, 0); */
+	background-color: @background;
+	padding: 1em;
+}
+
+tab {
+	padding: 0.25em 1em;
+	color: @text-dark;
+	border-top: solid 4px transparent;
+}
+
+tab:hover {
+	color: @text;
+}
+
+tab:checked {
+	color: @text;
+	background-color: @background;
+	border-top: solid 4px @accent;
 }
 
 button {
-	background-color: rgb(25, 25, 25);
-	border-radius: 4px;
-
-	transition: background-color 50ms ease-in-out;
+	padding: 0.25em;
+	border: solid 2px @element;
 }
 
 button:hover {
-	background-color: rgb(30, 30, 30);
+	background-color: @element;
 }
 
-button:active {
-	background-color: rgb(15, 15, 15);
+button:active, button:checked {
+	background-color: @element;
 }
