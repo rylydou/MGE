@@ -8,54 +8,65 @@ namespace MGE.Editor
 		CssProvider resetProvider;
 		CssProvider styleProvider;
 
-		public MainWindow() : base("Mangrove Game Engine Editor DEBUG - Untitled Scene.mges")
+		public MainWindow() : base("MGE EDITOR")
 		{
 			SetPosition(WindowPosition.Center);
 			SetDefaultSize(1280, 720);
-			SetSizeRequest(1280, 720);
-			Maximize();
+			// Maximize();
 
 			KeyPressEvent += KeyPress;
 
 			DeleteEvent += delegate { Application.Quit(); };
 
-			// ModifyBg(StateType.Normal, Colors.@base);
+			var page1 = new Grid();
 
-			var page1 = new Box(Orientation.Vertical, 4);
+			page1.ColumnSpacing = 16;
+			page1.RowSpacing = 4;
 
-			page1.Add(new Label("Enim sunt non ipsum irure commodo ipsum id proident consectetur proident deserunt. Sunt enim cupidatat commodo sint commodo ex enim voluptate tempor. Dolore velit esse officia amet tempor quis eu reprehenderit consequat enim in."));
-			page1.Add(new Label("Ullamco incididunt proident non consequat quis laboris officia ex pariatur aute occaecat. Qui consectetur occaecat laboris ad reprehenderit commodo. Magna ipsum voluptate qui culpa occaecat excepteur qui in exercitation incididunt veniam. Ullamco aute cupidatat est culpa eiusmod dolor fugiat nisi labore elit ut aliqua Lorem. Cupidatat proident nostrud pariatur ea cillum velit dolor in aliqua labore. Occaecat nulla aute duis aliquip laboris aute sit nulla pariatur. Et minim sit tempor veniam aute et dolor."));
+			page1.Attach(new Label("Enabled"), 0, 0, 1, 1);
+			page1.Attach(new CheckButton(), 1, 0, 1, 1);
 
-			var page2 = new Box(Orientation.Vertical, 4);
+			page1.Attach(new Label("Visible"), 0, 1, 1, 1);
+			page1.Attach(new CheckButton(), 1, 1, 1, 1);
 
-			page2.Add(new Button("Button"));
-			page2.Add(new ToggleButton("Toggle Button"));
-			page2.Add(new CheckButton("Check Button"));
-			page2.Add(new CheckButton("Check Button"));
-			page2.Add(new RadioButton("Radio Button"));
-			page2.Add(new RadioButton("Radio Button"));
-			page2.Add(new RadioButton("Radio Button"));
-			page2.Add(new ProgressBar());
-			page2.Add(new HScale(0, 100, 10));
-			page2.Add(new Entry());
+			page1.Attach(new Label("Name"), 0, 2, 1, 1);
+			page1.Attach(new Entry(), 1, 2, 1, 1);
+
+			page1.Attach(new Label("Element"), 0, 3, 1, 1);
+			page1.Attach(new ComboBox(new[] { "Fire", "Water", "Air", "Nature" }), 1, 3, 1, 1);
 
 			var left = new Notebook();
 
 			left.AppendPage(page1, new Label("Hierarchy"));
-			left.AppendPage(page2, new Label("Common Settings"));
+			left.AppendPage(new Label("Common Settings"), new Label("Common Settings"));
 
 			var right = new Notebook();
 
 			right.AppendPage(new Label("Inspector"), new Label("Inspector"));
 			right.AppendPage(new Label("Project Settings"), new Label("Project Settings"));
 
-			var mainLayout = new HBox(true, 0);
+			var mainLayout = new Paned(Orientation.Horizontal) { WideHandle = true };
 
 			mainLayout.Add(left);
-			mainLayout.Add(new VSeparator());
-			mainLayout.Add(right);
+			// mainLayout.Add(new VSeparator());
+			var r = new Paned(Orientation.Horizontal) { WideHandle = true };
+			r.Add(new VSeparator());
+			r.Add(right);
+			mainLayout.Add(r);
 
 			Add(mainLayout);
+
+			var titleBar = new HeaderBar();
+
+			titleBar.Add(new Label("MGE EDITOR"));
+			titleBar.Add(new VSeparator());
+			titleBar.Add(new Label("Untitled Scene.mges"));
+			// titleBar.Add(new VSeparator());
+			// var closeButton = new Button(new Image("images/icons/cross.png"));
+			// closeButton.Clicked += (sender, args) => Close();
+			// titleBar.Add(closeButton);
+
+			Titlebar = titleBar;
 
 			resetProvider = new CssProvider();
 			styleProvider = new CssProvider();
@@ -79,26 +90,16 @@ namespace MGE.Editor
 
 		void ReloadStyles()
 		{
-			// ResetCss(this);
+			SetIconFromFile("icon.png");
 
 			try
 			{
 				resetProvider.LoadFromPath("styles/reset.css");
 				styleProvider.LoadFromPath("styles/styles.css");
 			}
-			catch { }
-		}
-
-		void ResetCss(Widget widget)
-		{
-			widget.ResetStyle();
-
-			if (widget is Container container)
+			catch (Exception e)
 			{
-				foreach (var child in container.Children)
-				{
-					ResetCss(child);
-				}
+				Console.WriteLine(e);
 			}
 		}
 
@@ -111,6 +112,15 @@ namespace MGE.Editor
 				foreach (var child in container.Children)
 				{
 					ApplyCss(child, provider, priority);
+				}
+
+				if (widget is Bin bin)
+				{
+					if (bin.Child is not null)
+					{
+						System.Console.WriteLine("Appied to child");
+						ApplyCss(bin.Child, provider, priority);
+					}
 				}
 			}
 		}

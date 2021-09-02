@@ -1,13 +1,43 @@
-@define-color base rgb(1, 4, 9);
+/* My Theme
+@define-color base #0a0f13;
 
-@define-color background rgb(13, 17, 23);
+@define-color background #0e141a;
 
-@define-color element rgb(22, 27, 34);
+@define-color element #121a22;
 
-@define-color text rgb(201, 209, 217);
-@define-color text-dark rgb(139, 148, 158);
+@define-color text #c3ced9;
+@define-color text-dark #62676d;
 
-@define-color accent rgb(88, 166, 255);
+@define-color accent #599eff;
+@define-color accent-light #79c0ff;
+*/
+
+/* Github Theme
+@define-color base #010409;
+
+@define-color background #0D1117;
+
+@define-color element #161B22;
+
+@define-color text #c3ced9;
+@define-color text-dark #62676d;
+
+@define-color accent #599eff;
+@define-color accent-light #79c0ff;
+*/
+
+/* Gray Theme */
+@define-color base #000;
+
+@define-color background #0a0a0a;
+
+@define-color element #191919;
+
+@define-color text #c3ced9;
+@define-color text-dark #62676d;
+
+@define-color accent #00AAFF;
+@define-color accent-light #79c0ff;
 
 * {
 	color: @text;
@@ -33,18 +63,28 @@
 	transition: background-color 50ms;
 }
 
+selection {
+	background-color: @accent;
+}
+
 window {
 	background-color: @base;
 }
 
+headerbar {
+	background-color: #000;
+	padding-left: 1rem;
+	border-top: solid 4px @accent;
+}
+
 stack {
 	/* border: solid 2px rgb(0, 0, 0); */
-	background-color: @background;
+	background-color: @background; 
 	padding: 1em;
 }
 
 tab {
-	padding: 0.25em 1em;
+	padding: 0 1em;
 	color: @text-dark;
 	border-top: solid 4px transparent;
 }
@@ -70,4 +110,25 @@ button:hover {
 
 button:active, button:checked {
 	background-color: @element;
+}
+
+checkbutton {
+	border: solid 2px @element;
+}
+
+checkbutton:hover {
+	background-color: @element;
+}
+
+check {
+	color: @accent;
+}
+
+entry {
+	border: solid 2px @element;
+}
+
+
+combobox box.linked button.combo {
+	background-color: red;
 }
