@@ -23,16 +23,16 @@ namespace MGE.Editor
 			page1.ColumnSpacing = 16;
 			page1.RowSpacing = 4;
 
-			page1.Attach(new Label("Enabled"), 0, 0, 1, 1);
+			page1.Attach(new Label("Enabled") { Xalign = 0 }, 0, 0, 1, 1);
 			page1.Attach(new CheckButton(), 1, 0, 1, 1);
 
-			page1.Attach(new Label("Visible"), 0, 1, 1, 1);
+			page1.Attach(new Label("Visible") { Xalign = 0 }, 0, 1, 1, 1);
 			page1.Attach(new CheckButton(), 1, 1, 1, 1);
 
-			page1.Attach(new Label("Name"), 0, 2, 1, 1);
+			page1.Attach(new Label("Name") { Xalign = 0 }, 0, 2, 1, 1);
 			page1.Attach(new Entry(), 1, 2, 1, 1);
 
-			page1.Attach(new Label("Element"), 0, 3, 1, 1);
+			page1.Attach(new Label("Element") { Xalign = 0 }, 0, 3, 1, 1);
 			page1.Attach(new ComboBox(new[] { "Fire", "Water", "Air", "Nature" }), 1, 3, 1, 1);
 
 			var left = new Notebook();
@@ -41,6 +41,8 @@ namespace MGE.Editor
 			left.AppendPage(new Label("Common Settings"), new Label("Common Settings"));
 
 			var right = new Notebook();
+
+			right.Hexpand = true;
 
 			right.AppendPage(new Label("Inspector"), new Label("Inspector"));
 			right.AppendPage(new Label("Project Settings"), new Label("Project Settings"));
@@ -61,18 +63,17 @@ namespace MGE.Editor
 			titleBar.Add(new Label("MGE EDITOR"));
 			titleBar.Add(new VSeparator());
 			titleBar.Add(new Label("Untitled Scene.mges"));
-			// titleBar.Add(new VSeparator());
-			// var closeButton = new Button(new Image("images/icons/cross.png"));
-			// closeButton.Clicked += (sender, args) => Close();
-			// titleBar.Add(closeButton);
+			titleBar.ShowCloseButton = true;
 
 			Titlebar = titleBar;
 
 			resetProvider = new CssProvider();
 			styleProvider = new CssProvider();
+
 			ReloadStyles();
-			ApplyCss(this, resetProvider, 800);
-			ApplyCss(this, styleProvider, int.MaxValue);
+
+			StyleContext.AddProviderForScreen(Screen, resetProvider, int.MaxValue - 1);
+			StyleContext.AddProviderForScreen(Screen, styleProvider, int.MaxValue);
 
 			ShowAll();
 		}
@@ -84,8 +85,6 @@ namespace MGE.Editor
 			{
 				ReloadStyles();
 			}
-
-			Console.WriteLine(args.Event.Key);
 		}
 
 		void ReloadStyles()
@@ -95,33 +94,19 @@ namespace MGE.Editor
 			try
 			{
 				resetProvider.LoadFromPath("styles/reset.css");
-				styleProvider.LoadFromPath("styles/styles.css");
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
 			}
-		}
 
-		void ApplyCss(Widget widget, CssProvider provider, uint priority)
-		{
-			widget.StyleContext.AddProvider(provider, priority);
-
-			if (widget is Container container)
+			try
 			{
-				foreach (var child in container.Children)
-				{
-					ApplyCss(child, provider, priority);
-				}
-
-				if (widget is Bin bin)
-				{
-					if (bin.Child is not null)
-					{
-						System.Console.WriteLine("Appied to child");
-						ApplyCss(bin.Child, provider, priority);
-					}
-				}
+				styleProvider.LoadFromPath("styles/styles.css");
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
 			}
 		}
 	}
