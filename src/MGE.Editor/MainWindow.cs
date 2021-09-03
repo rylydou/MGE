@@ -18,26 +18,9 @@ namespace MGE.Editor
 
 			DeleteEvent += delegate { Application.Quit(); };
 
-			var page1 = new Grid();
-
-			page1.ColumnSpacing = 16;
-			page1.RowSpacing = 4;
-
-			page1.Attach(new Label("Enabled") { Xalign = 0 }, 0, 0, 1, 1);
-			page1.Attach(new CheckButton(), 1, 0, 1, 1);
-
-			page1.Attach(new Label("Visible") { Xalign = 0 }, 0, 1, 1, 1);
-			page1.Attach(new CheckButton(), 1, 1, 1, 1);
-
-			page1.Attach(new Label("Name") { Xalign = 0 }, 0, 2, 1, 1);
-			page1.Attach(new Entry(), 1, 2, 1, 1);
-
-			page1.Attach(new Label("Element") { Xalign = 0 }, 0, 3, 1, 1);
-			page1.Attach(new ComboBox(new[] { "Fire", "Water", "Air", "Nature" }), 1, 3, 1, 1);
-
 			var left = new Notebook();
 
-			left.AppendPage(page1, new Label("Hierarchy"));
+			left.AppendPage(EditorUtil.GenerateInspector(null), new Label("Hierarchy"));
 			left.AppendPage(new Label("Common Settings"), new Label("Common Settings"));
 
 			var right = new Notebook();
@@ -89,7 +72,7 @@ namespace MGE.Editor
 
 		void ReloadStyles()
 		{
-			SetIconFromFile("icon.png");
+			SetIconFromFile("images/icons/icon.png");
 
 			try
 			{

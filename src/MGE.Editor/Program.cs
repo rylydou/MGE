@@ -10,7 +10,7 @@ namespace MGE.Editor
 		{
 			Application.Init();
 
-			var app = new Application("org.MGE.Editor.MGE.Editor", GLib.ApplicationFlags.None);
+			var app = new Application("com.MGE.Editor", GLib.ApplicationFlags.None);
 			app.Register(GLib.Cancellable.Current);
 
 			var win = new MainWindow();

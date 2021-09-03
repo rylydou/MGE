@@ -36,10 +36,13 @@
 @define-color element-light lighter(@element);
 
 @define-color text #c3ced9;
-@define-color text-dark darker(@text);
+@define-color text-dark #8a9199;
 
 @define-color accent #00AAFF;
 @define-color accent-light lighter(@accent);
+
+@define-color error #eb4034;
+@define-color warn #eb8034;
 
 * {
 	color: @text;
@@ -51,13 +54,11 @@
 	;
 
 	font-size: 14px;
-
-	transition: color 100ms;
-	transition: background-color 50ms;
 }
 
 selection {
 	background-color: @accent;
+	color: white;
 }
 
 window {
@@ -72,32 +73,13 @@ window.popup {
 headerbar {
 	background-color: #000;
 	padding-left: 1rem;
-	border-top: solid 4px @accent;
+	border-top: solid 2px @accent;
 }
 
 stack {
-	/* border: solid 2px rgb(0, 0, 0); */
 	background-color: @background;
 	padding: 1em;
 }
-
-tab {
-	padding: 0 1em;
-	color: @text-dark;
-	border-top: solid 4px transparent;
-}
-
-tab:hover {
-	color: @text;
-}
-
-tab:checked {
-	color: @text;
-	background-color: @background;
-	border-top: solid 4px @accent;
-}
-
-
 
 button,
 checkbutton,
@@ -105,12 +87,13 @@ entry,
 combobox {
 	background-color: @element;
 	border: solid 2px @element;
-	padding: 0.1rem;
+	padding: 0.25rem;
 }
 
 button:hover,
 checkbutton:hover,
 entry:hover,
+entry:focus,
 combobox:hover {
 	border-color: @accent;
 }
@@ -126,4 +109,20 @@ check {
 
 cellview {
 	padding: 0.1rem;
+}
+
+tab {
+	padding: 0 1em;
+	color: @text-dark;
+	border-top: solid 2px transparent;
+}
+
+tab:hover {
+	color: @text;
+}
+
+tab:checked {
+	color: @text;
+	background-color: @background;
+	border-top: solid 2px @accent;
 }
