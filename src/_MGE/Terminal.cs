@@ -195,7 +195,7 @@ namespace MGE
 						if (matchedCount == item.Key.Item2.Length)
 						{
 							foundCommand = true;
-							// TODO: Make the try catch actually work
+							// TODO Make the try catch actually work
 							try
 							{
 								item.Value.Invoke(null, commandParamValues.ToArray());

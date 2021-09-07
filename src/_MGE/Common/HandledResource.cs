@@ -18,13 +18,13 @@ namespace MGE
 #endif
 		}
 
-		public static implicit operator int(HandledResource resource) => resource.handle;
-
-		public override string ToString() => $"{GetType().Name}{handle}";
+		public override bool Equals(object obj) => obj is HandledResource && Equals((HandledResource)obj);
+		public bool Equals(HandledResource other) => other != null && handle.Equals(other.handle);
 
 		public override int GetHashCode() => handle.GetHashCode();
 
-		public override bool Equals(object? obj) => obj is HandledResource && Equals((HandledResource)obj);
-		public bool Equals(HandledResource other) => other != null && handle.Equals(other.handle);
+		public override string ToString() => $"{GetType().Name}{handle}";
+
+		public static implicit operator int(HandledResource resource) => resource.handle;
 	}
 }

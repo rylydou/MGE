@@ -1,9 +1,8 @@
 using System;
 using Gtk;
-
 namespace MGE.Editor
 {
-	class MainWindow : Window
+	class MainWindow : Gtk.Window
 	{
 		CssProvider resetProvider;
 		CssProvider styleProvider;
@@ -16,28 +15,26 @@ namespace MGE.Editor
 
 			KeyPressEvent += KeyPress;
 
-			DeleteEvent += delegate { Application.Quit(); };
+			FocusInEvent += delegate { ReloadStyles(); };
+			Destroyed += MainWindow_Destroyed;
 
 			var left = new Notebook();
 
-			left.AppendPage(EditorUtil.GenerateInspector(null), new Label("Hierarchy"));
+			left.AppendPage(new Label("Hierarchy"), new Label("Hierarchy"));
 			left.AppendPage(new Label("Common Settings"), new Label("Common Settings"));
+			left.AppendPage(new Label("Other Menu"), new Label("Other Menu"));
 
 			var right = new Notebook();
 
 			right.Hexpand = true;
 
-			right.AppendPage(new Label("Inspector"), new Label("Inspector"));
+			right.AppendPage(EditorUtil.GenerateInspector(null), new Label("Inspector"));
 			right.AppendPage(new Label("Project Settings"), new Label("Project Settings"));
 
 			var mainLayout = new Paned(Orientation.Horizontal) { WideHandle = true };
 
 			mainLayout.Add(left);
-			// mainLayout.Add(new VSeparator());
-			var r = new Paned(Orientation.Horizontal) { WideHandle = true };
-			r.Add(new VSeparator());
-			r.Add(right);
-			mainLayout.Add(r);
+			mainLayout.Add(right);
 
 			Add(mainLayout);
 
@@ -57,17 +54,20 @@ namespace MGE.Editor
 
 			StyleContext.AddProviderForScreen(Screen, resetProvider, int.MaxValue - 1);
 			StyleContext.AddProviderForScreen(Screen, styleProvider, int.MaxValue);
-
-			ShowAll();
 		}
 
 		[GLib.ConnectBefore]
 		void KeyPress(object sender, KeyPressEventArgs args)
 		{
-			if (args.Event.Key == Gdk.Key.space)
-			{
-				ReloadStyles();
-			}
+			// if (args.Event.Key == Gdk.Key.space)
+			// {
+			// 	ReloadStyles();
+			// }
+		}
+
+		private void MainWindow_Destroyed(object sender, EventArgs e)
+		{
+			Application.Quit();
 		}
 
 		void ReloadStyles()
@@ -76,20 +76,21 @@ namespace MGE.Editor
 
 			try
 			{
-				resetProvider.LoadFromPath("styles/reset.css");
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e);
-			}
-
-			try
-			{
 				styleProvider.LoadFromPath("styles/styles.css");
+
+				try
+				{
+					resetProvider.LoadFromPath("styles/reset.css");
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+				}
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
+				resetProvider.LoadFromData(string.Empty);
 			}
 		}
 	}

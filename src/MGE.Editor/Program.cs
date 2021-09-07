@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Gtk;
 
 namespace MGE.Editor
@@ -8,17 +9,19 @@ namespace MGE.Editor
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			Application.Init();
+			try
+			{
+				Application.Init();
 
-			var app = new Application("com.MGE.Editor", GLib.ApplicationFlags.None);
-			app.Register(GLib.Cancellable.Current);
+				var win = new MainWindow();
+				win.ShowAll();
 
-			var win = new MainWindow();
-
-			app.AddWindow(win);
-
-			win.Show();
-			Application.Run();
+				Application.Run();
+			}
+			catch (Exception e)
+			{
+				File.WriteAllText(Environment.CurrentDirectory + "/crash.log", e.ToString());
+			}
 		}
 	}
 }

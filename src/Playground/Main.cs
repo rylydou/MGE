@@ -3,9 +3,9 @@ using Playground.Nodes;
 
 namespace Playground
 {
-	public class Main : Microsoft.Xna.Framework.Game
+	public class Game : Microsoft.Xna.Framework.Game
 	{
-		public Main()
+		public Game()
 		{
 			Engine.Setup(this, new Config());
 

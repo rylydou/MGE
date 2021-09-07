@@ -2,6 +2,13 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "build engine",
+			"command": "dotnet",
+			"type": "process",
+			"args": ["build", "${workspaceFolder}/src/MGE/MGE.csproj", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
+			"problemMatcher": "$msCompile"
+		},
+		{
 			"label": "build game",
 			"command": "dotnet",
 			"type": "process",
@@ -13,34 +20,6 @@
 			"command": "dotnet",
 			"type": "process",
 			"args": ["build", "${workspaceFolder}/src/MGE.Editor/MGE.Editor.csproj", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
-			"problemMatcher": "$msCompile"
-		},
-		// {
-		// 	"label": "build editor gtk",
-		// 	"command": "dotnet",
-		// 	"type": "process",
-		// 	"args": ["build", "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Gtk/MGE.Editor.Gtk.csproj", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
-		// 	"problemMatcher": "$msCompile"
-		// },
-		// {
-		// 	"label": "build editor wpf",
-		// 	"command": "dotnet",
-		// 	"type": "process",
-		// 	"args": ["build", "${workspaceFolder}/src/MGE.Editor/MGE.Editor.Wpf/MGE.Editor.Wpf.csproj", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
-		// 	"problemMatcher": "$msCompile"
-		// },
-		{
-			"label": "publish",
-			"command": "dotnet",
-			"type": "process",
-			"args": ["publish", "${workspaceFolder}/src/Playground/Playground.csproj", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"label": "watch",
-			"command": "dotnet",
-			"type": "process",
-			"args": ["watch", "run", "${workspaceFolder}/src/Playground/Playground.csproj", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
 			"problemMatcher": "$msCompile"
 		}
 	]

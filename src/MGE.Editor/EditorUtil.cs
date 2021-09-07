@@ -13,13 +13,13 @@ namespace MGE.Editor
 
 			var inspector = new ScrolledWindow(null, null);
 			var list = new ListBox();
+			list.SelectionMode = SelectionMode.None;
 
-			list.Add(GenerateEntry("Name", new Entry()));
-			list.Add(new HSeparator() { MarginBottom = 3 });
+			list.Add(GenerateEntry("Name", new Entry() { Expand = true, PlaceholderText = "Enter Text...", TooltipText = "Click to enter text!" }));
+			list.Add(GenerateEntry("Description", new Entry() { Expand = true, TruncateMultiline = true, CapsLockWarning = true, PlaceholderText = "Enter Text..." }));
 			list.Add(GenerateEntry("Enabled", new CheckButton()));
-			list.Add(new HSeparator() { MarginBottom = 3 });
 			list.Add(GenerateEntry("Visible", new CheckButton()));
-			list.Add(new HSeparator() { MarginBottom = 3 });
+			list.Add(GenerateEntry("Attack Type", new ComboBox(new[] { "Fire", "Air", "Water", "Earth" }) { Expand = true }));
 
 			inspector.Add(list);
 
