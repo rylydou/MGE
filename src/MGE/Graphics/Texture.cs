@@ -1,12 +1,13 @@
+using System;
 using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace MGE
+namespace MGE.Graphics
 {
-	public class Texture : HandledResource
+	public class Texture : GraphicsObject
 	{
 		public readonly int width;
 		public readonly int height;
@@ -16,7 +17,7 @@ namespace MGE
 			GL.ActiveTexture(TextureUnit.Texture0);
 			GL.BindTexture(TextureTarget.Texture2D, handle);
 
-			GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.x, size.y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, System.IntPtr.Zero);
+			GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.x, size.y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
 
 			GL.Enable(EnableCap.Blend);
 
@@ -43,25 +44,9 @@ namespace MGE
 			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
 		}
 
-		protected override void Dispose(bool manual)
-		{
-			if (!manual) return;
-
-			GL.DeleteTexture(handle);
-		}
-
 		public static Texture LoadFromFile(string path)
 		{
-			// if (path.EndsWith(".ase"))
-			// {
-			// 	var ase = new Aseprite(System.Environment.CurrentDirectory + "/Assets/" + path);
-
-			// 	// TODO Implement Aseprite Support
-
-			// 	return null;
-			// }
-
-			using (var image = Image.Load<Rgba32>(System.Environment.CurrentDirectory + "/Assets/" + path))
+			using (var image = Image.Load<Rgba32>(Environment.CurrentDirectory + "/Assets/" + path))
 			{
 				image.Mutate(x => x.Flip(FlipMode.Vertical));
 
@@ -84,7 +69,7 @@ namespace MGE
 
 		public static OpenTK.Windowing.Common.Input.Image LoadIconData(string path)
 		{
-			using (var image = Image.Load<Rgba32>(System.Environment.CurrentDirectory + "/Assets/" + path))
+			using (var image = Image.Load<Rgba32>(Environment.CurrentDirectory + "/Assets/" + path))
 			{
 				var pixels = new List<byte>(image.Width * image.Height * 4);
 
@@ -113,9 +98,15 @@ namespace MGE
 
 		public void Use(byte unit)
 		{
-			if (unit > 31) throw new System.ArgumentOutOfRangeException("unit", unit, "Intended range 0 - 31");
+			if (unit > 31) throw new ArgumentOutOfRangeException("unit", unit, "Intended range 0 - 31");
 
 			Use((TextureUnit)(33984 + unit));
+		}
+
+		protected override void Dispose(bool manual)
+		{
+			if (!manual) return;
+			GL.DeleteTexture(handle);
 		}
 	}
 }

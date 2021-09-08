@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using OpenTK.Mathematics;
 
-namespace MGE
+namespace MGE.Graphics
 {
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct VertexPositionColorTexture

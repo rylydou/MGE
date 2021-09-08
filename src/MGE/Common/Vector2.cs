@@ -61,8 +61,7 @@ namespace MGE
 
 			var dist = Math.Sqrt(sqDist);
 
-			return new Vector2
-			(
+			return new Vector2(
 				from.x + toVector_x / dist * maxDistanceDelta,
 				from.y + toVector_y / dist * maxDistanceDelta
 			);
