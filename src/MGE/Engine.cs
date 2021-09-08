@@ -13,15 +13,26 @@ namespace MGE
 
 		protected override void OnLoad()
 		{
-			GL.ClearColor(new Color(0xFFFFFFFF));
-			GL.Enable(EnableCap.Blend);
-			GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+			// #472d3c #a93b3b #122020 #24523b #70942F #394778 #3978a8 #0099db #4da6ff
+			GL.ClearColor(new Color("#122020"));
+			GL.Viewport(0, 0, Size.X, Size.Y);
 
 			base.OnLoad();
 		}
 
+		protected override void OnResize(ResizeEventArgs e)
+		{
+			GL.Viewport(0, 0, e.Width, e.Height);
+
+			base.OnResize(e);
+		}
+
 		protected override void OnUpdateFrame(FrameEventArgs e)
 		{
+			GFX.StartBatch();
+
+			GFX.EndBatch();
+
 			base.OnUpdateFrame(e);
 		}
 
