@@ -5,8 +5,8 @@ namespace MGE
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
 	public sealed class PropAttribute : Attribute
 	{
-		public string name { get; init; }
-		public int order { get; init; }
+		public string? name { get; init; }
+		public int? order { get; init; }
 
 		public PropAttribute() { }
 

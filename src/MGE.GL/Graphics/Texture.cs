@@ -90,17 +90,18 @@ namespace MGE.Graphics
 			}
 		}
 
-		public void Use(TextureUnit unit = TextureUnit.Texture0)
-		{
-			GL.ActiveTexture(unit);
-			GL.BindTexture(TextureTarget.Texture2D, handle);
-		}
+		public Vector2 GetTextureCoord(Vector2 position) => GetTextureCoord(position.x, position.y);
+		public Vector2 GetTextureCoord(float x, float y) => new Vector2(x / width, y / height);
 
 		public void Use(byte unit)
 		{
 			if (unit > 31) throw new ArgumentOutOfRangeException("unit", unit, "Intended range 0 - 31");
-
 			Use((TextureUnit)(33984 + unit));
+		}
+		public void Use(TextureUnit unit = TextureUnit.Texture0)
+		{
+			GL.ActiveTexture(unit);
+			GL.BindTexture(TextureTarget.Texture2D, handle);
 		}
 
 		protected override void Dispose(bool manual)

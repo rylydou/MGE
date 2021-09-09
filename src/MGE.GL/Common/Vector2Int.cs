@@ -1,28 +1,26 @@
 using System;
 
-using Newtonsoft.Json;
-
 namespace MGE
 {
-	public class Vector2IntJsonConverter : JsonConverter<Vector2Int>
-	{
-		public override Vector2Int ReadJson(JsonReader reader, Type objectType, Vector2Int existingValue, bool hasExistingValue, JsonSerializer serializer)
-		{
-			var values = reader.ReadAsMultiDimensional<int>();
+	// public class Vector2IntJsonConverter : JsonConverter<Vector2Int>
+	// {
+	// 	public override Vector2Int ReadJson(JsonReader reader, Type objectType, Vector2Int existingValue, bool hasExistingValue, JsonSerializer serializer)
+	// 	{
+	// 		var values = reader.ReadAsMultiDimensional<int>();
 
-			if (values.Length == 2)
-				return new Vector2(values[0], values[1]);
+	// 		if (values.Length == 2)
+	// 			return new Vector2(values[0], values[1]);
 
-			throw new InvalidOperationException("Invalid Vector2Int");
-		}
+	// 		throw new InvalidOperationException("Invalid Vector2Int");
+	// 	}
 
-		public override void WriteJson(JsonWriter writer, Vector2Int vector, JsonSerializer serializer)
-		{
-			writer.WriteValue($"{vector.x} {vector.y}");
-		}
-	}
+	// 	public override void WriteJson(JsonWriter writer, Vector2Int vector, JsonSerializer serializer)
+	// 	{
+	// 		writer.WriteValue($"{vector.x} {vector.y}");
+	// 	}
+	// }
 
-	[System.Serializable]
+	[Serializable]
 	public struct Vector2Int : IEquatable<Vector2Int>
 	{
 		public static readonly Vector2Int zero = new Vector2Int(0, 0);
@@ -142,27 +140,12 @@ namespace MGE
 
 		////////////////////////////////////////////////////////////
 
-		public static implicit operator bool(Vector2Int vector) => vector != Vector2Int.zero;
-
-		public static implicit operator Vector2Int(Microsoft.Xna.Framework.Vector2 vector) => new Vector2Int((int)vector.X, (int)vector.Y);
-		public static implicit operator Microsoft.Xna.Framework.Vector2(Vector2Int vector) => new Microsoft.Xna.Framework.Vector2(vector.x, vector.y);
-
-		public static implicit operator Vector2Int(Microsoft.Xna.Framework.Point vector) => new Vector2Int(vector.X, vector.Y);
-		public static implicit operator Microsoft.Xna.Framework.Point(Vector2Int vector) => new Microsoft.Xna.Framework.Point(vector.x, vector.y);
-
-		////////////////////////////////////////////////////////////
-
 		public override string ToString() => $"({x}, {y})";
 		public string ToString(string format) => string.Format(format, x, y);
 
 		public override int GetHashCode() => HashCode.Combine(x, y);
 
 		public bool Equals(Vector2Int other) => x == other.x && y == other.y;
-		public override bool Equals(object other)
-		{
-			if (other is Vector2Int vector)
-				return Equals(vector);
-			return false;
-		}
+		public override bool Equals(object? other) => other is Vector2Int vector && Equals(vector);
 	}
 }

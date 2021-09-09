@@ -6,9 +6,9 @@ namespace MGE.Serialization
 {
 	public static class Serializer
 	{
-		// TODO Don't use BinaryFormatter
+		// TODO: Don't use BinaryFormatter
 		public static readonly BinaryFormatter binaryFormatter = new BinaryFormatter();
-		static JsonSerializer? _jsonSerializer;
+		static JsonSerializer _jsonSerializer;
 		public static JsonSerializer jsonSerializer
 		{
 			get
@@ -21,12 +21,12 @@ namespace MGE.Serialization
 						Formatting = Formatting.Indented,
 						ContractResolver = new JsonContractResolver(),
 					};
-					// AddConverter(new Vector2JsonConverter());
-					// AddConverter(new Vector2IntJsonConverter());
-					// AddConverter(new RectJsonConverter());
-					// AddConverter(new RectIntJsonConverter());
-					// AddConverter(new ColorJsonConverter());
-					// AddConverter(new FolderJsonConverter());
+					AddConverter(new Vector2JsonConverter());
+					AddConverter(new Vector2IntJsonConverter());
+					AddConverter(new RectJsonConverter());
+					AddConverter(new RectIntJsonConverter());
+					AddConverter(new ColorJsonConverter());
+					AddConverter(new FolderJsonConverter());
 				}
 				return _jsonSerializer;
 			}
@@ -42,13 +42,11 @@ namespace MGE.Serialization
 			jsonSerializer.Serialize(writer, obj);
 		}
 
-		public static T? DeserializeReadable<T>(TextReader reader)
+		public static T DeserializeReadable<T>(TextReader reader)
 		{
-			T? result = default;
+			T result = default;
 			using (var jsonReader = new JsonTextReader(reader))
-			{
 				result = jsonSerializer.Deserialize<T>(jsonReader);
-			}
 			return result;
 		}
 

@@ -1,26 +1,24 @@
 using System;
 
-using Newtonsoft.Json;
-
 namespace MGE
 {
-	public class RectJsonConverter : JsonConverter<Rect>
-	{
-		public override Rect ReadJson(JsonReader reader, Type objectType, Rect existingValue, bool hasExistingValue, JsonSerializer serializer)
-		{
-			var values = reader.ReadAsMultiDimensional<float>();
+	// public class RectJsonConverter : JsonConverter<Rect>
+	// {
+	// 	public override Rect ReadJson(JsonReader reader, Type objectType, Rect existingValue, bool hasExistingValue, JsonSerializer serializer)
+	// 	{
+	// 		var values = reader.ReadAsMultiDimensional<float>();
 
-			if (values.Length == 4)
-				return new Rect(values[0], values[1], values[2], values[3]);
+	// 		if (values.Length == 4)
+	// 			return new Rect(values[0], values[1], values[2], values[3]);
 
-			throw new InvalidOperationException("Invalid Rect");
-		}
+	// 		throw new InvalidOperationException("Invalid Rect");
+	// 	}
 
-		public override void WriteJson(JsonWriter writer, Rect rect, JsonSerializer serializer)
-		{
-			writer.WriteValue($"{rect.x} {rect.y} {rect.width} {rect.height}");
-		}
-	}
+	// 	public override void WriteJson(JsonWriter writer, Rect rect, JsonSerializer serializer)
+	// 	{
+	// 		writer.WriteValue($"{rect.x} {rect.y} {rect.width} {rect.height}");
+	// 	}
+	// }
 
 	[System.Serializable]
 	public struct Rect : IEquatable<Rect>
@@ -242,9 +240,6 @@ namespace MGE
 		public static implicit operator Rect(RectInt rect) => new Rect(rect.x, rect.y, rect.width, rect.height);
 		public static implicit operator RectInt(Rect rect) => new RectInt((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 
-		public static implicit operator Rect(Microsoft.Xna.Framework.Rectangle rect) => new Rect((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
-		public static implicit operator Microsoft.Xna.Framework.Rectangle(Rect rect) => new Microsoft.Xna.Framework.Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
-
 		////////////////////////////////////////////////////////////
 
 		public override string ToString() => $"({x.ToString("F3")} {y.ToString("F3")} {width.ToString("F3")}x{height.ToString("F3")})";
@@ -253,11 +248,6 @@ namespace MGE
 		public override int GetHashCode() => HashCode.Combine(x, y, width, height);
 
 		public bool Equals(Rect other) => x.Equals(other.x) && y.Equals(other.y) && width.Equals(other.width) && height.Equals(other.height);
-		public override bool Equals(object other)
-		{
-			if (other is Rect rect)
-				return Equals(rect);
-			return false;
-		}
+		public override bool Equals(object? other) => other is Rect rect && Equals(rect);
 	}
 }

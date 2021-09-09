@@ -1,23 +1,22 @@
 using System;
 using System.Globalization;
 
-using Newtonsoft.Json;
-
 namespace MGE
 {
-	public class ColorJsonConverter : JsonConverter<Color>
-	{
-		public override Color ReadJson(JsonReader reader, Type objectType, Color existingValue, bool hasExistingValue, JsonSerializer serializer)
-		{
-			var value = (string)reader.Value;
-			return value.StartsWith("#") ? new Color(value) : (Color)System.Drawing.Color.FromName(value);
-		}
+	// public class ColorJsonConverter : JsonConverter<Color>
+	// {
+	// 	public override Color ReadJson(JsonReader reader, Type objectType, Color existingValue, bool hasExistingValue, JsonSerializer serializer)
+	// 	{
+	// 		var value = (string?)reader.Value;
+	// 		if (value is null) return Color.transparent;
+	// 		return value.StartsWith("#") ? new Color(value) : (Color)System.Drawing.Color.FromName(value);
+	// 	}
 
-		public override void WriteJson(JsonWriter writer, Color color, JsonSerializer serializer)
-		{
-			writer.WriteValue(color.ToHex());
-		}
-	}
+	// 	public override void WriteJson(JsonWriter writer, Color color, JsonSerializer serializer)
+	// 	{
+	// 		writer.WriteValue(color.ToHex());
+	// 	}
+	// }
 
 	[Serializable]
 	public struct Color : IEquatable<Color>
@@ -34,6 +33,8 @@ namespace MGE
 		public static readonly Color gray = new Color(0.5f);
 		public static readonly Color lightGray = new Color(0.75f);
 		public static readonly Color white = new Color(1f);
+
+		public static readonly Color transparent = new Color(0, 0, 0, 0);
 
 		////////////////////////////////////////////////////////////
 
@@ -196,11 +197,8 @@ namespace MGE
 
 		////////////////////////////////////////////////////////////
 
-		public string ToHex(int? length = null)
+		public string ToHex(int length = 8)
 		{
-			if (!length.HasValue)
-				length = intA == byte.MaxValue ? 6 : 8;
-
 			switch (length)
 			{
 				case 3: return string.Format("#{0:X1}{1:X1}{2:X1}", intR / 15, intG / 15, intB / 15);
@@ -208,9 +206,7 @@ namespace MGE
 				case 6: return string.Format("#{0:X2}{1:X2}{2:X2}", intR, intG, intB);
 				case 8: return string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", intR, intG, intB, intA);
 			}
-
-			Logger.LogError($"Color '{this.ToString()}' can not be convered to hex string a length of {length}!");
-			return string.Empty;
+			throw new ArgumentException($"Color '{this.ToString()}' can not be convered to hex string a length of {length}!", nameof(length));
 		}
 
 		public Color WithAlpha(float a) => new Color(r, g, b, a);
@@ -248,9 +244,6 @@ namespace MGE
 
 		////////////////////////////////////////////////////////////
 
-		public static implicit operator Microsoft.Xna.Framework.Color(Color color) => new Microsoft.Xna.Framework.Color(color.intR, color.intG, color.intB, color.intA);
-		public static implicit operator Color(Microsoft.Xna.Framework.Color color) => Color.FromBytes(color.R, color.G, color.B, color.A);
-
 		public static implicit operator System.Drawing.Color(Color color) => System.Drawing.Color.FromArgb(color.intA, color.intR, color.intG, color.intB);
 		public static implicit operator Color(System.Drawing.Color color) => Color.FromBytes(color.R, color.G, color.B, color.A);
 
@@ -267,11 +260,6 @@ namespace MGE
 		public override int GetHashCode() => HashCode.Combine(r, g, b, a);
 
 		public bool Equals(Color color) => intA == color.intA && intR == color.intR && intG == color.intG && intB == color.intB;
-		public override bool Equals(object other)
-		{
-			if (other is Color color)
-				return Equals(color);
-			return false;
-		}
+		public override bool Equals(object? other) => other is Color color && Equals(color);
 	}
 }

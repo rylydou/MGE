@@ -1,25 +1,23 @@
 using System;
 
-using Newtonsoft.Json;
-
 namespace MGE
 {
-	public class Vector2JsonConverter : JsonConverter<Vector2>
-	{
-		public override Vector2 ReadJson(JsonReader reader, Type objectType, Vector2 existingValue, bool hasExistingValue, JsonSerializer serializer)
-		{
-			var values = reader.ReadAsMultiDimensional<float>();
-			if (values.Length == 2) return new Vector2(values[0], values[1]);
-			throw new InvalidOperationException("Invalid Vector2");
-		}
+	// public class Vector2JsonConverter : JsonConverter<Vector2>
+	// {
+	// 	public override Vector2 ReadJson(JsonReader reader, Type objectType, Vector2 existingValue, bool hasExistingValue, JsonSerializer serializer)
+	// 	{
+	// 		var values = reader.ReadAsMultiDimensional<float>();
+	// 		if (values.Length == 2) return new Vector2(values[0], values[1]);
+	// 		throw new InvalidOperationException("Invalid Vector2");
+	// 	}
 
-		public override void WriteJson(JsonWriter writer, Vector2 vector, JsonSerializer serializer)
-		{
-			writer.WriteValue($"{vector.x} {vector.y}");
-		}
-	}
+	// 	public override void WriteJson(JsonWriter writer, Vector2 vector, JsonSerializer serializer)
+	// 	{
+	// 		writer.WriteValue($"{vector.x} {vector.y}");
+	// 	}
+	// }
 
-	[System.Serializable]
+	[Serializable]
 	public struct Vector2 : IEquatable<Vector2>
 	{
 		public static readonly Vector2 zero = new Vector2(0, 0);
@@ -63,8 +61,7 @@ namespace MGE
 
 			var dist = Math.Sqrt(sqDist);
 
-			return new Vector2
-			(
+			return new Vector2(
 				from.x + toVector_x / dist * maxDistanceDelta,
 				from.y + toVector_y / dist * maxDistanceDelta
 			);
@@ -240,19 +237,17 @@ namespace MGE
 
 		////////////////////////////////////////////////////////////
 
-		public static implicit operator bool(Vector2 vector) => vector != Vector2.zero;
-
 		public static implicit operator Vector2Int(Vector2 vector) => new Vector2Int((int)vector.x, (int)vector.y);
 		public static implicit operator Vector2(Vector2Int vector) => new Vector2(vector.x, vector.y);
 
-		public static implicit operator Microsoft.Xna.Framework.Vector2(Vector2 vector) => new Microsoft.Xna.Framework.Vector2(vector.x, vector.y);
-		public static implicit operator Vector2(Microsoft.Xna.Framework.Vector2 vector) => new Vector2(vector.X, vector.Y);
+		public static implicit operator OpenTK.Mathematics.Vector2(Vector2 vector) => new OpenTK.Mathematics.Vector2(vector.x, vector.y);
+		public static implicit operator Vector2(OpenTK.Mathematics.Vector2 vector) => new Vector2(vector.X, vector.Y);
 
-		public static implicit operator Microsoft.Xna.Framework.Vector3(Vector2 vector) => new Microsoft.Xna.Framework.Vector3(vector.x, vector.y, 0);
-		public static implicit operator Vector2(Microsoft.Xna.Framework.Vector3 vector) => new Vector2(vector.X, vector.Y);
+		public static implicit operator OpenTK.Mathematics.Vector3(Vector2 vector) => new OpenTK.Mathematics.Vector3(vector.x, vector.y, 0);
+		public static implicit operator Vector2(OpenTK.Mathematics.Vector3 vector) => new Vector2(vector.X, vector.Y);
 
-		public static implicit operator Vector2(Microsoft.Xna.Framework.Point vector) => new Vector2(vector.X, vector.Y);
-		public static implicit operator Microsoft.Xna.Framework.Point(Vector2 vector) => new Microsoft.Xna.Framework.Point((int)vector.x, (int)vector.y);
+		// public static implicit operator Vector2(Microsoft.Xna.Framework.Point vector) => new Vector2(vector.X, vector.Y);
+		// public static implicit operator Microsoft.Xna.Framework.Point(Vector2 vector) => new Microsoft.Xna.Framework.Point((int)vector.x, (int)vector.y);
 
 		////////////////////////////////////////////////////////////
 
@@ -262,11 +257,6 @@ namespace MGE
 		public override int GetHashCode() => HashCode.Combine(x, y);
 
 		public bool Equals(Vector2 other) => x == other.x && y == other.y;
-		public override bool Equals(object other)
-		{
-			if (other is Vector2 vector)
-				return Equals(vector);
-			return false;
-		}
+		public override bool Equals(object? other) => other is Vector2 vector && Equals(vector);
 	}
 }
