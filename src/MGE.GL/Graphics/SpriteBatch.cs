@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL;
 
 namespace MGE.Graphics
@@ -9,14 +10,6 @@ namespace MGE.Graphics
 		BlendMode _blendMode;
 		SpriteBatcher _batcher;
 		Matrix _matrix;
-		public readonly GraphicsDevice _graphicsDevice;
-
-		public SpriteBatch(GraphicsDevice graphicsDevice)
-		{
-			_graphicsDevice = graphicsDevice;
-
-			_batcher = new SpriteBatcher();
-		}
 
 		public void Begin()
 		{
@@ -67,22 +60,10 @@ namespace MGE.Graphics
 
 			GL.Ortho(0, _graphicsDevice.Viewport.width, _graphicsDevice.Viewport.height, 0, -1, 1);
 
-			// Enable Scissor Tests if necessary
-			if (_graphicsDevice.RenderState.ScissorTestEnable)
-			{
-				GL.Enable(EnableCap.ScissorTest);
-			}
-
 			GL.MatrixMode(MatrixMode.Modelview);
-			GL.LoadMatrix(ref _matrix.M11);
+			GL.LoadMatrix(ref _matrix.m11);
 
 			GL.Viewport(0, 0, _graphicsDevice.Viewport.width, _graphicsDevice.Viewport.height);
-
-			// Enable Scissor Tests if necessary
-			if (_graphicsDevice.RenderState.ScissorTestEnable)
-			{
-				GL.Scissor(_graphicsDevice.ScissorRectangle.x, _graphicsDevice.ScissorRectangle.y, _graphicsDevice.ScissorRectangle.width, _graphicsDevice.ScissorRectangle.height);
-			}
 
 			// Initialize OpenGL states (ideally move this to initialize somewhere else)
 			GL.Disable(EnableCap.DepthTest);
@@ -100,7 +81,7 @@ namespace MGE.Graphics
 			_batcher.DrawBatch(_sortMode);
 		}
 
-		public void Draw(Texture texture, Vector2 position, Rect? sourceRectangle, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effect, float depth)
+		public void Draw(Texture texture, Vector2 position, Rect? sourceRectangle, Color color, float rotation, Vector2 origin, Vector2 scale, /* SpriteEffects effect, */ float depth)
 		{
 			var item = _batcher.CreateBatchItem();
 
@@ -116,23 +97,23 @@ namespace MGE.Graphics
 			var texCoordTL = texture.GetTextureCoord(rect.x, rect.y);
 			var texCoordBR = texture.GetTextureCoord(rect.x + rect.width, rect.y + rect.height);
 
-			if (effect == SpriteEffects.FlipVertically)
-			{
-				var temp = texCoordBR.y;
-				texCoordBR.y = texCoordTL.y;
-				texCoordTL.y = temp;
-			}
-			else if (effect == SpriteEffects.FlipHorizontally)
-			{
-				var temp = texCoordBR.x;
-				texCoordBR.x = texCoordTL.x;
-				texCoordTL.x = temp;
-			}
+			// if (effect == SpriteEffects.FlipVertically)
+			// {
+			// 	var temp = texCoordBR.y;
+			// 	texCoordBR.y = texCoordTL.y;
+			// 	texCoordTL.y = temp;
+			// }
+			// else if (effect == SpriteEffects.FlipHorizontally)
+			// {
+			// 	var temp = texCoordBR.x;
+			// 	texCoordBR.x = texCoordTL.x;
+			// 	texCoordTL.x = temp;
+			// }
 
 			item.Set(position.x, position.y, -origin.x * scale.x, -origin.y * scale.y, rect.width * scale.x, rect.height * scale.y, (float)Math.Sin(rotation), (float)Math.Cos(rotation), color, texCoordTL, texCoordBR);
 		}
 
-		public void Draw(Texture texture, Vector2 position, Nullable<Rect> sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effect, float depth)
+		public void Draw(Texture texture, Vector2 position, Nullable<Rect> sourceRectangle, Color color, float rotation, Vector2 origin, float scale, /* SpriteEffects effect, */ float depth)
 		{
 			var item = _batcher.CreateBatchItem();
 
@@ -148,22 +129,22 @@ namespace MGE.Graphics
 			var texCoordTL = texture.GetTextureCoord(rect.x, rect.y);
 			var texCoordBR = texture.GetTextureCoord(rect.x + rect.width, rect.y + rect.height);
 
-			if (effect == SpriteEffects.FlipVertically)
-			{
-				var temp = texCoordBR.y;
-				texCoordBR.y = texCoordTL.y;
-				texCoordTL.y = temp;
-			}
-			else if (effect == SpriteEffects.FlipHorizontally)
-			{
-				var temp = texCoordBR.x;
-				texCoordBR.x = texCoordTL.x;
-				texCoordTL.x = temp;
-			}
+			// if (effect == SpriteEffects.FlipVertically)
+			// {
+			// 	var temp = texCoordBR.y;
+			// 	texCoordBR.y = texCoordTL.y;
+			// 	texCoordTL.y = temp;
+			// }
+			// else if (effect == SpriteEffects.FlipHorizontally)
+			// {
+			// 	var temp = texCoordBR.x;
+			// 	texCoordBR.x = texCoordTL.x;
+			// 	texCoordTL.x = temp;
+			// }
 			item.Set(position.x, position.y, -origin.x * scale, -origin.y * scale, rect.width * scale, rect.height * scale, (float)Math.Sin(rotation), (float)Math.Cos(rotation), color, texCoordTL, texCoordBR);
 		}
 
-		public void Draw(Texture texture, Rect destinationRectangle, Nullable<Rect> sourceRectangle, Color color, float rotation, Vector2 origin, SpriteEffects effect, float depth)
+		public void Draw(Texture texture, Rect destinationRectangle, Nullable<Rect> sourceRectangle, Color color, float rotation, Vector2 origin, /* SpriteEffects effect, */ float depth)
 		{
 			var item = _batcher.CreateBatchItem();
 
@@ -178,18 +159,18 @@ namespace MGE.Graphics
 
 			var texCoordTL = texture.GetTextureCoord(rect.x, rect.y);
 			var texCoordBR = texture.GetTextureCoord(rect.x + rect.width, rect.y + rect.height);
-			if (effect == SpriteEffects.FlipVertically)
-			{
-				var temp = texCoordBR.y;
-				texCoordBR.y = texCoordTL.y;
-				texCoordTL.y = temp;
-			}
-			else if (effect == SpriteEffects.FlipHorizontally)
-			{
-				var temp = texCoordBR.x;
-				texCoordBR.x = texCoordTL.x;
-				texCoordTL.x = temp;
-			}
+			// if (effect == SpriteEffects.FlipVertically)
+			// {
+			// 	var temp = texCoordBR.y;
+			// 	texCoordBR.y = texCoordTL.y;
+			// 	texCoordTL.y = temp;
+			// }
+			// else if (effect == SpriteEffects.FlipHorizontally)
+			// {
+			// 	var temp = texCoordBR.x;
+			// 	texCoordBR.x = texCoordTL.x;
+			// 	texCoordTL.x = temp;
+			// }
 
 			item.Set(destinationRectangle.x, destinationRectangle.y, -origin.x, -origin.y, destinationRectangle.width, destinationRectangle.height, (float)Math.Sin(rotation), (float)Math.Cos(rotation), color, texCoordTL, texCoordBR);
 		}

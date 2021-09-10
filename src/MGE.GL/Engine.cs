@@ -18,7 +18,6 @@ namespace MGE
 			GL.Viewport(0, 0, Size.X, Size.Y);
 			GL.Ortho(0, Size.X, Size.Y, 0, -1, 1);
 
-
 			base.OnLoad();
 		}
 
