@@ -22,30 +22,30 @@ namespace MGE.Graphics
 		{
 			this.depth = depth;
 
-			vertexTL.position.X = x + dx * cos - dy * sin;
-			vertexTL.position.Y = y + dx * sin + dy * cos;
-			vertexTL.position.Z = depth;
+			vertexTL.position.x = x + dx * cos - dy * sin;
+			vertexTL.position.y = y + dx * sin + dy * cos;
+			vertexTL.position.z = depth;
 			vertexTL.color = color;
 			vertexTL.textureCoordinate.x = texCoordTL.x;
 			vertexTL.textureCoordinate.y = texCoordTL.y;
 
-			vertexTR.position.X = x + (dx + w) * cos - dy * sin;
-			vertexTR.position.Y = y + (dx + w) * sin + dy * cos;
-			vertexTR.position.Z = depth;
+			vertexTR.position.x = x + (dx + w) * cos - dy * sin;
+			vertexTR.position.y = y + (dx + w) * sin + dy * cos;
+			vertexTR.position.z = depth;
 			vertexTR.color = color;
 			vertexTR.textureCoordinate.x = texCoordBR.x;
 			vertexTR.textureCoordinate.y = texCoordTL.y;
 
-			vertexBL.position.X = x + dx * cos - (dy + h) * sin;
-			vertexBL.position.Y = y + dx * sin + (dy + h) * cos;
-			vertexBL.position.Z = depth;
+			vertexBL.position.x = x + dx * cos - (dy + h) * sin;
+			vertexBL.position.y = y + dx * sin + (dy + h) * cos;
+			vertexBL.position.z = depth;
 			vertexBL.color = color;
 			vertexBL.textureCoordinate.x = texCoordTL.x;
 			vertexBL.textureCoordinate.y = texCoordBR.y;
 
-			vertexBR.position.X = x + (dx + w) * cos - (dy + h) * sin;
-			vertexBR.position.Y = y + (dx + w) * sin + (dy + h) * cos;
-			vertexBR.position.Z = depth;
+			vertexBR.position.x = x + (dx + w) * cos - (dy + h) * sin;
+			vertexBR.position.y = y + (dx + w) * sin + (dy + h) * cos;
+			vertexBR.position.z = depth;
 			vertexBR.color = color;
 			vertexBR.textureCoordinate.x = texCoordBR.y;
 			vertexBR.textureCoordinate.y = texCoordBR.y;
@@ -55,30 +55,30 @@ namespace MGE.Graphics
 		{
 			this.depth = depth;
 
-			vertexTL.position.X = x;
-			vertexTL.position.Y = y;
-			vertexTL.position.Z = depth;
+			vertexTL.position.x = x;
+			vertexTL.position.y = y;
+			vertexTL.position.z = depth;
 			vertexTL.color = color;
 			vertexTL.textureCoordinate.x = texCoordTL.x;
 			vertexTL.textureCoordinate.y = texCoordTL.y;
 
-			vertexTR.position.X = x + w;
-			vertexTR.position.Y = y;
-			vertexTR.position.Z = depth;
+			vertexTR.position.x = x + w;
+			vertexTR.position.y = y;
+			vertexTR.position.z = depth;
 			vertexTR.color = color;
 			vertexTR.textureCoordinate.x = texCoordBR.x;
 			vertexTR.textureCoordinate.y = texCoordTL.y;
 
-			vertexBL.position.X = x;
-			vertexBL.position.Y = y + h;
-			vertexBL.position.Z = depth;
+			vertexBL.position.x = x;
+			vertexBL.position.y = y + h;
+			vertexBL.position.z = depth;
 			vertexBL.color = color;
 			vertexBL.textureCoordinate.x = texCoordTL.x;
 			vertexBL.textureCoordinate.y = texCoordBR.y;
 
-			vertexBR.position.X = x + w;
-			vertexBR.position.Y = y + h;
-			vertexBR.position.Z = depth;
+			vertexBR.position.x = x + w;
+			vertexBR.position.y = y + h;
+			vertexBR.position.z = depth;
 			vertexBR.color = color;
 			vertexBR.textureCoordinate.x = texCoordBR.x;
 			vertexBR.textureCoordinate.y = texCoordBR.y;

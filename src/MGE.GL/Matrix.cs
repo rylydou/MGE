@@ -95,7 +95,6 @@ namespace MGE
 				}
 				throw new ArgumentOutOfRangeException();
 			}
-
 			set
 			{
 				switch (index)
@@ -135,7 +134,7 @@ namespace MGE
 			set => this[(row * 4) + column] = value;
 		}
 
-		private static Matrix identity = new Matrix(
+		public static Matrix identity = new Matrix(
 			1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
@@ -293,165 +292,166 @@ namespace MGE
 
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="Matrix"/> for spherical billboarding that rotates around specified object position.
-		/// </summary>
-		/// <param name="objectPosition">Position of billboard object. It will rotate around that vector.</param>
-		/// <param name="cameraPosition">The camera position.</param>
-		/// <param name="cameraUpVector">The camera up vector.</param>
-		/// <param name="cameraForwardVector">Optional camera forward vector.</param>
-		/// <returns>The <see cref="Matrix"/> for spherical billboarding.</returns>
-		public static Matrix CreateBillboard(Vector3 objectPosition, Vector3 cameraPosition, Vector3 cameraUpVector, Nullable<Vector3> cameraForwardVector)
-		{
-			Matrix result;
+		// TODO
+		// /// <summary>
+		// /// Creates a new <see cref="Matrix"/> for spherical billboarding that rotates around specified object position.
+		// /// </summary>
+		// /// <param name="objectPosition">Position of billboard object. It will rotate around that vector.</param>
+		// /// <param name="cameraPosition">The camera position.</param>
+		// /// <param name="cameraUpVector">The camera up vector.</param>
+		// /// <param name="cameraForwardVector">Optional camera forward vector.</param>
+		// /// <returns>The <see cref="Matrix"/> for spherical billboarding.</returns>
+		// public static Matrix CreateBillboard(Vector3 objectPosition, Vector3 cameraPosition, Vector3 cameraUpVector, Nullable<Vector3> cameraForwardVector)
+		// {
+		// 	Matrix result;
 
-			// Delegate to the other overload of the function to do the work
-			CreateBillboard(ref objectPosition, ref cameraPosition, ref cameraUpVector, cameraForwardVector, out result);
+		// 	// Delegate to the other overload of the function to do the work
+		// 	CreateBillboard(ref objectPosition, ref cameraPosition, ref cameraUpVector, cameraForwardVector, out result);
 
-			return result;
-		}
+		// 	return result;
+		// }
 
-		/// <summary>
-		/// Creates a new <see cref="Matrix"/> for spherical billboarding that rotates around specified object position.
-		/// </summary>
-		/// <param name="objectPosition">Position of billboard object. It will rotate around that vector.</param>
-		/// <param name="cameraPosition">The camera position.</param>
-		/// <param name="cameraUpVector">The camera up vector.</param>
-		/// <param name="cameraForwardVector">Optional camera forward vector.</param>
-		/// <param name="result">The <see cref="Matrix"/> for spherical billboarding as an output parameter.</param>
-		public static void CreateBillboard(ref Vector3 objectPosition, ref Vector3 cameraPosition, ref Vector3 cameraUpVector, Vector3? cameraForwardVector, out Matrix result)
-		{
-			Vector3 vector;
-			Vector3 vector2;
-			Vector3 vector3;
-			vector.x = objectPosition.x - cameraPosition.x;
-			vector.y = objectPosition.y - cameraPosition.y;
-			vector.z = objectPosition.z - cameraPosition.z;
-			var num = vector.sqrMagnitude;
-			if (num < 0.0001f)
-			{
-				vector = cameraForwardVector.HasValue ? -cameraForwardVector.Value : Vector3.forward;
-			}
-			else
-			{
-				Vector3.Multiply(ref vector, 1f / Math.Sqrt(num), out vector);
-			}
-			Vector3.Cross(ref cameraUpVector, ref vector, out vector3);
-			vector3.Normalize();
-			Vector3.Cross(ref vector, ref vector3, out vector2);
-			result.m11 = vector3.x;
-			result.m12 = vector3.y;
-			result.m13 = vector3.z;
-			result.m14 = 0;
-			result.m21 = vector2.x;
-			result.m22 = vector2.y;
-			result.m23 = vector2.z;
-			result.m24 = 0;
-			result.m31 = vector.x;
-			result.m32 = vector.y;
-			result.m33 = vector.z;
-			result.m34 = 0;
-			result.m41 = objectPosition.x;
-			result.m42 = objectPosition.y;
-			result.m43 = objectPosition.z;
-			result.m44 = 1;
-		}
+		// TODO
+		// /// <summary>
+		// /// Creates a new <see cref="Matrix"/> for spherical billboarding that rotates around specified object position.
+		// /// </summary>
+		// /// <param name="objectPosition">Position of billboard object. It will rotate around that vector.</param>
+		// /// <param name="cameraPosition">The camera position.</param>
+		// /// <param name="cameraUpVector">The camera up vector.</param>
+		// /// <param name="cameraForwardVector">Optional camera forward vector.</param>
+		// /// <param name="result">The <see cref="Matrix"/> for spherical billboarding as an output parameter.</param>
+		// public static void CreateBillboard(ref Vector3 objectPosition, ref Vector3 cameraPosition, ref Vector3 cameraUpVector, Vector3? cameraForwardVector, out Matrix result)
+		// {
+		// 	Vector3 vector;
+		// 	Vector3 vector2;
+		// 	Vector3 vector3;
+		// 	vector.x = objectPosition.x - cameraPosition.x;
+		// 	vector.y = objectPosition.y - cameraPosition.y;
+		// 	vector.z = objectPosition.z - cameraPosition.z;
+		// 	var num = vector.sqrMagnitude;
+		// 	if (num < 0.0001f)
+		// 	{
+		// 		vector = cameraForwardVector.HasValue ? -cameraForwardVector.Value : Vector3.forward;
+		// 	}
+		// 	else
+		// 	{
+		// 		Vector3.Multiply(ref vector, 1f / Math.Sqrt(num), out vector);
+		// 	}
+		// 	Vector3.Cross(ref cameraUpVector, ref vector, out vector3);
+		// 	vector3.Normalize();
+		// 	Vector3.Cross(ref vector, ref vector3, out vector2);
+		// 	result.m11 = vector3.x;
+		// 	result.m12 = vector3.y;
+		// 	result.m13 = vector3.z;
+		// 	result.m14 = 0;
+		// 	result.m21 = vector2.x;
+		// 	result.m22 = vector2.y;
+		// 	result.m23 = vector2.z;
+		// 	result.m24 = 0;
+		// 	result.m31 = vector.x;
+		// 	result.m32 = vector.y;
+		// 	result.m33 = vector.z;
+		// 	result.m34 = 0;
+		// 	result.m41 = objectPosition.x;
+		// 	result.m42 = objectPosition.y;
+		// 	result.m43 = objectPosition.z;
+		// 	result.m44 = 1;
+		// }
 
-		/// <summary>
-		/// Creates a new <see cref="Matrix"/> for cylindrical billboarding that rotates around specified axis.
-		/// </summary>
-		/// <param name="objectPosition">Object position the billboard will rotate around.</param>
-		/// <param name="cameraPosition">Camera position.</param>
-		/// <param name="rotateAxis">Axis of billboard for rotation.</param>
-		/// <param name="cameraForwardVector">Optional camera forward vector.</param>
-		/// <param name="objectForwardVector">Optional object forward vector.</param>
-		/// <returns>The <see cref="Matrix"/> for cylindrical billboarding.</returns>
-		public static Matrix CreateConstrainedBillboard(Vector3 objectPosition, Vector3 cameraPosition,
-				Vector3 rotateAxis, Nullable<Vector3> cameraForwardVector, Nullable<Vector3> objectForwardVector)
-		{
-			Matrix result;
-			CreateConstrainedBillboard(ref objectPosition, ref cameraPosition, ref rotateAxis,
-					cameraForwardVector, objectForwardVector, out result);
-			return result;
-		}
+		// TODO
+		// /// <summary>
+		// /// Creates a new <see cref="Matrix"/> for cylindrical billboarding that rotates around specified axis.
+		// /// </summary>
+		// /// <param name="objectPosition">Object position the billboard will rotate around.</param>
+		// /// <param name="cameraPosition">Camera position.</param>
+		// /// <param name="rotateAxis">Axis of billboard for rotation.</param>
+		// /// <param name="cameraForwardVector">Optional camera forward vector.</param>
+		// /// <param name="objectForwardVector">Optional object forward vector.</param>
+		// /// <returns>The <see cref="Matrix"/> for cylindrical billboarding.</returns>
+		// public static Matrix CreateConstrainedBillboard(Vector3 objectPosition, Vector3 cameraPosition, Vector3 rotateAxis, Nullable<Vector3> cameraForwardVector, Nullable<Vector3> objectForwardVector)
+		// {
+		// 	Matrix result;
+		// 	CreateConstrainedBillboard(ref objectPosition, ref cameraPosition, ref rotateAxis,
+		// 			cameraForwardVector, objectForwardVector, out result);
+		// 	return result;
+		// }
 
-		/// <summary>
-		/// Creates a new <see cref="Matrix"/> for cylindrical billboarding that rotates around specified axis.
-		/// </summary>
-		/// <param name="objectPosition">Object position the billboard will rotate around.</param>
-		/// <param name="cameraPosition">Camera position.</param>
-		/// <param name="rotateAxis">Axis of billboard for rotation.</param>
-		/// <param name="cameraForwardVector">Optional camera forward vector.</param>
-		/// <param name="objectForwardVector">Optional object forward vector.</param>
-		/// <param name="result">The <see cref="Matrix"/> for cylindrical billboarding as an output parameter.</param>
-		public static void CreateConstrainedBillboard(ref Vector3 objectPosition, ref Vector3 cameraPosition,
-				ref Vector3 rotateAxis, Vector3? cameraForwardVector, Vector3? objectForwardVector, out Matrix result)
-		{
-			float num;
-			Vector3 vector;
-			Vector3 vector2;
-			Vector3 vector3;
-			vector2.x = objectPosition.x - cameraPosition.x;
-			vector2.y = objectPosition.y - cameraPosition.y;
-			vector2.z = objectPosition.z - cameraPosition.z;
-			var num2 = vector2.sqrMagnitude;
-			if (num2 < 0.0001f)
-			{
-				vector2 = cameraForwardVector.HasValue ? -cameraForwardVector.Value : Vector3.forward;
-			}
-			else
-			{
-				Vector3.Multiply(ref vector2, 1f / Math.Sqrt(num2), out vector2);
-			}
-			var vector4 = rotateAxis;
-			Vector3.Dot(ref rotateAxis, ref vector2, out num);
-			if (Math.Abs(num) > 0.9982547f)
-			{
-				if (objectForwardVector.HasValue)
-				{
-					vector = objectForwardVector.Value;
-					Vector3.Dot(ref rotateAxis, ref vector, out num);
-					if (Math.Abs(num) > 0.9982547f)
-					{
-						num = ((rotateAxis.x * Vector3.forward.x) + (rotateAxis.y * Vector3.forward.y)) + (rotateAxis.z * Vector3.forward.z);
-						vector = (Math.Abs(num) > 0.9982547f) ? Vector3.right : Vector3.forward;
-					}
-				}
-				else
-				{
-					num = ((rotateAxis.x * Vector3.forward.x) + (rotateAxis.y * Vector3.forward.y)) + (rotateAxis.z * Vector3.forward.z);
-					vector = (Math.Abs(num) > 0.9982547f) ? Vector3.right : Vector3.forward;
-				}
-				Vector3.Cross(ref rotateAxis, ref vector, out vector3);
-				vector3.Normalize();
-				Vector3.Cross(ref vector3, ref rotateAxis, out vector);
-				vector.Normalize();
-			}
-			else
-			{
-				Vector3.Cross(ref rotateAxis, ref vector2, out vector3);
-				vector3.Normalize();
-				Vector3.Cross(ref vector3, ref vector4, out vector);
-				vector.Normalize();
-			}
-			result.m11 = vector3.x;
-			result.m12 = vector3.y;
-			result.m13 = vector3.z;
-			result.m14 = 0;
-			result.m21 = vector4.x;
-			result.m22 = vector4.y;
-			result.m23 = vector4.z;
-			result.m24 = 0;
-			result.m31 = vector.x;
-			result.m32 = vector.y;
-			result.m33 = vector.z;
-			result.m34 = 0;
-			result.m41 = objectPosition.x;
-			result.m42 = objectPosition.y;
-			result.m43 = objectPosition.z;
-			result.m44 = 1;
-
-		}
+		// TODO
+		// /// <summary>
+		// /// Creates a new <see cref="Matrix"/> for cylindrical billboarding that rotates around specified axis.
+		// /// </summary>
+		// /// <param name="objectPosition">Object position the billboard will rotate around.</param>
+		// /// <param name="cameraPosition">Camera position.</param>
+		// /// <param name="rotateAxis">Axis of billboard for rotation.</param>
+		// /// <param name="cameraForwardVector">Optional camera forward vector.</param>
+		// /// <param name="objectForwardVector">Optional object forward vector.</param>
+		// /// <param name="result">The <see cref="Matrix"/> for cylindrical billboarding as an output parameter.</param>
+		// public static void CreateConstrainedBillboard(ref Vector3 objectPosition, ref Vector3 cameraPosition, ref Vector3 rotateAxis, Vector3? cameraForwardVector, Vector3? objectForwardVector, out Matrix result)
+		// {
+		// 	float num;
+		// 	Vector3 vector;
+		// 	Vector3 vector2;
+		// 	Vector3 vector3;
+		// 	vector2.x = objectPosition.x - cameraPosition.x;
+		// 	vector2.y = objectPosition.y - cameraPosition.y;
+		// 	vector2.z = objectPosition.z - cameraPosition.z;
+		// 	var num2 = vector2.sqrMagnitude;
+		// 	if (num2 < 0.0001f)
+		// 	{
+		// 		vector2 = cameraForwardVector.HasValue ? -cameraForwardVector.Value : Vector3.forward;
+		// 	}
+		// 	else
+		// 	{
+		// 		Vector3.Multiply(ref vector2, 1f / Math.Sqrt(num2), out vector2);
+		// 	}
+		// 	var vector4 = rotateAxis;
+		// 	Vector3.Dot(ref rotateAxis, ref vector2, out num);
+		// 	if (Math.Abs(num) > 0.9982547f)
+		// 	{
+		// 		if (objectForwardVector.HasValue)
+		// 		{
+		// 			vector = objectForwardVector.Value;
+		// 			Vector3.Dot(ref rotateAxis, ref vector, out num);
+		// 			if (Math.Abs(num) > 0.9982547f)
+		// 			{
+		// 				num = ((rotateAxis.x * Vector3.forward.x) + (rotateAxis.y * Vector3.forward.y)) + (rotateAxis.z * Vector3.forward.z);
+		// 				vector = (Math.Abs(num) > 0.9982547f) ? Vector3.right : Vector3.forward;
+		// 			}
+		// 		}
+		// 		else
+		// 		{
+		// 			num = ((rotateAxis.x * Vector3.forward.x) + (rotateAxis.y * Vector3.forward.y)) + (rotateAxis.z * Vector3.forward.z);
+		// 			vector = (Math.Abs(num) > 0.9982547f) ? Vector3.right : Vector3.forward;
+		// 		}
+		// 		Vector3.Cross(ref rotateAxis, ref vector, out vector3);
+		// 		vector3.Normalize();
+		// 		Vector3.Cross(ref vector3, ref rotateAxis, out vector);
+		// 		vector.Normalize();
+		// 	}
+		// 	else
+		// 	{
+		// 		Vector3.Cross(ref rotateAxis, ref vector2, out vector3);
+		// 		vector3.Normalize();
+		// 		Vector3.Cross(ref vector3, ref vector4, out vector);
+		// 		vector.Normalize();
+		// 	}
+		// 	result.m11 = vector3.x;
+		// 	result.m12 = vector3.y;
+		// 	result.m13 = vector3.z;
+		// 	result.m14 = 0;
+		// 	result.m21 = vector4.x;
+		// 	result.m22 = vector4.y;
+		// 	result.m23 = vector4.z;
+		// 	result.m24 = 0;
+		// 	result.m31 = vector.x;
+		// 	result.m32 = vector.y;
+		// 	result.m33 = vector.z;
+		// 	result.m34 = 0;
+		// 	result.m41 = objectPosition.x;
+		// 	result.m42 = objectPosition.y;
+		// 	result.m43 = objectPosition.z;
+		// 	result.m44 = 1;
+		// }
 
 		/// <summary>
 		/// Creates a new <see cref="Matrix"/> which contains the rotation moment around specified axis.
@@ -685,10 +685,10 @@ namespace MGE
 		/// <param name="zNearPlane">Depth of the near plane.</param>
 		/// <param name="zFarPlane">Depth of the far plane.</param>
 		/// <returns>The new projection <see cref="Matrix"/> for customized orthographic view.</returns>
-		public static Matrix CreateOrthographicOffCenter(Rectangle viewingVolume, float zNearPlane, float zFarPlane)
+		public static Matrix CreateOrthographicOffCenter(Rect viewingVolume, float zNearPlane, float zFarPlane)
 		{
 			Matrix matrix;
-			CreateOrthographicOffCenter(viewingVolume.Left, viewingVolume.Right, viewingVolume.Bottom, viewingVolume.Top, zNearPlane, zFarPlane, out matrix);
+			CreateOrthographicOffCenter(viewingVolume.left, viewingVolume.right, viewingVolume.bottom, viewingVolume.top, zNearPlane, zFarPlane, out matrix);
 			return matrix;
 		}
 
@@ -1079,52 +1079,51 @@ namespace MGE
 			result.m44 = 1;
 		}
 
+		// TODO
+		// /// <summary>
+		// /// Creates a new <see cref="Matrix"/> that flattens geometry into a specified <see cref="Plane"/> as if casting a shadow from a specified light source.
+		// /// </summary>
+		// /// <param name="lightDirection">A vector specifying the direction from which the light that will cast the shadow is coming.</param>
+		// /// <param name="plane">The plane onto which the new matrix should flatten geometry so as to cast a shadow.</param>
+		// /// <returns>A <see cref="Matrix"/> that can be used to flatten geometry onto the specified plane from the specified direction. </returns>
+		// public static Matrix CreateShadow(Vector3 lightDirection, Plane plane)
+		// {
+		// 	Matrix result;
+		// 	CreateShadow(ref lightDirection, ref plane, out result);
+		// 	return result;
+		// }
 
-		/// <summary>
-		/// Creates a new <see cref="Matrix"/> that flattens geometry into a specified <see cref="Plane"/> as if casting a shadow from a specified light source.
-		/// </summary>
-		/// <param name="lightDirection">A vector specifying the direction from which the light that will cast the shadow is coming.</param>
-		/// <param name="plane">The plane onto which the new matrix should flatten geometry so as to cast a shadow.</param>
-		/// <returns>A <see cref="Matrix"/> that can be used to flatten geometry onto the specified plane from the specified direction. </returns>
-		public static Matrix CreateShadow(Vector3 lightDirection, Plane plane)
-		{
-			Matrix result;
-			CreateShadow(ref lightDirection, ref plane, out result);
-			return result;
-		}
+		// /// <summary>
+		// /// Creates a new <see cref="Matrix"/> that flattens geometry into a specified <see cref="Plane"/> as if casting a shadow from a specified light source.
+		// /// </summary>
+		// /// <param name="lightDirection">A vector specifying the direction from which the light that will cast the shadow is coming.</param>
+		// /// <param name="plane">The plane onto which the new matrix should flatten geometry so as to cast a shadow.</param>
+		// /// <param name="result">A <see cref="Matrix"/> that can be used to flatten geometry onto the specified plane from the specified direction as an output parameter.</param>
+		// public static void CreateShadow(ref Vector3 lightDirection, ref Plane plane, out Matrix result)
+		// {
+		// 	float dot = (plane.Normal.x * lightDirection.x) + (plane.Normal.y * lightDirection.y) + (plane.Normal.z * lightDirection.z);
+		// 	float x = -plane.Normal.x;
+		// 	float y = -plane.Normal.y;
+		// 	float z = -plane.Normal.z;
+		// 	float d = -plane.D;
 
-
-		/// <summary>
-		/// Creates a new <see cref="Matrix"/> that flattens geometry into a specified <see cref="Plane"/> as if casting a shadow from a specified light source.
-		/// </summary>
-		/// <param name="lightDirection">A vector specifying the direction from which the light that will cast the shadow is coming.</param>
-		/// <param name="plane">The plane onto which the new matrix should flatten geometry so as to cast a shadow.</param>
-		/// <param name="result">A <see cref="Matrix"/> that can be used to flatten geometry onto the specified plane from the specified direction as an output parameter.</param>
-		public static void CreateShadow(ref Vector3 lightDirection, ref Plane plane, out Matrix result)
-		{
-			float dot = (plane.Normal.x * lightDirection.x) + (plane.Normal.y * lightDirection.y) + (plane.Normal.z * lightDirection.z);
-			float x = -plane.Normal.x;
-			float y = -plane.Normal.y;
-			float z = -plane.Normal.z;
-			float d = -plane.D;
-
-			result.m11 = (x * lightDirection.x) + dot;
-			result.m12 = x * lightDirection.y;
-			result.m13 = x * lightDirection.z;
-			result.m14 = 0;
-			result.m21 = y * lightDirection.x;
-			result.m22 = (y * lightDirection.y) + dot;
-			result.m23 = y * lightDirection.z;
-			result.m24 = 0;
-			result.m31 = z * lightDirection.x;
-			result.m32 = z * lightDirection.y;
-			result.m33 = (z * lightDirection.z) + dot;
-			result.m34 = 0;
-			result.m41 = d * lightDirection.x;
-			result.m42 = d * lightDirection.y;
-			result.m43 = d * lightDirection.z;
-			result.m44 = dot;
-		}
+		// 	result.m11 = (x * lightDirection.x) + dot;
+		// 	result.m12 = x * lightDirection.y;
+		// 	result.m13 = x * lightDirection.z;
+		// 	result.m14 = 0;
+		// 	result.m21 = y * lightDirection.x;
+		// 	result.m22 = (y * lightDirection.y) + dot;
+		// 	result.m23 = y * lightDirection.z;
+		// 	result.m24 = 0;
+		// 	result.m31 = z * lightDirection.x;
+		// 	result.m32 = z * lightDirection.y;
+		// 	result.m33 = (z * lightDirection.z) + dot;
+		// 	result.m34 = 0;
+		// 	result.m41 = d * lightDirection.x;
+		// 	result.m42 = d * lightDirection.y;
+		// 	result.m43 = d * lightDirection.z;
+		// 	result.m44 = dot;
+		// }
 
 		/// <summary>
 		/// Creates a new translation <see cref="Matrix"/>.
@@ -1204,50 +1203,52 @@ namespace MGE
 			result.m44 = 1;
 		}
 
-		/// <summary>
-		/// Creates a new reflection <see cref="Matrix"/>.
-		/// </summary>
-		/// <param name="value">The plane that used for reflection calculation.</param>
-		/// <returns>The reflection <see cref="Matrix"/>.</returns>
-		public static Matrix CreateReflection(Plane value)
-		{
-			Matrix result;
-			CreateReflection(ref value, out result);
-			return result;
-		}
+		// TODO
+		// /// <summary>
+		// /// Creates a new reflection <see cref="Matrix"/>.
+		// /// </summary>
+		// /// <param name="value">The plane that used for reflection calculation.</param>
+		// /// <returns>The reflection <see cref="Matrix"/>.</returns>
+		// public static Matrix CreateReflection(Plane value)
+		// {
+		// 	Matrix result;
+		// 	CreateReflection(ref value, out result);
+		// 	return result;
+		// }
 
-		/// <summary>
-		/// Creates a new reflection <see cref="Matrix"/>.
-		/// </summary>
-		/// <param name="value">The plane that used for reflection calculation.</param>
-		/// <param name="result">The reflection <see cref="Matrix"/> as an output parameter.</param>
-		public static void CreateReflection(ref Plane value, out Matrix result)
-		{
-			Plane plane;
-			Plane.Normalize(ref value, out plane);
-			var x = plane.Normal.x;
-			var y = plane.Normal.y;
-			var z = plane.Normal.z;
-			var num3 = -2f * x;
-			var num2 = -2f * y;
-			var num = -2f * z;
-			result.m11 = (num3 * x) + 1f;
-			result.m12 = num2 * x;
-			result.m13 = num * x;
-			result.m14 = 0;
-			result.m21 = num3 * y;
-			result.m22 = (num2 * y) + 1;
-			result.m23 = num * y;
-			result.m24 = 0;
-			result.m31 = num3 * z;
-			result.m32 = num2 * z;
-			result.m33 = (num * z) + 1;
-			result.m34 = 0;
-			result.m41 = num3 * plane.D;
-			result.m42 = num2 * plane.D;
-			result.m43 = num * plane.D;
-			result.m44 = 1;
-		}
+		// TODO
+		// /// <summary>
+		// /// Creates a new reflection <see cref="Matrix"/>.
+		// /// </summary>
+		// /// <param name="value">The plane that used for reflection calculation.</param>
+		// /// <param name="result">The reflection <see cref="Matrix"/> as an output parameter.</param>
+		// public static void CreateReflection(ref Plane value, out Matrix result)
+		// {
+		// 	Plane plane;
+		// 	Plane.Normalize(ref value, out plane);
+		// 	var x = plane.Normal.x;
+		// 	var y = plane.Normal.y;
+		// 	var z = plane.Normal.z;
+		// 	var num3 = -2f * x;
+		// 	var num2 = -2f * y;
+		// 	var num = -2f * z;
+		// 	result.m11 = (num3 * x) + 1f;
+		// 	result.m12 = num2 * x;
+		// 	result.m13 = num * x;
+		// 	result.m14 = 0;
+		// 	result.m21 = num3 * y;
+		// 	result.m22 = (num2 * y) + 1;
+		// 	result.m23 = num * y;
+		// 	result.m24 = 0;
+		// 	result.m31 = num3 * z;
+		// 	result.m32 = num2 * z;
+		// 	result.m33 = (num * z) + 1;
+		// 	result.m34 = 0;
+		// 	result.m41 = num3 * plane.D;
+		// 	result.m42 = num2 * plane.D;
+		// 	result.m43 = num * plane.D;
+		// 	result.m44 = 1;
+		// }
 
 		/// <summary>
 		/// Creates a new world <see cref="Matrix"/>.
@@ -1300,9 +1301,9 @@ namespace MGE
 			translation.y = this.m42;
 			translation.z = this.m43;
 
-			float xs = (Math.Sign(m11 * m12 * m13 * m14) < 0) ? -1 : 1;
-			float ys = (Math.Sign(m21 * m22 * m23 * m24) < 0) ? -1 : 1;
-			float zs = (Math.Sign(m31 * m32 * m33 * m34) < 0) ? -1 : 1;
+			var xs = (Math.Sign(m11 * m12 * m13 * m14) < 0) ? -1 : 1;
+			var ys = (Math.Sign(m21 * m22 * m23 * m24) < 0) ? -1 : 1;
+			var zs = (Math.Sign(m31 * m32 * m33 * m34) < 0) ? -1 : 1;
 
 			scale.x = xs * Math.Sqrt(this.m11 * this.m11 + this.m12 * this.m12 + this.m13 * this.m13);
 			scale.y = ys * Math.Sqrt(this.m21 * this.m21 + this.m22 * this.m22 + this.m23 * this.m23);
@@ -1310,7 +1311,7 @@ namespace MGE
 
 			if (scale.x == 0.0 || scale.y == 0.0 || scale.z == 0.0)
 			{
-				rotation = Quaternion.Identity;
+				rotation = Quaternion.identity;
 				return false;
 			}
 

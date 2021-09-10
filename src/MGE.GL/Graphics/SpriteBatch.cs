@@ -4,31 +4,31 @@ using OpenTK.Graphics.OpenGL;
 
 namespace MGE.Graphics
 {
-	public class SpriteBatch : GraphicsResource
+	public class SpriteBatch
 	{
-		SpriteSortMode _sortMode;
+		// SpriteSortMode _sortMode;
 		BlendMode _blendMode;
 		SpriteBatcher _batcher;
 		Matrix _matrix;
 
 		public void Begin()
 		{
-			_sortMode = SpriteSortMode.Deferred;
+			// _sortMode = SpriteSortMode.Deferred;
 			_blendMode = BlendMode.AlphaBlend;
 			_matrix = Matrix.identity;
 		}
 
-		public void Begin(SpriteSortMode sortMode, BlendMode blendMode)
+		public void Begin(/* SpriteSortMode sortMode, */ BlendMode blendMode)
 		{
-			_sortMode = sortMode;
+			// _sortMode = sortMode;
 			_blendMode = blendMode;
 			_matrix = Matrix.identity;
 		}
 
-		public void Begin(SpriteSortMode sortMode, BlendMode blendMode, Matrix transformMatrix)
+		public void Begin(/* SpriteSortMode sortMode, */ BlendMode blendMode, Matrix transformMatrix)
 		{
 			_blendMode = blendMode;
-			_sortMode = sortMode;
+			// _sortMode = sortMode;
 			_matrix = transformMatrix;
 		}
 
@@ -58,12 +58,12 @@ namespace MGE.Graphics
 			GL.MatrixMode(MatrixMode.Projection);
 			GL.LoadIdentity();
 
-			GL.Ortho(0, _graphicsDevice.Viewport.width, _graphicsDevice.Viewport.height, 0, -1, 1);
+			// GL.Ortho(0, _graphicsDevice.Viewport.width, _graphicsDevice.Viewport.height, 0, -1, 1);
 
 			GL.MatrixMode(MatrixMode.Modelview);
 			GL.LoadMatrix(ref _matrix.m11);
 
-			GL.Viewport(0, 0, _graphicsDevice.Viewport.width, _graphicsDevice.Viewport.height);
+			// GL.Viewport(0, 0, _graphicsDevice.Viewport.width, _graphicsDevice.Viewport.height);
 
 			// Initialize OpenGL states (ideally move this to initialize somewhere else)
 			GL.Disable(EnableCap.DepthTest);
@@ -76,9 +76,9 @@ namespace MGE.Graphics
 			// Enable Culling for better performance
 			GL.Enable(EnableCap.CullFace);
 			GL.FrontFace(FrontFaceDirection.Cw);
-			GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);
+			GL.Color4(Color.white);
 
-			_batcher.DrawBatch(_sortMode);
+			_batcher.DrawBatch(/* _sortMode */);
 		}
 
 		public void Draw(Texture texture, Vector2 position, Rect? sourceRectangle, Color color, float rotation, Vector2 origin, Vector2 scale, /* SpriteEffects effect, */ float depth)
@@ -89,10 +89,8 @@ namespace MGE.Graphics
 			item.texture = texture;
 
 			Rect rect;
-			if (sourceRectangle.HasValue)
-				rect = sourceRectangle.Value;
-			else
-				rect = new Rect(0, 0, texture.width, texture.height);
+			if (sourceRectangle.HasValue) rect = sourceRectangle.Value;
+			else rect = new Rect(0, 0, texture.width, texture.height);
 
 			var texCoordTL = texture.GetTextureCoord(rect.x, rect.y);
 			var texCoordBR = texture.GetTextureCoord(rect.x + rect.width, rect.y + rect.height);
@@ -121,10 +119,8 @@ namespace MGE.Graphics
 			item.texture = texture;
 
 			Rect rect;
-			if (sourceRectangle.HasValue)
-				rect = sourceRectangle.Value;
-			else
-				rect = new Rect(0, 0, texture.width, texture.height);
+			if (sourceRectangle.HasValue) rect = sourceRectangle.Value;
+			else rect = new Rect(0, 0, texture.width, texture.height);
 
 			var texCoordTL = texture.GetTextureCoord(rect.x, rect.y);
 			var texCoordBR = texture.GetTextureCoord(rect.x + rect.width, rect.y + rect.height);
