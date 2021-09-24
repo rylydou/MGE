@@ -28,7 +28,7 @@ namespace MGE.Editor
 
 			right.Hexpand = true;
 
-			right.AppendPage(EditorUtil.GenerateInspector(null), new Label("Inspector"));
+			right.AppendPage(EditorUtil.GenerateInspector("TODO"), new Label("Inspector"));
 			right.AppendPage(new Label("Project Settings"), new Label("Project Settings"));
 
 			var mainLayout = new Paned(Orientation.Horizontal) { WideHandle = true };
@@ -65,7 +65,7 @@ namespace MGE.Editor
 			// }
 		}
 
-		private void MainWindow_Destroyed(object sender, EventArgs e)
+		private void MainWindow_Destroyed(object? sender, EventArgs e)
 		{
 			Application.Quit();
 		}
