@@ -1,5 +1,7 @@
 using System;
 using Gtk;
+using MGE.Editor.GUI.Windows;
+
 namespace MGE.Editor
 {
 	class MainWindow : Gtk.Window
@@ -22,7 +24,8 @@ namespace MGE.Editor
 
 			left.AppendPage(new Label("Hierarchy"), new Label("Hierarchy"));
 			left.AppendPage(new Label("Common Settings"), new Label("Common Settings"));
-			left.AppendPage(new Label("Other Menu"), new Label("Other Menu"));
+			var menu = new TestWindow();
+			left.AppendPage(menu.root, new Label("Other Menu"));
 
 			var right = new Notebook();
 

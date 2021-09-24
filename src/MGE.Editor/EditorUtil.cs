@@ -33,8 +33,7 @@ namespace MGE.Editor
 
 		public static Widget GenerateEntry(string name, Widget widget)
 		{
-			var box = new Box(Orientation.Horizontal, 32);
-			box.Spacing = 16;
+			var box = new Box(Orientation.Horizontal, 16);
 
 			var lable = new Label(name);
 			lable.Xalign = 0;

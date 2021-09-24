@@ -15,6 +15,12 @@
 	;
 
 	font-size: 14px;
+	
+	transition: opacity 100ms;
+}
+
+:disabled {
+	opacity: 0.8;
 }
 
 selection {
@@ -73,7 +79,6 @@ tab {
 
 tab * {
 	color: @text-dark;
-	transition: color 50ms;
 }
 
 tab:hover * {
@@ -104,8 +109,6 @@ entry {
 	padding: 0.25rem;
 	background-color: @element;
 	border: solid 2px @element;
-
-	transition: border-color 50ms;
 }
 
 button:hover,
@@ -129,7 +132,7 @@ combobox window.popup {
 }
 
 combobox window.popup > * * {
-	padding: 0.2rem 0.25rem;
+	padding: 0.15rem 0.2rem;
 }
 
 combobox window.popup :hover {
@@ -138,8 +141,4 @@ combobox window.popup :hover {
 
 entry {
 	padding: 0 0.5rem;
-}
-
-cellview {
-	padding: 0 0.1rem;
 }
