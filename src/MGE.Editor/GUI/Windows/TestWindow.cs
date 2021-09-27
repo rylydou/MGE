@@ -8,16 +8,23 @@ namespace MGE.Editor.GUI.Windows
 		protected override void Update()
 		{
 			Label("Enabled");
-			var enabled = Checkbox(true);
-			enabled += state => Trace.WriteLine("Enabled " + state);
+			Checkbox(true).onToggled += state => Trace.WriteLine("Enabled " + state);
 
 			Label("Visible");
-			var visible = Checkbox(true);
-			visible += state => Trace.WriteLine("Visible " + state);
+			Checkbox(true).onToggled += state => Trace.WriteLine("Visible " + state);
 
 			Label("Name");
-			var name = TextFeild("Unnamed");
-			name += text => Trace.WriteLine("Name " + text);
+			TextFeild("Unnamed").onTextSubmitted += text => Trace.WriteLine("Name " + text);
+
+			Label("Position");
+			StartHorizontal();
+			Label("X");
+			TextFeild("0.0").onTextSubmitted += text => Trace.WriteLine("X " + text);
+			Label("Y");
+			TextFeild("0.0").onTextSubmitted += text => Trace.WriteLine("Y " + text);
+			End();
+
+			Button("Delete").onPressed += () => Trace.WriteLine("Delete Pressed");
 
 			base.Update();
 		}

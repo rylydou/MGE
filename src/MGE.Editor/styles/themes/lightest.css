@@ -1,0 +1,11 @@
+@define-color base #F2F6FC;
+@define-color background #FFF;
+@define-color element #F2F6FC;
+
+@define-color text #363d47;
+@define-color text-dark #69707a;
+
+@define-color accent #0061f2;
+
+@define-color selection-color #FFFFFF;
+@define-color selection-background @accent;

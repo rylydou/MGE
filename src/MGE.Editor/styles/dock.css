@@ -1,0 +1,60 @@
+notebook arrow {
+	color: @text-dark;
+}
+
+notebook arrow:hover {
+	color: @accent;
+}
+
+notebook arrow:disabled {
+	color: @background;
+}
+
+tab {
+	padding: 0 1em;
+	border-top: solid 2px transparent;
+}
+
+tab label {
+	color: @text-dark;
+}
+
+tab:hover label {
+	color: @text;
+}
+
+tab:checked {
+	background-color: @background;
+	border-top: solid 2px @accent;
+}
+
+tab:checked label {
+	color: @text;
+}
+
+notebook stack {
+	background-color: @background;
+	padding: 1em;
+}
+
+notebook stack > * > undershoot.left {
+	background-image: -gtk-gradient (
+		linear,
+		left center,
+		right center,
+		from (@background),
+		to (alpha(@background, 0)));
+}
+
+notebook stack > * > undershoot.right {
+	background-image: -gtk-gradient (
+		linear,
+		right center,
+		left center,
+		from (@background),
+		to (alpha(@background, 0)));
+}
+
+notebook stack list row {
+	margin-bottom: 4px;
+}

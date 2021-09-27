@@ -52,6 +52,7 @@
 	transition-timing-function: initial;
 	transition-delay: initial;
 	/* engine: initial; */
+
 	-gtk-key-bindings: initial;
 
 	-gtkwidget-focus-line-width: 0;

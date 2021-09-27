@@ -2,8 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+using System.Threading.Tasks;
+using Gdk;
 using Gtk;
-using Action = System.Action;
+using MGE.Editor.GUI.Events;
+using Key = Gdk.Key;
 
 namespace MGE.Editor.GUI
 {
@@ -22,19 +26,18 @@ namespace MGE.Editor.GUI
 		[MemberNotNull(nameof(_container))]
 		void PushContainer(Container container)
 		{
-			Trace.WriteLine($"Pushing '{container}' to container stack - depth: {_uiDepth}");
-
 			_uiDepth++;
 
 			_containerStack.Push(container);
 			_container = container;
+
+			Trace.WriteLine($"Pushed '{container}' to container stack\tdepth: {_uiDepth}");
 
 			ContainerChanged();
 		}
 
 		Container PopContainer()
 		{
-
 			if (_uiDepth < 1) throw new Exception("Can not pop any further");
 			_uiDepth--;
 
@@ -44,14 +47,14 @@ namespace MGE.Editor.GUI
 
 			ContainerChanged();
 
-			Trace.WriteLine($"Poped '{container}' from container stack - depth: {_uiDepth}");
+			Trace.WriteLine($"Poped '{container}' from container stack\tdepth: {_uiDepth}");
 
 			return container;
 		}
 
 		void ContainerChanged()
 		{
-			_isHorizontal = _container is HBox;
+			_isHorizontal = _container is Box box && box.Orientation == Orientation.Horizontal;
 		}
 
 		#endregion
@@ -69,7 +72,7 @@ namespace MGE.Editor.GUI
 
 		Widget Add(Widget widget)
 		{
-			Trace.WriteLine($"Adding {widget} to {_container} - depth: {_uiDepth}");
+			Trace.WriteLine($"Adding {widget} to {_container}\t\tdepth: {_uiDepth}");
 
 			_container.Add(widget);
 
@@ -86,43 +89,81 @@ namespace MGE.Editor.GUI
 			return widget;
 		}
 
-		public void Text(string text) => Add(new Label(text));
+		public void Text(string text) => Add(new Label(text) { Xalign = 0 });
 
 		public void Label(string text)
 		{
+			var wasHorizontal = _isHorizontal;
 			StartHorizontal(16);
-			Add(new Label(text) { Xalign = 0, WidthRequest = 128 });
+			Add(new Label(text) { Xalign = 0, WidthRequest = wasHorizontal ? 0 : 128 });
+
 			_inLabel = true;
 		}
 
-		public Action<string> TextFeild(string text)
-		{
-			var textFeild = new Entry(text) { Hexpand = true, PlaceholderText = "Enter Text..." };
-			Add(textFeild);
-
-			Action<string> onClicked = text => { };
-			textFeild.Changed += (sender, args) => onClicked.Invoke(textFeild.Text);
-			return onClicked;
-		}
-
-		public Action Button(string text)
+		public ButtonEvents Button(string text)
 		{
 			var button = new Button(text) { Vexpand = true };
 			Add(button);
 
-			Action onClicked = () => { };
-			button.Clicked += (sender, args) => onClicked.Invoke();
-			return onClicked;
+			var events = new ButtonEvents();
+			button.Clicked += (sender, args) => events.onPressed.Invoke();
+			return events;
 		}
 
-		public Action<bool> Checkbox(bool value)
+		public ToggleEvents Checkbox(bool value)
 		{
 			var button = new CheckButton() { Active = value };
 			Add(button);
 
-			Action<bool> onClicked = state => { };
-			button.StateChanged += (sender, args) => onClicked.Invoke(button.Active);
-			return onClicked;
+			var events = new ToggleEvents();
+			button.Clicked += (sender, args) => events.onToggled.Invoke(button.Active);
+			return events;
+		}
+
+		// TODO Select all the text when the feild is selected
+		public TextFeildEvents TextFeild(string text)
+		{
+			var textFeild = new Entry(text) { Hexpand = true, PlaceholderText = "Enter Text...", Sensitive = true, };
+
+			var events = new TextFeildEvents();
+
+			// Select everything when focused
+			textFeild.FocusInEvent += (sender, args) =>
+			{
+				textFeild.SelectRegion(0, -1);
+			};
+
+			textFeild.ButtonPressEvent += (sender, args) =>
+			{
+				Trace.WriteLine("Pressed");
+				textFeild.SelectRegion(0, -1);
+			};
+
+			textFeild.KeyPressEvent += (sender, args) =>
+			{
+				// Trace.WriteLine("Key " + args.Event.Key);
+				switch (args.Event.Key)
+				{
+					case Key.Return:
+					case Key.ISO_Enter:
+					case Key.KP_Enter:
+						textFeild.HasFocus = false;
+						textFeild.SelectRegion(0, 0);
+						events.onTextSubmitted.Invoke(textFeild.Text);
+						break;
+				}
+			};
+
+			textFeild.EditingDone += (sender, args) =>
+			{
+				Trace.WriteLine("Done");
+				textFeild.SelectRegion(0, 0);
+				// textFeild.IsFocus = false;
+			};
+
+			Add(textFeild);
+
+			return events;
 		}
 
 		#endregion

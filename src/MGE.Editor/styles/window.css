@@ -1,0 +1,39 @@
+window {
+	background-color: @base;
+}
+
+window.popup {
+	background-color: @base;
+	border: solid 2px @accent;
+}
+
+headerbar {
+	background-color: @base;
+	padding-left: 1rem;
+	border-top: solid 2px @accent;
+	min-height: 0;
+}
+
+headerbar button.titlebutton {
+	margin: 0;
+	padding: 0.5rem;
+}
+
+headerbar > * {
+	color: @text-dark;
+}
+
+headerbar box button {
+	background-color: transparent;
+	border: none;
+}
+
+headerbar box button:hover {
+	color: @selection-color;
+	background-color: @selection-background;
+}
+
+headerbar box button:hover * {
+	color: @selection-color;
+}
+
