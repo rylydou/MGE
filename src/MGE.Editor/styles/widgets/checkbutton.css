@@ -1,0 +1,15 @@
+checkbutton check {
+	-gtk-icon-transform: scale(0) rotate(-10deg);
+
+	transition: -gtk-icon-transform 50ms;
+}
+
+checkbutton:checked check {
+	-gtk-icon-transform: scale(1);
+
+	transition: -gtk-icon-transform 250ms cubic-bezier(0, 2, 0.25, 1);
+}
+
+check {
+	color: @accent;
+}

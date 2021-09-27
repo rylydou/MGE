@@ -1,4 +1,11 @@
-@import url("themes/dracula.css");
+/* COLOR THEME */
+@import url("themes/obsidian.css");
+
+/* VARIBLES */
+@import url("animations.css");
+
+/* RESET */
+@import url("reset.css");
 
 * {
 	color: @text;
@@ -12,6 +19,7 @@
 	font-size: 14px;
 
 	transition: opacity 100ms;
+	caret-color: @accent;
 }
 
 :disabled {
@@ -23,6 +31,7 @@ selection {
 	color: @selection-color;
 }
 
+/* SECTIONS */
 @import url("window.css");
 @import url("dock.css");
 @import url("widgets.css");

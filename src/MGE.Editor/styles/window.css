@@ -10,16 +10,27 @@ window.popup {
 headerbar {
 	background-color: @base;
 	padding-left: 1rem;
-	border-top: solid 2px @accent;
 	min-height: 0;
+}
+
+window > decoration {
+  border: 2px solid @base;
+	border-top: solid 2px @accent;
+	/* box-shadow: 0 4px 8px 0 alpha(black, 0.25); */
+}
+
+window:backdrop decoration {
+	border-top-color: @background;
+	transition: border-top-color 250ms;
 }
 
 headerbar button.titlebutton {
 	margin: 0;
 	padding: 0.5rem;
+	min-height: 32px;
 }
 
-headerbar > * {
+headerbar * {
 	color: @text-dark;
 }
 
@@ -29,7 +40,6 @@ headerbar box button {
 }
 
 headerbar box button:hover {
-	color: @selection-color;
 	background-color: @selection-background;
 }
 

@@ -1,0 +1,12 @@
+combobox window.popup cellview {
+	padding: 0 4px;
+}
+
+combobox window.popup cellview:hover {
+	background-color: @accent;
+}
+
+combobox window.popup :hover cellview {
+	background-color: @selection-background;
+	color: @selection-color;
+}

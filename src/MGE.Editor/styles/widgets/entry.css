@@ -1,0 +1,29 @@
+entry undershoot.left {
+	background-image: -gtk-gradient (
+		linear,
+		left center,
+		right center,
+		from (@element),
+		to (alpha(@element, 0)));
+}
+
+entry undershoot.right {
+	background-image: -gtk-gradient (
+		linear,
+		right center,
+		left center,
+		from (@element),
+		to (alpha(@element, 0)));
+}
+
+entry {
+	padding: 0 4px;
+}
+
+/*
+	FIXME GTK 4 GtkText has a placeholder element,
+	why doesn't GTK 3's GtkEntry have one too?
+*/
+entry placeholder {
+	color: @text-dark;
+}

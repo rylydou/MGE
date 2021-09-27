@@ -12,7 +12,22 @@ notebook arrow:disabled {
 
 tab {
 	padding: 0 1em;
+}
+
+header.top tab {
 	border-top: solid 2px transparent;
+}
+
+header.bottom tab {
+	border-bottom: solid 2px transparent;
+}
+
+header.left tab {
+	border-left: solid 2px transparent;
+}
+
+header.right tab {
+	border-right: solid 2px transparent;
 }
 
 tab label {
@@ -23,9 +38,9 @@ tab:hover label {
 	color: @text;
 }
 
-tab:checked {
+header tab:checked {
 	background-color: @background;
-	border-top: solid 2px @accent;
+	border-color: @accent;
 }
 
 tab:checked label {

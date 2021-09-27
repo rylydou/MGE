@@ -94,8 +94,8 @@ namespace MGE.Editor.GUI
 		public void Label(string text)
 		{
 			var wasHorizontal = _isHorizontal;
-			StartHorizontal(16);
-			Add(new Label(text) { Xalign = 0, WidthRequest = wasHorizontal ? 0 : 128 });
+			StartHorizontal();
+			Add(new Label(text) { Xalign = 0, WidthChars = wasHorizontal ? -1 : 24, MarginStart = wasHorizontal ? 4 : 0, MarginEnd = 4, });
 
 			_inLabel = true;
 		}
@@ -120,45 +120,46 @@ namespace MGE.Editor.GUI
 			return events;
 		}
 
-		// TODO Select all the text when the feild is selected
 		public TextFeildEvents TextFeild(string text)
 		{
 			var textFeild = new Entry(text) { Hexpand = true, PlaceholderText = "Enter Text...", Sensitive = true, };
-
 			var events = new TextFeildEvents();
+			var originalText = string.Empty;
 
-			// Select everything when focused
+			// FIXME Select everything when focused
 			textFeild.FocusInEvent += (sender, args) =>
 			{
-				textFeild.SelectRegion(0, -1);
-			};
-
-			textFeild.ButtonPressEvent += (sender, args) =>
-			{
-				Trace.WriteLine("Pressed");
-				textFeild.SelectRegion(0, -1);
+				originalText = textFeild.Text;
+				// textFeild.SelectRegion(0, -1);
+				textFeild.GrabFocus();
 			};
 
 			textFeild.KeyPressEvent += (sender, args) =>
 			{
-				// Trace.WriteLine("Key " + args.Event.Key);
 				switch (args.Event.Key)
 				{
-					case Key.Return:
-					case Key.ISO_Enter:
-					case Key.KP_Enter:
-						textFeild.HasFocus = false;
-						textFeild.SelectRegion(0, 0);
-						events.onTextSubmitted.Invoke(textFeild.Text);
+					// Reset the text feild when escape is pressed
+					case Key.Escape:
+						textFeild.Text = originalText;
+						textFeild.FinishEditing();
 						break;
 				}
 			};
 
+			// Finish when enter is pressed
+			textFeild.Activated += (sender, args) => textFeild.FinishEditing();
+			// Finish when the feild is unfocused
+			textFeild.FocusOutEvent += (sender, args) => textFeild.FinishEditing();
+
 			textFeild.EditingDone += (sender, args) =>
 			{
-				Trace.WriteLine("Done");
 				textFeild.SelectRegion(0, 0);
-				// textFeild.IsFocus = false;
+				textFeild.UnsetStateFlags(StateFlags.Selected);
+				textFeild.UnsetStateFlags(StateFlags.Focused);
+				textFeild.UnsetStateFlags(StateFlags.Active);
+
+				if (originalText != textFeild.Text)
+					events.onTextSubmitted.Invoke(textFeild.Text);
 			};
 
 			Add(textFeild);
