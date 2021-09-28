@@ -42,7 +42,7 @@ namespace MGE.Editor
 
 			var titleBar = new HeaderBar();
 
-			titleBar.Add(new Image("images/icons/icon@16.png"));
+			titleBar.Add(new Image("images/icons/icon-symbolic.svg"));
 
 			titleBar.Add(new VSeparator());
 
@@ -113,7 +113,7 @@ namespace MGE.Editor
 
 		void ReloadStyles()
 		{
-			SetIconFromFile("images/icons/icon@256.png");
+			SetIconFromFile("images/icons/icon.svg");
 
 			try
 			{

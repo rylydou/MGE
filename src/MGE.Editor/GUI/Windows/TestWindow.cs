@@ -1,30 +1,45 @@
 using System.Diagnostics;
+using System.Reflection;
 using MGE.Editor.GUI;
 
 namespace MGE.Editor.GUI.Windows
 {
 	public class TestWindow : EditorWindow
 	{
+		TestStruct obj = new TestStruct();
+
 		protected override void Update()
 		{
-			Label("Enabled");
-			Checkbox(true).onToggled += state => Trace.WriteLine("Enabled " + state);
+			// Label("Enabled");
+			// Checkbox(true).onToggled += state => Trace.WriteLine("Enabled " + state);
 
-			Label("Visible");
-			Checkbox(true).onToggled += state => Trace.WriteLine("Visible " + state);
+			// Label("Visible");
+			// Checkbox(true).onToggled += state => Trace.WriteLine("Visible " + state);
 
-			Label("Name");
-			TextFeild("Unnamed").onTextSubmitted += text => Trace.WriteLine("Name " + text);
+			// Label("Name");
+			// TextFeild("Unnamed").onSubmitted += text => Trace.WriteLine("Name " + text);
 
-			Label("Position");
-			StartHorizontal();
-			Label("X");
-			TextFeild("0.0").onTextSubmitted += text => Trace.WriteLine("X " + text);
-			Label("Y");
-			TextFeild("0.0").onTextSubmitted += text => Trace.WriteLine("Y " + text);
-			End();
+			// Label("Position");
+			// StartHorizontal();
+			// Label("X");
+			// NumberFeild(0f).onSubmitted += num => Trace.WriteLine("X " + num);
+			// Label("Y");
+			// NumberFeild(0f).onSubmitted += num => Trace.WriteLine("Y " + num);
+			// End();
 
-			Button("Delete").onPressed += () => Trace.WriteLine("Delete Pressed");
+			// Button("Delete").onPressed += () => Trace.WriteLine("Delete Pressed");
+
+			var props = typeof(TestStruct).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+			foreach (var prop in props)
+			{
+				Label(prop.Name);
+				var val = prop.GetValue(obj);
+				if (val is string str)
+				{
+					// TextFeild(prop.PropertyType as);
+				}
+			}
 
 			base.Update();
 		}

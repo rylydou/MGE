@@ -12,7 +12,7 @@ headerbar button.titlebutton {
 	margin: 0;
 	padding: 0.5rem;
 	min-height: 32px;
-	/* min-width: 32px; */
+	min-width: 24px;
 }
 
 headerbar {
@@ -27,6 +27,11 @@ window:backdrop headerbar {
 	border-top-color: @background;
 
 	transition: border-top-color 1000ms;
+}
+
+window.maximized headerbar,
+window.fullscreen headerbar {
+	border-top: none;
 }
 
 headerbar * {
