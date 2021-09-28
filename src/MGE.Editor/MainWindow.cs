@@ -6,7 +6,6 @@ namespace MGE.Editor
 {
 	class MainWindow : Gtk.Window
 	{
-		CssProvider resetProvider;
 		CssProvider styleProvider;
 
 		public MainWindow() : base("MGE EDITOR")
@@ -43,19 +42,58 @@ namespace MGE.Editor
 
 			var titleBar = new HeaderBar();
 
-			titleBar.Add(new Label("MGE EDITOR"));
+			titleBar.Add(new Image("images/icons/icon@16.png"));
+
 			titleBar.Add(new VSeparator());
-			titleBar.Add(new Label("Untitled Scene.mges"));
+
+			var menubar = new MenuBar();
+			var filemenu = new Menu();
+			var file = new MenuItem("File");
+			file.Submenu = filemenu;
+			filemenu.Append(new MenuItem("Open Project..."));
+			filemenu.Append(new SeparatorMenuItem());
+			filemenu.Append(new MenuItem("Save"));
+			filemenu.Append(new MenuItem("Save As..."));
+			filemenu.Append(new SeparatorMenuItem());
+			var exit = new MenuItem("Exit");
+			exit.Activated += (sender, args) => Application.Quit();
+			filemenu.Append(exit);
+			menubar.Append(file);
+
+			var editmenu = new Menu();
+			var edit = new MenuItem("Edit");
+			edit.Submenu = editmenu;
+			editmenu.Append(new MenuItem("Undo"));
+			editmenu.Append(new MenuItem("Redo"));
+			editmenu.Append(new SeparatorMenuItem());
+			editmenu.Append(new MenuItem("User Settings"));
+			editmenu.Append(new MenuItem("Project Settings"));
+			menubar.Append(edit);
+
+			var viewmenu = new Menu();
+			var view = new MenuItem("View");
+			view.Submenu = viewmenu;
+			viewmenu.Append(new CheckMenuItem("Zoomed GUI"));
+			menubar.Append(view);
+
+			var helpmenu = new Menu();
+			var help = new MenuItem("Help");
+			help.Submenu = helpmenu;
+			helpmenu.Append(new MenuItem("About"));
+			helpmenu.Append(new SeparatorMenuItem());
+			helpmenu.Append(new MenuItem("About"));
+			menubar.Append(help);
+
+			titleBar.Add(menubar);
+
 			titleBar.ShowCloseButton = true;
 
 			Titlebar = titleBar;
 
-			resetProvider = new CssProvider();
 			styleProvider = new CssProvider();
 
 			ReloadStyles();
 
-			StyleContext.AddProviderForScreen(Screen, resetProvider, int.MaxValue - 1);
 			StyleContext.AddProviderForScreen(Screen, styleProvider, int.MaxValue);
 		}
 
@@ -75,25 +113,15 @@ namespace MGE.Editor
 
 		void ReloadStyles()
 		{
-			SetIconFromFile("images/icons/icon.png");
+			SetIconFromFile("images/icons/icon@256.png");
 
 			try
 			{
 				styleProvider.LoadFromPath("styles/styles.css");
-
-				try
-				{
-					resetProvider.LoadFromPath("styles/reset.css");
-				}
-				catch (Exception e)
-				{
-					Console.WriteLine(e);
-				}
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
-				resetProvider.LoadFromData(string.Empty);
 			}
 		}
 	}

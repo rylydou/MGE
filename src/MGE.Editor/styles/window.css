@@ -2,32 +2,31 @@ window {
 	background-color: @base;
 }
 
-window.popup {
-	background-color: @base;
-	border: solid 2px @accent;
-}
+window:not(.popup) decoration {
+  border: 4px solid alpha(@base, 0.1);
 
-headerbar {
-	background-color: @base;
-	padding-left: 1rem;
-	min-height: 0;
-}
-
-window > decoration {
-  border: 2px solid @base;
-	border-top: solid 2px @accent;
-	/* box-shadow: 0 4px 8px 0 alpha(black, 0.25); */
-}
-
-window:backdrop decoration {
-	border-top-color: @background;
-	transition: border-top-color 250ms;
+	transition: border-top-color 75ms;
 }
 
 headerbar button.titlebutton {
 	margin: 0;
 	padding: 0.5rem;
 	min-height: 32px;
+	/* min-width: 32px; */
+}
+
+headerbar {
+	background-color: @base;
+	padding-left: 1rem;
+	min-height: 0;
+
+	border-top: solid 2px @accent;
+}
+
+window:backdrop headerbar {
+	border-top-color: @background;
+
+	transition: border-top-color 1000ms;
 }
 
 headerbar * {
@@ -39,11 +38,24 @@ headerbar box button {
 	border: none;
 }
 
-headerbar box button:hover {
+headerbar button.titlebutton:hover {
 	background-color: @selection-background;
 }
 
-headerbar box button:hover * {
+headerbar button.titlebutton:hover * {
 	color: @selection-color;
 }
 
+headerbar button.close:hover {
+	background-color: @error;
+}
+
+window.popup {
+	background-color: @popup;
+}
+
+window.popup decoration {
+	border: none;
+	background-color: @base;
+	/* box-shadow: 0 0 8px 0 alpha(black, 0.25); */
+}

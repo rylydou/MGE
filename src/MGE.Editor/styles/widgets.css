@@ -5,10 +5,3 @@
 @import url("widgets/menu.css");
 @import url("widgets/popovers.css");
 @import url("widgets/tooltip.css");
-
-/*
-separator {
-	background-color: @background;
-	margin: 4px;
-}
-*/

@@ -1,8 +1,9 @@
-/* COLOR THEME */
-@import url("themes/obsidian.css");
-
 /* VARIBLES */
+@import url("colors.css");
 @import url("animations.css");
+
+/* CUSTOM THEME */
+@import url("themes/dracula.css");
 
 /* RESET */
 @import url("reset.css");
@@ -20,10 +21,6 @@
 
 	transition: opacity 100ms;
 	caret-color: @accent;
-}
-
-:disabled {
-	opacity: 0.5;
 }
 
 selection {

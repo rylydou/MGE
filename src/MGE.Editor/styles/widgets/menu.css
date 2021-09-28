@@ -1,19 +1,32 @@
-menu > * {
+menubar > menuitem {
+	padding: 0 4px;
+}
+
+menu menuitem {
 	padding: 2px 0;
+	color: @text;
 }
 
-menu > :first-child {
-	padding-top: 5px;
+menu menuitem:first-child {
+	padding-top: 4px;
 }
 
-menu > :last-child {
-	padding-bottom: 5px;
+menu menuitem:last-child {
+	padding-bottom: 4px;
 }
 
-menu > :hover {
+menu menuitem label {
+	color: @text;
+}
+
+menu menuitem:hover {
 	background-color: @selection-background;
 }
 
-menu > :hover label {
+menu menuitem:hover label {
 	color: @selection-color;
+}
+
+menu menuitem:disabled label {
+	color: @text-dark;
 }

@@ -1,4 +1,3 @@
 popover {
-	background-color: @background;
-	border: solid 2px @element;
+	background-color: @popup;
 }

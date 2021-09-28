@@ -20,6 +20,16 @@ entry {
 	padding: 0 4px;
 }
 
+entry.warning {
+	color: @warning;
+	border-color: @warning;
+}
+
+entry.error {
+	color: @error;
+	border-color: @error;
+}
+
 /*
 	FIXME GTK 4 GtkText has a placeholder element,
 	why doesn't GTK 3's GtkEntry have one too?

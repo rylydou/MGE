@@ -1,0 +1,25 @@
+@define-color base #111;
+@define-color background #151515;
+@define-color element #1A1A1A;
+@define-color popup #1A1A1A;
+
+@define-color text #EEE;
+@define-color text-dark #666;
+
+@define-color accent #FF7504;
+
+@define-color selection-color @text;
+@define-color selection-background @accent;
+
+@define-color black @000;
+@define-color white @FFF;
+
+@define-color red #eb4034;
+@define-color orange #eb7134;
+@define-color yellow #ebd534;
+@define-color green #34eb46;
+@define-color blue #347deb;
+@define-color purple #9b34eb;
+
+@define-color error @red;
+@define-color warning @yellow;

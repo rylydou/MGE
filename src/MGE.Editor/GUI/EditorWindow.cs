@@ -95,7 +95,7 @@ namespace MGE.Editor.GUI
 		{
 			var wasHorizontal = _isHorizontal;
 			StartHorizontal();
-			Add(new Label(text) { Xalign = 0, WidthChars = wasHorizontal ? -1 : 24, MarginStart = wasHorizontal ? 4 : 0, MarginEnd = 4, });
+			Add(new Label(text) { Xalign = 0, WidthChars = wasHorizontal ? -1 : 18, });
 
 			_inLabel = true;
 		}
