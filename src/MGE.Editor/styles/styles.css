@@ -1,9 +1,9 @@
-/* VARIBLES */
+/* VARIABLES */
 @import url("colors.css");
 @import url("animations.css");
 
 /* CUSTOM THEME */
-@import url("themes/dracula.css");
+@import url("themes/grayest.css");
 
 /* RESET */
 @import url("reset.css");

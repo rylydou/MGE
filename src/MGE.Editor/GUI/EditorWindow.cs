@@ -284,12 +284,15 @@ namespace MGE.Editor.GUI
 			// Finish when the feild is unfocused
 			entry.FocusOutEvent += (sender, args) => entry.FinishEditing();
 
+			// FIXME Completely deselect the entry when finished
 			entry.EditingDone += (sender, args) =>
 			{
-				entry.SelectRegion(0, 0);
-				entry.UnsetStateFlags(StateFlags.Selected);
-				entry.UnsetStateFlags(StateFlags.Focused);
-				entry.UnsetStateFlags(StateFlags.Active);
+				// entry.SelectRegion(0, 0);
+				// Works well enough
+				entry.Sensitive = false;
+				entry.Sensitive = true;
+
+				// Task.Delay(0).ContinueWith(t => entry.Sensitive = true);
 
 				if (originalText != entry.Text)
 				{

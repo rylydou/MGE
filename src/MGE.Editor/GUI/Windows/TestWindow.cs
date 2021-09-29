@@ -6,7 +6,7 @@ namespace MGE.Editor.GUI.Windows
 {
 	public class TestWindow : EditorWindow
 	{
-		TestStruct obj = new TestStruct();
+		TestNode obj = new TestNode();
 
 		protected override void Update()
 		{
@@ -29,16 +29,19 @@ namespace MGE.Editor.GUI.Windows
 
 			// Button("Delete").onPressed += () => Trace.WriteLine("Delete Pressed");
 
-			var props = typeof(TestStruct).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+			var props = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
 			foreach (var prop in props)
 			{
-				Label(prop.Name);
+				Label(EditorCache.GetPropertyName(prop.Name));
+
 				var val = prop.GetValue(obj);
-				if (val is string str)
-				{
-					// TextFeild(prop.PropertyType as);
-				}
+
+				if (val is bool b) Checkbox(b).onToggled += s => prop.SetValue(obj, s);
+				else if (val is string str) TextFeild(str).onSubmitted += text => prop.SetValue(obj, text);
+				else if (val is int i) NumberFeild(i).onSubmitted += num => prop.SetValue(obj, num);
+				else if (val is float f) NumberFeild(f).onSubmitted += num => prop.SetValue(obj, num);
+				else if (val is double d) NumberFeild(d).onSubmitted += num => prop.SetValue(obj, num);
 			}
 
 			base.Update();

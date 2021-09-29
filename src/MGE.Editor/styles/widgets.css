@@ -1,7 +1,22 @@
-@import url("widgets/generic.css");
+button,
+checkbutton,
+entry {
+	padding: 4px;
+	background-color: @element;
+	border: solid 2px @element;
+	border-radius: 3px;
+	/* box-shadow: 0 1px 2px 0 alpha(black, 0.1); */
+}
+
+button:hover,
+checkbutton:hover,
+entry:focus {
+	border-color: @accent;
+}
 
 @import url("widgets/buttons.css");
 @import url("widgets/entry.css");
 @import url("widgets/menu.css");
 @import url("widgets/popovers.css");
+@import url("widgets/scrollbar.css");
 @import url("widgets/tooltip.css");

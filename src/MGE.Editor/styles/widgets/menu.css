@@ -1,5 +1,5 @@
 menubar > menuitem {
-	padding: 0 4px;
+	padding: 0 6px;
 }
 
 menu menuitem {
@@ -8,11 +8,15 @@ menu menuitem {
 }
 
 menu menuitem:first-child {
-	padding-top: 4px;
+	padding-top: 3px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
 }
 
 menu menuitem:last-child {
-	padding-bottom: 4px;
+	padding-bottom: 3px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
 }
 
 menu menuitem label {
