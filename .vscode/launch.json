@@ -1,41 +1,68 @@
 {
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "MGE DEBUG",
-			"type": "coreclr",
-			"request": "launch",
-			"preLaunchTask": "build engine",
-			"program": "${workspaceFolder}/src/MGE/bin/Debug/net5.0/MGE.dll",
-			"args": [],
-			"cwd": "${workspaceFolder}/src/MGE",
-			"console": "internalConsole",
-			"stopAtEntry": false,
-			"logging": { "browserStdOut": false, "elapsedTiming": false, "engineLogging": false, "exceptions": false, "moduleLoad": false, "processExit": false, "programOutput": true, "threadExit": false }
-		},
-		{
-			"name": "Game DEBUG",
-			"type": "coreclr",
-			"request": "launch",
-			"preLaunchTask": "build game",
-			"program": "${workspaceFolder}/src/Playground/bin/Debug/net5.0/Playground.dll",
-			"args": [],
-			"cwd": "${workspaceFolder}/src/Playground",
-			"console": "internalConsole",
-			"stopAtEntry": false,
-			"logging": { "browserStdOut": false, "elapsedTiming": false, "engineLogging": false, "exceptions": false, "moduleLoad": false, "processExit": false, "programOutput": true, "threadExit": false }
-		},
-		{
-			"name": "Editor DEBUG",
-			"type": "coreclr",
-			"request": "launch",
-			"preLaunchTask": "build editor",
-			"program": "${workspaceFolder}/src/MGE.Editor/bin/Debug/net5.0/MGE.Editor.exe",
-			"args": [],
-			"cwd": "${workspaceFolder}/src/MGE.Editor",
-			"console": "internalConsole",
-			"stopAtEntry": false,
-			"logging": { "browserStdOut": false, "elapsedTiming": false, "engineLogging": false, "exceptions": false, "moduleLoad": false, "processExit": false, "programOutput": true, "threadExit": false }
-		}
-	]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "MGE DEBUG",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build engine",
+      "program": "${workspaceFolder}/src/MGE/bin/Debug/net5.0/MGE.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/MGE",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "logging": {
+        "browserStdOut": false,
+        "elapsedTiming": false,
+        "engineLogging": false,
+        "exceptions": false,
+        "moduleLoad": false,
+        "processExit": false,
+        "programOutput": true,
+        "threadExit": false
+      }
+    },
+    {
+      "name": "Game DEBUG",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build game",
+      "program": "${workspaceFolder}/src/Playground/bin/Debug/net5.0/Playground.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Playground",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "logging": {
+        "browserStdOut": false,
+        "elapsedTiming": false,
+        "engineLogging": false,
+        "exceptions": false,
+        "moduleLoad": false,
+        "processExit": false,
+        "programOutput": true,
+        "threadExit": false
+      }
+    },
+    {
+      "name": "Editor DEBUG",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build editor",
+      "program": "${workspaceFolder}/src/MGE.Editor/bin/Debug/net5.0/MGE.Editor.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/MGE.Editor",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "logging": {
+        "browserStdOut": false,
+        "elapsedTiming": false,
+        "engineLogging": false,
+        "exceptions": false,
+        "moduleLoad": false,
+        "processExit": false,
+        "programOutput": true,
+        "threadExit": false
+      }
+    }
+  ]
 }

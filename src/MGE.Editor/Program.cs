@@ -20,7 +20,7 @@ namespace MGE.Editor
 			}
 			catch (Exception e)
 			{
-				File.WriteAllText(Environment.CurrentDirectory + "/crash.log", e.ToString());
+				File.WriteAllText(Environment.CurrentDirectory + "/crash-editor.log", e.ToString());
 			}
 		}
 	}

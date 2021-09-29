@@ -1,14 +1,14 @@
-@define-color base #111;
-@define-color background #151515;
-@define-color element #1A1A1A;
-@define-color popup #1A1A1A;
+@define-color base darker(#202020);
+@define-color background #202020;
+@define-color element #2B2B2B;
+@define-color popup #343434;
 
-@define-color text #EEE;
-@define-color text-dark #666;
+@define-color text #FFF;
+@define-color text-dark #9aa0a6;
 
-@define-color accent #FF7504;
+@define-color accent #FE9137;
 
-@define-color selection-color @text;
+@define-color selection-color @base;
 @define-color selection-background @accent;
 
 @define-color black @000;

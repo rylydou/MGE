@@ -19,4 +19,5 @@ entry:focus {
 @import url("widgets/menu.css");
 @import url("widgets/popovers.css");
 @import url("widgets/scrollbar.css");
+@import url("widgets/separator.css");
 @import url("widgets/tooltip.css");

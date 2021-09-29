@@ -54,7 +54,11 @@ tab:checked label {
 
 notebook stack {
 	background-color: @background;
-	padding: 1em;
+	
+}
+
+notebook stack {
+	padding: 12px;
 }
 
 notebook stack > * > undershoot.left {

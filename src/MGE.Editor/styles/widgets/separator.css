@@ -1,0 +1,9 @@
+separator {
+	background-color: @element;
+	margin: 4px;
+	border-radius: 3px;
+}
+
+separator.wide {
+	margin: 2px;
+}

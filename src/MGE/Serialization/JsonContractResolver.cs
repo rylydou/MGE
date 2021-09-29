@@ -11,7 +11,7 @@ namespace MGE.Serialization
 	{
 		static void Ignore(JsonProperty property)
 		{
-			var prop = (PropAttribute)property.AttributeProvider.GetAttributes(typeof(PropAttribute), true).FirstOrDefault();
+			var prop = property.AttributeProvider?.GetAttributes(typeof(PropAttribute), true).FirstOrDefault() as PropAttribute;
 
 			if (prop is null)
 			{
@@ -28,14 +28,14 @@ namespace MGE.Serialization
 
 		protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
 		{
-			JsonProperty property = base.CreateProperty(member, memberSerialization);
+			var property = base.CreateProperty(member, memberSerialization);
 			Ignore(property);
 			return property;
 		}
 
 		protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
 		{
-			IList<JsonProperty> properties = base.CreateProperties(type, memberSerialization);
+			var properties = base.CreateProperties(type, memberSerialization);
 			foreach (var property in properties) Ignore(property);
 			return properties;
 		}

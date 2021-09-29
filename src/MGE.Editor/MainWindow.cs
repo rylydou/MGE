@@ -14,48 +14,49 @@ namespace MGE.Editor
 			SetDefaultSize(1280, 720);
 			// Maximize();
 
-			KeyPressEvent += KeyPress;
-
-			FocusInEvent += delegate { ReloadStyles(); };
-			Destroyed += MainWindow_Destroyed;
+			FocusInEvent += (sender, args) => ReloadStyles();
+			Destroyed += (sender, args) => MainWindow_Destroyed();
 
 			var left = new Notebook();
 
-			left.AppendPage(new Label("Hierarchy"), new Label("Hierarchy"));
-			left.AppendPage(new Label("Common Settings"), new Label("Common Settings"));
-			var menu = new TestWindow();
-			left.AppendPage(menu.root, new Label("Other Menu"));
+			var hierarchy = new HierarchyWindow();
+			left.AppendPage(hierarchy.root, new Label(hierarchy.title));
 
 			var right = new Notebook();
 
-			right.Hexpand = true;
-
-			right.AppendPage(EditorUtil.GenerateInspector("TODO"), new Label("Inspector"));
+			var inspector = new InspectorWindow();
+			right.AppendPage(inspector.root, new Label(inspector.title));
 			right.AppendPage(new Label("Project Settings"), new Label("Project Settings"));
 
-			var mainLayout = new Paned(Orientation.Horizontal) { WideHandle = true };
+			var leftLayout = new Paned(Orientation.Horizontal) { WideHandle = true };
 
-			mainLayout.Add(left);
-			mainLayout.Add(right);
+			var rightLayout = new Paned(Orientation.Horizontal) { WideHandle = true };
 
-			Add(mainLayout);
+			var center = new Notebook();
 
-			var titleBar = new HeaderBar();
+			center.AppendPage(new GLWindow() { WidthRequest = 480 }, new Label("Scene View"));
 
-			titleBar.Add(new Image("images/icons/icon-symbolic.svg"));
+			rightLayout.Add(center);
 
-			titleBar.Add(new VSeparator());
+			rightLayout.Add(right);
+
+			leftLayout.Add(left);
+			leftLayout.Add(rightLayout);
+
+			Add(leftLayout);
 
 			var menubar = new MenuBar();
+
 			var filemenu = new Menu();
 			var file = new MenuItem("File");
 			file.Submenu = filemenu;
+			filemenu.Append(new MenuItem("New Project..."));
 			filemenu.Append(new MenuItem("Open Project..."));
 			filemenu.Append(new SeparatorMenuItem());
 			filemenu.Append(new MenuItem("Save"));
 			filemenu.Append(new MenuItem("Save As..."));
 			filemenu.Append(new SeparatorMenuItem());
-			var exit = new MenuItem("Exit");
+			var exit = new MenuItem("Exit...");
 			exit.Activated += (sender, args) => Application.Quit();
 			filemenu.Append(exit);
 			menubar.Append(file);
@@ -66,27 +67,86 @@ namespace MGE.Editor
 			editmenu.Append(new MenuItem("Undo"));
 			editmenu.Append(new MenuItem("Redo"));
 			editmenu.Append(new SeparatorMenuItem());
-			editmenu.Append(new MenuItem("User Settings"));
-			editmenu.Append(new MenuItem("Project Settings"));
+			editmenu.Append(new MenuItem("Cut"));
+			editmenu.Append(new MenuItem("Copy"));
+			editmenu.Append(new MenuItem("Paste"));
+			editmenu.Append(new SeparatorMenuItem());
+			editmenu.Append(new MenuItem("Previous Selection"));
+			editmenu.Append(new SeparatorMenuItem());
+			editmenu.Append(new MenuItem("Recompile Project"));
+			editmenu.Append(new SeparatorMenuItem());
+			editmenu.Append(new MenuItem("Editor Settings..."));
+			editmenu.Append(new MenuItem("Project Settings..."));
 			menubar.Append(edit);
 
 			var viewmenu = new Menu();
 			var view = new MenuItem("View");
 			view.Submenu = viewmenu;
-			viewmenu.Append(new CheckMenuItem("Zoomed GUI"));
+			viewmenu.Append(new CheckMenuItem("Show Node Gizmos") { Active = true });
+			viewmenu.Append(new CheckMenuItem("Show Node Icons") { Active = true });
+			viewmenu.Append(new SeparatorMenuItem());
+			viewmenu.Append(new CheckMenuItem("Show Hidden Nodes"));
+			viewmenu.Append(new CheckMenuItem("Show Disabled Nodes"));
+			viewmenu.Append(new CheckMenuItem("Show Graphicless Nodes") { Active = true });
+			viewmenu.Append(new SeparatorMenuItem());
+			viewmenu.Append(new CheckMenuItem("Large GUI"));
+			viewmenu.Append(new CheckMenuItem("Static GUI"));
+			viewmenu.Append(new CheckMenuItem("Focus Outlines"));
+			viewmenu.Append(new SeparatorMenuItem());
+			viewmenu.Append(new MenuItem("Reload Styles"));
 			menubar.Append(view);
+
+			var windowmenu = new Menu();
+			var window = new MenuItem("Window");
+			window.Submenu = windowmenu;
+			windowmenu.Append(new MenuItem("Scene"));
+			windowmenu.Append(new MenuItem("Hierarchy"));
+			windowmenu.Append(new MenuItem("Inspector"));
+			windowmenu.Append(new MenuItem("Assets"));
+			windowmenu.Append(new MenuItem("Problems"));
+			windowmenu.Append(new MenuItem("Console"));
+			windowmenu.Append(new SeparatorMenuItem());
+			windowmenu.Append(new MenuItem("Source Control"));
+			windowmenu.Append(new MenuItem("Profiler"));
+			windowmenu.Append(new MenuItem("Autodocs")); // Gets all the info of types in an assembly and shows the xml docs
+			windowmenu.Append(new SeparatorMenuItem());
+			windowmenu.Append(new MenuItem("Music Player")); // A mini music player, mostly as an example on how to write custom windows
+			windowmenu.Append(new SeparatorMenuItem());
+			windowmenu.Append(new CheckMenuItem("Lock Docked Windows"));
+			windowmenu.Append(new SeparatorMenuItem());
+			windowmenu.Append(new MenuItem("Editor Debugger...")); // Will open a ~~completly~~ mostly isolated editor debugger
+			menubar.Append(window);
 
 			var helpmenu = new Menu();
 			var help = new MenuItem("Help");
 			help.Submenu = helpmenu;
-			helpmenu.Append(new MenuItem("About"));
+			helpmenu.Append(new MenuItem("Command Palette"));
+			helpmenu.Append(new MenuItem("Project Search"));
 			helpmenu.Append(new SeparatorMenuItem());
-			helpmenu.Append(new MenuItem("About"));
+			helpmenu.Append(new MenuItem("Tutorials"));
+			helpmenu.Append(new MenuItem("Documentation"));
+			helpmenu.Append(new SeparatorMenuItem());
+			helpmenu.Append(new MenuItem("Reload GUI"));
+			helpmenu.Append(new MenuItem("Reload Scene"));
+			helpmenu.Append(new MenuItem("Reload Assets"));
+			helpmenu.Append(new MenuItem("Reload Editor"));
+			var clearCacheMenuItem = new MenuItem("Reload Cache");
+			clearCacheMenuItem.Activated += (sender, args) => Editor.ClearCache();
+			helpmenu.Append(clearCacheMenuItem);
+			helpmenu.Append(new SeparatorMenuItem());
+			helpmenu.Append(new MenuItem("Request a Feature..."));
+			helpmenu.Append(new MenuItem("Report an Issue..."));
+			helpmenu.Append(new SeparatorMenuItem());
+			helpmenu.Append(new MenuItem("Check for Updates..."));
+			helpmenu.Append(new SeparatorMenuItem());
+			helpmenu.Append(new MenuItem("Copy Debug Info"));
+			helpmenu.Append(new MenuItem("About..."));
 			menubar.Append(help);
 
-			titleBar.Add(menubar);
+			var titleBar = new HeaderBar() { ShowCloseButton = true, Title = "MGE Editor", };
 
-			titleBar.ShowCloseButton = true;
+			titleBar.Add(new Image("images/icons/icon.svg"));
+			titleBar.Add(menubar);
 
 			Titlebar = titleBar;
 
@@ -97,16 +157,7 @@ namespace MGE.Editor
 			StyleContext.AddProviderForScreen(Screen, styleProvider, int.MaxValue);
 		}
 
-		[GLib.ConnectBefore]
-		void KeyPress(object sender, KeyPressEventArgs args)
-		{
-			// if (args.Event.Key == Gdk.Key.space)
-			// {
-			// 	ReloadStyles();
-			// }
-		}
-
-		private void MainWindow_Destroyed(object? sender, EventArgs e)
+		private void MainWindow_Destroyed()
 		{
 			Application.Quit();
 		}

@@ -11,20 +11,13 @@
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 	</PropertyGroup>
 
-	<!-- <ItemGroup>
-		<None Remove="**\*.glade" />
-		<EmbeddedResource Include="**\*.glade">
-			<LogicalName>%(Filename)%(Extension)</LogicalName>
-		</EmbeddedResource>
-	</ItemGroup> -->
-
 	<ItemGroup>
 		<EmbeddedResource Include="icon.ico" />
 	</ItemGroup>
 
-	<!-- <ItemGroup>
-		<ProjectReference Include="..\Playground\Playground.csproj" />
-	</ItemGroup> -->
+	<ItemGroup>
+		<ProjectReference Include="..\OpenGLTest\OpenGLTest.csproj" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="GtkSharp" Version="3.24.24.*" />

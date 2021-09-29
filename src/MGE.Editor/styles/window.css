@@ -2,6 +2,7 @@ window {
 	background-color: @base;
 }
 
+/* Resisze border hacks */
 window:not(.popup) decoration {
   border: 8px solid alpha(@base, 0.01);
 }
@@ -29,7 +30,8 @@ window:backdrop headerbar {
 }
 
 window.maximized headerbar,
-window.fullscreen headerbar {
+window.fullscreen headerbar,
+window.tiled headerbar {
 	border-top: none;
 }
 

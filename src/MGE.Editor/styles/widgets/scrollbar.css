@@ -1,3 +1,8 @@
 trough slider {
+	background-color: @text-dark;
+	border-radius: 3px;
+}
+
+trough:hover slider {
 	background-color: @accent;
 }
