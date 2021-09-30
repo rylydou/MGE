@@ -12,7 +12,6 @@ namespace MGE.Editor
 		{
 			SetPosition(WindowPosition.Center);
 			SetDefaultSize(1280, 720);
-			// Maximize();
 
 			FocusInEvent += (sender, args) => ReloadStyles();
 			Destroyed += (sender, args) => MainWindow_Destroyed();
@@ -51,10 +50,13 @@ namespace MGE.Editor
 			var file = new MenuItem("File");
 			file.Submenu = filemenu;
 			filemenu.Append(new MenuItem("New Project..."));
+			filemenu.Append(new SeparatorMenuItem());
 			filemenu.Append(new MenuItem("Open Project..."));
 			filemenu.Append(new SeparatorMenuItem());
 			filemenu.Append(new MenuItem("Save"));
 			filemenu.Append(new MenuItem("Save As..."));
+			filemenu.Append(new SeparatorMenuItem());
+			filemenu.Append(new MenuItem("Backups..."));
 			filemenu.Append(new SeparatorMenuItem());
 			var exit = new MenuItem("Exit...");
 			exit.Activated += (sender, args) => Application.Quit();
@@ -93,12 +95,16 @@ namespace MGE.Editor
 			viewmenu.Append(new CheckMenuItem("Static GUI"));
 			viewmenu.Append(new CheckMenuItem("Focus Outlines"));
 			viewmenu.Append(new SeparatorMenuItem());
-			viewmenu.Append(new MenuItem("Reload Styles"));
+			var reloadStylesMenuItem = new MenuItem("Reload Styles");
+			reloadStylesMenuItem.Activated += (sender, args) => ReloadStyles();
+			viewmenu.Append(reloadStylesMenuItem);
 			menubar.Append(view);
 
 			var windowmenu = new Menu();
 			var window = new MenuItem("Window");
 			window.Submenu = windowmenu;
+			windowmenu.Append(new CheckMenuItem("Lock Docked Windows"));
+			windowmenu.Append(new SeparatorMenuItem());
 			windowmenu.Append(new MenuItem("Scene"));
 			windowmenu.Append(new MenuItem("Hierarchy"));
 			windowmenu.Append(new MenuItem("Inspector"));
@@ -112,27 +118,24 @@ namespace MGE.Editor
 			windowmenu.Append(new SeparatorMenuItem());
 			windowmenu.Append(new MenuItem("Music Player")); // A mini music player, mostly as an example on how to write custom windows
 			windowmenu.Append(new SeparatorMenuItem());
-			windowmenu.Append(new CheckMenuItem("Lock Docked Windows"));
-			windowmenu.Append(new SeparatorMenuItem());
-			windowmenu.Append(new MenuItem("Editor Debugger...")); // Will open a ~~completly~~ mostly isolated editor debugger
+			windowmenu.Append(new MenuItem("Editor Debugger...")); // Will open a mostly isolated editor debugger
 			menubar.Append(window);
 
 			var helpmenu = new Menu();
 			var help = new MenuItem("Help");
 			help.Submenu = helpmenu;
-			helpmenu.Append(new MenuItem("Command Palette"));
-			helpmenu.Append(new MenuItem("Project Search"));
-			helpmenu.Append(new SeparatorMenuItem());
 			helpmenu.Append(new MenuItem("Tutorials"));
 			helpmenu.Append(new MenuItem("Documentation"));
 			helpmenu.Append(new SeparatorMenuItem());
-			helpmenu.Append(new MenuItem("Reload GUI"));
+			helpmenu.Append(new MenuItem("Command Palette"));
+			helpmenu.Append(new MenuItem("Project Search"));
+			helpmenu.Append(new SeparatorMenuItem());
 			helpmenu.Append(new MenuItem("Reload Scene"));
 			helpmenu.Append(new MenuItem("Reload Assets"));
-			helpmenu.Append(new MenuItem("Reload Editor"));
 			var clearCacheMenuItem = new MenuItem("Reload Cache");
 			clearCacheMenuItem.Activated += (sender, args) => Editor.ClearCache();
 			helpmenu.Append(clearCacheMenuItem);
+			helpmenu.Append(new MenuItem("Reload Editor"));
 			helpmenu.Append(new SeparatorMenuItem());
 			helpmenu.Append(new MenuItem("Request a Feature..."));
 			helpmenu.Append(new MenuItem("Report an Issue..."));
@@ -145,7 +148,7 @@ namespace MGE.Editor
 
 			var titleBar = new HeaderBar() { ShowCloseButton = true, Title = "MGE Editor", };
 
-			titleBar.Add(new Image("images/icons/icon.svg"));
+			titleBar.Add(new Image("res/images/icons/icon.svg"));
 			titleBar.Add(menubar);
 
 			Titlebar = titleBar;
@@ -164,11 +167,11 @@ namespace MGE.Editor
 
 		void ReloadStyles()
 		{
-			SetIconFromFile("images/icons/icon.svg");
+			SetIconFromFile("res/images/icons/logo.png");
 
 			try
 			{
-				styleProvider.LoadFromPath("styles/styles.css");
+				styleProvider.LoadFromPath("res/styles/styles.css");
 			}
 			catch (Exception e)
 			{

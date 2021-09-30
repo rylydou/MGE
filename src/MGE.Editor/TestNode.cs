@@ -15,5 +15,7 @@ namespace MGE.Editor
 		public bool some_camel_case_value_for_the_MGE_editor { get; set; }
 
 		public bool a2ndVaribleWith2ManyNumbersInIt { get; set; }
+
+		public bool iHave12345NumbersInMe { get; set; }
 	}
 }

@@ -2,6 +2,10 @@ menubar menuitem {
 	padding: 0 6px;
 }
 
+menubar menuitem:hover > label {
+	color: @accent;
+}
+
 menu menuitem {
 	padding: 2px 0;
 	color: @text;
@@ -31,6 +35,14 @@ menu menuitem:hover label {
 	color: @selection-color;
 }
 
+menu menuitem:hover check {
+	color: @selection-color;
+}
+
 menu menuitem:disabled label {
 	color: @text-dark;
+}
+
+menuitem check {
+	margin: 0 4px;
 }

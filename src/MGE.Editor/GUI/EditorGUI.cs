@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Gtk;
 using MGE.Editor.GUI.Events;
 using MGE.Editor.Util;
@@ -100,16 +98,6 @@ namespace MGE.Editor.GUI
 		{
 			container.Add(widget);
 
-			// if (widget is Container container && (widget is ListBox || widget is Box))
-			// {
-			// 	PushContainer(container);
-			// }
-			// else if (_inLabel)
-			// {
-			// 	_inLabel = false;
-			// 	PopContainer();
-			// }
-
 			return widget;
 		}
 
@@ -119,7 +107,7 @@ namespace MGE.Editor.GUI
 
 		public static void Label(string text)
 		{
-			Add(new Label(text) { Xalign = 0, WidthChars = 24, MaxWidthChars = 24, Ellipsize = Pango.EllipsizeMode.End, TooltipText = text.Length > 24 ? text : null });
+			Add(new Label(text) { Xalign = 0, WidthChars = 24, MaxWidthChars = 24, Ellipsize = Pango.EllipsizeMode.End, TooltipText = text.Length > 32 ? text : null });
 		}
 
 		#region Buttons
