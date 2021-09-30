@@ -37,6 +37,9 @@ namespace MGE.Editor.GUI
 			listBox.ShowAll();
 		}
 
-		protected virtual void Update() { }
+		protected virtual void Update()
+		{
+			EditorGUI.Header(title);
+		}
 	}
 }

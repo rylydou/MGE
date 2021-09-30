@@ -4,7 +4,7 @@ using Gtk;
 
 namespace MGE.Editor
 {
-	public class GLWindow : DrawingArea
+	public class SceneViewport : DrawingArea
 	{
 		protected override bool OnDrawn(Context cr)
 		{

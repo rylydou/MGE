@@ -33,7 +33,9 @@ namespace MGE.Editor
 
 			var center = new Notebook();
 
-			center.AppendPage(new GLWindow() { WidthRequest = 480 }, new Label("Scene View"));
+			var scene = new SceneWindow();
+
+			center.AppendPage(scene.root, new Label(scene.title));
 
 			rightLayout.Add(center);
 

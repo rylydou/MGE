@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Gtk;
 using MGE.Editor.GUI.Events;
 using MGE.Editor.Util;
+using Pango;
 
 namespace MGE.Editor.GUI
 {
@@ -60,6 +61,41 @@ namespace MGE.Editor.GUI
 
 		#endregion
 
+		#region Properties
+
+		public static bool? sensitive;
+		public static string? tooltip;
+		public static int? width;
+		public static int? height;
+		public static bool? xExpand;
+		public static bool? yExpand;
+
+		public static float? xAlign;
+		public static int? widthInChars;
+		public static int? maxWidthInChars;
+		public static EllipsizeMode? ellipsizeMode;
+
+		public static string? placeholderText;
+
+		static void ResetProperties()
+		{
+			sensitive = null;
+			tooltip = null;
+			width = null;
+			height = null;
+			xExpand = null;
+			yExpand = null;
+
+			xAlign = null;
+			widthInChars = null;
+			maxWidthInChars = null;
+			ellipsizeMode = null;
+
+			placeholderText = null;
+		}
+
+		#endregion
+
 		public static Container container
 		{
 			get
@@ -68,6 +104,7 @@ namespace MGE.Editor.GUI
 				return _container;
 			}
 		}
+		// TODO
 		public static bool isHorizontalContainer;
 		public static bool inLabel;
 		static Container? _container;
@@ -96,25 +133,65 @@ namespace MGE.Editor.GUI
 
 		public static Widget Add(Widget widget)
 		{
+			widget.Sensitive = sensitive ?? true;
+			widget.TooltipText = tooltip;
+			if (width.HasValue) widget.WidthRequest = width.Value;
+			if (height.HasValue) widget.HeightRequest = height.Value;
+			widget.Hexpand = xExpand ?? true;
+			widget.Vexpand = yExpand ?? false;
+
 			container.Add(widget);
+
+			ResetProperties();
 
 			return widget;
 		}
 
 		#region Widgets
 
-		public static void Text(string text) => Add(new Label(text) { Xalign = 0 });
-
-		public static void Label(string text)
+		public static void Text(string text) => Add(new Label(text)
 		{
-			Add(new Label(text) { Xalign = 0, WidthChars = 24, MaxWidthChars = 24, Ellipsize = Pango.EllipsizeMode.End, TooltipText = text.Length > 32 ? text : null });
-		}
+			Xalign = xAlign ?? 0.0f,
+			WidthChars = widthInChars ?? -1,
+			MaxWidthChars = maxWidthInChars ?? -1,
+			Ellipsize = ellipsizeMode ?? EllipsizeMode.End,
+		});
+
+		public static void Header(string text) => Add(new Label(text)
+		{
+			Xalign = xAlign ?? 0.5f,
+			WidthChars = widthInChars ?? -1,
+			MaxWidthChars = maxWidthInChars ?? -1,
+			Ellipsize = ellipsizeMode ?? EllipsizeMode.End,
+		});
+
+		public static void Label(string text) => Add(new Label(text)
+		{
+			Xalign = xAlign ?? 0.0f,
+			WidthChars = widthInChars ?? 24,
+			MaxWidthChars = maxWidthInChars ?? 24,
+			Ellipsize = ellipsizeMode ?? EllipsizeMode.End,
+			TooltipText = text.Length > 32 ? text : null,
+		});
 
 		#region Buttons
 
 		public static ButtonEvents Button(string text)
 		{
-			var button = new Button(text) { Vexpand = true };
+			var button = new Button(text)
+			{
+				Hexpand = true,
+			};
+			Add(button);
+
+			var events = new ButtonEvents();
+			button.Clicked += (sender, args) => events.onPressed.Invoke();
+			return events;
+		}
+
+		public static ButtonEvents IconButton(string icon)
+		{
+			var button = new Button(icon, IconSize.Button);
 			Add(button);
 
 			var events = new ButtonEvents();
@@ -136,6 +213,58 @@ namespace MGE.Editor.GUI
 
 		#region Feilds
 
+		static Entry MakeEntry(string text, Func<string, string> onTextSubmitted)
+		{
+			var entry = new Entry(text) { Hexpand = true };
+			var originalText = string.Empty;
+
+			// FIXME Select everything when focused
+			entry.FocusInEvent += (sender, args) =>
+			{
+				originalText = entry.Text;
+				entry.SelectRegion(0, -1);
+			};
+
+			entry.KeyPressEvent += (sender, args) =>
+			{
+				switch (args.Event.Key)
+				{
+					// Reset the text feild when escape is pressed
+					case Gdk.Key.Escape:
+						entry.Text = originalText;
+						entry.FinishEditing();
+						break;
+				}
+			};
+
+			// Finish when enter is pressed
+			entry.Activated += (sender, args) => entry.FinishEditing();
+			// Finish when the feild is unfocused
+			entry.FocusOutEvent += (sender, args) => entry.FinishEditing();
+
+			entry.EditingDone += (sender, args) =>
+			{
+				// entry.SelectRegion(0, 0);
+				// Works well enough
+				entry.Sensitive = false;
+				entry.Sensitive = true;
+
+				if (originalText != entry.Text)
+				{
+					try
+					{
+						entry.Text = onTextSubmitted.Invoke(entry.Text);
+					}
+					catch (System.Exception)
+					{
+						entry.Text = originalText;
+					}
+				}
+			};
+
+			return entry;
+		}
+
 		public static TextFeildEvents TextFeild(string text)
 		{
 			var events = new TextFeildEvents();
@@ -145,6 +274,8 @@ namespace MGE.Editor.GUI
 				return text;
 			});
 
+			entry.PlaceholderText = placeholderText ?? "Enter Text...";
+
 			Add(entry);
 
 			return events;
@@ -153,7 +284,6 @@ namespace MGE.Editor.GUI
 		public static NumberFeildEvents<float> NumberFeild(float number)
 		{
 			var events = new NumberFeildEvents<float>();
-
 			var entry = MakeEntry(number.ToString(), text =>
 			{
 				var val = 0f;
@@ -163,6 +293,8 @@ namespace MGE.Editor.GUI
 				return val.ToString();
 			});
 
+			entry.PlaceholderText = placeholderText ?? "Enter Float...";
+
 			Add(entry);
 
 			return events;
@@ -171,7 +303,6 @@ namespace MGE.Editor.GUI
 		public static NumberFeildEvents<double> NumberFeild(double number)
 		{
 			var events = new NumberFeildEvents<double>();
-
 			var entry = MakeEntry(number.ToString(), text =>
 			{
 				var val = 0d;
@@ -181,6 +312,8 @@ namespace MGE.Editor.GUI
 				return val.ToString();
 			});
 
+			entry.PlaceholderText = placeholderText ?? "Enter Double...";
+
 			Add(entry);
 
 			return events;
@@ -189,7 +322,6 @@ namespace MGE.Editor.GUI
 		public static NumberFeildEvents<int> NumberFeild(int number)
 		{
 			var events = new NumberFeildEvents<int>();
-
 			var entry = MakeEntry(number.ToString(), text =>
 			{
 				var val = 0;
@@ -198,6 +330,8 @@ namespace MGE.Editor.GUI
 				events.onSubmitted.Invoke(val);
 				return val.ToString();
 			});
+
+			entry.PlaceholderText = placeholderText ?? "Enter Integer...";
 
 			Add(entry);
 
@@ -252,61 +386,6 @@ namespace MGE.Editor.GUI
 
 		#endregion
 
-		static Entry MakeEntry(string text, Func<string, string> onTextSubmitted)
-		{
-			var entry = new Entry(text) { Hexpand = true, PlaceholderText = "Enter Text...", Sensitive = true, };
-			var originalText = string.Empty;
-
-			// FIXME Select everything when focused
-			entry.FocusInEvent += (sender, args) =>
-			{
-				originalText = entry.Text;
-				entry.SelectRegion(0, -1);
-			};
-
-			entry.KeyPressEvent += (sender, args) =>
-			{
-				switch (args.Event.Key)
-				{
-					// Reset the text feild when escape is pressed
-					case Gdk.Key.Escape:
-						entry.Text = originalText;
-						entry.FinishEditing();
-						break;
-				}
-			};
-
-			// Finish when enter is pressed
-			entry.Activated += (sender, args) => entry.FinishEditing();
-			// Finish when the feild is unfocused
-			entry.FocusOutEvent += (sender, args) => entry.FinishEditing();
-
-			entry.EditingDone += (sender, args) =>
-			{
-				// entry.SelectRegion(0, 0);
-				// Works well enough
-				entry.Sensitive = false;
-				entry.Sensitive = true;
-
-				if (originalText != entry.Text)
-				{
-					try
-					{
-						entry.Text = onTextSubmitted.Invoke(entry.Text);
-					}
-					catch (System.Exception)
-					{
-						entry.Text = originalText;
-					}
-				}
-			};
-
-			return entry;
-		}
-
-		public static double Eval(string expr)
-		{
-			return ExpressionParser.Parse(expr).Eval(_dictionaryContext);
-		}
+		static double Eval(string expr) => ExpressionParser.Parse(expr).Eval(_dictionaryContext);
 	}
 }
