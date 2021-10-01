@@ -17,6 +17,8 @@ namespace MGE.Editor
 			RegisterPropDrawer(new FloatPropDrawer());
 
 			RegisterPropDrawer(new StringPropDrawer());
+
+			RegisterPropDrawer(new Vector2PropDrawer());
 		}
 
 		public static object? selectedObject

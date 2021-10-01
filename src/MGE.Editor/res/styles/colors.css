@@ -1,7 +1,7 @@
 @define-color base darker(#202020);
 @define-color background #202020;
 @define-color element #2B2B2B;
-@define-color popup #343434;
+@define-color popup shade(#202020, 0.5);
 
 @define-color text #FFF;
 @define-color text-dark #9aa0a6;

@@ -1,6 +1,7 @@
 entry {
 	padding: 0 4px;
 	min-height: 28px;
+	min-width: 0;
 }
 
 entry.warning {

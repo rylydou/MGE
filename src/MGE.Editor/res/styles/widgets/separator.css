@@ -1,7 +1,7 @@
 separator {
 	background-color: @element;
 	margin: 4px;
-	border-radius: 3px;
+	border-radius: 4px;
 }
 
 separator.wide {

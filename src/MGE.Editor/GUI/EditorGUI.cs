@@ -42,40 +42,27 @@ namespace MGE.Editor.GUI
 			{ "clamp", (args) => Math.Clamp(args[0], args[1], args[2]) },
 		});
 
-		#region Menubar
-
-		// TODO
-		public static ButtonEvents MenubarButton(string title)
-		{
-			var events = new ButtonEvents();
-
-			var segments = title.Split('/');
-
-			foreach (var segment in segments)
-			{
-
-			}
-
-			return events;
-		}
-
-		#endregion
-
 		#region Properties
 
 		public static Optional<bool> sensitive = new();
 		public static Optional<string?> tooltip = new();
 		public static Optional<int> width = new();
 		public static Optional<int> height = new();
-		public static Optional<bool> xExpand = new();
-		public static Optional<bool> yExpand = new();
+		public static Optional<bool> horizontalExpand = new();
+		public static Optional<bool> verticalExpand = new();
 
-		public static Optional<float> xAlign = new();
+		public static Optional<int> margin = new();
+		public static Optional<int> marginTop = new();
+		public static Optional<int> marginBottom = new();
+		public static Optional<int> marginStart = new();
+		public static Optional<int> marginEnd = new();
+
+		public static Optional<float> horizontalAlign = new();
 		public static Optional<int> widthInChars = new();
 		public static Optional<int> maxWidthInChars = new();
 		public static Optional<EllipsizeMode> ellipsizeMode = new();
 
-		public static string? placeholderText;
+		public static Optional<string> placeholderText = new();
 
 		static void ResetProperties()
 		{
@@ -83,19 +70,27 @@ namespace MGE.Editor.GUI
 			tooltip.Unset();
 			width.Unset();
 			height.Unset();
-			xExpand.Unset();
-			yExpand.Unset();
+			horizontalExpand.Unset();
+			verticalExpand.Unset();
 
-			xAlign.Unset();
+			margin.Unset();
+			marginTop.Unset();
+			marginBottom.Unset();
+			marginStart.Unset();
+			marginEnd.Unset();
+
+			horizontalAlign.Unset();
 			widthInChars.Unset();
 			maxWidthInChars.Unset();
 			ellipsizeMode.Unset();
 
-			placeholderText = null;
+			placeholderText.Unset();
 		}
 
 		#endregion
 
+		static Stack<Container> _containerStack = new Stack<Container>();
+		static Container? _container;
 		public static Container container
 		{
 			get
@@ -104,17 +99,15 @@ namespace MGE.Editor.GUI
 				return _container;
 			}
 		}
-		// TODO
-		public static bool isHorizontalContainer;
-		public static bool inLabel;
-		static Container? _container;
-		static Stack<Container> _containerStack = new Stack<Container>();
+
+		public static bool isHorizontal { get; private set; }
 
 		public static void PushContainer(Container container)
 		{
 			if (_container is not null)
 				_containerStack.Push(_container);
 			_container = container;
+			UpdateContainer();
 		}
 
 		public static void PopContainer()
@@ -123,6 +116,12 @@ namespace MGE.Editor.GUI
 				_container = container;
 			else
 				_container = null;
+			UpdateContainer();
+		}
+
+		static void UpdateContainer()
+		{
+			isHorizontal = _container is Box box && box.Orientation == Orientation.Horizontal;
 		}
 
 		internal static void SetContainer(Container container)
@@ -136,8 +135,14 @@ namespace MGE.Editor.GUI
 			sensitive.TrySetValue(value => widget.Sensitive = value);
 			tooltip.TrySetValue(value => widget.TooltipText = value);
 			width.TrySetValue(value => widget.WidthRequest = value);
-			xExpand.TrySetValue(value => widget.Hexpand = value);
-			yExpand.TrySetValue(value => widget.Vexpand = value);
+			horizontalExpand.TrySetValue(value => widget.Hexpand = value);
+			verticalExpand.TrySetValue(value => widget.Vexpand = value);
+
+			margin.TrySetValue(value => widget.Margin = value);
+			marginTop.TrySetValue(value => widget.MarginTop = value);
+			marginBottom.TrySetValue(value => widget.MarginBottom = value);
+			marginStart.TrySetValue(value => widget.MarginStart = value);
+			marginEnd.TrySetValue(value => widget.MarginEnd = value);
 
 			container.Add(widget);
 
@@ -150,7 +155,7 @@ namespace MGE.Editor.GUI
 
 		public static void Text(string text) => Add(new Label(text)
 		{
-			Xalign = xAlign.GetValueOnDefualt(0),
+			Xalign = horizontalAlign.GetValueOnDefualt(0),
 			WidthChars = widthInChars.GetValueOnDefualt(-1),
 			MaxWidthChars = maxWidthInChars.GetValueOnDefualt(-1),
 			Ellipsize = ellipsizeMode.GetValueOnDefualt(EllipsizeMode.End),
@@ -158,19 +163,25 @@ namespace MGE.Editor.GUI
 
 		public static void Header(string text) => Add(new Label(text)
 		{
-			Xalign = xAlign.GetValueOnDefualt(0.5f),
+			Xalign = horizontalAlign.GetValueOnDefualt(0.5f),
 			WidthChars = widthInChars.GetValueOnDefualt(-1),
 			MaxWidthChars = maxWidthInChars.GetValueOnDefualt(-1),
 			Ellipsize = ellipsizeMode.GetValueOnDefualt(EllipsizeMode.End),
 		});
 
+		public static void Paragraph(string text)
+		{
+			var textView = new TextView() { Editable = false, WrapMode = Gtk.WrapMode.Word, };
+			textView.Buffer.Text = text;
+			Add(textView);
+		}
+
 		public static void Label(string text) => Add(new Label(text)
 		{
-			Xalign = xAlign.GetValueOnDefualt(0),
-			WidthChars = widthInChars.GetValueOnDefualt(32),
-			MaxWidthChars = maxWidthInChars.GetValueOnDefualt(32),
+			Xalign = horizontalAlign.GetValueOnDefualt(0),
+			WidthChars = widthInChars.GetValueOnDefualt(-1),
+			MaxWidthChars = maxWidthInChars.GetValueOnDefualt(-1),
 			Ellipsize = ellipsizeMode.GetValueOnDefualt(EllipsizeMode.End),
-			TooltipText = text.Length > 32 ? text : null,
 		});
 
 		#region Buttons
@@ -213,7 +224,7 @@ namespace MGE.Editor.GUI
 
 		static Entry MakeEntry(string text, Func<string, string> onTextSubmitted)
 		{
-			var entry = new Entry(text) { Hexpand = true };
+			var entry = new Entry(text) { Hexpand = true, };
 			var originalText = string.Empty;
 
 			// FIXME Select everything when focused
@@ -272,45 +283,7 @@ namespace MGE.Editor.GUI
 				return text;
 			});
 
-			entry.PlaceholderText = placeholderText ?? "Enter Text...";
-
-			Add(entry);
-
-			return events;
-		}
-
-		public static NumberFeildEvents<float> NumberFeild(float number)
-		{
-			var events = new NumberFeildEvents<float>();
-			var entry = MakeEntry(number.ToString(), text =>
-			{
-				var val = 0f;
-				if (!string.IsNullOrEmpty(text))
-					val = (float)Eval(text);
-				events.onSubmitted.Invoke(val);
-				return val.ToString();
-			});
-
-			entry.PlaceholderText = placeholderText ?? "Enter Float...";
-
-			Add(entry);
-
-			return events;
-		}
-
-		public static NumberFeildEvents<double> NumberFeild(double number)
-		{
-			var events = new NumberFeildEvents<double>();
-			var entry = MakeEntry(number.ToString(), text =>
-			{
-				var val = 0d;
-				if (!string.IsNullOrEmpty(text))
-					val = Eval(text);
-				events.onSubmitted.Invoke(val);
-				return val.ToString();
-			});
-
-			entry.PlaceholderText = placeholderText ?? "Enter Double...";
+			entry.PlaceholderText = placeholderText.GetValueOnDefualt("Enter Text...");
 
 			Add(entry);
 
@@ -329,7 +302,45 @@ namespace MGE.Editor.GUI
 				return val.ToString();
 			});
 
-			entry.PlaceholderText = placeholderText ?? "Enter Integer...";
+			entry.PlaceholderText = placeholderText.GetValueOnDefualt();
+
+			Add(entry);
+
+			return events;
+		}
+
+		public static NumberFeildEvents<float> NumberFeild(float number)
+		{
+			var events = new NumberFeildEvents<float>();
+			var entry = MakeEntry(number.ToString(), text =>
+			{
+				var val = 0f;
+				if (!string.IsNullOrEmpty(text))
+					val = (float)Eval(text);
+				events.onSubmitted.Invoke(val);
+				return val.ToString();
+			});
+
+			entry.PlaceholderText = placeholderText.GetValueOnDefualt();
+
+			Add(entry);
+
+			return events;
+		}
+
+		public static NumberFeildEvents<double> NumberFeild(double number)
+		{
+			var events = new NumberFeildEvents<double>();
+			var entry = MakeEntry(number.ToString(), text =>
+			{
+				var val = 0d;
+				if (!string.IsNullOrEmpty(text))
+					val = Eval(text);
+				events.onSubmitted.Invoke(val);
+				return val.ToString();
+			});
+
+			entry.PlaceholderText = placeholderText.GetValueOnDefualt();
 
 			Add(entry);
 
@@ -352,9 +363,16 @@ namespace MGE.Editor.GUI
 
 		#region Layout
 
-		public static void StartHorizontal(int spacing = 0)
+		public static void StartHorizontal(int spacing = 8)
 		{
 			var box = new Box(Orientation.Horizontal, spacing);
+			Add(box);
+			PushContainer(box);
+		}
+
+		public static void StartToolbar()
+		{
+			var box = new Box(Orientation.Horizontal, 4) { Homogeneous = false };
 			Add(box);
 			PushContainer(box);
 		}
@@ -365,22 +383,25 @@ namespace MGE.Editor.GUI
 			{
 				StartHorizontal();
 
+				widthInChars = 24;
+				maxWidthInChars = 24;
+
 				Label(label);
 			}
 			else
 			{
 				Label(label);
 
-				var lb = new ListBox();
-				Add(lb);
-				PushContainer(lb);
+				var box = new Box(Orientation.Vertical, 4);
+				Add(box);
+				PushContainer(box);
 			}
 
 		}
 
 		public static void End() => PopContainer();
 
-		public static void Separator() => Add(isHorizontalContainer ? new VSeparator() : new HSeparator());
+		public static void Separator() => Add(isHorizontal ? new VSeparator() : new HSeparator());
 
 		#endregion
 

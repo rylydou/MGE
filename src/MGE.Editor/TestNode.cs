@@ -2,20 +2,13 @@ namespace MGE.Editor
 {
 	public class TestNode
 	{
-		public float number { get; set; }
-		public int interger { get; set; }
+		public string name { get; set; } = "Name";
 
-		public string text { get; set; } = string.Empty;
-		public string playerDataInJSONFormat { get; set; } = string.Empty;
+		public bool enabled { get; set; }
+		public bool visible { get; set; }
 
-		public bool toggle { get; set; }
-		public bool boolean { get; set; }
-
-		public bool some_camel_case_value { get; set; }
-		public bool some_camel_case_value_for_the_MGE_editor { get; set; }
-
-		public bool a2ndVaribleWith2ManyNumbersInIt { get; set; }
-
-		public bool iHave12345NumbersInMe { get; set; }
+		public Vector2 position { get; set; } = new Vector2();
+		public float rotation { get; set; }
+		public Vector2 scale { get; set; } = new Vector2();
 	}
 }

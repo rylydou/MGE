@@ -17,7 +17,7 @@ namespace MGE.Editor
 			// the Cairo context, and the contents have been cleared to the
 			// widget's background color.
 
-			Gdk.Rectangle alloc = Allocation;
+			var alloc = Allocation;
 			// Start redrawing the Checkerboard
 			xcount = 0;
 			i = Spacing;
@@ -45,6 +45,7 @@ namespace MGE.Editor
 			cr.SelectFontFace("Segoe UI Semibold", FontSlant.Normal, FontWeight.Normal);
 
 			cr.MoveTo(32, 32);
+			cr.SetFontSize(4);
 			cr.ShowText("Hello World");
 
 			// return true because we've handled this event, so no

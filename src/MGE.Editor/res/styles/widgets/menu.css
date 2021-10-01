@@ -1,44 +1,40 @@
 menu {
 	padding: 4px;
+	border-radius: 4px;
 }
 
-menubar > menuitem {
-	margin: 8px 0;
-	padding: 0 6px;
-}
-
-menubar menuitem:hover {
-	background-color: @selection-background;
-	border-radius: 3px;
-}
-
-menubar menuitem:hover > label {
-	color: @selection-color;
-}
-
-menu menuitem {
+menuitem {
 	padding: 4px 0;
 	color: @text;
-	border-radius: 3px;
+	border-radius: 4px;
 }
 
-menu menuitem label {
+menuitem > * {
 	color: @text;
 }
 
-menu menuitem:hover {
+menuitem > check {
+	color: @accent;
+}
+
+menuitem:hover {
 	background-color: @selection-background;
 }
 
-menu menuitem:hover * {
+menuitem:hover > * {
 	color: @selection-color;
 }
 
-menu menuitem:disabled * {
+menuitem:disabled > * {
 	color: @text-dark;
 }
 
 menuitem check,
 menuitem arrow {
 	margin: 0 4px;
+}
+
+menubar > menuitem {
+	margin: 8px 0;
+	padding: 0 6px;
 }

@@ -40,12 +40,5 @@ namespace MGE.Editor
 
 		public static explicit operator T(Optional<T> optional) => optional._value!;
 		public static implicit operator Optional<T>(T value) => new Optional<T>(value);
-
-		public override bool Equals(object? obj) => obj is Optional<T> op ? Equals(op) : false;
-		public bool Equals(Optional<T> other)
-		{
-			if (isSet && other.isSet) return object.Equals(value, other.value);
-			else return isSet == other.isSet;
-		}
 	}
 }

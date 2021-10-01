@@ -3,15 +3,21 @@ checkbutton {
 }
 
 checkbutton:active {
-	background-color: @accent;
+	background-color: @selection-background;
 
-	transition: background-color 50ms;
+	transition: background-color 0;
 }
 
 checkbutton check {
 	-gtk-icon-transform: scale(0) rotate(-10deg);
 
-	transition: -gtk-icon-transform 50ms;
+	transition: color 100ms, -gtk-icon-transform 50ms;
+}
+
+checkbutton:active check {
+	color: @selection-color;
+
+	transition: color 0;
 }
 
 checkbutton:checked check {

@@ -10,13 +10,18 @@ namespace MGE.Editor.GUI.Windows
 
 		protected override void Update()
 		{
-			EditorGUI.StartHorizontal();
+			EditorGUI.StartToolbar();
 
-			EditorGUI.Header("TODO Toolbar");
+			EditorGUI.horizontalExpand = false;
+			EditorGUI.Button("Move");
+			EditorGUI.horizontalExpand = false;
+			EditorGUI.Button("Rotate");
+			EditorGUI.horizontalExpand = false;
+			EditorGUI.Button("Scale");
 
 			EditorGUI.End();
 
-			EditorGUI.yExpand = true;
+			EditorGUI.verticalExpand = true;
 			EditorGUI.Add(sceneViewport);
 		}
 	}

@@ -1,6 +1,25 @@
-button.active {
-	color: @selection-color;
+button:not(.titlebutton) {
+	min-height: 18px;
+	margin-bottom: 2px;
+	box-shadow: 0 1px 1px 0 alpha(black, 0.1);
+
+	transition: background-color 250ms;
+}
+
+button label {
+	transition: color 250ms;
+}
+
+button:not(.titlebutton):active {
 	background-color: @selection-background;
+
+	transition: background-color 0;
+}
+
+button:active label {
+	color: @selection-color;
+
+	transition: color 0;
 }
 
 @import url("checkbutton.css");

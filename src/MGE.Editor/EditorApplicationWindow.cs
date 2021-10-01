@@ -1,14 +1,15 @@
 using System;
 using Gtk;
+using MGE.Editor.GUI.Widgets;
 using MGE.Editor.GUI.Windows;
 
 namespace MGE.Editor
 {
-	class MainWindow : Gtk.Window
+	class EditorApplicationWindow : Gtk.Window
 	{
 		CssProvider styleProvider;
 
-		public MainWindow() : base("MGE EDITOR")
+		public EditorApplicationWindow() : base("MGE EDITOR")
 		{
 			SetPosition(WindowPosition.Center);
 			SetDefaultSize(1280, 720);
@@ -61,7 +62,11 @@ namespace MGE.Editor
 			filemenu.Append(new MenuItem("Backups..."));
 			filemenu.Append(new SeparatorMenuItem());
 			var exit = new MenuItem("Exit...");
-			exit.Activated += (sender, args) => Application.Quit();
+			exit.Activated += (sender, args) =>
+			{
+				// new Model("Are you sure you want to quit?", "Are you sure you want to quit?", new ModelButton());
+				Application.Quit();
+			};
 			filemenu.Append(exit);
 			menubar.Append(file);
 

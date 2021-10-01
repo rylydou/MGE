@@ -13,7 +13,7 @@ namespace MGE.Editor
 			{
 				Application.Init();
 
-				var win = new MainWindow();
+				var win = new EditorApplicationWindow();
 				win.ShowAll();
 
 				Application.Run();
