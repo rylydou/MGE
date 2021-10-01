@@ -2,7 +2,7 @@ namespace MGE.Editor.GUI.Windows
 {
 	public class SceneWindow : EditorWindow
 	{
-		SceneViewport sceneViewport = new SceneViewport() { Hexpand = true, Vexpand = true };
+		SceneViewport sceneViewport = new SceneViewport();
 
 		public SceneWindow() : base("Scene")
 		{
@@ -16,6 +16,7 @@ namespace MGE.Editor.GUI.Windows
 
 			EditorGUI.End();
 
+			EditorGUI.yExpand = true;
 			EditorGUI.Add(sceneViewport);
 		}
 	}

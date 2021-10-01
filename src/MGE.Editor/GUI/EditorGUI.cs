@@ -63,33 +63,33 @@ namespace MGE.Editor.GUI
 
 		#region Properties
 
-		public static bool? sensitive;
-		public static string? tooltip;
-		public static int? width;
-		public static int? height;
-		public static bool? xExpand;
-		public static bool? yExpand;
+		public static Optional<bool> sensitive = new();
+		public static Optional<string?> tooltip = new();
+		public static Optional<int> width = new();
+		public static Optional<int> height = new();
+		public static Optional<bool> xExpand = new();
+		public static Optional<bool> yExpand = new();
 
-		public static float? xAlign;
-		public static int? widthInChars;
-		public static int? maxWidthInChars;
-		public static EllipsizeMode? ellipsizeMode;
+		public static Optional<float> xAlign = new();
+		public static Optional<int> widthInChars = new();
+		public static Optional<int> maxWidthInChars = new();
+		public static Optional<EllipsizeMode> ellipsizeMode = new();
 
 		public static string? placeholderText;
 
 		static void ResetProperties()
 		{
-			sensitive = null;
-			tooltip = null;
-			width = null;
-			height = null;
-			xExpand = null;
-			yExpand = null;
+			sensitive.Unset();
+			tooltip.Unset();
+			width.Unset();
+			height.Unset();
+			xExpand.Unset();
+			yExpand.Unset();
 
-			xAlign = null;
-			widthInChars = null;
-			maxWidthInChars = null;
-			ellipsizeMode = null;
+			xAlign.Unset();
+			widthInChars.Unset();
+			maxWidthInChars.Unset();
+			ellipsizeMode.Unset();
 
 			placeholderText = null;
 		}
@@ -133,12 +133,11 @@ namespace MGE.Editor.GUI
 
 		public static Widget Add(Widget widget)
 		{
-			widget.Sensitive = sensitive ?? true;
-			widget.TooltipText = tooltip;
-			if (width.HasValue) widget.WidthRequest = width.Value;
-			if (height.HasValue) widget.HeightRequest = height.Value;
-			widget.Hexpand = xExpand ?? true;
-			widget.Vexpand = yExpand ?? false;
+			sensitive.TrySetValue(value => widget.Sensitive = value);
+			tooltip.TrySetValue(value => widget.TooltipText = value);
+			width.TrySetValue(value => widget.WidthRequest = value);
+			xExpand.TrySetValue(value => widget.Hexpand = value);
+			yExpand.TrySetValue(value => widget.Vexpand = value);
 
 			container.Add(widget);
 
@@ -151,26 +150,26 @@ namespace MGE.Editor.GUI
 
 		public static void Text(string text) => Add(new Label(text)
 		{
-			Xalign = xAlign ?? 0.0f,
-			WidthChars = widthInChars ?? -1,
-			MaxWidthChars = maxWidthInChars ?? -1,
-			Ellipsize = ellipsizeMode ?? EllipsizeMode.End,
+			Xalign = xAlign.GetValueOnDefualt(0),
+			WidthChars = widthInChars.GetValueOnDefualt(-1),
+			MaxWidthChars = maxWidthInChars.GetValueOnDefualt(-1),
+			Ellipsize = ellipsizeMode.GetValueOnDefualt(EllipsizeMode.End),
 		});
 
 		public static void Header(string text) => Add(new Label(text)
 		{
-			Xalign = xAlign ?? 0.5f,
-			WidthChars = widthInChars ?? -1,
-			MaxWidthChars = maxWidthInChars ?? -1,
-			Ellipsize = ellipsizeMode ?? EllipsizeMode.End,
+			Xalign = xAlign.GetValueOnDefualt(0.5f),
+			WidthChars = widthInChars.GetValueOnDefualt(-1),
+			MaxWidthChars = maxWidthInChars.GetValueOnDefualt(-1),
+			Ellipsize = ellipsizeMode.GetValueOnDefualt(EllipsizeMode.End),
 		});
 
 		public static void Label(string text) => Add(new Label(text)
 		{
-			Xalign = xAlign ?? 0.0f,
-			WidthChars = widthInChars ?? 24,
-			MaxWidthChars = maxWidthInChars ?? 24,
-			Ellipsize = ellipsizeMode ?? EllipsizeMode.End,
+			Xalign = xAlign.GetValueOnDefualt(0),
+			WidthChars = widthInChars.GetValueOnDefualt(32),
+			MaxWidthChars = maxWidthInChars.GetValueOnDefualt(32),
+			Ellipsize = ellipsizeMode.GetValueOnDefualt(EllipsizeMode.End),
 			TooltipText = text.Length > 32 ? text : null,
 		});
 
@@ -178,10 +177,7 @@ namespace MGE.Editor.GUI
 
 		public static ButtonEvents Button(string text)
 		{
-			var button = new Button(text)
-			{
-				Hexpand = true,
-			};
+			var button = new Button(text) { Hexpand = true };
 			Add(button);
 
 			var events = new ButtonEvents();
@@ -199,9 +195,11 @@ namespace MGE.Editor.GUI
 			return events;
 		}
 
-		public static ToggleEvents Checkbox(bool value)
+		public static ToggleEvents Checkbox(bool? value)
 		{
-			var button = new CheckButton() { Active = value };
+			var button = new CheckButton();
+			if (value.HasValue) button.Active = value.Value;
+			else button.Inconsistent = true;
 			Add(button);
 
 			var events = new ToggleEvents();

@@ -34,3 +34,6 @@ selection {
 @import url("widgets.css");
 
 @import url("important.css");
+
+/* MINI MODE */
+@import url("minimode.css");

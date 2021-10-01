@@ -1,0 +1,28 @@
+* {
+	font-size: 12px;
+}
+
+notebook stack {
+	padding: 8px;
+}
+
+button,
+checkbutton,
+entry {
+	padding: 4px;
+	border-width: 1px;
+	border-radius: 3px;
+	/* box-shadow: 0 1px 2px 0 alpha(black, 0.1); */
+}
+
+entry {
+	padding: 0 6px;
+}
+
+tab {
+	padding: 0 8px;
+}
+
+undershoot.left {
+	background: none;
+}

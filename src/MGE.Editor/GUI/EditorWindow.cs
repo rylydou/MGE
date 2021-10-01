@@ -7,34 +7,34 @@ namespace MGE.Editor.GUI
 		public string title;
 
 		public ScrolledWindow root;
-		public ListBox listBox;
+		public Box content;
 
 		protected EditorWindow(string title)
 		{
 			this.title = title;
 
 			root = new ScrolledWindow();
-			listBox = new ListBox();
-			root.Add(listBox);
+			content = new Box(Orientation.Vertical, 4);
+			root.Add(content);
 
 			DoUpdate();
 		}
 
 		internal virtual void DoUpdate()
 		{
-			var children = listBox.Children;
+			var children = content.Children;
 			foreach (var child in children)
 			{
-				listBox.Remove(child);
+				content.Remove(child);
 			}
 
-			EditorGUI.PushContainer(listBox);
+			EditorGUI.PushContainer(content);
 
 			Update();
 
 			EditorGUI.PopContainer();
 
-			listBox.ShowAll();
+			content.ShowAll();
 		}
 
 		protected virtual void Update()

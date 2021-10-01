@@ -7,16 +7,9 @@ window:not(.popup) decoration {
   border: 8px solid alpha(@base, 0.01);
 }
 
-headerbar button.titlebutton {
-	margin: 0;
-	padding: 0.5rem;
-	min-height: 32px;
-	min-width: 24px;
-}
-
 headerbar {
 	background-color: @base;
-	padding-left: 1rem;
+	padding-left: 12px;
 	min-height: 0;
 	border-top: solid 2px @accent;
 
@@ -33,6 +26,11 @@ window.maximized headerbar,
 window.fullscreen headerbar,
 window.tiled headerbar {
 	border-top: none;
+}
+
+headerbar button.titlebutton {
+	min-height: 32px;
+	min-width: 32px;
 }
 
 headerbar * {

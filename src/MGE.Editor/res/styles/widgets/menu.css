@@ -1,26 +1,25 @@
-menubar menuitem {
+menu {
+	padding: 4px;
+}
+
+menubar > menuitem {
+	margin: 8px 0;
 	padding: 0 6px;
 }
 
+menubar menuitem:hover {
+	background-color: @selection-background;
+	border-radius: 3px;
+}
+
 menubar menuitem:hover > label {
-	color: @accent;
+	color: @selection-color;
 }
 
 menu menuitem {
-	padding: 2px 0;
+	padding: 4px 0;
 	color: @text;
-}
-
-menu menuitem:first-child {
-	padding-top: 3px;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
-}
-
-menu menuitem:last-child {
-	padding-bottom: 3px;
-	border-bottom-left-radius: 3px;
-	border-bottom-right-radius: 3px;
+	border-radius: 3px;
 }
 
 menu menuitem label {
@@ -31,18 +30,15 @@ menu menuitem:hover {
 	background-color: @selection-background;
 }
 
-menu menuitem:hover label {
+menu menuitem:hover * {
 	color: @selection-color;
 }
 
-menu menuitem:hover check {
-	color: @selection-color;
-}
-
-menu menuitem:disabled label {
+menu menuitem:disabled * {
 	color: @text-dark;
 }
 
-menuitem check {
+menuitem check,
+menuitem arrow {
 	margin: 0 4px;
 }
