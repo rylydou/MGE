@@ -10,13 +10,10 @@ namespace MGE.Editor.GUI.Windows
 
 		protected override void Update()
 		{
-			EditorGUI.StartToolbar();
+			EditorGUI.StartHorizontal(homogeneous: false);
 
-			EditorGUI.horizontalExpand = false;
 			EditorGUI.Button("Move");
-			EditorGUI.horizontalExpand = false;
 			EditorGUI.Button("Rotate");
-			EditorGUI.horizontalExpand = false;
 			EditorGUI.Button("Scale");
 
 			EditorGUI.End();

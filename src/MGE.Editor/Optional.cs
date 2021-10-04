@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MGE.Editor
 {
@@ -29,13 +30,46 @@ namespace MGE.Editor
 
 		public void Unset() => this.isSet = false;
 
-		public T? GetValueOnDefualt() => isSet ? _value : (T?)default;
-		public T GetValueOnDefualt(T defualt) => isSet ? _value! : defualt;
-		public T GetValueOnDefualt(Func<T> defualt) => isSet ? _value! : defualt.Invoke();
-
-		public void TrySetValue(Action<T> setValue)
+		public T? TryGetValue() => isSet ? _value : default(T?);
+		public T TryGetValue(T defualt) => isSet ? _value! : defualt;
+		public T TryGetValue(Func<T> defualt) => isSet ? _value! : defualt.Invoke();
+		public bool TryGetValue([NotNullWhen(true)] out T value)
 		{
-			if (isSet) setValue.Invoke(_value!);
+			if (isSet)
+			{
+				value = this._value!;
+				return true;
+			}
+			value = default(T)!;
+			return false;
+		}
+		public bool TryGetValue(Action<T> hasValue)
+		{
+			if (isSet)
+			{
+				hasValue.Invoke(_value!);
+				return true;
+			}
+			return false;
+		}
+
+		public bool SetIfUnset(T value)
+		{
+			if (isUnset)
+			{
+				Set(value);
+				return true;
+			}
+			return false;
+		}
+		public bool SetIfUnset(Func<T> getValue)
+		{
+			if (isUnset)
+			{
+				Set(getValue.Invoke());
+				return true;
+			}
+			return false;
 		}
 
 		public static explicit operator T(Optional<T> optional) => optional._value!;

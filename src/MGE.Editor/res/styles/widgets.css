@@ -3,14 +3,13 @@ checkbutton,
 entry {
 	padding: 4px;
 	background-color: @element;
-	border: solid 2px @element;
-	border-radius: 4px;
-	/* box-shadow: 0 1px 1px 0 alpha(black, 0.1), 0 -1px 1px 0 alpha(white, 0.075); */
+	border: solid 1px @element;
+	border-radius: 3px;
 }
 
-button:hover,
-checkbutton:hover,
-entry:focus {
+button:hover, button:focus,
+checkbutton:hover, checkbutton:focus,
+entry:hover /* Why doesn't this work */, entry:focus {
 	border-color: @accent;
 }
 

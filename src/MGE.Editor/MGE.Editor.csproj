@@ -16,12 +16,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\OpenGLTest\OpenGLTest.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="GtkSharp" Version="3.24.24.*" />
-		<PackageReference Include="MonoGame.Framework.Gtk" Version="3.8.0.5" />
+		<PackageReference Include="GtkSharp" Version="3.24.24.34" />
 	</ItemGroup>
 
 </Project>

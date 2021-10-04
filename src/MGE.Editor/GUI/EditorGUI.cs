@@ -131,17 +131,17 @@ namespace MGE.Editor.GUI
 
 		public static Widget Add(Widget widget)
 		{
-			sensitive.TrySetValue(value => widget.Sensitive = value);
-			tooltip.TrySetValue(value => widget.TooltipText = value);
-			width.TrySetValue(value => widget.WidthRequest = value);
-			horizontalExpand.TrySetValue(value => widget.Hexpand = value);
-			verticalExpand.TrySetValue(value => widget.Vexpand = value);
+			sensitive.TryGetValue(value => widget.Sensitive = value);
+			tooltip.TryGetValue(value => widget.TooltipText = value);
+			width.TryGetValue(value => widget.WidthRequest = value);
+			horizontalExpand.TryGetValue(value => widget.Hexpand = value);
+			verticalExpand.TryGetValue(value => widget.Vexpand = value);
 
-			margin.TrySetValue(value => widget.Margin = value);
-			marginTop.TrySetValue(value => widget.MarginTop = value);
-			marginBottom.TrySetValue(value => widget.MarginBottom = value);
-			marginStart.TrySetValue(value => widget.MarginStart = value);
-			marginEnd.TrySetValue(value => widget.MarginEnd = value);
+			margin.TryGetValue(value => widget.Margin = value);
+			marginTop.TryGetValue(value => widget.MarginTop = value);
+			marginBottom.TryGetValue(value => widget.MarginBottom = value);
+			marginStart.TryGetValue(value => widget.MarginStart = value);
+			marginEnd.TryGetValue(value => widget.MarginEnd = value);
 
 			container.Add(widget);
 
@@ -154,18 +154,18 @@ namespace MGE.Editor.GUI
 
 		public static void Text(string text) => Add(new Label(text)
 		{
-			Xalign = horizontalAlign.GetValueOnDefualt(0),
-			WidthChars = widthInChars.GetValueOnDefualt(-1),
-			MaxWidthChars = maxWidthInChars.GetValueOnDefualt(-1),
-			Ellipsize = ellipsizeMode.GetValueOnDefualt(EllipsizeMode.End),
+			Xalign = horizontalAlign.TryGetValue(0),
+			WidthChars = widthInChars.TryGetValue(-1),
+			MaxWidthChars = maxWidthInChars.TryGetValue(-1),
+			Ellipsize = ellipsizeMode.TryGetValue(EllipsizeMode.End),
 		});
 
 		public static void Header(string text) => Add(new Label(text)
 		{
-			Xalign = horizontalAlign.GetValueOnDefualt(0.5f),
-			WidthChars = widthInChars.GetValueOnDefualt(-1),
-			MaxWidthChars = maxWidthInChars.GetValueOnDefualt(-1),
-			Ellipsize = ellipsizeMode.GetValueOnDefualt(EllipsizeMode.End),
+			Xalign = horizontalAlign.TryGetValue(0.5f),
+			WidthChars = widthInChars.TryGetValue(-1),
+			MaxWidthChars = maxWidthInChars.TryGetValue(-1),
+			Ellipsize = ellipsizeMode.TryGetValue(EllipsizeMode.End),
 		});
 
 		public static void Paragraph(string text)
@@ -177,10 +177,10 @@ namespace MGE.Editor.GUI
 
 		public static void Label(string text) => Add(new Label(text)
 		{
-			Xalign = horizontalAlign.GetValueOnDefualt(0),
-			WidthChars = widthInChars.GetValueOnDefualt(-1),
-			MaxWidthChars = maxWidthInChars.GetValueOnDefualt(-1),
-			Ellipsize = ellipsizeMode.GetValueOnDefualt(EllipsizeMode.End),
+			Xalign = horizontalAlign.TryGetValue(0),
+			WidthChars = widthInChars.TryGetValue(-1),
+			MaxWidthChars = maxWidthInChars.TryGetValue(-1),
+			Ellipsize = ellipsizeMode.TryGetValue(EllipsizeMode.End),
 		});
 
 		#region Buttons
@@ -282,7 +282,7 @@ namespace MGE.Editor.GUI
 				return text;
 			});
 
-			entry.PlaceholderText = placeholderText.GetValueOnDefualt("Enter Text...");
+			entry.PlaceholderText = placeholderText.TryGetValue("Enter Text...");
 
 			Add(entry);
 
@@ -301,7 +301,7 @@ namespace MGE.Editor.GUI
 				return val.ToString();
 			});
 
-			entry.PlaceholderText = placeholderText.GetValueOnDefualt();
+			entry.PlaceholderText = placeholderText.TryGetValue();
 
 			Add(entry);
 
@@ -320,7 +320,7 @@ namespace MGE.Editor.GUI
 				return val.ToString();
 			});
 
-			entry.PlaceholderText = placeholderText.GetValueOnDefualt();
+			entry.PlaceholderText = placeholderText.TryGetValue();
 
 			Add(entry);
 
@@ -339,7 +339,7 @@ namespace MGE.Editor.GUI
 				return val.ToString();
 			});
 
-			entry.PlaceholderText = placeholderText.GetValueOnDefualt();
+			entry.PlaceholderText = placeholderText.TryGetValue();
 
 			Add(entry);
 
@@ -362,16 +362,9 @@ namespace MGE.Editor.GUI
 
 		#region Layout
 
-		public static void StartHorizontal(int spacing = 4)
+		public static void StartHorizontal(int spacing = 4, bool homogeneous = true)
 		{
-			var box = new Box(Orientation.Horizontal, spacing);
-			Add(box);
-			PushContainer(box);
-		}
-
-		public static void StartToolbar()
-		{
-			var box = new Box(Orientation.Horizontal, 4) { Homogeneous = false };
+			var box = new Box(Orientation.Horizontal, spacing) { Homogeneous = homogeneous };
 			Add(box);
 			PushContainer(box);
 		}
@@ -384,6 +377,8 @@ namespace MGE.Editor.GUI
 
 				widthInChars = 18;
 				maxWidthInChars = 18;
+
+				tooltip.SetIfUnset("label");
 
 				Label(label);
 			}

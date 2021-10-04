@@ -17,7 +17,7 @@
 		/* Fallback */ Arial
 	;
 
-	font-size: 14px;
+	font-size: 12px;
 
 	transition: opacity 100ms;
 	caret-color: @accent;
@@ -34,6 +34,3 @@ selection {
 @import url("widgets.css");
 
 @import url("important.css");
-
-/* MINI MODE */
-@import url("minimode.css");
