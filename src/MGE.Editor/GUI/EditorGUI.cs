@@ -99,7 +99,6 @@ namespace MGE.Editor.GUI
 				return _container;
 			}
 		}
-
 		public static bool isHorizontal { get; private set; }
 
 		public static void PushContainer(Container container)
@@ -224,7 +223,7 @@ namespace MGE.Editor.GUI
 
 		static Entry MakeEntry(string text, Func<string, string> onTextSubmitted)
 		{
-			var entry = new Entry(text) { Hexpand = true, };
+			var entry = new Entry(text) { Hexpand = true, WidthRequest = 0, WidthChars = 0, MaxWidthChars = 0, };
 			var originalText = string.Empty;
 
 			// FIXME Select everything when focused
@@ -363,7 +362,7 @@ namespace MGE.Editor.GUI
 
 		#region Layout
 
-		public static void StartHorizontal(int spacing = 8)
+		public static void StartHorizontal(int spacing = 4)
 		{
 			var box = new Box(Orientation.Horizontal, spacing);
 			Add(box);
@@ -383,8 +382,8 @@ namespace MGE.Editor.GUI
 			{
 				StartHorizontal();
 
-				widthInChars = 24;
-				maxWidthInChars = 24;
+				widthInChars = 18;
+				maxWidthInChars = 18;
 
 				Label(label);
 			}
@@ -405,6 +404,6 @@ namespace MGE.Editor.GUI
 
 		#endregion
 
-		static double Eval(string expr) => ExpressionParser.Parse(expr).Eval(_dictionaryContext);
+		static double Eval(string expression) => ExpressionParser.Parse(expression).Eval(_dictionaryContext);
 	}
 }

@@ -5,7 +5,7 @@ entry {
 	background-color: @element;
 	border: solid 2px @element;
 	border-radius: 4px;
-	/* box-shadow: 0 1px 2px 0 alpha(black, 0.1); */
+	/* box-shadow: 0 1px 1px 0 alpha(black, 0.1), 0 -1px 1px 0 alpha(white, 0.075); */
 }
 
 button:hover,
@@ -14,10 +14,15 @@ entry:focus {
 	border-color: @accent;
 }
 
-@import url("widgets/buttons.css");
-@import url("widgets/entry.css");
-@import url("widgets/menu.css");
-@import url("widgets/popovers.css");
-@import url("widgets/scrollbar.css");
 @import url("widgets/separator.css");
+@import url("widgets/scrollbar.css");
+
+@import url("widgets/button.css");
+@import url("widgets/checkbutton.css");
+
+@import url("widgets/entry.css");
+
+@import url("widgets/combobox.css");
+@import url("widgets/popovers.css");
 @import url("widgets/tooltip.css");
+@import url("widgets/menu.css");

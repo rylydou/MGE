@@ -289,7 +289,6 @@ namespace MGE
 			result.m42 = matrix1.m42 + matrix2.m42;
 			result.m43 = matrix1.m43 + matrix2.m43;
 			result.m44 = matrix1.m44 + matrix2.m44;
-
 		}
 
 		// TODO

@@ -26,6 +26,6 @@ checkbutton:checked check {
 	transition: -gtk-icon-transform 250ms cubic-bezier(0, 2, 0.25, 1);
 }
 
-check {
+checkbutton check {
 	color: @accent;
 }

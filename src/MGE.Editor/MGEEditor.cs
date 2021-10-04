@@ -1,16 +1,23 @@
 using System;
 using Gtk;
-using MGE.Editor.GUI.Widgets;
+using MGE.Editor.GUI;
 using MGE.Editor.GUI.Windows;
 
 namespace MGE.Editor
 {
-	class EditorApplicationWindow : Gtk.Window
+	class MGEEditor : Gtk.Window
 	{
+		public static MGEEditor current { get { if (_current is null) throw new NullReferenceException("_current is null"); return _current; } }
+		static MGEEditor? _current;
+
 		CssProvider styleProvider;
 
-		public EditorApplicationWindow() : base("MGE EDITOR")
+		public MGEEditor() : base("MGE EDITOR")
 		{
+			if (_current is not null) throw new Exception($"A {nameof(MGEEditor)} instance already exists");
+
+			_current = this;
+
 			SetPosition(WindowPosition.Center);
 			SetDefaultSize(1280, 720);
 
@@ -21,6 +28,9 @@ namespace MGE.Editor
 
 			var hierarchy = new HierarchyWindow();
 			left.AppendPage(hierarchy.root, new Label(hierarchy.title));
+
+			var console = new ConsoleWindow();
+			left.AppendPage(console.root, new Label(console.title));
 
 			var right = new Notebook();
 
@@ -62,11 +72,8 @@ namespace MGE.Editor
 			filemenu.Append(new MenuItem("Backups..."));
 			filemenu.Append(new SeparatorMenuItem());
 			var exit = new MenuItem("Exit...");
-			exit.Activated += (sender, args) =>
-			{
-				// new Model("Are you sure you want to quit?", "Are you sure you want to quit?", new ModelButton());
-				Application.Quit();
-			};
+			exit.Activated += (sender, args) => Application.Quit();
+
 			filemenu.Append(exit);
 			menubar.Append(file);
 

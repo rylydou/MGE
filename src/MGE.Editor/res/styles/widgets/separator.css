@@ -1,9 +1,5 @@
-separator {
+separator:not(.wide) {
 	background-color: @element;
 	margin: 4px;
 	border-radius: 4px;
-}
-
-separator.wide {
-	margin: 2px;
 }

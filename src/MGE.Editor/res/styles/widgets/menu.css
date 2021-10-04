@@ -17,6 +17,16 @@ menuitem > check {
 	color: @accent;
 }
 
+menuitem check,
+menuitem arrow {
+	margin: 0 4px;
+}
+
+menubar > menuitem {
+	margin: 8px 0;
+	padding: 0 6px;
+}
+
 menuitem:hover {
 	background-color: @selection-background;
 }
@@ -27,14 +37,4 @@ menuitem:hover > * {
 
 menuitem:disabled > * {
 	color: @text-dark;
-}
-
-menuitem check,
-menuitem arrow {
-	margin: 0 4px;
-}
-
-menubar > menuitem {
-	margin: 8px 0;
-	padding: 0 6px;
 }

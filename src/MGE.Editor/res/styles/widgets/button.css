@@ -21,6 +21,3 @@ button:active label {
 
 	transition: color 0;
 }
-
-@import url("checkbutton.css");
-@import url("combobox.css");
