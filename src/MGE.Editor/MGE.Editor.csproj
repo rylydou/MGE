@@ -17,6 +17,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="GtkSharp" Version="3.24.24.34" />
+		<PackageReference Include="OpenTK" Version="4.6.7" />
 	</ItemGroup>
 
 </Project>

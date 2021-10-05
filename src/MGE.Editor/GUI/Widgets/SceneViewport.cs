@@ -4,7 +4,7 @@ using Gdk;
 using Gtk;
 using Key = Gdk.Key;
 
-namespace MGE.Editor
+namespace MGE.Editor.GUI.Widgets
 {
 	public class SceneViewport : DrawingArea
 	{

@@ -362,7 +362,7 @@ namespace MGE.Editor.GUI
 
 		#region Layout
 
-		public static void StartHorizontal(int spacing = 4, bool homogeneous = true)
+		public static void StartHorizontal(int spacing = 4, bool homogeneous = false)
 		{
 			var box = new Box(Orientation.Horizontal, spacing) { Homogeneous = homogeneous };
 			Add(box);
@@ -375,10 +375,10 @@ namespace MGE.Editor.GUI
 			{
 				StartHorizontal();
 
-				widthInChars = 18;
-				maxWidthInChars = 18;
+				widthInChars.SetIfUnset(18);
+				maxWidthInChars.SetIfUnset(18);
 
-				tooltip.SetIfUnset("label");
+				tooltip.SetIfUnset(label);
 
 				Label(label);
 			}

@@ -1,3 +1,5 @@
+using MGE.Editor.GUI.Widgets;
+
 namespace MGE.Editor.GUI.Windows
 {
 	public class SceneWindow : EditorWindow
