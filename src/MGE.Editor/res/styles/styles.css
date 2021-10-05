@@ -13,10 +13,11 @@
 	font-family:
 		/* Windows */  Segoe UI Semibold,
 		/* Lunix */    Ubuntu,
-		/* Mac */      Helvetica Neue Bold, San Francisco Semibold,
+		/* Mac */      Helvetica Neue, San Francisco,
 		/* Fallback */ Arial
 	;
 
+	font-weight: bold;
 	font-size: 12px;
 
 	transition: opacity 100ms;

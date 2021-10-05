@@ -10,5 +10,15 @@ namespace MGE.Editor
 		public Vector2 position { get; set; } = new Vector2();
 		public float rotation { get; set; }
 		public Vector2 scale { get; set; } = new Vector2();
+
+		public Direction direction { get; set; }
+	}
+
+	public enum Direction
+	{
+		Up,
+		Down,
+		Left,
+		Right,
 	}
 }

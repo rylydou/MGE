@@ -12,14 +12,6 @@ namespace MGE.Editor.GUI.Windows
 
 		protected override void Update()
 		{
-			EditorGUI.StartHorizontal(homogeneous: false);
-
-			EditorGUI.Button("Move");
-			EditorGUI.Button("Rotate");
-			EditorGUI.Button("Scale");
-
-			EditorGUI.End();
-
 			EditorGUI.verticalExpand = true;
 			EditorGUI.Add(sceneViewport);
 		}

@@ -7,37 +7,42 @@ namespace MGE.Editor.GUI.Windows
 {
 	public class ConsoleWindow : EditorWindow
 	{
+		class TextBufferWriter : TextWriter
+		{
+			public override Encoding Encoding => Encoding.Default;
+
+			public readonly TextBuffer buffer;
+
+			public TextBufferWriter(TextBuffer buffer)
+			{
+				this.buffer = buffer;
+			}
+
+			public override void Write(char[]? buffer)
+			{
+				if (buffer is null) return;
+
+				var iter = this.buffer.EndIter;
+				this.buffer.Insert(ref iter, new string(buffer));
+			}
+		}
+
 		public ConsoleWindow() : base("Console")
 		{
 		}
 
 		protected override void Update()
 		{
-			var logTextView = new TextView();
+			var logTextView = new TextView() { Editable = false, };
 
-			var writer = new Writer(logTextView.Buffer);
+			var tw = new TextBufferWriter(logTextView.Buffer);
 
-			Console.SetOut(writer);
+			// Console.SetOut(tw);
+
+			EditorGUI.Header("General");
 
 			EditorGUI.Add(logTextView);
-		}
-	}
 
-	public class Writer : TextWriter
-	{
-		public override Encoding Encoding => Encoding.Default;
-
-		public readonly TextBuffer buffer;
-
-		public Writer(TextBuffer buffer)
-		{
-			this.buffer = buffer;
-		}
-
-		public override void Write(char[]? buffer)
-		{
-			var iter = new TextIter();
-			this.buffer.Insert(ref iter, buffer?.ToString());
 		}
 	}
 }

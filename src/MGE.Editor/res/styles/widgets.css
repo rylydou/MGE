@@ -4,7 +4,7 @@ entry {
 	padding: 4px;
 	background-color: @element;
 	border: solid 1px @element;
-	border-radius: 3px;
+	border-radius: 4px;
 }
 
 button:hover, button:focus,

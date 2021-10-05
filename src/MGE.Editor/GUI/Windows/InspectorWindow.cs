@@ -16,7 +16,7 @@ namespace MGE.Editor.GUI.Windows
 			}
 
 			var propDrawer = Editor.GetPropDrawer(Editor.selectedObject.GetType());
-			propDrawer.DrawProp(Editor.selectedObject, val => DoUpdate());
+			propDrawer.DrawProp(Editor.selectedObject, val => { });
 		}
 	}
 }

@@ -10,6 +10,9 @@ namespace MGE.Editor
 		public static MGEEditor current { get { if (_current is null) throw new NullReferenceException("_current is null"); return _current; } }
 		static MGEEditor? _current;
 
+		public MenuBar menubar;
+		public Box statusbar;
+
 		CssProvider styleProvider;
 
 		public MGEEditor() : base("MGE EDITOR")
@@ -57,7 +60,27 @@ namespace MGE.Editor
 
 			Add(leftLayout);
 
-			var menubar = new MenuBar();
+			MakeMenubar();
+
+			MakeStatusbar();
+
+			var titleBar = new HeaderBar() { ShowCloseButton = true, Title = "MGE Editor", };
+
+			titleBar.Add(new Image("res/images/icons/icon.svg"));
+			titleBar.Add(menubar);
+
+			Titlebar = titleBar;
+
+			styleProvider = new CssProvider();
+
+			ReloadStyles();
+
+			StyleContext.AddProviderForScreen(Screen, styleProvider, int.MaxValue);
+		}
+
+		void MakeMenubar()
+		{
+			menubar = new MenuBar();
 
 			var filemenu = new Menu();
 			var file = new MenuItem("File");
@@ -159,19 +182,17 @@ namespace MGE.Editor
 			helpmenu.Append(new MenuItem("Copy Debug Info"));
 			helpmenu.Append(new MenuItem("About..."));
 			menubar.Append(help);
+		}
 
-			var titleBar = new HeaderBar() { ShowCloseButton = true, Title = "MGE Editor", };
+		void MakeStatusbar()
+		{
+			statusbar = new Box(Orientation.Horizontal, 4);
 
-			titleBar.Add(new Image("res/images/icons/icon.svg"));
-			titleBar.Add(menubar);
-
-			Titlebar = titleBar;
-
-			styleProvider = new CssProvider();
-
-			ReloadStyles();
-
-			StyleContext.AddProviderForScreen(Screen, styleProvider, int.MaxValue);
+			statusbar.Add(new Label("main*"));
+			statusbar.Add(new Label("⬇2"));
+			statusbar.Add(new Label("⬆1"));
+			statusbar.Add(new Label("❌🛑⛔ 0 ⚠ 0"));
+			statusbar.Add(new Label("🕒 0 hrs 0 mins"));
 		}
 
 		private void MainWindow_Destroyed()

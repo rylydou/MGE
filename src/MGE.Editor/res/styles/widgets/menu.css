@@ -38,3 +38,8 @@ menuitem:hover > * {
 menuitem:disabled > * {
 	color: @text-dark;
 }
+
+menuitem > check {
+	border: solid 1px @element;
+	border-radius: 4px;
+}

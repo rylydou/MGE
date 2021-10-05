@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Gtk;
 using MGE.Editor.GUI.Events;
 using MGE.Editor.Util;
@@ -347,6 +349,26 @@ namespace MGE.Editor.GUI
 		}
 
 		#endregion
+
+		public static ComboboxEvents Combobox(string? current, params string[] options)
+		{
+			var events = new ComboboxEvents();
+			var combobox = new ComboBox(options) { Hexpand = true };
+
+			if (current is not null) combobox.Active = Array.IndexOf(options, current);
+
+			if (combobox.Active < 0) combobox.Active = 0;
+
+			combobox.Changed += (sender, args) =>
+			{
+				events.onItemIndexChanged.Invoke(combobox.Active);
+				events.onItemChanged.Invoke(options[combobox.Active]);
+			};
+
+			Add(combobox);
+
+			return events;
+		}
 
 		// public ListEvents<T> ListEntry<T>(IEnumerable<T> list)
 		// {

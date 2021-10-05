@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using MGE.Editor.GUI;
 using MGE.Editor.GUI.PropDrawers;
@@ -118,6 +117,7 @@ namespace MGE.Editor
 
 		static Dictionary<Type, PropDrawer> typeToPropDrawer = new Dictionary<Type, PropDrawer>();
 
+		static PropDrawer enumPropDrawer = new EnumPropDrawer();
 		static PropDrawer fallbackPropDrawer = new FallbackPropDrawer();
 
 		public static bool RegisterPropDrawer(PropDrawer propDrawer)
@@ -129,7 +129,11 @@ namespace MGE.Editor
 			return false;
 		}
 
-		public static PropDrawer GetPropDrawer(Type type) => typeToPropDrawer.GetValueOrDefault(type, fallbackPropDrawer);
+		public static PropDrawer GetPropDrawer(Type type)
+		{
+			if (type.IsEnum) return enumPropDrawer;
+			return typeToPropDrawer.GetValueOrDefault(type, fallbackPropDrawer);
+		}
 
 		#endregion
 
