@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Gtk;
 using MGE.Editor.GUI;
+using MGE.Editor.GUI.Widgets;
 using MGE.Editor.GUI.Windows;
 
 namespace MGE.Editor
@@ -18,7 +19,7 @@ namespace MGE.Editor
 
 		public MGEEditor() : base("MGE EDITOR")
 		{
-			if (_current is not null) throw new Exception($"A {nameof(MGEEditor)} instance already exists");
+			if (_current is not null) throw new Exception("A main MGE editor window already exists");
 
 			_current = this;
 
@@ -30,44 +31,37 @@ namespace MGE.Editor
 
 			var mainLayout = new Box(Orientation.Vertical, 0);
 
-			var left = new Notebook();
+			var leftDock = new Dock();
+			leftDock.AddWindow(new HierarchyWindow());
 
-			var hierarchy = new HierarchyWindow();
-			left.AppendPage(hierarchy.root, new Label(hierarchy.title));
+			var rightDock = new Dock();
+			rightDock.AddWindow(new InspectorWindow());
 
-			var console = new ConsoleWindow();
-			left.AppendPage(console.root, new Label(console.title));
+			var centerDock = new Dock();
+			centerDock.AddWindow(new SceneWindow());
 
-			var right = new Notebook();
+			var bottomDock = new Dock();
+			bottomDock.AddWindow(new AssetsWindow());
+			bottomDock.AddWindow(new ConsoleWindow());
 
-			var inspector = new InspectorWindow();
-			right.AppendPage(inspector.root, new Label(inspector.title));
-			right.AppendPage(new Label("Project Settings"), new Label("Project Settings"));
+			var rightPaned = new Paned(Orientation.Horizontal) { Position = 360 };
+			rightPaned.Add(centerDock);
+			rightPaned.Add(rightDock);
 
-			var leftLayout = new Paned(Orientation.Horizontal);
+			var leftPaned = new Paned(Orientation.Horizontal) { Position = 360 };
+			leftPaned.Add(leftDock);
+			leftPaned.Add(rightPaned);
 
-			var rightLayout = new Paned(Orientation.Horizontal);
+			var bottomPaned = new Paned(Orientation.Vertical) { Position = 480 };
+			bottomPaned.Add(leftPaned);
+			bottomPaned.Add(bottomDock);
 
-			var center = new Notebook();
+			mainLayout.Add(bottomPaned);
 
-			var scene = new SceneWindow();
-
-			center.AppendPage(scene.root, new Label(scene.title));
-
-			rightLayout.Add(center);
-
-			rightLayout.Add(right);
-
-			leftLayout.Add(left);
-			leftLayout.Add(rightLayout);
-
-			mainLayout.Add(leftLayout);
-
-			MakeMenubar();
-
-			var titleBar = new HeaderBar() { ShowCloseButton = true, Title = "MGE Editor", };
+			var titleBar = new HeaderBar() { ShowCloseButton = true, };
 
 			titleBar.Add(new Image("res/images/icons/icon.svg"));
+			MakeMenubar();
 			titleBar.Add(menubar);
 
 			Titlebar = titleBar;

@@ -10,14 +10,12 @@ namespace MGE.Editor
 		[STAThread]
 		public static void Main(string[] args)
 		{
+#if DEBUG
+			Run();
+#else
 			try
 			{
-				Application.Init();
-
-				var window = new MGEEditor();
-				window.ShowAll();
-
-				Application.Run();
+				Run();
 			}
 			catch (Exception e)
 			{
@@ -30,6 +28,17 @@ namespace MGE.Editor
 				}
 				throw;
 			}
+#endif
+		}
+
+		static void Run()
+		{
+			Application.Init();
+
+			var window = new MGEEditor();
+			window.ShowAll();
+
+			Application.Run();
 		}
 	}
 }

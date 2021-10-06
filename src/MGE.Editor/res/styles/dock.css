@@ -31,6 +31,11 @@ header.right tab {
 	border-right: solid 2px transparent;
 }
 
+tab {
+	padding: 0 8px;
+	min-height: 24px;
+}
+
 tab label {
 	color: @text-dark;
 }
@@ -56,22 +61,3 @@ notebook stack {
 	padding: 8px;
 }
 
-/*
-notebook stack > * > undershoot.left {
-	background-image: -gtk-gradient (
-		linear,
-		left center,
-		right center,
-		from (@background),
-		to (alpha(@background, 0)));
-}
-
-notebook stack > * > undershoot.right {
-	background-image: -gtk-gradient (
-		linear,
-		right center,
-		left center,
-		from (@background),
-		to (alpha(@background, 0)));
-}
-*/

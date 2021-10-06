@@ -2,9 +2,9 @@ window {
 	background-color: @base;
 }
 
-/* Resisze border hacks */
 window:not(.popup) decoration {
-  border: 8px solid alpha(@base, 0.01);
+	border: 1px solid @base;
+	border-top: 1px solid alpha(@base, 0.01);
 }
 
 headerbar {
@@ -29,7 +29,7 @@ window.tiled headerbar {
 }
 
 headerbar button.titlebutton {
-	min-height: 32px;
+	min-height: 24px;
 	min-width: 32px;
 }
 
@@ -65,14 +65,4 @@ window.popup decoration {
 	border-radius: 4px;
 
 	/* box-shadow: 0 0 8px 0 alpha(black, 0.05); */
-}
-
-.statusbar {
-	padding: 6px 8px;
-	background-color: @background;
-	border-top: solid 1px @base;
-}
-
-.statusbar * {
-	color: @text-dark;
 }

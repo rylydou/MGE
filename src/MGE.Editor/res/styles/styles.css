@@ -3,7 +3,7 @@
 @import url("animations.css");
 
 /* CUSTOM THEME */
-/* @import url("themes/THEME.css"); */
+@import url("themes/darkest.css");
 
 /* RESET */
 @import url("reset.css");
@@ -31,6 +31,7 @@ selection {
 
 /* SECTIONS */
 @import url("window.css");
+@import url("statusbar.css");
 @import url("dock.css");
 @import url("widgets.css");
 

@@ -1,17 +1,29 @@
+using System.Diagnostics.CodeAnalysis;
 using Gtk;
 
 namespace MGE.Editor.GUI
 {
 	public abstract class EditorWindow
 	{
-		public string title;
+		public Label label { get; private set; }
+		string _title;
+		public string title
+		{
+			get => _title;
+			set
+			{
+				label.Text = value;
+				_title = value;
+			}
+		}
 
-		public ScrolledWindow root;
-		public Box content;
+		public ScrolledWindow root { get; private set; }
+		public Container content { get; private set; }
 
 		protected EditorWindow(string title)
 		{
-			this.title = title;
+			this.label = new Label(title);
+			_title = title;
 
 			root = new ScrolledWindow();
 			content = new Box(Orientation.Vertical, 4);
@@ -39,6 +51,7 @@ namespace MGE.Editor.GUI
 
 		protected virtual void Update()
 		{
+			EditorGUI.verticalExpand = true;
 			EditorGUI.Header(title);
 		}
 	}
