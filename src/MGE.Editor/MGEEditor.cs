@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Gtk;
 using MGE.Editor.GUI;
 using MGE.Editor.GUI.Windows;
@@ -25,7 +26,9 @@ namespace MGE.Editor
 			SetDefaultSize(1280, 720);
 
 			FocusInEvent += (sender, args) => ReloadStyles();
-			Destroyed += (sender, args) => MainWindow_Destroyed();
+			Destroyed += (sender, args) => Application.Quit();
+
+			var mainLayout = new Box(Orientation.Vertical, 0);
 
 			var left = new Notebook();
 
@@ -41,9 +44,9 @@ namespace MGE.Editor
 			right.AppendPage(inspector.root, new Label(inspector.title));
 			right.AppendPage(new Label("Project Settings"), new Label("Project Settings"));
 
-			var leftLayout = new Paned(Orientation.Horizontal) { WideHandle = true };
+			var leftLayout = new Paned(Orientation.Horizontal);
 
-			var rightLayout = new Paned(Orientation.Horizontal) { WideHandle = true };
+			var rightLayout = new Paned(Orientation.Horizontal);
 
 			var center = new Notebook();
 
@@ -58,11 +61,9 @@ namespace MGE.Editor
 			leftLayout.Add(left);
 			leftLayout.Add(rightLayout);
 
-			Add(leftLayout);
+			mainLayout.Add(leftLayout);
 
 			MakeMenubar();
-
-			MakeStatusbar();
 
 			var titleBar = new HeaderBar() { ShowCloseButton = true, Title = "MGE Editor", };
 
@@ -71,6 +72,14 @@ namespace MGE.Editor
 
 			Titlebar = titleBar;
 
+			MakeStatusbar();
+
+			mainLayout.Add(statusbar);
+
+			Add(mainLayout);
+
+			// Styles
+
 			styleProvider = new CssProvider();
 
 			ReloadStyles();
@@ -78,6 +87,7 @@ namespace MGE.Editor
 			StyleContext.AddProviderForScreen(Screen, styleProvider, int.MaxValue);
 		}
 
+		[MemberNotNull(nameof(menubar))]
 		void MakeMenubar()
 		{
 			menubar = new MenuBar();
@@ -184,20 +194,16 @@ namespace MGE.Editor
 			menubar.Append(help);
 		}
 
+		[MemberNotNull(nameof(statusbar))]
 		void MakeStatusbar()
 		{
-			statusbar = new Box(Orientation.Horizontal, 4);
+			statusbar = new Box(Orientation.Horizontal, 8);
+			statusbar.StyleContext.AddClass("statusbar");
 
 			statusbar.Add(new Label("main*"));
-			statusbar.Add(new Label("⬇2"));
-			statusbar.Add(new Label("⬆1"));
-			statusbar.Add(new Label("❌🛑⛔ 0 ⚠ 0"));
-			statusbar.Add(new Label("🕒 0 hrs 0 mins"));
-		}
-
-		private void MainWindow_Destroyed()
-		{
-			Application.Quit();
+			statusbar.Add(new Label("2⬇ 1⬆"));
+			statusbar.Add(new Label("0 Errors 0 Warnings"));
+			statusbar.Add(new Label("0 hrs 0 mins"));
 		}
 
 		void ReloadStyles()

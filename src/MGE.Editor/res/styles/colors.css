@@ -1,12 +1,12 @@
 @define-color base #161616;
 @define-color background #202020;
-@define-color element #2B2B2B;
+@define-color element #2B2B2B; /* #272727 */
 @define-color popup #101010;
 
 @define-color text #FFF;
-@define-color text-dark #9aa0a6;
+@define-color text-dark #9A9A9A;
 
-@define-color accent #FE9137;
+@define-color accent #FE9137; /* #00B7C3 */
 
 @define-color selection-color @base;
 @define-color selection-background @accent;
@@ -14,12 +14,12 @@
 @define-color black @000;
 @define-color white @FFF;
 
-@define-color red #eb4034;
-@define-color orange #eb7134;
-@define-color yellow #ebd534;
-@define-color green #34eb46;
-@define-color blue #347deb;
-@define-color purple #9b34eb;
+@define-color red #FF4343;
+@define-color orange #FF8C00;
+@define-color yellow #FFB900;
+@define-color green #10893E;
+@define-color blue #0078D7;
+@define-color purple #881798;
 
 @define-color error @red;
 @define-color warning @yellow;

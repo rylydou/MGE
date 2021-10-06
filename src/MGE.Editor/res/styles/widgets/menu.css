@@ -3,6 +3,12 @@ menu {
 	border-radius: 4px;
 }
 
+menu separator {
+	margin: 4px;
+	padding: 0;
+	background-color: @element;
+}
+
 menuitem {
 	padding: 4px 0;
 	color: @text;
@@ -39,7 +45,9 @@ menuitem:disabled > * {
 	color: @text-dark;
 }
 
+/*
 menuitem > check {
 	border: solid 1px @element;
 	border-radius: 4px;
 }
+*/
