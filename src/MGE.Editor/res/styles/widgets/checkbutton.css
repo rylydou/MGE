@@ -6,7 +6,7 @@ checkbutton {
 checkbutton:active {
 	background-color: @selection-background;
 
-	transition: background-color 0;
+	transition: background-color 0ms;
 }
 
 checkbutton check {

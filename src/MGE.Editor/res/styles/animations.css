@@ -7,14 +7,3 @@
 	from { opacity: 1; }
 	to { opacity: 0; }
 }
-
-@keyframes highlight-flash {
-	from {
-		background-color: @selection-background;
-		color: @selection-color;
-	}
-	to {
-		background-color: @selection-color;
-		color: @selection-background;
-	}
-}

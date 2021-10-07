@@ -8,11 +8,15 @@ namespace MGE.Editor.GUI.Widgets
 	 */
 	public class Dock : Notebook
 	{
+		public bool empty { get; private set; } = true;
+
 		public Dock()
 		{
 			// EnablePopup = true;
 			Scrollable = true;
 			GroupName = "any";
+
+			StyleContext.AddClass("empty");
 		}
 
 		protected override bool OnPopupMenu()
@@ -59,6 +63,20 @@ namespace MGE.Editor.GUI.Widgets
 		{
 			// BUG Destroys window when moving the only page inside window
 			// if (NPages < 1) Destroy();
+			if (NPages < 1)
+			{
+				empty = true;
+				StyleContext.AddClass("empty");
+			}
+		}
+
+		protected override void OnPageAdded(Widget child, uint page_num)
+		{
+			if (empty)
+			{
+				empty = false;
+				StyleContext.RemoveClass("empty");
+			}
 		}
 	}
 }

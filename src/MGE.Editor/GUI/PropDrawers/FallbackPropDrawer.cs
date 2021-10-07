@@ -19,6 +19,8 @@ namespace MGE.Editor.GUI.PropDrawers
 
 			foreach (var prop in props)
 			{
+				if (prop.Name == "nodes") continue;
+
 				EditorGUI.StartProperty(Editor.GetPropertyName(prop.Name));
 
 				var propDrawer = Editor.GetPropDrawer(prop.PropertyType);

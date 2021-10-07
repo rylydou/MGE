@@ -65,6 +65,7 @@ namespace MGE.Editor
 			titleBar.Add(menubar);
 
 			Titlebar = titleBar;
+			Title = "MGE Editor";
 
 			MakeStatusbar();
 

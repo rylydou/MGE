@@ -5,6 +5,7 @@ entry {
 	background-color: @element;
 	border: solid 1px @element;
 	border-radius: 4px;
+	box-shadow: 0 1px 1px 0 alpha(black, 0.1);
 }
 
 button:hover, button:focus,
@@ -20,6 +21,7 @@ entry:hover /* Why doesn't this work */, entry:focus {
 @import url("widgets/checkbutton.css");
 
 @import url("widgets/entry.css");
+@import url("widgets/tree.css");
 
 @import url("widgets/combobox.css");
 @import url("widgets/popovers.css");

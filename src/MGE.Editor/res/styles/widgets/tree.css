@@ -1,0 +1,20 @@
+/* FIXME Rounded corners have a gap between cells */
+treeview.view {
+	padding: 2px;
+	border-radius: 4px;
+	border: solid 1px transparent;
+}
+
+treeview:hover {
+	background-color: @element;
+}
+
+treeview:selected {
+	color: @selection-color;
+	background-color: @selection-background;
+}
+
+/* BUG_NOTE Why do borders look normal? */
+treeview:drop(active) {
+	border: solid 1px @accent;
+}

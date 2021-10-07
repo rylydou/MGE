@@ -10,6 +10,16 @@ notebook arrow:disabled {
 	color: @background;
 }
 
+notebook > stack {
+	padding: 8px;
+	background-color: @background;
+	transition: background-color 250ms;
+}
+
+notebook.empty > stack {
+	background-color: @base;
+}
+
 tab {
 	padding: 0 8px;
 	min-height: 24px;
@@ -52,12 +62,3 @@ header tab:checked {
 tab:checked label {
 	color: @text;
 }
-
-notebook stack {
-	background-color: @background;
-}
-
-notebook stack {
-	padding: 8px;
-}
-

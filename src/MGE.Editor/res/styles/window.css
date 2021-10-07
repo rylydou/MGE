@@ -3,13 +3,13 @@ window {
 }
 
 window:not(.popup) decoration {
-	border: 1px solid @base;
-	border-top: 1px solid alpha(@base, 0.01);
+	border: 2px solid @base;
+	border-top: 4px solid alpha(@base, 0.01);
 }
 
 headerbar {
 	background-color: @base;
-	padding-left: 12px;
+	padding-left: 8px;
 	min-height: 0;
 	border-top: solid 2px @accent;
 
@@ -17,7 +17,7 @@ headerbar {
 }
 
 window:backdrop headerbar {
-	border-top-color: @background;
+	border-top-color: transparent;
 
 	transition: border-top-color 1000ms;
 }

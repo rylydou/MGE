@@ -29,7 +29,7 @@ namespace MGE.Editor
 				onSelectionChanged.Invoke();
 			}
 		}
-		static object? _selectedObject = new TestNode();
+		static object? _selectedObject = TestNode.root;
 		public static Action onSelectionChanged = () => { };
 
 		#region Property Name
