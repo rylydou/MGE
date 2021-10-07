@@ -8,5 +8,5 @@
 
 @define-color accent #FF7504;
 
-@define-color selection-color @text;
+@define-color selection-color #000;
 @define-color selection-background @accent;

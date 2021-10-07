@@ -1,12 +1,12 @@
-@define-color base #200;
-@define-color background #100;
+@define-color base #100;
+@define-color background #200;
 @define-color element #300;
 @define-color popup #000;
 
-@define-color text #E20;
+@define-color text #D22;
 @define-color text-dark #800;
 
-@define-color accent #E20;
+@define-color accent #D22;
 
 @define-color selection-color @base;
 @define-color selection-background @accent;

@@ -1,0 +1,12 @@
+@define-color base #040f13;
+@define-color background #071e26;
+@define-color element #0b2d39;
+@define-color popup #000000;
+
+@define-color text #e9f5f9;
+@define-color text-dark #757b7d;
+
+@define-color accent #2596be;
+
+@define-color selection-color #000;
+@define-color selection-background @accent;

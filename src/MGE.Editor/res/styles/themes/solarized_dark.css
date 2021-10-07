@@ -1,11 +1,12 @@
-@define-color base #002b36;
+@define-color base #002B36;
 @define-color background #073642;
 @define-color element #002b36;
+@define-color popup darker(#002b36);
 
-@define-color text #fdf6e3;
+@define-color text #FDF6E3;
 @define-color text-dark #839496;
 
-@define-color accent #268bd2;
+@define-color accent #268BD2;
 
 @define-color selection-color @base;
 @define-color selection-background @accent;

@@ -1,6 +1,7 @@
 @define-color base #F0F0F0;
 @define-color background #FFF;
 @define-color element #F0F0F0;
+@define-color popup #F5F5F5;
 
 @define-color text #000;
 @define-color text-dark #7B7B7B;

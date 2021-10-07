@@ -1,3 +1,7 @@
+combobox button {
+	padding: 2px 4px;
+}
+
 combobox window.popup cellview {
 	padding: 0 4px;
 }
