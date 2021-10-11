@@ -4,7 +4,7 @@ namespace MGE.Editor
 {
 	public class TestNode
 	{
-		public static TestNode root = new TestNode() { nodes = new List<TestNode>() { new TestNode(), new TestNode(), new TestNode(), } };
+		public static TestNode root = new TestNode() { _nodes = new List<TestNode>() { new TestNode(), new TestNode(), new TestNode(), } };
 
 		public string name { get; set; } = "Name";
 
@@ -17,7 +17,7 @@ namespace MGE.Editor
 
 		public Direction direction { get; set; }
 
-		public List<TestNode> nodes { get; set; } = new List<TestNode>();
+		public List<TestNode> _nodes { get; set; } = new List<TestNode>();
 	}
 
 	public enum Direction

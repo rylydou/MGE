@@ -40,24 +40,28 @@ namespace MGE.Editor
 		{
 			if (propNameCache.TryGetValue(propName, out var name)) return name;
 
+			name = CodeToPrettyName(propName);
+
+			propNameCache.Add(propName, name);
+			return name;
+		}
+
+		static string CodeToPrettyName(string text)
+		{
 			var sb = new StringBuilder();
 
 			var lastCharWasCapital = false;
 			var inAcronym = false;
 			var nextCharShouldBeCapital = false;
-			for (int i = 0; i < propName.Length; i++)
-			{
-				var ch = propName[i];
 
-				if (i == 0)
-				{
-					lastCharWasCapital = char.IsUpper(ch);
-					sb.Append(char.ToUpper(ch));
-					continue;
-				}
+			for (int i = 0; i < text.Length; i++)
+			{
+				var ch = text[i];
 
 				if (ch == '_')
 				{
+					if (i == 0) continue;
+
 					nextCharShouldBeCapital = true;
 					sb.Append(' ');
 
@@ -106,9 +110,7 @@ namespace MGE.Editor
 				}
 			}
 
-			name = sb.ToString();
-			propNameCache.Add(propName, name);
-			return name;
+			return sb.ToString();
 		}
 
 		#endregion

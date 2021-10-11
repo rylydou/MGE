@@ -62,7 +62,7 @@ window.popup {
 window.popup decoration {
 	background-color: @base;
 	border: none;
-	border-radius: 4px;
+	border-radius: 0px;
 
 	/* box-shadow: 0 0 8px 0 alpha(black, 0.05); */
 }
