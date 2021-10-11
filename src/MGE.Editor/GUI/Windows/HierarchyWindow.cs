@@ -5,13 +5,11 @@ namespace MGE.Editor.GUI.Windows
 {
 	public class HierarchyWindow : EditorWindow
 	{
-		TreeStore tree;
+		TreeStore tree = new TreeStore(typeof(string), typeof(string));
 		TreeView treeView;
 
 		public HierarchyWindow() : base("Hierarchy")
 		{
-			tree = new TreeStore(typeof(string), typeof(string));
-
 			foreach (var node in TestNode.root.nodes)
 			{
 				tree.AppendValues(node.name, node.GetType().ToString());

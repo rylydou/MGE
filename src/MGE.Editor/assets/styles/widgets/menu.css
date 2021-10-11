@@ -1,6 +1,6 @@
 menu {
 	padding: 4px;
-	border-radius: 4px;
+	border-radius: 0px;
 }
 
 menu separator {
@@ -12,7 +12,7 @@ menu separator {
 menuitem {
 	padding: 4px 0;
 	color: @text;
-	border-radius: 4px;
+	border-radius: 0px;
 }
 
 menuitem > * {

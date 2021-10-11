@@ -11,13 +11,13 @@
 * {
 	color: @text;
 	font-family:
-		/* Windows */  Segoe UI Semibold,
-		/* Lunix */    Ubuntu,
+		Roboto Medium,
+		/* Windows */  Segoe UI Semibold, Segoe UI,
+		/* Linux */    Ubuntu,
 		/* Mac */      Helvetica Neue, San Francisco,
 		/* Fallback */ Arial
 	;
 
-	font-weight: bold;
 	font-size: 12px;
 
 	transition: opacity 100ms;
@@ -36,3 +36,4 @@ selection {
 @import url("widgets.css");
 
 @import url("important.css");
+

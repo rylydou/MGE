@@ -13,11 +13,11 @@ notebook arrow:disabled {
 notebook > stack {
 	padding: 8px;
 	background-color: @background;
-	transition: background-color 250ms;
 }
 
 notebook.empty > stack {
 	background-color: @base;
+	transition: background-color 1000ms;
 }
 
 tab {

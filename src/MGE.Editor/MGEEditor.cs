@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Gtk;
 using MGE.Editor.GUI;
 using MGE.Editor.GUI.Widgets;
@@ -28,6 +29,8 @@ namespace MGE.Editor
 
 			FocusInEvent += (sender, args) => ReloadStyles();
 			Destroyed += (sender, args) => Application.Quit();
+
+			LoadIcons();
 
 			var mainLayout = new Box(Orientation.Vertical, 0);
 
@@ -60,7 +63,7 @@ namespace MGE.Editor
 
 			var titleBar = new HeaderBar() { ShowCloseButton = true, };
 
-			titleBar.Add(new Image("res/images/icons/icon.svg"));
+			titleBar.Add(new Image(IconTheme.Default.LoadIcon("icon", 16, IconLookupFlags.ForceSymbolic)));
 			MakeMenubar();
 			titleBar.Add(menubar);
 
@@ -201,13 +204,18 @@ namespace MGE.Editor
 			statusbar.Add(new Label("0 hrs 0 mins"));
 		}
 
+		void LoadIcons()
+		{
+			IconTheme.Default.AppendSearchPath(Environment.CurrentDirectory + "/assets/icons");
+		}
+
 		void ReloadStyles()
 		{
-			SetIconFromFile("res/images/icons/logo.png");
+			SetIconFromFile("assets/favicons/default.png");
 
 			try
 			{
-				styleProvider.LoadFromPath("res/styles/styles.css");
+				styleProvider.LoadFromPath("assets/styles/styles.css");
 			}
 			catch (Exception e)
 			{

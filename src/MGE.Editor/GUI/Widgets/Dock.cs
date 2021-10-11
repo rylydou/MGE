@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Gtk;
 
 namespace MGE.Editor.GUI.Widgets
@@ -38,13 +39,37 @@ namespace MGE.Editor.GUI.Widgets
 		{
 			var window = new Window("MGE Editor Dock")
 			{
-				TypeHint = Gdk.WindowTypeHint.Dock,
+				TypeHint = Gdk.WindowTypeHint.Menu,
 				KeepAbove = true,
 				DefaultSize = new Gdk.Size(360, 480),
 				SkipTaskbarHint = true,
 				SkipPagerHint = true,
 			};
 			window.Move(x, y);
+
+			MGEEditor.current.WindowStateEvent += (sender, args) =>
+			{
+				// TODO Get this working
+				// var state = args.Event.NewWindowState;
+				// if (state.HasFlag(Gdk.WindowState.Iconified))
+				// {
+				// 	window.KeepAbove = false;
+				// 	window.Iconify();
+				// }
+				// else if (state.HasFlag(Gdk.WindowState.Focused))
+				// {
+				// 	window.KeepAbove = true;
+				// 	window.Present();
+				// }
+				// else if (state.HasFlag(Gdk.WindowState.Above))
+				// {
+				// 	window.KeepAbove = true;
+				// }
+				// else if (state.HasFlag(Gdk.WindowState.Below))
+				// {
+				// 	window.KeepAbove = false;
+				// }
+			};
 
 			// TODO Show tabs in titlebar
 			var titlebar = new HeaderBar() { ShowCloseButton = true, };

@@ -48,7 +48,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build editor",
-      "program": "${workspaceFolder}/src/MGE.Editor/bin/Debug/net5.0/MGE.Editor.exe",
+      "program": "${workspaceFolder}/src/MGE.Editor/bin/Debug/net5.0/MGE.Editor.dll",
       "args": [],
       "cwd": "${workspaceFolder}/src/MGE.Editor",
       "console": "internalConsole",
