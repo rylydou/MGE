@@ -1,0 +1,10 @@
+{
+  "spellcheck": true,
+  "showFrontmatter": true,
+  "foldHeading": true,
+  "foldIndent": true,
+  "defaultViewMode": "source",
+  "showLineNumber": true,
+  "tabSize": 2,
+  "promptDelete": false
+}
