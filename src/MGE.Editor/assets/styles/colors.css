@@ -14,12 +14,12 @@
 @define-color black @000;
 @define-color white @FFF;
 
-@define-color red #FF4343;
-@define-color orange #FF8C00;
-@define-color yellow #FFB900;
-@define-color green #10893E;
-@define-color blue #0078D7;
-@define-color purple #881798;
+@define-color red #fe3737;
+@define-color orange #FE9137;
+@define-color yellow #fedd39;
+@define-color green #55d934;
+@define-color blue #387aff;
+@define-color purple #bd38ff;
 
 @define-color error @red;
 @define-color warning @yellow;
