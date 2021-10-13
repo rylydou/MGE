@@ -34,15 +34,15 @@ namespace MGE.Editor
 
 		#region Property Name
 
-		static Dictionary<string, string> propNameCache = new Dictionary<string, string>();
+		static Dictionary<string, string> propNameCache = new();
 
 		public static string GetPropertyName(string propName)
 		{
 			if (propNameCache.TryGetValue(propName, out var name)) return name;
 
 			name = CodeToPrettyName(propName);
-
 			propNameCache.Add(propName, name);
+
 			return name;
 		}
 
@@ -52,7 +52,7 @@ namespace MGE.Editor
 
 			var lastCharWasCapital = false;
 			var inAcronym = false;
-			var nextCharShouldBeCapital = false;
+			var nextCharShouldBeCapital = true;
 
 			for (int i = 0; i < text.Length; i++)
 			{
@@ -60,9 +60,10 @@ namespace MGE.Editor
 
 				if (ch == '_')
 				{
+					nextCharShouldBeCapital = true;
+
 					if (i == 0) continue;
 
-					nextCharShouldBeCapital = true;
 					sb.Append(' ');
 
 					continue;
@@ -117,7 +118,7 @@ namespace MGE.Editor
 
 		#region Property Drawer
 
-		static Dictionary<Type, PropDrawer> typeToPropDrawer = new Dictionary<Type, PropDrawer>();
+		static Dictionary<Type, PropDrawer> typeToPropDrawer = new();
 
 		static PropDrawer enumPropDrawer = new EnumPropDrawer();
 		static PropDrawer fallbackPropDrawer = new FallbackPropDrawer();

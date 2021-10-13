@@ -10,18 +10,16 @@
 
 * {
 	color: @text;
-	font-family:
-		Roboto Medium,
-		/* Windows */  Segoe UI Semibold, Segoe UI,
-		/* Linux */    Ubuntu,
-		/* Mac */      Helvetica Neue, San Francisco,
-		/* Fallback */ Arial
-	;
 
-	font-size: 12px;
+	font:
+		/* General */  bold 12px Inter,
+		/* Windows */  Segoe UI Semibold, Segoe UI,
+		/* Mac */      Helvetica Neue, San Francisco,
+		/* Linux */    Ubuntu,
+		/* Fallback */ Sans;
+	caret-color: @accent;
 
 	transition: opacity 100ms;
-	caret-color: @accent;
 }
 
 selection {

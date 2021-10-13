@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Gtk;
@@ -13,24 +14,26 @@ namespace MGE.Editor
 		public static MGEEditor current { get { if (_current is null) throw new NullReferenceException("_current is null"); return _current; } }
 		static MGEEditor? _current;
 
-		public MenuBar menubar;
-		public Box statusbar;
+		public HeaderBar titlebar = new() { ShowCloseButton = true };
+		public MenuBar menubar = new();
+		public Box statusbar = new(Orientation.Horizontal, 8);
 
-		CssProvider styleProvider;
+		CssProvider styleProvider = new();
 
 		public MGEEditor() : base("MGE EDITOR")
 		{
-			if (_current is not null) throw new Exception("A main MGE editor window already exists");
+			if (_current is not null) throw new Exception("A MGE editor window already exists");
 
 			_current = this;
 
 			SetPosition(WindowPosition.Center);
 			SetDefaultSize(1280, 720);
 
-			FocusInEvent += (sender, args) => ReloadStyles();
+			// FocusInEvent += (sender, args) => ReloadStyles();
 			Destroyed += (sender, args) => Application.Quit();
 
-			LoadIcons();
+			IconTheme.Default.AppendSearchPath(Environment.CurrentDirectory + "/assets/icons");
+			IconTheme.Default.RescanIfNeeded();
 
 			var mainLayout = new Box(Orientation.Vertical, 0);
 
@@ -61,13 +64,16 @@ namespace MGE.Editor
 
 			mainLayout.Add(bottomPaned);
 
-			var titleBar = new HeaderBar() { ShowCloseButton = true, };
+			EditorGUI.PushContainer(titlebar);
 
-			titleBar.Add(new Image(IconTheme.Default.LoadIcon("icon", 16, IconLookupFlags.ForceSymbolic)));
+			EditorGUI.classes.Add("favicon");
+			EditorGUI.IconButton("icon");
 			MakeMenubar();
-			titleBar.Add(menubar);
+			EditorGUI.Add(menubar);
 
-			Titlebar = titleBar;
+			EditorGUI.PopContainer();
+
+			Titlebar = titlebar;
 			Title = "MGE Editor";
 
 			MakeStatusbar();
@@ -78,18 +84,13 @@ namespace MGE.Editor
 
 			// Styles
 
-			styleProvider = new CssProvider();
-
 			ReloadStyles();
 
 			StyleContext.AddProviderForScreen(Screen, styleProvider, int.MaxValue);
 		}
 
-		[MemberNotNull(nameof(menubar))]
 		void MakeMenubar()
 		{
-			menubar = new MenuBar();
-
 			var filemenu = new Menu();
 			var file = new MenuItem("File");
 			file.Submenu = filemenu;
@@ -192,10 +193,8 @@ namespace MGE.Editor
 			menubar.Append(help);
 		}
 
-		[MemberNotNull(nameof(statusbar))]
 		void MakeStatusbar()
 		{
-			statusbar = new Box(Orientation.Horizontal, 8);
 			statusbar.StyleContext.AddClass("statusbar");
 
 			statusbar.Add(new Label("main*"));
@@ -204,14 +203,11 @@ namespace MGE.Editor
 			statusbar.Add(new Label("0 hrs 0 mins"));
 		}
 
-		void LoadIcons()
-		{
-			IconTheme.Default.AppendSearchPath(Environment.CurrentDirectory + "/assets/icons");
-		}
-
 		void ReloadStyles()
 		{
-			SetIconFromFile("assets/favicons/default.png");
+			Trace.WriteLine("Reloading styles...");
+
+			SetIconFromFile("assets/favicons/normal.svg");
 
 			try
 			{

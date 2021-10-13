@@ -34,13 +34,11 @@ namespace MGE.Editor.GUI.PropDrawers
 			else
 			{
 				// Single
-				EditorGUI.Combobox(Enum.GetName(type, value)!, options).onItemChanged += item => setValue.Invoke(Enum.Parse(type, item));
+
+				EditorGUI.Combobox(options, Enum.GetName(type, value)!).onItemChanged += item => setValue.Invoke(Enum.Parse(type, item));
 			}
 		}
 
-		static IEnumerable<Enum> GetFlags(Enum e)
-		{
-			return Enum.GetValues(e.GetType()).Cast<Enum>().Where(e.HasFlag);
-		}
+		static IEnumerable<Enum> GetFlags(Enum e) => Enum.GetValues(e.GetType()).Cast<Enum>().Where(e.HasFlag);
 	}
 }

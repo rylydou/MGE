@@ -66,6 +66,8 @@ namespace MGE.Editor.GUI
 
 		public static Optional<string> placeholderText = new();
 
+		public static List<string> classes = new();
+
 		static void ResetProperties()
 		{
 			sensitive.Unset();
@@ -86,12 +88,14 @@ namespace MGE.Editor.GUI
 			maxWidthInChars.Unset();
 			ellipsizeMode.Unset();
 
+			classes.Clear();
+
 			placeholderText.Unset();
 		}
 
 		#endregion
 
-		static Stack<Container> _containerStack = new Stack<Container>();
+		static Stack<Container> _containerStack = new();
 		static Container? _container;
 		public static Container container
 		{
@@ -145,6 +149,12 @@ namespace MGE.Editor.GUI
 			marginStart.TryGetValue(value => widget.MarginStart = value);
 			marginEnd.TryGetValue(value => widget.MarginEnd = value);
 
+			var styleContext = widget.StyleContext;
+			foreach (var c in classes)
+			{
+				styleContext.AddClass(c);
+			}
+
 			container.Add(widget);
 
 			ResetProperties();
@@ -162,21 +172,6 @@ namespace MGE.Editor.GUI
 			Ellipsize = ellipsizeMode.TryGetValue(EllipsizeMode.End),
 		});
 
-		public static void Header(string text) => Add(new Label(text)
-		{
-			Xalign = horizontalAlign.TryGetValue(0.5f),
-			WidthChars = widthInChars.TryGetValue(-1),
-			MaxWidthChars = maxWidthInChars.TryGetValue(-1),
-			Ellipsize = ellipsizeMode.TryGetValue(EllipsizeMode.End),
-		});
-
-		public static void Paragraph(string text)
-		{
-			var textView = new TextView() { Editable = false, WrapMode = Gtk.WrapMode.Word, };
-			textView.Buffer.Text = text;
-			Add(textView);
-		}
-
 		public static void Label(string text) => Add(new Label(text)
 		{
 			Xalign = horizontalAlign.TryGetValue(0),
@@ -184,6 +179,26 @@ namespace MGE.Editor.GUI
 			MaxWidthChars = maxWidthInChars.TryGetValue(-1),
 			Ellipsize = ellipsizeMode.TryGetValue(EllipsizeMode.End),
 		});
+
+		public static void Header(string text)
+		{
+			var label = new Label(text)
+			{
+				Xalign = horizontalAlign.TryGetValue(0.5f),
+				WidthChars = widthInChars.TryGetValue(-1),
+				MaxWidthChars = maxWidthInChars.TryGetValue(-1),
+				Ellipsize = ellipsizeMode.TryGetValue(EllipsizeMode.End),
+			};
+			label.StyleContext.AddClass("header");
+			Add(label);
+		}
+
+		public static void TextBox(string text)
+		{
+			var textView = new TextView() { Editable = false, WrapMode = Gtk.WrapMode.Word, };
+			textView.Buffer.Text = text;
+			Add(textView);
+		}
 
 		#region Buttons
 
@@ -200,6 +215,7 @@ namespace MGE.Editor.GUI
 		public static ButtonEvents IconButton(string icon)
 		{
 			var button = new Button(icon, IconSize.Button);
+			button.StyleContext.AddClass("icon");
 			Add(button);
 
 			var events = new ButtonEvents();
@@ -254,8 +270,7 @@ namespace MGE.Editor.GUI
 
 			entry.EditingDone += (sender, args) =>
 			{
-				// entry.SelectRegion(0, 0);
-				// Works well enough
+				// HACK Works well enough, but is not good for keyboard users
 				entry.Sensitive = false;
 				entry.Sensitive = true;
 
@@ -350,12 +365,13 @@ namespace MGE.Editor.GUI
 
 		#endregion
 
-		public static ComboboxEvents Combobox(string? current, params string[] options)
+		public static ComboboxEvents Combobox(string[] options, string? current = null) => Combobox(options, Array.IndexOf(options, current));
+		public static ComboboxEvents Combobox(string[] options, int current = -1)
 		{
 			var events = new ComboboxEvents();
 			var combobox = new ComboBox(options) { Hexpand = true };
 
-			if (current is not null) combobox.Active = Array.IndexOf(options, current);
+			combobox.Active = current;
 
 			if (combobox.Active < 0) combobox.Active = 0;
 
@@ -391,6 +407,20 @@ namespace MGE.Editor.GUI
 			PushContainer(box);
 		}
 
+		public static void StartHorizonalFlow(int rowspacing = 8, int columnSpacing = 8, int maxChildrenPerLine = int.MaxValue, int minChildrenPerLine = 0)
+		{
+			var flow = new FlowBox()
+			{
+				Orientation = Orientation.Horizontal,
+				RowSpacing = (uint)rowspacing,
+				ColumnSpacing = (uint)columnSpacing,
+				MaxChildrenPerLine = (uint)maxChildrenPerLine,
+				MinChildrenPerLine = (uint)minChildrenPerLine,
+			};
+			Add(flow);
+			PushContainer(flow);
+		}
+
 		public static void StartProperty(string label, bool inline = true)
 		{
 			if (inline)
@@ -418,6 +448,8 @@ namespace MGE.Editor.GUI
 		public static void End() => PopContainer();
 
 		public static void Separator() => Add(isHorizontal ? new VSeparator() : new HSeparator());
+
+		public static void Expand() => Add(new Box(Orientation.Horizontal, 0) { Hexpand = isHorizontal, Vexpand = !isHorizontal, });
 
 		#endregion
 

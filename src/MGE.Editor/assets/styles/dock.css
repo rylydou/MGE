@@ -10,6 +10,10 @@ notebook arrow:disabled {
 	color: @background;
 }
 
+notebook header {
+	min-height: 26px;
+}
+
 notebook > stack {
 	padding: 8px;
 	background-color: @background;
