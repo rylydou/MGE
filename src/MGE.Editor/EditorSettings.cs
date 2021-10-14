@@ -7,6 +7,8 @@ namespace MGE.Editor
 		public bool fullscreen = true;
 		public string? recentProjectPath = null;
 
+		public string? theme = null;
+
 		EditorSettings()
 		{
 

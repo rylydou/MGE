@@ -12,7 +12,7 @@
 	color: @text;
 
 	font:
-		/* General */  bold 12px Inter,
+		/* General */  600 12px Inter,
 		/* Windows */  Segoe UI Semibold, Segoe UI,
 		/* Mac */      Helvetica Neue, San Francisco,
 		/* Linux */    Ubuntu,

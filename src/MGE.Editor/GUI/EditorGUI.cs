@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Gtk;
-using MGE.Editor.GUI.Events;
+using MGE.Editor.GUI.Data;
+using MGE.Editor.GUI.Datas;
 using MGE.Editor.Util;
 using Pango;
 
@@ -66,7 +67,7 @@ namespace MGE.Editor.GUI
 
 		public static Optional<string> placeholderText = new();
 
-		public static List<string> classes = new();
+		public static readonly List<string> classes = new();
 
 		static void ResetProperties()
 		{
@@ -162,25 +163,49 @@ namespace MGE.Editor.GUI
 			return widget;
 		}
 
+		public static Container AddContainer(Container container)
+		{
+			Add(container);
+			PushContainer(container);
+
+			return container;
+		}
+
 		#region Widgets
 
-		public static void Text(string text) => Add(new Label(text)
+		public static TextData Text(string text)
 		{
-			Xalign = horizontalAlign.TryGetValue(0),
-			WidthChars = widthInChars.TryGetValue(-1),
-			MaxWidthChars = maxWidthInChars.TryGetValue(-1),
-			Ellipsize = ellipsizeMode.TryGetValue(EllipsizeMode.End),
-		});
+			var label = new Label(text)
+			{
+				Xalign = horizontalAlign.TryGetValue(0),
+				WidthChars = widthInChars.TryGetValue(-1),
+				MaxWidthChars = maxWidthInChars.TryGetValue(-1),
+				Ellipsize = ellipsizeMode.TryGetValue(EllipsizeMode.End),
+			};
+			var data = new TextData(label);
 
-		public static void Label(string text) => Add(new Label(text)
+			Add(label);
+
+			return data;
+		}
+
+		public static TextData Label(string text)
 		{
-			Xalign = horizontalAlign.TryGetValue(0),
-			WidthChars = widthInChars.TryGetValue(-1),
-			MaxWidthChars = maxWidthInChars.TryGetValue(-1),
-			Ellipsize = ellipsizeMode.TryGetValue(EllipsizeMode.End),
-		});
+			var label = new Label(text)
+			{
+				Xalign = horizontalAlign.TryGetValue(0),
+				WidthChars = widthInChars.TryGetValue(-1),
+				MaxWidthChars = maxWidthInChars.TryGetValue(-1),
+				Ellipsize = ellipsizeMode.TryGetValue(EllipsizeMode.End),
+			};
+			var data = new TextData(label);
 
-		public static void Header(string text)
+			Add(label);
+
+			return data;
+		}
+
+		public static TextData Header(string text)
 		{
 			var label = new Label(text)
 			{
@@ -189,59 +214,71 @@ namespace MGE.Editor.GUI
 				MaxWidthChars = maxWidthInChars.TryGetValue(-1),
 				Ellipsize = ellipsizeMode.TryGetValue(EllipsizeMode.End),
 			};
+			var data = new TextData(label);
+
 			label.StyleContext.AddClass("header");
 			Add(label);
+
+			return data;
 		}
 
-		public static void TextBox(string text)
+		public static TextBoxData TextBox(string text)
 		{
 			var textView = new TextView() { Editable = false, WrapMode = Gtk.WrapMode.Word, };
+			var data = new TextBoxData(textView);
+
 			textView.Buffer.Text = text;
 			Add(textView);
+
+			return data;
 		}
 
 		#region Buttons
 
-		public static ButtonEvents Button(string text)
+		public static ButtonData Button(string text)
 		{
 			var button = new Button(text) { Hexpand = true };
+			var data = new ButtonData(button);
+			button.Clicked += (sender, args) => data.onPressed.Invoke();
+
 			Add(button);
 
-			var events = new ButtonEvents();
-			button.Clicked += (sender, args) => events.onPressed.Invoke();
-			return events;
+			return data;
 		}
 
-		public static ButtonEvents IconButton(string icon)
+		public static ButtonData IconButton(string icon)
 		{
 			var button = new Button(icon, IconSize.Button);
+			var data = new ButtonData(button);
+
 			button.StyleContext.AddClass("icon");
 			Add(button);
 
-			var events = new ButtonEvents();
-			button.Clicked += (sender, args) => events.onPressed.Invoke();
-			return events;
+			button.Clicked += (sender, args) => data.onPressed.Invoke();
+			return data;
 		}
 
-		public static ToggleEvents Checkbox(bool? value)
+		public static CheckboxData Checkbox(bool? value)
 		{
-			var button = new CheckButton();
-			if (value.HasValue) button.Active = value.Value;
-			else button.Inconsistent = true;
-			Add(button);
+			var checkbox = new CheckButton();
+			var data = new CheckboxData(checkbox);
+			checkbox.Clicked += (sender, args) => data.onToggled.Invoke(checkbox.Active);
 
-			var events = new ToggleEvents();
-			button.Clicked += (sender, args) => events.onToggled.Invoke(button.Active);
-			return events;
+			if (value.HasValue) checkbox.Active = value.Value;
+			else checkbox.Inconsistent = true;
+			Add(checkbox);
+
+			return data;
 		}
 
 		#endregion
 
 		#region Feilds
 
-		static Entry MakeEntry(string text, Func<string, string> onTextSubmitted)
+		static InternalEntryData MakeEntry(string text)
 		{
 			var entry = new Entry(text) { Hexpand = true, WidthRequest = 0, WidthChars = 0, MaxWidthChars = 0, };
+			var entryEvent = new InternalEntryData(entry);
 			var originalText = string.Empty;
 
 			// FIXME Select everything when focused
@@ -278,7 +315,7 @@ namespace MGE.Editor.GUI
 				{
 					try
 					{
-						entry.Text = onTextSubmitted.Invoke(entry.Text);
+						entry.Text = entryEvent.onTextSubmitted.Invoke(entry.Text);
 					}
 					catch (System.Exception)
 					{
@@ -287,89 +324,91 @@ namespace MGE.Editor.GUI
 				}
 			};
 
-			return entry;
+			return entryEvent;
 		}
 
-		public static TextFeildEvents TextFeild(string text)
+		public static EntryData<string> TextFeild(string text)
 		{
-			var events = new TextFeildEvents();
-			var entry = MakeEntry(text, text =>
+			var entry = MakeEntry(text);
+			var events = new EntryData<string>(entry.entry);
+
+			entry.onTextSubmitted = text =>
 			{
 				events.onSubmitted.Invoke(text);
 				return text;
-			});
+			};
 
-			entry.PlaceholderText = placeholderText.TryGetValue("Enter Text...");
+			entry.entry.PlaceholderText = placeholderText.TryGetValue("Enter Text...");
 
-			Add(entry);
+			Add(entry.entry);
 
 			return events;
 		}
 
-		public static NumberFeildEvents<int> NumberFeild(int number)
+		public static EntryData<int> NumberFeild(int number)
 		{
-			var events = new NumberFeildEvents<int>();
-			var entry = MakeEntry(number.ToString(), text =>
+			var entry = MakeEntry(number.ToString());
+			var events = new EntryData<int>(entry.entry);
+
+			entry.onTextSubmitted = text =>
 			{
 				var val = 0;
 				if (!string.IsNullOrEmpty(text))
 					val = (int)Math.Round(Eval(text));
 				events.onSubmitted.Invoke(val);
 				return val.ToString();
-			});
+			};
 
-			entry.PlaceholderText = placeholderText.TryGetValue();
-
-			Add(entry);
+			Add(entry.entry);
 
 			return events;
 		}
 
-		public static NumberFeildEvents<float> NumberFeild(float number)
+		public static EntryData<float> NumberFeild(float number)
 		{
-			var events = new NumberFeildEvents<float>();
-			var entry = MakeEntry(number.ToString(), text =>
+			var entry = MakeEntry(number.ToString());
+			var events = new EntryData<float>(entry.entry);
+
+			entry.onTextSubmitted = text =>
 			{
 				var val = 0f;
 				if (!string.IsNullOrEmpty(text))
 					val = (float)Eval(text);
 				events.onSubmitted.Invoke(val);
 				return val.ToString();
-			});
+			};
 
-			entry.PlaceholderText = placeholderText.TryGetValue();
-
-			Add(entry);
+			Add(entry.entry);
 
 			return events;
 		}
 
-		public static NumberFeildEvents<double> NumberFeild(double number)
+		public static EntryData<double> NumberFeild(double number)
 		{
-			var events = new NumberFeildEvents<double>();
-			var entry = MakeEntry(number.ToString(), text =>
+			var entry = MakeEntry(number.ToString());
+			var events = new EntryData<double>(entry.entry);
+
+			entry.onTextSubmitted = text =>
 			{
 				var val = 0d;
 				if (!string.IsNullOrEmpty(text))
 					val = Eval(text);
 				events.onSubmitted.Invoke(val);
 				return val.ToString();
-			});
+			};
 
-			entry.PlaceholderText = placeholderText.TryGetValue();
-
-			Add(entry);
+			Add(entry.entry);
 
 			return events;
 		}
 
 		#endregion
 
-		public static ComboboxEvents Combobox(string[] options, string? current = null) => Combobox(options, Array.IndexOf(options, current));
-		public static ComboboxEvents Combobox(string[] options, int current = -1)
+		public static ComboboxData Combobox(string[] options, string? current = null) => Combobox(options, Array.IndexOf(options, current));
+		public static ComboboxData Combobox(string[] options, int current = -1)
 		{
-			var events = new ComboboxEvents();
 			var combobox = new ComboBox(options) { Hexpand = true };
+			var events = new ComboboxData(combobox);
 
 			combobox.Active = current;
 
@@ -407,18 +446,24 @@ namespace MGE.Editor.GUI
 			PushContainer(box);
 		}
 
-		public static void StartHorizonalFlow(int rowspacing = 8, int columnSpacing = 8, int maxChildrenPerLine = int.MaxValue, int minChildrenPerLine = 0)
+		public static void StartHorizonalFlow(int rowspacing = 8, int columnSpacing = 8)
 		{
 			var flow = new FlowBox()
 			{
 				Orientation = Orientation.Horizontal,
 				RowSpacing = (uint)rowspacing,
 				ColumnSpacing = (uint)columnSpacing,
-				MaxChildrenPerLine = (uint)maxChildrenPerLine,
-				MinChildrenPerLine = (uint)minChildrenPerLine,
 			};
 			Add(flow);
 			PushContainer(flow);
+		}
+
+		public static void StartNotebook(bool tabsOnSide)
+		{
+			var notebook = new Notebook() { TabPos = tabsOnSide ? PositionType.Left : PositionType.Top };
+
+			Add(notebook);
+			PushContainer(notebook);
 		}
 
 		public static void StartProperty(string label, bool inline = true)

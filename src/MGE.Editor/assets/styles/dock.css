@@ -21,7 +21,7 @@ notebook > stack {
 
 notebook.empty > stack {
 	background-color: @base;
-	transition: background-color 1000ms;
+	transition: background-color 500ms;
 }
 
 tab {

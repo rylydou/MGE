@@ -8,10 +8,7 @@ window:not(.popup) decoration {
 		HACK to have no border but still have
 		the window still be resizeable on windows
 	*/
-	border: 2px solid alpha(@base, 0.01);
-	border-top: 2px solid alpha(@base, 0.01);
-
-	box-shadow: 0 0 8px 0 alpha(black, 0.2);
+	border: 1px solid darker(@base);
 }
 
 headerbar {
