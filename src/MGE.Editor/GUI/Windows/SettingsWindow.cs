@@ -2,14 +2,8 @@ namespace MGE.Editor.GUI.Windows
 {
 	public class SettingsWindow : EditorWindow
 	{
-		public SettingsWindow() : base("Settings")
-		{
+		public override string title => "Settings";
 
-		}
-
-		protected override void Update()
-		{
-
-		}
+		public SettingsWindow() : base() { }
 	}
 }

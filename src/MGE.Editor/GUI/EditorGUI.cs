@@ -466,6 +466,14 @@ namespace MGE.Editor.GUI
 			PushContainer(notebook);
 		}
 
+		public static ScrolledData StartScrolled()
+		{
+			var scrolled = new ScrolledWindow();
+			var data = new ScrolledData(scrolled);
+
+			return data;
+		}
+
 		public static void StartProperty(string label, bool inline = true)
 		{
 			if (inline)

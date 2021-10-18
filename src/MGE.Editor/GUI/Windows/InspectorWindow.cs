@@ -1,22 +1,28 @@
+using System.Diagnostics;
+
 namespace MGE.Editor.GUI.Windows
 {
-	public class InspectorWindow : EditorWindow
+	public class InspectorWindow : ContextWindow
 	{
-		public InspectorWindow() : base("Inspector")
+		public override string title => "Inspector";
+
+		public InspectorWindow() : base()
 		{
-			Editor.onSelectionChanged += () => DoUpdate();
+			context.onSelectionChanged += () => Redraw();
 		}
 
-		protected override void Update()
+		protected override void Draw()
 		{
-			if (Editor.selectedObject is null)
+			if (context.selection is null)
 			{
 				EditorGUI.Text("Nothing Selected");
 				return;
 			}
 
-			var propDrawer = Editor.GetPropDrawer(Editor.selectedObject.GetType());
-			propDrawer.DrawProp(Editor.selectedObject, val => { });
+			Trace.WriteLine(context.selection.GetType());
+
+			var propDrawer = Editor.GetPropDrawer(context.selection.GetType());
+			propDrawer.DrawProp(context.selection, val => { });
 		}
 	}
 }

@@ -20,17 +20,7 @@ namespace MGE.Editor
 			RegisterPropDrawer(new Vector2PropDrawer());
 		}
 
-		public static object? selectedObject
-		{
-			get => _selectedObject;
-			set
-			{
-				_selectedObject = value;
-				onSelectionChanged.Invoke();
-			}
-		}
-		static object? _selectedObject = TestNode.root;
-		public static Action onSelectionChanged = () => { };
+		public static List<EditorContext> contexts = new() { new() { selection = TestNode.root } };
 
 		#region Property Name
 

@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using GLib;
 using Gtk;
 
 namespace MGE.Editor.GUI.Windows
@@ -54,6 +51,8 @@ namespace MGE.Editor.GUI.Windows
 			}
 		}
 
+		public override string title => "Console";
+
 		public string[] consoles = new[]
 		{
 			"Editor",
@@ -65,9 +64,9 @@ namespace MGE.Editor.GUI.Windows
 
 		TextView logTextView = new() { Editable = false, };
 
-		public ConsoleWindow() : base("Console") { }
+		public ConsoleWindow() : base() { }
 
-		protected override void Update()
+		protected override void Draw()
 		{
 			var consoleWriter = new TextBufferWriter(logTextView.Buffer);
 			// Console.SetOut(consoleWriter);
@@ -90,7 +89,6 @@ namespace MGE.Editor.GUI.Windows
 			EditorGUI.End();
 
 			EditorGUI.Add(logTextView);
-
 		}
 	}
 }

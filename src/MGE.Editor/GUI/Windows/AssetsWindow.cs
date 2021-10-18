@@ -2,7 +2,9 @@ namespace MGE.Editor.GUI.Windows
 {
 	public class AssetsWindow : EditorWindow
 	{
-		public AssetsWindow() : base("Assets")
+		public override string title => "Assets";
+
+		public AssetsWindow() : base()
 		{
 		}
 	}
