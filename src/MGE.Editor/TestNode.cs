@@ -4,9 +4,9 @@ namespace MGE.Editor
 {
 	public class TestNode
 	{
-		public static TestNode root = new() { _nodes = new() { new(), new(), new(), } };
+		static int _nextID;
 
-		public string name { get; set; } = "Name";
+		public string name { get; set; }
 
 		public bool enabled { get; set; } = true;
 		public bool visible { get; set; } = true;
@@ -18,6 +18,11 @@ namespace MGE.Editor
 		public Direction direction { get; set; }
 
 		public List<TestNode> _nodes { get; set; } = new();
+
+		public TestNode()
+		{
+			name = $"Node #{_nextID++}";
+		}
 	}
 
 	public enum Direction

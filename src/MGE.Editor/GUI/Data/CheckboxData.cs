@@ -1,7 +1,6 @@
 using Gtk;
-using MGE.Editor.GUI.Data;
 
-namespace MGE.Editor.GUI.Datas
+namespace MGE.Editor.GUI.Data
 {
 	public class CheckboxData : ToggleData<CheckButton>
 	{

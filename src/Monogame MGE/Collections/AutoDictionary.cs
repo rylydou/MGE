@@ -19,11 +19,11 @@ namespace MGE
 		public ICollection<TKey> Keys => _dictionary.Keys;
 		public ICollection<TValue> Values => _dictionary.Values;
 
-		public void Add(TValue item) => _dictionary.Add(_getKey.Invoke(item), item);
-		public bool Remove(TValue item) => _dictionary.Remove(_getKey.Invoke(item));
+		public void Add(TValue item) => _dictionary.Add(_getKey(item), item);
+		public bool Remove(TValue item) => _dictionary.Remove(_getKey(item));
 		public void Clear() => _dictionary.Clear();
 
-		public bool Contains(TValue item) => _dictionary.ContainsKey(_getKey.Invoke(item));
+		public bool Contains(TValue item) => _dictionary.ContainsKey(_getKey(item));
 		public bool ContainsKey(TKey key) => _dictionary.ContainsKey(key);
 		public bool TryGetValue(TKey key, out TValue value) => _dictionary.TryGetValue(key, out value);
 

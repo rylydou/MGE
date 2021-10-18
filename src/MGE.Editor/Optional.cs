@@ -32,7 +32,7 @@ namespace MGE.Editor
 
 		public T? TryGetValue() => isSet ? _value : default(T?);
 		public T TryGetValue(T defualt) => isSet ? _value! : defualt;
-		public T TryGetValue(Func<T> defualt) => isSet ? _value! : defualt.Invoke();
+		public T TryGetValue(Func<T> defualt) => isSet ? _value! : defualt();
 		public bool TryGetValue([NotNullWhen(true)] out T value)
 		{
 			if (isSet)
@@ -47,7 +47,7 @@ namespace MGE.Editor
 		{
 			if (isSet)
 			{
-				hasValue.Invoke(_value!);
+				hasValue(_value!);
 				return true;
 			}
 			return false;
@@ -66,7 +66,7 @@ namespace MGE.Editor
 		{
 			if (isUnset)
 			{
-				Set(getValue.Invoke());
+				Set(getValue());
 				return true;
 			}
 			return false;

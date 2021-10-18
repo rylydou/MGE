@@ -19,7 +19,7 @@ namespace MGE.Editor.Util.Expression
 		{
 			var lhsVal = _lhs.Eval(ctx);
 			var rhsVal = _rhs.Eval(ctx);
-			var result = _op.Invoke(lhsVal, rhsVal);
+			var result = _op(lhsVal, rhsVal);
 			return result;
 		}
 	}

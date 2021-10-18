@@ -35,7 +35,7 @@ namespace MGE.Editor.GUI.PropDrawers
 			{
 				// Single
 
-				EditorGUI.Combobox(options, Enum.GetName(type, value)!).onItemChanged += item => setValue.Invoke(Enum.Parse(type, item));
+				EditorGUI.Combobox(options, Enum.GetName(type, value)!).onItemChanged += item => setValue(Enum.Parse(type, item));
 			}
 		}
 

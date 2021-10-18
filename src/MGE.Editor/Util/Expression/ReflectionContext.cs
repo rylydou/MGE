@@ -26,8 +26,7 @@ namespace MGE.Editor.Util.Expression
 		{
 			// Find method
 			var mi = _targetObject.GetType().GetMethod(name);
-			if (mi == null)
-				throw new InvalidDataException($"Unknown function: '{name}'");
+			if (mi == null) throw new InvalidDataException($"Unknown function: '{name}'");
 
 			// Convert double array to object array
 			var argObjs = arguments.Select(x => (object)x).ToArray();

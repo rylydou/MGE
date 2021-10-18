@@ -198,7 +198,7 @@ namespace MGE
 							// TODO Make the try catch actually work
 							try
 							{
-								item.Value.Invoke(null, commandParamValues.ToArray());
+								item.Value(null, commandParamValues.ToArray());
 							}
 							catch (System.Exception e)
 							{

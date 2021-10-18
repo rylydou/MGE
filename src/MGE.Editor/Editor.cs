@@ -20,7 +20,7 @@ namespace MGE.Editor
 			RegisterPropDrawer(new Vector2PropDrawer());
 		}
 
-		public static List<EditorContext> contexts = new() { new() { selection = TestNode.root } };
+		public static List<EditorContext> contexts = new() { new() };
 
 		#region Property Name
 

@@ -17,7 +17,7 @@ namespace MGE.Editor.Util.Expression
 		public override double Eval(IExpressionContext ctx)
 		{
 			var rhsVal = _rhs.Eval(ctx);
-			var result = _op.Invoke(rhsVal);
+			var result = _op(rhsVal);
 			return result;
 		}
 	}

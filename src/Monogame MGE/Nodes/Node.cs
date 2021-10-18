@@ -52,7 +52,7 @@ namespace MGE
 				_queuedActions.Enqueue(action);
 				return false;
 			}
-			action.Invoke();
+			action();
 			return true;
 		}
 
@@ -60,7 +60,7 @@ namespace MGE
 		{
 			var length = _queuedActions.Count;
 			for (int i = 0; i < length; i++)
-				_queuedActions.Dequeue().Invoke();
+				_queuedActions.Dequeue()();
 		}
 
 		#region Node Management
@@ -426,7 +426,7 @@ namespace MGE
 
 			try
 			{
-				onNodeAddedDirectly.Invoke(node);
+				onNodeAddedDirectly(node);
 				OnNodeAddedDirectly(node);
 			}
 			catch (Exception e)
@@ -448,7 +448,7 @@ namespace MGE
 
 			try
 			{
-				onNodeAdded.Invoke(node);
+				onNodeAdded(node);
 				OnNodeAdded(node);
 			}
 			catch (Exception e)
@@ -470,7 +470,7 @@ namespace MGE
 
 			try
 			{
-				onNodeAddedDirectly.Invoke(node);
+				onNodeAddedDirectly(node);
 				OnNodeRemovedDirectly(node);
 			}
 			catch (Exception e)
@@ -492,7 +492,7 @@ namespace MGE
 
 			try
 			{
-				onNodeAdded.Invoke(node);
+				onNodeAdded(node);
 				OnNodeRemoved(node);
 			}
 			catch (Exception e)
@@ -546,7 +546,7 @@ namespace MGE
 
 			try
 			{
-				action.Invoke();
+				action();
 			}
 			catch (Exception e)
 			{

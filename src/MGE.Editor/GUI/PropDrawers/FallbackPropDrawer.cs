@@ -25,7 +25,7 @@ namespace MGE.Editor.GUI.PropDrawers
 
 				var propDrawer = Editor.GetPropDrawer(prop.PropertyType);
 
-				propDrawer.DrawProp(prop.GetValue(value), val => { prop.SetValue(value, val); setValue.Invoke(null); });
+				propDrawer.DrawProp(prop.GetValue(value), val => { prop.SetValue(value, val); setValue(null); });
 
 				EditorGUI.End();
 			}

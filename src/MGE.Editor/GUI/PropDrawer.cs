@@ -13,7 +13,7 @@ namespace MGE.Editor.GUI
 	{
 		public sealed override Type type => typeof(T);
 
-		public sealed override void DrawProp(object? value, Action<object?> setValue) => DrawProp((T)value!, val => setValue.Invoke(val));
+		public sealed override void DrawProp(object? value, Action<object?> setValue) => DrawProp((T)value!, val => setValue(val));
 		protected abstract void DrawProp(T value, Action<T> setValue);
 	}
 }
