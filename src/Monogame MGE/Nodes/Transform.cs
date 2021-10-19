@@ -21,7 +21,7 @@ namespace MGE
 			{
 				if (_localPosition != value)
 				{
-					onLocalPositionChanged();
+					onLocalPositionChanged.Invoke();
 					SafelyCallFunction(OnLocalPositionChanged);
 					_localPosition = value;
 					SetNeedsLocalUpdate();

@@ -16,7 +16,7 @@ namespace MGE
 
 		internal static void Init()
 		{
-			window.ClientSizeChanged += (sender, args) => onResize();
+			window.ClientSizeChanged += (sender, args) => onResize.Invoke();
 
 #if DEBUG
 			Window.title = Engine.config.gameName + " (DEBUG)";

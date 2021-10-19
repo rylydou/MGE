@@ -1,7 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using Gtk;
 using MGE.Editor.GUI;
 using MGE.Editor.GUI.Widgets;

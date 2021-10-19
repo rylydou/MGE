@@ -70,7 +70,7 @@ headerbar .titlebutton.minimize:hover {
 
 window.popup {
 	background-color: @popup;
-	border-radius: 4px;
+	border-radius: 0px;
 }
 
 window.popup decoration {

@@ -31,7 +31,7 @@ namespace MGE.Editor.GUI.Windows
 
 					EditorGUI.MenuButton("Add Child");
 					EditorGUI.MenuButton("Add Parent");
-					// EditorGUI.MenuSeparator();
+					EditorGUI.MenuSeparator();
 					EditorGUI.MenuButton("Remove");
 
 					EditorGUI.EndMenu();

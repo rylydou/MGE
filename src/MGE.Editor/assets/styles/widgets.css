@@ -5,7 +5,7 @@ entry {
 	background-color: @element;
 	border: solid 1px @element;
 	border-radius: 0px;
-	box-shadow: 0 1px 1px 0 alpha(black, 0.1);
+	box-shadow: 0 1px 1px 0 @base;
 }
 
 button:hover, button:focus,

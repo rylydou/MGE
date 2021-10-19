@@ -512,6 +512,13 @@ namespace MGE.Editor.GUI
 			_menu.Popup();
 		}
 
+		public static void MenuSeparator()
+		{
+			if (_menu is null) throw new Exception($"{nameof(StartMenu)} has not been called yet");
+
+			_menu.Add(new SeparatorMenuItem());
+		}
+
 		public static MenuItemData MenuButton(string label)
 		{
 			if (_menu is null) throw new Exception($"{nameof(StartMenu)} has not been called yet");

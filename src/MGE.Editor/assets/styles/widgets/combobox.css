@@ -1,3 +1,7 @@
+combobox {
+	min-height: 24px;
+}
+
 combobox button {
 	padding: 4px;
 }
