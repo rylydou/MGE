@@ -23,7 +23,7 @@ button:not(.titlebutton):not(.icon):active * {
 button.icon {
 	min-width: 16px;
 	min-height: 16px;
-	background-color: transparent;
+	background-color: unset;
 	border: none;
 }
 

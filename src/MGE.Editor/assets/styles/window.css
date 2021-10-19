@@ -2,12 +2,7 @@ window {
 	background-color: @base;
 }
 
-/* BUG Fix shadow spacing due to the border */
 window:not(.popup) decoration {
-	/* 
-		HACK to have no border but still have
-		the window still be resizeable on windows
-	*/
 	border: 1px solid darker(@base);
 }
 
@@ -18,6 +13,10 @@ headerbar {
 	border-top: solid 2px @accent;
 
 	transition: border-top-color 100ms;
+}
+
+headerbar:drop(active) {
+	background-color: @red;
 }
 
 window:backdrop headerbar {
@@ -40,7 +39,7 @@ headerbar .title {
 	color: @text-dark;
 }
 
-headerbar .titlebutton {
+.titlebutton {
 	min-height: 24px;
 	min-width: 32px;
 	color: @text-dark;
@@ -48,23 +47,27 @@ headerbar .titlebutton {
 	border: none;
 }
 
-headerbar .titlebutton:hover {
+.titlebutton * {
+	color: @text-dark;
+}
+
+.titlebutton:hover {
 	background-color: @selection-background;
 }
 
-headerbar .titlebutton:hover * {
+.titlebutton:hover * {
 	color: @selection-color;
 }
 
-headerbar .titlebutton.close:hover {
+.titlebutton.close:hover {
 	background-color: @error;
 }
 
-headerbar .titlebutton.maximize:hover {
+.titlebutton.maximize:hover {
 	background-color: @green;
 }
 
-headerbar .titlebutton.minimize:hover {
+.titlebutton.minimize:hover {
 	background-color: @yellow;
 }
 

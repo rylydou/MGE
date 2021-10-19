@@ -6,11 +6,13 @@ entry {
 entry.warning {
 	color: @warning;
 	border-color: @warning;
+	caret-color: @warning;
 }
 
 entry.error {
 	color: @error;
 	border-color: @error;
+	caret-color: @error;
 }
 
 entry undershoot.left {

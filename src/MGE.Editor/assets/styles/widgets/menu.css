@@ -21,6 +21,10 @@ menuitem > check {
 	color: @accent;
 }
 
+menuitem > check:checked {
+	-gtk-icon-source: -gtk-icontheme('check');
+}
+
 menuitem check,
 menuitem arrow {
 	margin: 0 4px;

@@ -1,24 +1,31 @@
 checkbutton {
 	padding: 4px;
-	transition: background-color 100ms;
+
+	transition: background-color 150ms;
 }
 
 checkbutton:active {
 	background-color: @selection-background;
 
-	transition: background-color 0ms;
+	transition: background-color 0;
 }
 
 checkbutton check {
-	-gtk-icon-transform: scale(0) rotate(-10deg);
+	-gtk-icon-transform: scale(0);
 
-	transition: color 100ms, -gtk-icon-transform 50ms;
+	transition: -gtk-icon-transform 50ms;
+}
+
+checkbutton:checked check {
+	-gtk-icon-source: -gtk-icontheme('check');
+}
+
+checkbutton:indeterminate > check {
+	-gtk-icon-source: -gtk-icontheme('indeterminate');
 }
 
 checkbutton:active check {
 	color: @selection-color;
-
-	transition: color 0;
 }
 
 checkbutton:checked check {

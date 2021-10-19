@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Gtk;
 
 namespace MGE.Editor.GUI.Windows
@@ -27,6 +28,8 @@ namespace MGE.Editor.GUI.Windows
 			{
 				if (args.Event.Type == Gdk.EventType.ButtonPress && args.Event.Button == 3)
 				{
+					Trace.WriteLine("Right");
+
 					EditorGUI.StartMenu();
 
 					EditorGUI.MenuButton("Add Child");

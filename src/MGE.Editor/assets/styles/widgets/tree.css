@@ -1,8 +1,35 @@
-/* FIXME Rounded corners have a gap between cells */
 treeview.view {
   padding: 2px;
   border-radius: 0px;
   border: solid 1px transparent;
+	border-left-color: @text-dark;
+}
+
+dndtarget:drop(active) {
+	border-style: solid none;
+	border-width: 1px;
+	border-color: @red;
+}
+
+dndtarget:drop(active).after {
+	border-top-style: none;
+}
+
+dndtarget:drop(active).before {
+	border-bottom-style: none;
+}
+
+treeview .expander  {
+	color: @text-dark;
+	-gtk-icon-source: -gtk-icontheme('tree_closed');
+}
+
+treeview .expander  {
+	-gtk-icon-source: -gtk-icontheme('tree_open');
+}
+
+treeview .expander:hover  {
+	color: @text;
 }
 
 treeview:hover {
@@ -14,7 +41,11 @@ treeview:selected {
   background-color: @selection-background;
 }
 
-/* BUG_NOTE Why do borders look normal? */
 treeview:drop(active) {
   border: solid 1px @accent;
+}
+
+treeview arrow {
+	color: @red;
+	background-color: @blue;
 }

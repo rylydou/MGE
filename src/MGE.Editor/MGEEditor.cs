@@ -128,13 +128,6 @@ namespace MGE.Editor
 			var viewmenu = new Menu();
 			var view = new MenuItem("View");
 			view.Submenu = viewmenu;
-			viewmenu.Append(new CheckMenuItem("Show Node Gizmos") { Active = true });
-			viewmenu.Append(new CheckMenuItem("Show Node Icons") { Active = true });
-			viewmenu.Append(new SeparatorMenuItem());
-			viewmenu.Append(new CheckMenuItem("Show Hidden Nodes"));
-			viewmenu.Append(new CheckMenuItem("Show Disabled Nodes"));
-			viewmenu.Append(new CheckMenuItem("Show Graphicless Nodes") { Active = true });
-			viewmenu.Append(new SeparatorMenuItem());
 			viewmenu.Append(new CheckMenuItem("Large GUI"));
 			viewmenu.Append(new CheckMenuItem("Static GUI"));
 			viewmenu.Append(new CheckMenuItem("Focus Outlines"));
@@ -161,6 +154,7 @@ namespace MGE.Editor
 			windowmenu.Append(new MenuItem("Autodocs")); // Gets all the info of types in an assembly and shows the xml docs
 			windowmenu.Append(new SeparatorMenuItem());
 			windowmenu.Append(new MenuItem("Music Player")); // A mini music player, mostly as an example on how to write custom windows
+			windowmenu.Append(new MenuItem("More Windows..."));
 			windowmenu.Append(new SeparatorMenuItem());
 			windowmenu.Append(new MenuItem("Editor Debugger...")); // Will open a mostly isolated editor debugger
 			menubar.Append(window);
