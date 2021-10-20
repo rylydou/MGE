@@ -38,5 +38,9 @@ entry undershoot.right {
 	why doesn't GTK 3's GtkEntry have one too?
 */
 entry placeholder {
-	color: @text-dark;
+	color: @red;
+}
+
+entry:drop(active) {
+	border-color: @accent;
 }

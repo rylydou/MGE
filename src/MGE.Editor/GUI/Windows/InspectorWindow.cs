@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace MGE.Editor.GUI.Windows
 {
 	public class InspectorWindow : ContextWindow
@@ -13,9 +15,12 @@ namespace MGE.Editor.GUI.Windows
 		{
 			if (context.selection is null)
 			{
-				EditorGUI.Text("Nothing Selected");
+				EditorGUI.verticalExpand = true;
+				EditorGUI.Header("Nothing Selected");
 				return;
 			}
+
+			Trace.WriteLine("Drawing inspector");
 
 			var propDrawer = Editor.GetPropDrawer(context.selection.GetType());
 			propDrawer.DrawProp(context.selection, val => { });

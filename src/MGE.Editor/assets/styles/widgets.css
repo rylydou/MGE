@@ -5,7 +5,7 @@ entry {
 	background-color: @element;
 	border: solid 1px @element;
 	border-radius: 0px;
-	box-shadow: 0 1px 1px 0 @base;
+	box-shadow: 0 1px 2px 0 @base;
 }
 
 button:hover, button:focus,
@@ -14,16 +14,18 @@ entry:hover /* Why doesn't this work */, entry:focus {
 	border-color: @accent;
 }
 
-@import url("widgets/separator.css");
-@import url("widgets/scrollbar.css");
+@import url("widgets/notebook.css");
+@import url("widgets/tree.css");
 
 @import url("widgets/button.css");
 @import url("widgets/checkbutton.css");
 
 @import url("widgets/entry.css");
-@import url("widgets/tree.css");
-
 @import url("widgets/combobox.css");
+
 @import url("widgets/popovers.css");
 @import url("widgets/tooltip.css");
 @import url("widgets/menu.css");
+
+@import url("widgets/separator.css");
+@import url("widgets/scrollbar.css");

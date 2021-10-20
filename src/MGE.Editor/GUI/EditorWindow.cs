@@ -7,14 +7,14 @@ namespace MGE.Editor.GUI
 		public readonly Label label;
 		public abstract string title { get; }
 
-		Container _context = new Box(Orientation.Vertical, 4);
-		public override Container content => _context;
+		Container _content = new Box(Orientation.Vertical, 4);
+		public override Container content => _content;
 
 		protected EditorWindow() : base(new ScrolledWindow())
 		{
 			label = new Label(title);
 
-			root.Add(_context);
+			root.Add(_content);
 		}
 
 		protected override void Draw()

@@ -3,12 +3,7 @@ combobox {
 }
 
 combobox arrow {
-	color: @text;
-	-gtk-icon-source: -gtk-icontheme('dropdown_open');
-}
-
-combobox arrow {
-	color: @text;
+	color: @text-dark;
 	-gtk-icon-source: -gtk-icontheme('dropdown_open');
 }
 

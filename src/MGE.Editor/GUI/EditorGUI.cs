@@ -277,7 +277,7 @@ namespace MGE.Editor.GUI
 		static InternalEntryData MakeEntry(string text)
 		{
 			var widget = new Entry(text) { Hexpand = true, WidthRequest = 0, WidthChars = 0, MaxWidthChars = 0, };
-			var @event = new InternalEntryData(widget);
+			var data = new InternalEntryData(widget);
 			var originalText = string.Empty;
 
 			// FIXME Select everything when focused
@@ -314,7 +314,7 @@ namespace MGE.Editor.GUI
 				{
 					try
 					{
-						widget.Text = @event.onTextSubmitted(widget.Text);
+						widget.Text = data.onTextSubmitted(widget.Text);
 					}
 					catch (System.Exception)
 					{
@@ -323,7 +323,7 @@ namespace MGE.Editor.GUI
 				}
 			};
 
-			return @event;
+			return data;
 		}
 
 		public static EntryData<string> TextFeild(string text)

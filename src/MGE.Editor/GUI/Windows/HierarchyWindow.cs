@@ -9,7 +9,7 @@ namespace MGE.Editor.GUI.Windows
 
 		ScrolledWindow hierarchyContainer = new();
 		TreeView hierarchyView;
-		TreeStore hierarchyStore = new(typeof(string), typeof(string));
+		TreeStore hierarchyStore = new(typeof(string), typeof(string), typeof(int));
 
 		public HierarchyWindow() : base()
 		{
@@ -18,6 +18,11 @@ namespace MGE.Editor.GUI.Windows
 				var nodeIter = hierarchyStore.AppendValues(child.name, child.GetType().ToString());
 				AddNodeHierarchy(ref nodeIter, child);
 			}
+
+			hierarchyStore.RowChanged += (sender, args) =>
+			{
+
+			};
 
 			hierarchyView = new(hierarchyStore) { HeadersVisible = false, Reorderable = true, EnableTreeLines = true, RubberBanding = true, Vexpand = true, };
 
@@ -42,13 +47,25 @@ namespace MGE.Editor.GUI.Windows
 			};
 
 			hierarchyContainer.Add(hierarchyView);
+
+			hierarchyView.CursorChanged += (sender, args) =>
+			{
+				var path = hierarchyView.Selection.GetSelectedRows()[0];
+				hierarchyStore.GetIter(out var iter, path);
+				var id = (int)hierarchyStore.GetValue(iter, 2);
+
+				Trace.WriteLine(id);
+
+				context.selection = TestNode.nodes[id];
+				context.onSelectionChanged();
+			};
 		}
 
 		void AddNodeHierarchy(ref TreeIter iter, TestNode node)
 		{
 			foreach (var child in node._nodes)
 			{
-				var nodeIter = hierarchyStore.AppendValues(iter, child.name, child.GetType().ToString());
+				var nodeIter = hierarchyStore.AppendValues(iter, child.name, child.GetType().ToString(), child.id);
 				AddNodeHierarchy(ref nodeIter, child);
 			}
 		}

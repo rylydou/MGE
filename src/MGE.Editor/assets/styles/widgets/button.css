@@ -25,6 +25,7 @@ button.icon {
 	min-height: 16px;
 	background-color: unset;
 	border: none;
+	box-shadow: none;
 }
 
 button.icon * {

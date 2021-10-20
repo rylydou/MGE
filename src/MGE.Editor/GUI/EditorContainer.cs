@@ -1,4 +1,4 @@
-using Cairo;
+using System.Diagnostics;
 using Gtk;
 
 namespace MGE.Editor.GUI

@@ -3,7 +3,7 @@ window {
 }
 
 window:not(.popup) decoration {
-	border: 1px solid darker(@base);
+	border: 2px solid @base;
 }
 
 headerbar {
@@ -45,6 +45,7 @@ headerbar .title {
 	color: @text-dark;
 	background-color: transparent;
 	border: none;
+	box-shadow: none;
 }
 
 .titlebutton * {
