@@ -15,7 +15,7 @@ namespace MGE.Editor.GUI.Windows
 		{
 			foreach (var child in context.root._nodes)
 			{
-				var nodeIter = hierarchyStore.AppendValues(child.name, child.GetType().ToString());
+				var nodeIter = hierarchyStore.AppendValues(child.name, child.GetType().ToString(), child.id);
 				AddNodeHierarchy(ref nodeIter, child);
 			}
 
@@ -53,8 +53,6 @@ namespace MGE.Editor.GUI.Windows
 				var path = hierarchyView.Selection.GetSelectedRows()[0];
 				hierarchyStore.GetIter(out var iter, path);
 				var id = (int)hierarchyStore.GetValue(iter, 2);
-
-				Trace.WriteLine(id);
 
 				context.selection = TestNode.nodes[id];
 				context.onSelectionChanged();

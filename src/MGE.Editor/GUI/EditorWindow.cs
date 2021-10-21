@@ -4,6 +4,8 @@ namespace MGE.Editor.GUI
 {
 	public abstract class EditorWindow : EditorContainer
 	{
+		public virtual Orientation preferedOrientation { get => Orientation.Vertical; }
+
 		public readonly Label label;
 		public abstract string title { get; }
 

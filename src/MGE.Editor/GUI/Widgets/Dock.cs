@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Gtk;
 
@@ -40,8 +41,8 @@ namespace MGE.Editor.GUI.Widgets
 			var window = new Window("MGE Editor Dock")
 			{
 				TypeHint = Gdk.WindowTypeHint.Menu,
-				KeepAbove = true,
 				DefaultSize = new Gdk.Size(360, 480),
+				KeepAbove = true,
 				SkipTaskbarHint = true,
 				SkipPagerHint = true,
 			};
@@ -60,15 +61,9 @@ namespace MGE.Editor.GUI.Widgets
 				// {
 				// 	window.KeepAbove = true;
 				// 	window.Present();
+				// 	// window.Present();
 				// }
-				// else if (state.HasFlag(Gdk.WindowState.Above))
-				// {
-				// 	window.KeepAbove = true;
-				// }
-				// else if (state.HasFlag(Gdk.WindowState.Below))
-				// {
-				// 	window.KeepAbove = false;
-				// }
+
 			};
 
 			// TODO Show tabs in titlebar

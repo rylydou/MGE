@@ -9,6 +9,26 @@ namespace MGE.Editor.GUI
 {
 	public static class EditorGUI
 	{
+		class ContainerInfo
+		{
+			public Container container;
+
+			public readonly bool isHorizontal;
+			public readonly bool isBin;
+
+			public ContainerInfo(Container container)
+			{
+				this.container = container;
+
+				if (container is Box box)
+				{
+					isHorizontal = box.Orientation == Orientation.Horizontal;
+				}
+
+				isBin = container is Bin;
+			}
+		}
+
 		static ExpressionDictionaryContext _dictionaryContext = new ExpressionDictionaryContext(new()
 		{
 			{ "pi", () => Math.PI },
@@ -95,44 +115,32 @@ namespace MGE.Editor.GUI
 
 		#endregion
 
-		static Stack<Container> _containerStack = new();
-		static Container? _container;
-		public static Container container
-		{
-			get
-			{
-				if (_container is null) throw new NullReferenceException("No active container");
-				return _container;
-			}
-		}
-		public static bool isHorizontal { get; private set; }
+		static Stack<ContainerInfo> _containerStack = new();
+		static ContainerInfo? _containerInfo;
+		static ContainerInfo containerInfo { get => _containerInfo is not null ? _containerInfo : throw new NullReferenceException("No active container"); }
+		public static Container container { get => containerInfo.container; }
+		public static bool isHorizontal { get => containerInfo.isHorizontal; }
+		public static bool isBin { get => containerInfo.isBin; }
 
 		public static void PushContainer(Container container)
 		{
-			if (_container is not null)
-				_containerStack.Push(_container);
-			_container = container;
-			UpdateContainer();
+			if (_containerInfo is not null)
+			{
+				_containerStack.Push(_containerInfo);
+			}
+			_containerInfo = new ContainerInfo(container);
 		}
 
 		public static void PopContainer()
 		{
-			if (_containerStack.TryPop(out var container))
-				_container = container;
+			if (_containerStack.TryPop(out var item))
+			{
+				_containerInfo = item;
+			}
 			else
-				_container = null;
-			UpdateContainer();
-		}
-
-		static void UpdateContainer()
-		{
-			isHorizontal = _container is Box box && box.Orientation == Orientation.Horizontal;
-		}
-
-		internal static void SetContainer(Container container)
-		{
-			_containerStack.Clear();
-			_container = container;
+			{
+				_containerInfo = null;
+			}
 		}
 
 		public static Widget Add(Widget widget)
@@ -250,7 +258,9 @@ namespace MGE.Editor.GUI
 			var widget = new Button(icon, IconSize.Button);
 			var data = new ButtonData(widget);
 
-			widget.StyleContext.AddClass("icon");
+			var styleContext = widget.StyleContext;
+			styleContext.AddClass("flat");
+			styleContext.AddClass("icon");
 			Add(widget);
 
 			widget.Clicked += (sender, args) => data.onPressed();
@@ -303,6 +313,8 @@ namespace MGE.Editor.GUI
 			widget.Activated += (sender, args) => widget.FinishEditing();
 			// Finish when the feild is unfocused
 			widget.FocusOutEvent += (sender, args) => widget.FinishEditing();
+			// Finish when the feild is destroyed
+			widget.Destroyed += (sender, args) => widget.FinishEditing();
 
 			widget.EditingDone += (sender, args) =>
 			{

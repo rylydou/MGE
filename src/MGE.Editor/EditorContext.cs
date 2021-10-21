@@ -9,14 +9,19 @@ namespace MGE.Editor
 			_nodes = new()
 			{
 				new(),
+				new TestChildNode(),
 				new()
 				{
 					_nodes = new()
 					{
 						new(),
+						new TestChildNode(),
+						new(),
 						new(),
 					}
 				},
+				new(),
+				new TestChildNode(),
 				new(),
 			},
 		};

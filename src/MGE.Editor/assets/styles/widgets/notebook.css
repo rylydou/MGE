@@ -1,32 +1,10 @@
-notebook arrow {
-	color: @text-dark;
-}
-
-notebook arrow:hover {
-	color: @accent;
-}
-
-notebook arrow:disabled {
-	color: @background;
-}
-
 notebook header {
-	min-height: 26px;
-}
-
-notebook > stack {
-	padding: 8px;
-	background-color: @background;
-}
-
-notebook.empty > stack {
-	background-color: @base;
-	transition: background-color 500ms;
+	min-height: 24px;
 }
 
 notebook > header > tabs > tab {
-	padding: 0 8px;
 	min-height: 24px;
+	padding: 0 8px;
 }
 
 notebook > header.top > tabs > tab { border-top: solid 2px transparent; }
@@ -51,6 +29,24 @@ notebook > header > tabs > tab:checked * {
 	color: @text;
 }
 
-notebook > stack:focus-within {
-	background-color: @red;
+notebook > header > tabs > arrow {
+	color: @text-dark;
+}
+
+notebook > header > tabs > arrow:hover {
+	color: @accent;
+}
+
+notebook > header > tabs > arrow:disabled {
+	color: @background;
+}
+
+notebook > stack {
+	padding: 8px;
+	background-color: @background;
+}
+
+notebook.empty > stack {
+	background-color: @base;
+	transition: background-color 500ms;
 }

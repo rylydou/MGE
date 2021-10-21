@@ -2,6 +2,7 @@ IN=icons-svg
 OUT=icons
 RES=64x64
 
+echo "Checking for encoder"
 command -v gtk-encode-symbolic-svg || {
 	echo "GTK tools are not installed."
 
@@ -10,13 +11,13 @@ command -v gtk-encode-symbolic-svg || {
 }
 
 echo "Cleaning OUT"
-
 rm $OUT/*
 
-for f in $IN/*
+echo "Converting svgs"
+for file in $IN/*
 do
-	echo "Converting $f"
-	gtk-encode-symbolic-svg $f $RES -o $OUT
+	echo "Converting $file"
+	gtk-encode-symbolic-svg $file $RES -o $OUT
 done
 
 echo "Done!"

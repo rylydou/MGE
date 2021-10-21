@@ -29,6 +29,8 @@ namespace MGE.Editor.GUI
 			Draw();
 
 			EditorGUI.PopContainer();
+
+			root.ShowAll();
 		}
 
 		protected abstract void Draw();

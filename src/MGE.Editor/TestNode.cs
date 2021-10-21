@@ -24,11 +24,20 @@ namespace MGE.Editor
 
 		public TestNode()
 		{
-			name = $"Node #{_nextID}";
 			id = _nextID;
+			name = $"Node #{_nextID}";
 			nodes.Add(id, this);
 			_nextID++;
 		}
+	}
+
+	public class TestChildNode : TestNode
+	{
+		public Vector2 groundCheckPosition { get; set; } = new();
+		public Vector2 groundCheckSize { get; set; } = new();
+
+		public int health { get; set; }
+		public float speed { get; set; }
 	}
 
 	public enum Direction

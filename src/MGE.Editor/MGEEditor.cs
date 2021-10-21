@@ -30,6 +30,8 @@ namespace MGE.Editor
 			// FocusInEvent += (sender, args) => ReloadStyles();
 			Destroyed += (sender, args) => Application.Quit();
 
+			// Idk which one I should use
+			IconTheme.Default.PrependSearchPath(Environment.CurrentDirectory + "/assets/icons");
 			IconTheme.Default.AppendSearchPath(Environment.CurrentDirectory + "/assets/icons");
 			IconTheme.Default.RescanIfNeeded();
 
@@ -121,6 +123,8 @@ namespace MGE.Editor
 			editmenu.Append(new SeparatorMenuItem());
 			editmenu.Append(new MenuItem("Recompile Project"));
 			editmenu.Append(new SeparatorMenuItem());
+			editmenu.Append(new MenuItem("Manage 2 Contexts..."));
+			editmenu.Append(new SeparatorMenuItem());
 			editmenu.Append(new MenuItem("Editor Settings..."));
 			editmenu.Append(new MenuItem("Project Settings..."));
 			menubar.Append(edit);
@@ -142,19 +146,19 @@ namespace MGE.Editor
 			window.Submenu = windowmenu;
 			windowmenu.Append(new CheckMenuItem("Lock Docked Windows"));
 			windowmenu.Append(new SeparatorMenuItem());
-			windowmenu.Append(new MenuItem("Scene"));
-			windowmenu.Append(new MenuItem("Hierarchy"));
-			windowmenu.Append(new MenuItem("Inspector"));
-			windowmenu.Append(new MenuItem("Assets"));
-			windowmenu.Append(new MenuItem("Problems"));
-			windowmenu.Append(new MenuItem("Console"));
-			windowmenu.Append(new SeparatorMenuItem());
+			windowmenu.Append(new MenuItem("All Windows..."));
+			windowmenu.Append(new SeparatorMenuItem()); // Pinned windows (windows assigned to hotkeys)
+			windowmenu.Append(new MenuItem("Scene")); // alt 1, goes to the last focused context of that window
+			windowmenu.Append(new MenuItem("Hierarchy")); // alt 2
+			windowmenu.Append(new MenuItem("Inspector")); // alt 3
+			windowmenu.Append(new MenuItem("Assets")); // alt 4
+			windowmenu.Append(new MenuItem("Problems")); // alt 5
+			windowmenu.Append(new MenuItem("Console")); // alt 6
+			windowmenu.Append(new SeparatorMenuItem()); // Recently used windows
 			windowmenu.Append(new MenuItem("Source Control"));
 			windowmenu.Append(new MenuItem("Profiler"));
 			windowmenu.Append(new MenuItem("Autodocs")); // Gets all the info of types in an assembly and shows the xml docs
-			windowmenu.Append(new SeparatorMenuItem());
 			windowmenu.Append(new MenuItem("Music Player")); // A mini music player, mostly as an example on how to write custom windows
-			windowmenu.Append(new MenuItem("More Windows..."));
 			windowmenu.Append(new SeparatorMenuItem());
 			windowmenu.Append(new MenuItem("Editor Debugger...")); // Will open a mostly isolated editor debugger
 			menubar.Append(window);
