@@ -6,7 +6,6 @@ namespace MGE.Editor.GUI.Widgets
 {
 	// TODO
 
-	//
 	// Layout: [0] 0 [1] 1 [2] 2 [3]
 	// Count:   1     2     3     4
 	//
@@ -14,7 +13,7 @@ namespace MGE.Editor.GUI.Widgets
 	// If separator x is moved then resize item x and x + 1
 	//
 	// If an item is added before or after item 1 then resize item 1
-	//
+
 	public class EditorPaned : Container
 	{
 		public readonly Orientation orientation;

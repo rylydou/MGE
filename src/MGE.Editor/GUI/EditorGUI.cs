@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Gtk;
 using MGE.Editor.GUI.Data;
+using MGE.Editor.GUI.ObjectDrawers;
 using MGE.Editor.Util;
 using Pango;
 
@@ -28,6 +30,48 @@ namespace MGE.Editor.GUI
 				isBin = container is Bin;
 			}
 		}
+
+		#region Object Drawer
+
+		static Dictionary<Type, Type> _typeToDrawer = new();
+		static List<(Type, Type)> _objectDrawers = new();
+
+		static Type _defaultDrawer = typeof(DefaultDrawer);
+
+		public static void RegisterDrawer(ObjectDrawer drawer)
+		{
+			_objectDrawers.Add((drawer.type, drawer.GetType()));
+			_typeToDrawer.Add(drawer.type, drawer.GetType());
+		}
+
+		public static ObjectDrawer GetDrawer(Type type)
+		{
+			// Try to see if the drawer fro this specific type has been found already
+			if (_typeToDrawer.TryGetValue(type, out var drawer)) goto Return;
+
+			// If not then try to find the drawer for the specific type
+			foreach (var item in _objectDrawers)
+			{
+				if (type.Equals(item.Item1))
+				{
+					drawer = item.Item2;
+					break;
+				}
+			}
+
+			// If no drawer exists for this type then just use the defualt one
+			if (drawer is null) drawer = _defaultDrawer;
+
+			// Add the drawer and type combo to the cache so its faster to find next time
+			_typeToDrawer.Add(type, drawer);
+
+		Return:
+			return (ObjectDrawer)Activator.CreateInstance(drawer)!;
+		}
+
+		#endregion
+
+		public
 
 		static ExpressionDictionaryContext _dictionaryContext = new ExpressionDictionaryContext(new()
 		{
@@ -264,6 +308,32 @@ namespace MGE.Editor.GUI
 			Add(widget);
 
 			widget.Clicked += (sender, args) => data.onPressed();
+			return data;
+		}
+
+		public static ToggleButtonData ToggleButton(string text, bool? state)
+		{
+			var widget = new ToggleButton(text) { Inconsistent = !state.HasValue, Active = state.HasValue ? state.Value : false };
+			var data = new ToggleButtonData(widget);
+
+			var styleContext = widget.StyleContext;
+			Add(widget);
+
+			widget.Clicked += (sender, args) => data.onToggled(widget.Active);
+			return data;
+		}
+
+		public static ToggleButtonData IconToggleButton(string icon, bool? state)
+		{
+			var widget = new ToggleButton() { Inconsistent = !state.HasValue, Active = state.HasValue ? state.Value : false };
+			var data = new ToggleButtonData(widget);
+
+			widget.Add(new Image(icon, IconSize.Button));
+			var styleContext = widget.StyleContext;
+			styleContext.AddClass("icon");
+			Add(widget);
+
+			widget.Clicked += (sender, args) => data.onToggled(widget.Active);
 			return data;
 		}
 
@@ -555,6 +625,61 @@ namespace MGE.Editor.GUI
 			_menu.Add(widget);
 
 			return data;
+		}
+
+		#endregion
+
+		#region Utils
+
+		public static void DrawObject<T>(T obj, Action<T> onObjectChanged) where T : notnull
+		{
+			if (obj is null)
+			{
+				EditorGUI.tooltip = "Click to create object";
+				EditorGUI.Button("(null)").onPressed += () =>
+				{
+					obj = Activator.CreateInstance<T>();
+					onObjectChanged(obj);
+				};
+				return;
+			}
+
+			Add(EditorGUI.GetDrawer(typeof(T)));
+		}
+
+		public static void ObjectInspector<T>(T obj, Action<T> onObjectChanged)
+		{
+			if (obj is null)
+			{
+				EditorGUI.Text("(null)");
+				return;
+			}
+
+			var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+			ObjectInspector(obj, props.GetEnumerator(), onObjectChanged);
+		}
+
+		public static void ObjectInspector<T>(T obj, System.Collections.IEnumerator props, Action<T> onObjectChanged)
+		{
+			if (obj is null)
+			{
+				EditorGUI.Text("(null)");
+				return;
+			}
+
+			while (props.MoveNext())
+			{
+				var prop = (PropertyInfo)props.Current;
+
+				EditorGUI.tooltip = prop.Name;
+				EditorGUI.StartProperty(Editor.GetPropertyName(prop.Name));
+
+				var propDrawer = Editor.GetPropDrawer(prop.PropertyType);
+
+				propDrawer.DrawProp(prop.GetValue(obj)!, val => { prop.SetValue(obj, val); onObjectChanged(obj); });
+
+				EditorGUI.End();
+			}
 		}
 
 		#endregion

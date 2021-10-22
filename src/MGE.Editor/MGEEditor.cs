@@ -172,7 +172,6 @@ namespace MGE.Editor
 			helpmenu.Append(new MenuItem("Command Palette"));
 			helpmenu.Append(new MenuItem("Project Search"));
 			helpmenu.Append(new SeparatorMenuItem());
-			helpmenu.Append(new MenuItem("Reload Scene"));
 			helpmenu.Append(new MenuItem("Reload Assets"));
 			var clearCacheMenuItem = new MenuItem("Reload Cache");
 			clearCacheMenuItem.Activated += (sender, args) => Editor.ClearCache();
@@ -184,7 +183,6 @@ namespace MGE.Editor
 			helpmenu.Append(new SeparatorMenuItem());
 			helpmenu.Append(new MenuItem("Check for Updates..."));
 			helpmenu.Append(new SeparatorMenuItem());
-			helpmenu.Append(new MenuItem("Copy Debug Info"));
 			helpmenu.Append(new MenuItem("About..."));
 			menubar.Append(help);
 		}

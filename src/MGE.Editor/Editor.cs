@@ -1,25 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
-using MGE.Editor.GUI;
-using MGE.Editor.GUI.PropDrawers;
 
 namespace MGE.Editor
 {
 	internal static class Editor
 	{
-		static Editor()
-		{
-			RegisterPropDrawer(new BoolPropDrawer());
-
-			RegisterPropDrawer(new IntPropDrawer());
-			RegisterPropDrawer(new FloatPropDrawer());
-
-			RegisterPropDrawer(new StringPropDrawer());
-
-			RegisterPropDrawer(new Vector2PropDrawer());
-		}
-
 		public static List<EditorContext> contexts = new() { new() };
 
 		#region Property Name
@@ -102,30 +87,6 @@ namespace MGE.Editor
 			}
 
 			return sb.ToString();
-		}
-
-		#endregion
-
-		#region Property Drawer
-
-		static Dictionary<Type, PropDrawer> typeToPropDrawer = new();
-
-		static PropDrawer enumPropDrawer = new EnumPropDrawer();
-		static PropDrawer fallbackPropDrawer = new FallbackPropDrawer();
-
-		public static bool RegisterPropDrawer(PropDrawer propDrawer)
-		{
-			var type = propDrawer.type;
-
-			if (typeToPropDrawer.TryAdd(type, propDrawer)) return true;
-			typeToPropDrawer[type] = propDrawer;
-			return false;
-		}
-
-		public static PropDrawer GetPropDrawer(Type type)
-		{
-			if (type.IsEnum) return enumPropDrawer;
-			return typeToPropDrawer.GetValueOrDefault(type, fallbackPropDrawer);
 		}
 
 		#endregion
