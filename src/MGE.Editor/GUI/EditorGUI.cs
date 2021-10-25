@@ -31,6 +31,16 @@ namespace MGE.Editor.GUI
 			}
 		}
 
+		static EditorGUI()
+		{
+			RegisterDrawer<bool, BoolDrawer>();
+			RegisterDrawer<string, StringDrawer>();
+			RegisterDrawer<int, IntDrawer>();
+			RegisterDrawer<float, FloatDrawer>();
+
+			RegisterDrawer<Vector2, Vector2Drawer>();
+		}
+
 		#region Object Drawer
 
 		static Dictionary<Type, Type> _typeToDrawer = new();
@@ -38,14 +48,16 @@ namespace MGE.Editor.GUI
 
 		static Type _defaultDrawer = typeof(DefaultDrawer);
 
-		public static void RegisterDrawer(ObjectDrawer drawer)
+		public static void RegisterDrawer<Type, Drawer>()
 		{
-			_objectDrawers.Add((drawer.type, drawer.GetType()));
-			_typeToDrawer.Add(drawer.type, drawer.GetType());
+			_objectDrawers.Add((typeof(Type), typeof(Drawer)));
+			_typeToDrawer.Add(typeof(Type), typeof(Drawer));
 		}
 
-		public static ObjectDrawer GetDrawer(Type type)
+		public static ObjectDrawer GetDrawer(object value)
 		{
+			var type = value.GetType();
+
 			// Try to see if the drawer fro this specific type has been found already
 			if (_typeToDrawer.TryGetValue(type, out var drawer)) goto Return;
 
@@ -66,7 +78,7 @@ namespace MGE.Editor.GUI
 			_typeToDrawer.Add(type, drawer);
 
 		Return:
-			return (ObjectDrawer)Activator.CreateInstance(drawer)!;
+			return (ObjectDrawer)Activator.CreateInstance(drawer, value)!;
 		}
 
 		#endregion
@@ -631,35 +643,27 @@ namespace MGE.Editor.GUI
 
 		#region Utils
 
-		public static void DrawObject<T>(T obj, Action<T> onObjectChanged) where T : notnull
+		public static void Value<T>(T obj, Action<T> onObjectChanged) where T : notnull
 		{
-			if (obj is null)
-			{
-				EditorGUI.tooltip = "Click to create object";
-				EditorGUI.Button("(null)").onPressed += () =>
-				{
-					obj = Activator.CreateInstance<T>();
-					onObjectChanged(obj);
-				};
-				return;
-			}
+			var drawer = EditorGUI.GetDrawer(obj);
 
-			Add(EditorGUI.GetDrawer(typeof(T)));
+			Add(drawer.root);
 		}
 
-		public static void ObjectInspector<T>(T obj, Action<T> onObjectChanged)
+		public static void Inspector<T>(T obj, Action<T> onObjectChanged)
 		{
+			// Todo properly support null
 			if (obj is null)
 			{
 				EditorGUI.Text("(null)");
 				return;
 			}
 
-			var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-			ObjectInspector(obj, props.GetEnumerator(), onObjectChanged);
+			var props = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+			Inspector(obj, props.GetEnumerator(), onObjectChanged);
 		}
 
-		public static void ObjectInspector<T>(T obj, System.Collections.IEnumerator props, Action<T> onObjectChanged)
+		public static void Inspector<T>(T obj, System.Collections.IEnumerator props, Action<T> onObjectChanged)
 		{
 			if (obj is null)
 			{
@@ -674,9 +678,15 @@ namespace MGE.Editor.GUI
 				EditorGUI.tooltip = prop.Name;
 				EditorGUI.StartProperty(Editor.GetPropertyName(prop.Name));
 
-				var propDrawer = Editor.GetPropDrawer(prop.PropertyType);
+				var value = prop.GetValue(obj);
 
-				propDrawer.DrawProp(prop.GetValue(obj)!, val => { prop.SetValue(obj, val); onObjectChanged(obj); });
+				if (value is null)
+				{
+					EditorGUI.Text("(null)");
+					return;
+				}
+
+				Value(value, val => { prop.SetValue(obj, val); onObjectChanged(obj); });
 
 				EditorGUI.End();
 			}

@@ -17,6 +17,8 @@ namespace MGE.Editor.GUI
 			label = new Label(title);
 
 			root.Add(_content);
+
+			Redraw();
 		}
 
 		protected override void Draw()

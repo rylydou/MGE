@@ -11,6 +11,8 @@ checkbutton:active {
 }
 
 checkbutton check {
+	/* Sometimes in cinnamon you can see the unchecked box when you click */
+	-gtk-icon-source: none;
 	-gtk-icon-transform: scale(0);
 
 	transition: -gtk-icon-transform 50ms;

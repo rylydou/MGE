@@ -13,7 +13,7 @@ namespace MGE.Editor.GUI.Windows
 
 		public HierarchyWindow() : base()
 		{
-			foreach (var child in context.root._nodes)
+			foreach (var child in context.root.nodes)
 			{
 				var nodeIter = hierarchyStore.AppendValues(child.name, child.GetType().ToString(), child.id);
 				AddNodeHierarchy(ref nodeIter, child);
@@ -54,14 +54,14 @@ namespace MGE.Editor.GUI.Windows
 				hierarchyStore.GetIter(out var iter, path);
 				var id = (int)hierarchyStore.GetValue(iter, 2);
 
-				context.selection = TestNode.nodes[id];
+				context.selection = TestNode.nodeDatabase[id];
 				context.onSelectionChanged();
 			};
 		}
 
 		void AddNodeHierarchy(ref TreeIter iter, TestNode node)
 		{
-			foreach (var child in node._nodes)
+			foreach (var child in node.nodes)
 			{
 				var nodeIter = hierarchyStore.AppendValues(iter, child.name, child.GetType().ToString(), child.id);
 				AddNodeHierarchy(ref nodeIter, child);

@@ -11,8 +11,6 @@ namespace MGE.Editor.GUI
 		protected EditorContainer(Container root)
 		{
 			this.root = root;
-
-			Redraw();
 		}
 
 		public virtual void Redraw()

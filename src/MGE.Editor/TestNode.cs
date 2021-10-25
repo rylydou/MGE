@@ -5,7 +5,7 @@ namespace MGE.Editor
 	public class TestNode
 	{
 		static int _nextID;
-		public static Dictionary<int, TestNode> nodes = new();
+		public static Dictionary<int, TestNode> nodeDatabase = new();
 
 		public readonly int id;
 
@@ -20,13 +20,13 @@ namespace MGE.Editor
 
 		public Direction direction { get; set; }
 
-		public List<TestNode> _nodes { get; set; } = new();
+		public List<TestNode> nodes = new();
 
 		public TestNode()
 		{
 			id = _nextID;
 			name = $"Node #{_nextID}";
-			nodes.Add(id, this);
+			nodeDatabase.Add(id, this);
 			_nextID++;
 		}
 	}

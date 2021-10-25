@@ -6,13 +6,13 @@ namespace MGE.Editor
 	{
 		public TestNode root = new()
 		{
-			_nodes = new()
+			nodes = new()
 			{
 				new(),
 				new TestChildNode(),
 				new()
 				{
-					_nodes = new()
+					nodes = new()
 					{
 						new(),
 						new TestChildNode(),

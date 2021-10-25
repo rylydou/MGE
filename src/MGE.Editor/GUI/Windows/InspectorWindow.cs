@@ -18,8 +18,7 @@ namespace MGE.Editor.GUI.Windows
 				return;
 			}
 
-			var propDrawer = Editor.GetPropDrawer(context.selection.GetType());
-			propDrawer.DrawProp(context.selection, val => { });
+			EditorGUI.Value(context.selection, val => { });
 		}
 	}
 }
