@@ -1,0 +1,8 @@
+:link {
+	color: @accent;
+	text-decoration: none;
+}
+
+:link:hover, :link:focus {
+	text-decoration: underline;
+}

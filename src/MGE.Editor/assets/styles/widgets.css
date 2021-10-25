@@ -17,6 +17,7 @@ entry:hover /* Why doesn't this work */, entry:focus {
 @import url("widgets/notebook.css");
 @import url("widgets/tree.css");
 
+@import url("widgets/link.css");
 @import url("widgets/button.css");
 @import url("widgets/checkbutton.css");
 

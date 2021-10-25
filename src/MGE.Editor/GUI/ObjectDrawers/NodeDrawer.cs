@@ -1,8 +1,8 @@
 namespace MGE.Editor.GUI.ObjectDrawers
 {
-	public class NodeDrawer : ObjectDrawer<TestNode>
+	public class NodeDrawer : ObjectDrawer<GameNode>
 	{
-		public NodeDrawer(TestNode value) : base(value, true)
+		public NodeDrawer(GameNode value) : base(value, true)
 		{
 
 		}

@@ -4,27 +4,22 @@ namespace MGE.Editor
 {
 	public class EditorContext
 	{
-		public TestNode root = new()
-		{
-			nodes = new()
-			{
+		public GameNode root = new(
+			new(),
+			new GameNodePlus(
 				new(),
-				new TestChildNode(),
+				new GameNodePlus(),
+				// new(
+				// 	new(),
+				// 	new GameNodePlus(),
+				// 	new()
+				// ),
 				new()
-				{
-					nodes = new()
-					{
-						new(),
-						new TestChildNode(),
-						new(),
-						new(),
-					}
-				},
-				new(),
-				new TestChildNode(),
-				new(),
-			},
-		};
+			),
+			new(),
+			new GameNodePlus(),
+			new()
+		);
 
 		// TODO Support multiple objects
 		public object? selection;

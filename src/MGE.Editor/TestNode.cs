@@ -1,13 +1,17 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace MGE.Editor
 {
-	public class TestNode
+	public class GameNode : IEnumerable<GameNode>
 	{
 		static int _nextID;
-		public static Dictionary<int, TestNode> nodeDatabase = new();
+		public static Dictionary<int, GameNode> nodeDatabase = new();
 
 		public readonly int id;
+
+		public GameNode? parent { get; private set; }
 
 		public string name { get; set; }
 
@@ -20,24 +24,48 @@ namespace MGE.Editor
 
 		public Direction direction { get; set; }
 
-		public List<TestNode> nodes = new();
+		List<GameNode> _nodes = new();
 
-		public TestNode()
+		public GameNode(params GameNode[] nodes)
 		{
 			id = _nextID;
-			name = $"Node #{_nextID}";
+			name = $"Node #{id}";
 			nodeDatabase.Add(id, this);
 			_nextID++;
+
+			foreach (var node in nodes) AttachNode(node);
 		}
+
+		public void AttachNode(GameNode node)
+		{
+			if (node.parent is not null) throw new InvalidOperationException("Cannot attach node - It is already attached to something");
+			if (node.id == id) throw new InvalidOperationException("Cannot attach node - Cannot attach node to itself");
+
+			_nodes.Add(node);
+			node.parent = this;
+		}
+
+		public void Detach()
+		{
+			if (parent is null) throw new InvalidOperationException("Cannot attach node - It is not attached to anything");
+
+			parent._nodes.Remove(this);
+			parent = null;
+		}
+
+		public IEnumerator<GameNode> GetEnumerator() => _nodes.GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => _nodes.GetEnumerator();
 	}
 
-	public class TestChildNode : TestNode
+	public class GameNodePlus : GameNode
 	{
 		public Vector2 groundCheckPosition { get; set; } = new();
 		public Vector2 groundCheckSize { get; set; } = new();
 
 		public int health { get; set; }
 		public float speed { get; set; }
+
+		public GameNodePlus(params GameNode[] nodes) : base(nodes) { }
 	}
 
 	public enum Direction

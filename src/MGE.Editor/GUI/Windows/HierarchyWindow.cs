@@ -5,7 +5,7 @@ namespace MGE.Editor.GUI.Windows
 {
 	public class HierarchyWindow : ContextWindow
 	{
-		public override string title => "Inspector";
+		public override string title => "Hierarchy";
 
 		ScrolledWindow hierarchyContainer = new();
 		TreeView hierarchyView;
@@ -13,38 +13,41 @@ namespace MGE.Editor.GUI.Windows
 
 		public HierarchyWindow() : base()
 		{
-			foreach (var child in context.root.nodes)
+			foreach (var child in context.root)
 			{
 				var nodeIter = hierarchyStore.AppendValues(child.name, child.GetType().ToString(), child.id);
-				AddNodeHierarchy(ref nodeIter, child);
+				AddNodeHierarchy(nodeIter, child);
 			}
 
 			hierarchyStore.RowChanged += (sender, args) =>
 			{
+				var node = GameNode.nodeDatabase[(int)hierarchyStore.GetValue(args.Iter, 2)];
 
+				var startNode = node.parent;
+
+				var desinationNode = context.root;
+				try
+				{
+					args.Path.Up();
+					hierarchyStore.GetIter(out var iter, args.Path);
+					desinationNode = GameNode.nodeDatabase[(int)hierarchyStore.GetValue(iter, 2)];
+				}
+				catch (System.Exception)
+				{
+					desinationNode = context.root;
+				}
+
+				Trace.WriteLine($">>> Moving node {node.id} from {startNode?.id} to {desinationNode.id}");
+
+				node.Detach();
+				desinationNode.AttachNode(node);
 			};
 
 			hierarchyView = new(hierarchyStore) { HeadersVisible = false, Reorderable = true, EnableTreeLines = true, RubberBanding = true, Vexpand = true, };
 
 			hierarchyView.AppendColumn("Name", new CellRendererText(), "text", 0);
 			hierarchyView.AppendColumn("Type", new CellRendererText(), "text", 1);
-
-			hierarchyView.ButtonPressEvent += (sender, args) =>
-			{
-				if (args.Event.Type == Gdk.EventType.ButtonPress && args.Event.Button == 3)
-				{
-					Trace.WriteLine("Right");
-
-					EditorGUI.StartMenu();
-
-					EditorGUI.MenuButton("Add Child");
-					EditorGUI.MenuButton("Add Parent");
-					EditorGUI.MenuSeparator();
-					EditorGUI.MenuButton("Remove");
-
-					EditorGUI.EndMenu();
-				}
-			};
+			hierarchyView.AppendColumn("ID", new CellRendererText(), "text", 2);
 
 			hierarchyContainer.Add(hierarchyView);
 
@@ -54,17 +57,17 @@ namespace MGE.Editor.GUI.Windows
 				hierarchyStore.GetIter(out var iter, path);
 				var id = (int)hierarchyStore.GetValue(iter, 2);
 
-				context.selection = TestNode.nodeDatabase[id];
+				context.selection = GameNode.nodeDatabase[id];
 				context.onSelectionChanged();
 			};
 		}
 
-		void AddNodeHierarchy(ref TreeIter iter, TestNode node)
+		void AddNodeHierarchy(TreeIter iter, GameNode node)
 		{
-			foreach (var child in node.nodes)
+			foreach (var child in node)
 			{
 				var nodeIter = hierarchyStore.AppendValues(iter, child.name, child.GetType().ToString(), child.id);
-				AddNodeHierarchy(ref nodeIter, child);
+				AddNodeHierarchy(nodeIter, child);
 			}
 		}
 

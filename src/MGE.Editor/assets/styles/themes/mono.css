@@ -3,8 +3,8 @@
 @define-color element #000;
 @define-color popup #000;
 
-@define-color text #EEE;
-@define-color text-dark #AAA;
+@define-color text #FFF;
+@define-color text-dark #FFF;
 
 @define-color accent #FFF;
 

@@ -18,13 +18,6 @@ namespace MGE.Editor.GUI
 
 		protected void ValueChanged() => onValueChanged(value);
 
-		protected ObjectDrawer(T value, Container root) : base(root)
-		{
-			this.value = value;
-
-			Redraw();
-		}
-
 		protected ObjectDrawer(T value, bool multiline) : base(new Box(multiline ? Orientation.Vertical : Orientation.Horizontal, 4))
 		{
 			this.value = value;

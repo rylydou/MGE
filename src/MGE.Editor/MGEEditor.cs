@@ -42,6 +42,7 @@ namespace MGE.Editor
 
 			var rightDock = new Dock();
 			rightDock.AddWindow(new InspectorWindow());
+			rightDock.AddWindow(new RealHierarchyWindow());
 
 			var centerDock = new Dock();
 			centerDock.AddWindow(new SceneWindow());

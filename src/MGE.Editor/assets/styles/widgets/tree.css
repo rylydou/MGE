@@ -8,12 +8,12 @@ treeview .expander {
 	-gtk-icon-source: -gtk-icontheme('tree_closed');
 }
 
-treeview .expander:checked {
-	-gtk-icon-source: -gtk-icontheme('tree_open');
-}
-
 treeview .expander:hover {
 	color: @text;
+}
+
+treeview .expander:checked {
+	-gtk-icon-source: -gtk-icontheme('tree_open');
 }
 
 treeview:hover {
@@ -24,11 +24,6 @@ treeview:selected {
 	color: @selection-color;
 	background-color: @selection-background;
 	border-color: @selection-color;
-}
-
-treeview arrow {
-	color: @red;
-	background-color: @blue;
 }
 
 treeview:drop(active) {

@@ -47,6 +47,8 @@ namespace MGE.Editor.GUI
 		static List<(Type, Type)> _objectDrawers = new();
 
 		static Type _defaultDrawer = typeof(DefaultDrawer);
+		static Type _enumDrawer = typeof(EnumDrawer);
+		static Type _flagsDrawer = typeof(FlagsDrawer);
 
 		public static void RegisterDrawer<Type, Drawer>()
 		{
@@ -71,8 +73,8 @@ namespace MGE.Editor.GUI
 				}
 			}
 
-			// If no drawer exists for this type then just use the defualt one
-			if (drawer is null) drawer = _defaultDrawer;
+			if (type.IsEnum) drawer = type.GetCustomAttribute<FlagsAttribute>() is null ? _enumDrawer : _flagsDrawer;
+			else if (drawer is null) drawer = _defaultDrawer;
 
 			// Add the drawer and type combo to the cache so its faster to find next time
 			_typeToDrawer.Add(type, drawer);
