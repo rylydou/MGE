@@ -11,12 +11,7 @@
 * {
 	color: @text;
 
-	font:
-		/* General */  600 12px Inter,
-		/* Windows */  Segoe UI Semibold, Segoe UI,
-		/* Mac */      Helvetica Neue, San Francisco,
-		/* Linux */    Ubuntu,
-		/* Fallback */ Sans;
+	font: 600 12px Inter, Sans;
 	caret-color: @accent;
 
 	transition: opacity 100ms;

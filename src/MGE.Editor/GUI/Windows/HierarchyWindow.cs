@@ -25,16 +25,12 @@ namespace MGE.Editor.GUI.Windows
 
 				var startNode = node.parent;
 
+				var desinationPath = args.Path;
 				var desinationNode = context.root;
-				try
+				if (desinationPath.Up() && desinationPath.Depth > 0)
 				{
-					args.Path.Up();
-					hierarchyStore.GetIter(out var iter, args.Path);
+					hierarchyStore.GetIter(out var iter, desinationPath);
 					desinationNode = GameNode.nodeDatabase[(int)hierarchyStore.GetValue(iter, 2)];
-				}
-				catch (System.Exception)
-				{
-					desinationNode = context.root;
 				}
 
 				Trace.WriteLine($">>> Moving node {node.id} from {startNode?.id} to {desinationNode.id}");
@@ -47,9 +43,7 @@ namespace MGE.Editor.GUI.Windows
 
 			hierarchyView.AppendColumn("Name", new CellRendererText(), "text", 0);
 			hierarchyView.AppendColumn("Type", new CellRendererText(), "text", 1);
-			hierarchyView.AppendColumn("ID", new CellRendererText(), "text", 2);
-
-			hierarchyContainer.Add(hierarchyView);
+			// hierarchyView.AppendColumn("ID", new CellRendererText(), "text", 2);
 
 			hierarchyView.CursorChanged += (sender, args) =>
 			{
@@ -60,6 +54,8 @@ namespace MGE.Editor.GUI.Windows
 				context.selection = GameNode.nodeDatabase[id];
 				context.onSelectionChanged();
 			};
+
+			hierarchyContainer.Add(hierarchyView);
 		}
 
 		void AddNodeHierarchy(TreeIter iter, GameNode node)

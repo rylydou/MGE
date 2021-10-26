@@ -11,7 +11,7 @@ namespace MGE.Editor
 
 		public readonly int id;
 
-		public GameNode? parent { get; private set; }
+		public GameNode? parent;
 
 		public string name { get; set; }
 

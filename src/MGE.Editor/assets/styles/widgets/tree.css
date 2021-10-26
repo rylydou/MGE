@@ -4,7 +4,7 @@ treeview.view {
 }
 
 treeview .expander {
-	color: @text-dark;
+	color: alpha(@text, 0.1);
 	-gtk-icon-source: -gtk-icontheme('tree_closed');
 }
 
