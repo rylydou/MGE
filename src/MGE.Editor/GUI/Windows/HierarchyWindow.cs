@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Gtk;
 
 namespace MGE.Editor.GUI.Windows
@@ -23,23 +26,30 @@ namespace MGE.Editor.GUI.Windows
 			{
 				var node = GameNode.nodeDatabase[(int)hierarchyStore.GetValue(args.Iter, 2)];
 
-				var startNode = node.parent;
+				var oldPosition = node.siblingIndex;
+				var originalParent = node.parent ?? throw new InvalidOperationException("Cannot move root node");
 
-				var desinationPath = args.Path;
-				var desinationNode = context.root;
-				if (desinationPath.Up() && desinationPath.Depth > 0)
+				var newPosition = args.Path.Indices.Last();
+				var newParentPath = new TreePath(args.Path.Indices);
+				var newParent = context.root;
+				if (newParentPath.Up() && newParentPath.Depth > 0)
 				{
-					hierarchyStore.GetIter(out var iter, desinationPath);
-					desinationNode = GameNode.nodeDatabase[(int)hierarchyStore.GetValue(iter, 2)];
+					hierarchyStore.GetIter(out var iter, newParentPath);
+					newParent = GameNode.nodeDatabase[(int)hierarchyStore.GetValue(iter, 2)];
 				}
 
-				Trace.WriteLine($">>> Moving node {node.id} from {startNode?.id} to {desinationNode.id}");
+				Trace.WriteLine($"Moving node #{node.id} from #{originalParent.id} to #{newParent.id} at {newPosition}");
 
+				if (originalParent == newParent && newPosition >= oldPosition)
+				{
+					newPosition--;
+				}
 				node.Detach();
-				desinationNode.AttachNode(node);
+				newParent.AttachNode(node, newPosition);
 			};
 
-			hierarchyView = new(hierarchyStore) { HeadersVisible = false, Reorderable = true, EnableTreeLines = true, RubberBanding = true, Vexpand = true, };
+			hierarchyView = new(hierarchyStore) { HeadersVisible = false, Reorderable = true, EnableTreeLines = true, RubberBanding = true, Vexpand = true, LevelIndentation = 1 };
+			hierarchyView.Selection.Mode = SelectionMode.Multiple;
 
 			hierarchyView.AppendColumn("Name", new CellRendererText(), "text", 0);
 			hierarchyView.AppendColumn("Type", new CellRendererText(), "text", 1);
@@ -47,12 +57,18 @@ namespace MGE.Editor.GUI.Windows
 
 			hierarchyView.CursorChanged += (sender, args) =>
 			{
-				var path = hierarchyView.Selection.GetSelectedRows()[0];
-				hierarchyStore.GetIter(out var iter, path);
-				var id = (int)hierarchyStore.GetValue(iter, 2);
+				context.ClearSelection();
 
-				context.selection = GameNode.nodeDatabase[id];
-				context.onSelectionChanged();
+				var selectedRows = hierarchyView.Selection.GetSelectedRows();
+				var selectedNodes = new List<GameNode>(selectedRows.Length);
+				foreach (var row in selectedRows)
+				{
+					hierarchyStore.GetIter(out var iter, row);
+					var id = (int)hierarchyStore.GetValue(iter, 2);
+					selectedNodes.Add(GameNode.nodeDatabase[id]);
+				}
+
+				context.SetSelection(selectedNodes);
 			};
 
 			hierarchyContainer.Add(hierarchyView);

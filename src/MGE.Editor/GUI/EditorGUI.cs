@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Gtk;
@@ -33,6 +34,8 @@ namespace MGE.Editor.GUI
 
 		static EditorGUI()
 		{
+			RegisterDrawer<IEnumerable, ListDrawer>();
+
 			RegisterDrawer<bool, BoolDrawer>();
 			RegisterDrawer<string, StringDrawer>();
 			RegisterDrawer<int, IntDrawer>();
@@ -52,7 +55,7 @@ namespace MGE.Editor.GUI
 
 		public static void RegisterDrawer<Type, Drawer>()
 		{
-			_objectDrawers.Add((typeof(Type), typeof(Drawer)));
+			_objectDrawers.Insert(0, (typeof(Type), typeof(Drawer)));
 			_typeToDrawer.Add(typeof(Type), typeof(Drawer));
 		}
 
@@ -146,7 +149,7 @@ namespace MGE.Editor.GUI
 
 		public static readonly List<string> classes = new();
 
-		static void ResetProperties()
+		public static void ResetProperties()
 		{
 			sensitive.Unset();
 			tooltip.Unset();
@@ -302,7 +305,7 @@ namespace MGE.Editor.GUI
 
 		public static ButtonData Button(string text)
 		{
-			var widget = new Button(text) { Hexpand = true };
+			var widget = new Button(text) { Hexpand = true, Xalign = horizontalAlign.TryGetValue(0.5f), };
 			var data = new ButtonData(widget);
 			widget.Clicked += (sender, args) => data.onPressed();
 
@@ -327,7 +330,7 @@ namespace MGE.Editor.GUI
 
 		public static ToggleButtonData ToggleButton(string text, bool? state)
 		{
-			var widget = new ToggleButton(text) { Inconsistent = !state.HasValue, Active = state.HasValue ? state.Value : false };
+			var widget = new ToggleButton(text) { Inconsistent = !state.HasValue, Active = state.HasValue ? state.Value : false, Xalign = horizontalAlign.TryGetValue(0.5f), };
 			var data = new ToggleButtonData(widget);
 
 			var styleContext = widget.StyleContext;
@@ -527,6 +530,13 @@ namespace MGE.Editor.GUI
 		public static void StartHorizontal(int spacing = 4, bool homogeneous = false)
 		{
 			var box = new Box(Orientation.Horizontal, spacing) { Homogeneous = homogeneous };
+			Add(box);
+			PushContainer(box);
+		}
+
+		public static void StartVertical(int spacing = 4, bool homogeneous = false)
+		{
+			var box = new Box(Orientation.Vertical, spacing) { Homogeneous = homogeneous };
 			Add(box);
 			PushContainer(box);
 		}

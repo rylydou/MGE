@@ -12,6 +12,7 @@ namespace MGE.Editor
 		public readonly int id;
 
 		public GameNode? parent;
+		public int siblingIndex;
 
 		public string name { get; set; }
 
@@ -42,6 +43,25 @@ namespace MGE.Editor
 			if (node.id == id) throw new InvalidOperationException("Cannot attach node - Cannot attach node to itself");
 
 			_nodes.Add(node);
+			node.siblingIndex = _nodes.Count;
+			node.parent = this;
+		}
+
+		public void AttachNode(GameNode node, int position)
+		{
+			if (position < 0) throw new ArgumentOutOfRangeException(nameof(position), position, "Position cannot be less than 0");
+			if (position > _nodes.Count) throw new ArgumentOutOfRangeException(nameof(position), position, $"Position greater than {_nodes.Count} (number of nodes)");
+
+			if (node.parent is not null) throw new InvalidOperationException("Cannot attach node - It is already attached to something");
+			if (node.id == id) throw new InvalidOperationException("Cannot attach node - Cannot attach node to itself");
+
+			node.siblingIndex = position;
+			for (int i = position; i < _nodes.Count; i++)
+			{
+				_nodes[i].siblingIndex++;
+			}
+
+			_nodes.Insert(position, node);
 			node.parent = this;
 		}
 

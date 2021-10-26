@@ -11,14 +11,21 @@ namespace MGE.Editor.GUI.Windows
 
 		protected override void Draw()
 		{
-			if (context.selection is null)
+			if (context.multipleSelectedObjects)
+			{
+				EditorGUI.verticalExpand = true;
+				EditorGUI.Header("Multiple Selected Objects");
+				return;
+			}
+
+			if (context.selectedObject is null)
 			{
 				EditorGUI.verticalExpand = true;
 				EditorGUI.Header("Nothing Selected");
 				return;
 			}
 
-			EditorGUI.Value(context.selection, val => { });
+			EditorGUI.Value(context.selectedObject, val => { });
 		}
 	}
 }
