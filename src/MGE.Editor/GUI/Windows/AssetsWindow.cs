@@ -24,7 +24,7 @@ namespace MGE.Editor.GUI.Windows
 			// TODO Switch to panned
 			EditorGUI.StartHorizontal(homogeneous: true);
 
-			EditorGUI.StartHorizonalFlow();
+			EditorGUI.StartVertical();
 
 			var folders = currentFolder.GetDirectories("*", enumerationOptions);
 			var files = currentFolder.GetFiles("*", enumerationOptions);
@@ -49,7 +49,7 @@ namespace MGE.Editor.GUI.Windows
 
 			EditorGUI.End();
 
-			EditorGUI.StartVertical();
+			EditorGUI.StartHorizonalFlow();
 
 			foreach (var file in files)
 			{
