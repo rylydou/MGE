@@ -18,6 +18,6 @@ namespace MGE.Editor.GUI.Windows
 		}
 		public EditorContext context { get; private set; } = Editor.contexts[0];
 
-		protected ContextWindow() : base() { }
+		protected ContextWindow(bool scrolled = true) : base(scrolled) { }
 	}
 }

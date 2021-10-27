@@ -1,6 +1,6 @@
-namespace MGE.Editor.GUI.ObjectDrawers
+namespace MGE.Editor.GUI.Drawers
 {
-	public class DefaultDrawer : ObjectDrawer<object>
+	public class DefaultDrawer : Drawer<object>
 	{
 		public DefaultDrawer(object value) : base(value, true) { }
 

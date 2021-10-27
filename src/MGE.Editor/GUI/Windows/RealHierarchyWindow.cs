@@ -2,15 +2,14 @@ using Gtk;
 
 namespace MGE.Editor.GUI.Windows
 {
+	[EditorWindow("Real Hierarchy")]
 	public class RealHierarchyWindow : ContextWindow
 	{
-		public override string title => "Real Hierarchy";
-
 		ScrolledWindow hierarchyContainer = new();
 		TreeView hierarchyView;
 		TreeStore hierarchyStore = new(typeof(string), typeof(string), typeof(int));
 
-		public RealHierarchyWindow()
+		public RealHierarchyWindow() : base()
 		{
 			hierarchyView = new(hierarchyStore) { HeadersVisible = false, EnableTreeLines = true, RubberBanding = true, Vexpand = true, };
 

@@ -1,54 +1,54 @@
 menu {
-	border-radius: 0px;
+  border-radius: 0px;
 }
 
 menu separator {
-	margin: 3px;
-	padding: 0;
-	background-color: @background;
+  margin: 3px;
+  padding: 0;
+  background-color: @background;
 }
 
 menuitem {
-	padding: 4px 0;
-	border-radius: 0px;
+  padding: 4px 0;
+  border-radius: 0px;
 }
 
 menuitem > * {
-	color: @text;
+  color: @foreground;
 }
 
 menuitem > check {
-	color: @accent;
+  color: @accent;
 }
 
 menuitem > check:checked {
-	-gtk-icon-source: -gtk-icontheme('check');
+  -gtk-icon-source: -gtk-icontheme("check");
 }
 
 menuitem check,
 menuitem arrow {
-	margin: 0 4px;
+  margin: 0 4px;
 }
 
 menubar > menuitem {
-	margin: 4px 0;
-	padding: 0 6px;
+  margin: 4px 0;
+  padding: 0 6px;
 }
 
 menubar > menuitem > label {
-	color: @text-dark;
+  color: @midground;
 }
 
 menuitem:hover {
-	background-color: @selection-background;
+  background-color: @accent;
 }
 
 menuitem:hover > * {
-	color: @selection-color;
+  color: @accent-foreground;
 }
 
 menuitem:disabled > * {
-	color: @text-dark;
+  color: @midground;
 }
 
 /*

@@ -3,10 +3,8 @@
 @define-color element #1D1D1D;
 @define-color popup #000;
 
-@define-color text #EEE;
-@define-color text-dark #666;
+@define-color foreground #EEE;
+@define-color midground #666;
 
 @define-color accent #FF7504;
-
-@define-color selection-color #000;
-@define-color selection-background @accent;
+@define-color accent-foreground #000;

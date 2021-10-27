@@ -9,17 +9,17 @@
 @import url("reset.css");
 
 * {
-	color: @text;
+  color: @foreground;
 
-	font: 600 12px Inter, Sans;
-	caret-color: @accent;
+  font: 600 12px Inter, Sans;
+  caret-color: @accent;
 
-	transition: opacity 100ms;
+  transition: opacity 100ms;
 }
 
 selection {
-	background-color: @selection-background;
-	color: @selection-color;
+  background-color: @accent;
+  color: @accent-foreground;
 }
 
 /* SECTIONS */

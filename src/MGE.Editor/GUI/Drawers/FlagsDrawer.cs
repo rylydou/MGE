@@ -1,8 +1,8 @@
 using System;
 
-namespace MGE.Editor.GUI.ObjectDrawers
+namespace MGE.Editor.GUI.Drawers
 {
-	public class FlagsDrawer : ObjectDrawer<Enum>
+	public class FlagsDrawer : Drawer<Enum>
 	{
 		public FlagsDrawer(Enum value) : base(value, false) { }
 

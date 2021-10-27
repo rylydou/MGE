@@ -1,9 +1,8 @@
 namespace MGE.Editor.GUI.Windows
 {
+	[EditorWindow("Inspector")]
 	public class InspectorWindow : ContextWindow
 	{
-		public override string title => "Inspector";
-
 		public InspectorWindow() : base()
 		{
 			context.onSelectionChanged += () => Redraw();

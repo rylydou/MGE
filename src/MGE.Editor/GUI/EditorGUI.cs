@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Gtk;
 using MGE.Editor.GUI.Data;
-using MGE.Editor.GUI.ObjectDrawers;
+using MGE.Editor.GUI.Drawers;
 using MGE.Editor.Util;
 using Pango;
 
@@ -44,7 +44,7 @@ namespace MGE.Editor.GUI
 			RegisterDrawer<Vector2, Vector2Drawer>();
 		}
 
-		#region Object Drawer
+		#region Drawers
 
 		static Dictionary<Type, Type> _typeToDrawer = new();
 		static List<(Type, Type)> _objectDrawers = new();
@@ -59,7 +59,7 @@ namespace MGE.Editor.GUI
 			_typeToDrawer.Add(typeof(Type), typeof(Drawer));
 		}
 
-		public static ObjectDrawer GetDrawer(object value)
+		public static Drawer GetDrawer(object value)
 		{
 			var type = value.GetType();
 
@@ -83,10 +83,10 @@ namespace MGE.Editor.GUI
 			_typeToDrawer.Add(type, drawer);
 
 		Return:
-			return (ObjectDrawer)Activator.CreateInstance(drawer, value)!;
+			return (Drawer)Activator.CreateInstance(drawer, value)!;
 		}
 
-		#endregion
+		#endregion Drawers
 
 		public
 
@@ -125,7 +125,7 @@ namespace MGE.Editor.GUI
 			{ "clamp", (args) => Math.Clamp(args[0], args[1], args[2]) },
 		});
 
-		#region Properties
+		#region Widget Properties
 
 		public static Optional<bool> sensitive = new();
 		public static Optional<string?> tooltip = new();
@@ -174,7 +174,7 @@ namespace MGE.Editor.GUI
 			placeholderText.Unset();
 		}
 
-		#endregion
+		#endregion Widget Properties
 
 		static Stack<ContainerInfo> _containerStack = new();
 		static ContainerInfo? _containerInfo;
@@ -192,6 +192,7 @@ namespace MGE.Editor.GUI
 			_containerInfo = new ContainerInfo(container);
 		}
 
+		public static void End() => PopContainer();
 		public static void PopContainer()
 		{
 			if (_containerStack.TryPop(out var item))
@@ -224,9 +225,11 @@ namespace MGE.Editor.GUI
 				styleContext.AddClass(c);
 			}
 
+			ResetProperties();
+
 			container.Add(widget);
 
-			ResetProperties();
+			if (containerInfo.isBin) End();
 
 			return widget;
 		}
@@ -301,6 +304,8 @@ namespace MGE.Editor.GUI
 			return data;
 		}
 
+		#region Controls
+
 		#region Buttons
 
 		public static ButtonData Button(string text)
@@ -310,6 +315,17 @@ namespace MGE.Editor.GUI
 			widget.Clicked += (sender, args) => data.onPressed();
 
 			Add(widget);
+
+			return data;
+		}
+
+		public static ButtonData ButtonWithContent()
+		{
+			var widget = new Button() { Hexpand = true, };
+			var data = new ButtonData(widget);
+			widget.Clicked += (sender, args) => data.onPressed();
+
+			AddContainer(widget);
 
 			return data;
 		}
@@ -354,20 +370,7 @@ namespace MGE.Editor.GUI
 			return data;
 		}
 
-		public static CheckboxData Checkbox(bool? value)
-		{
-			var widget = new CheckButton();
-			var data = new CheckboxData(widget);
-			widget.Clicked += (sender, args) => data.onToggled(widget.Active);
-
-			if (value.HasValue) widget.Active = value.Value;
-			else widget.Inconsistent = true;
-			Add(widget);
-
-			return data;
-		}
-
-		#endregion
+		#endregion Buttons
 
 		#region Feilds
 
@@ -500,7 +503,20 @@ namespace MGE.Editor.GUI
 			return data;
 		}
 
-		#endregion
+		#endregion Feilds
+
+		public static CheckboxData Checkbox(bool? value)
+		{
+			var widget = new CheckButton();
+			var data = new CheckboxData(widget);
+			widget.Clicked += (sender, args) => data.onToggled(widget.Active);
+
+			if (value.HasValue) widget.Active = value.Value;
+			else widget.Inconsistent = true;
+			Add(widget);
+
+			return data;
+		}
 
 		public static ComboboxData Combobox(string[] options, string? current = null) => Combobox(options, Array.IndexOf(options, current));
 		public static ComboboxData Combobox(string[] options, int current = -1)
@@ -523,50 +539,41 @@ namespace MGE.Editor.GUI
 			return data;
 		}
 
+		#endregion Controls
+
 		#endregion
+
+		public static void Icon(string name) => Add(new Image(IconTheme.Default.LoadIcon(name, 64, IconLookupFlags.ForceSymbolic)));
+
+		public static void Image(string path) => Add(new Image($"{Environment.CurrentDirectory}/{path}"));
 
 		#region Layout
 
+		#region Containers
+
 		public static void StartHorizontal(int spacing = 4, bool homogeneous = false)
 		{
-			var box = new Box(Orientation.Horizontal, spacing) { Homogeneous = homogeneous };
-			Add(box);
-			PushContainer(box);
+			var box = new Box(Orientation.Horizontal, spacing) { Homogeneous = homogeneous, };
+			AddContainer(box);
 		}
 
 		public static void StartVertical(int spacing = 4, bool homogeneous = false)
 		{
 			var box = new Box(Orientation.Vertical, spacing) { Homogeneous = homogeneous };
-			Add(box);
-			PushContainer(box);
+			AddContainer(box);
 		}
 
-		public static void StartHorizonalFlow(int rowspacing = 8, int columnSpacing = 8)
+		public static void StartHorizonalFlow(int spacing = 8)
 		{
-			var flow = new FlowBox()
+			var widget = new FlowBox()
 			{
 				Orientation = Orientation.Horizontal,
-				RowSpacing = (uint)rowspacing,
-				ColumnSpacing = (uint)columnSpacing,
+				RowSpacing = (uint)spacing,
+				ColumnSpacing = (uint)spacing,
+				Homogeneous = true,
 			};
-			Add(flow);
-			PushContainer(flow);
-		}
 
-		public static void StartNotebook(bool tabsOnSide)
-		{
-			var notebook = new Notebook() { TabPos = tabsOnSide ? PositionType.Left : PositionType.Top };
-
-			Add(notebook);
-			PushContainer(notebook);
-		}
-
-		public static ScrolledData StartScrolled()
-		{
-			var scrolled = new ScrolledWindow();
-			var data = new ScrolledData(scrolled);
-
-			return data;
+			AddContainer(widget);
 		}
 
 		public static void StartProperty(string label, bool inline = true)
@@ -587,19 +594,44 @@ namespace MGE.Editor.GUI
 				Label(label);
 
 				var box = new Box(Orientation.Vertical, 4);
-				Add(box);
-				PushContainer(box);
+				AddContainer(box);
 			}
 
 		}
 
-		public static void End() => PopContainer();
+		#endregion Containers
 
-		public static void Separator() => Add(isHorizontal ? new VSeparator() : new HSeparator());
+		#region Bins
 
-		public static void Expand() => Add(new Box(Orientation.Horizontal, 0) { Hexpand = isHorizontal, Vexpand = !isHorizontal, });
+		public static ScrolledData VerticalOverflow()
+		{
+			var widget = new ScrolledWindow() { Vexpand = true, Hexpand = true, };
+			var data = new ScrolledData(widget);
 
-		#endregion
+			AddContainer(widget);
+
+			return data;
+		}
+
+		public static FlexData HorizontalFlex(int position = 240)
+		{
+			var widget = new Paned(Orientation.Horizontal) { Vexpand = true, Hexpand = true, Position = position, PositionSet = true, };
+			var data = new FlexData(widget);
+
+			widget.MoveHandle += (sender, args) => data.onPositionChanged.Invoke(widget.Position);
+
+			AddContainer(widget);
+
+			return data;
+		}
+
+		#endregion Bins
+
+		public static void Separator() => Add(new Separator(isHorizontal ? Orientation.Horizontal : Orientation.Vertical));
+
+		public static void Flex() => Add(new Label() { Hexpand = isHorizontal, Vexpand = !isHorizontal, });
+
+		#endregion Layout
 
 		#region Menu
 
@@ -651,7 +683,7 @@ namespace MGE.Editor.GUI
 			return data;
 		}
 
-		#endregion
+		#endregion Menu
 
 		#region Utils
 
@@ -704,8 +736,8 @@ namespace MGE.Editor.GUI
 			}
 		}
 
-		#endregion
-
 		static double Eval(string expression) => ExpressionParser.Parse(expression).Eval(_dictionaryContext);
+
+		#endregion Utils
 	}
 }

@@ -1,8 +1,8 @@
 using System;
 
-namespace MGE.Editor.GUI.ObjectDrawers
+namespace MGE.Editor.GUI.Drawers
 {
-	public class EnumDrawer : ObjectDrawer<Enum>
+	public class EnumDrawer : Drawer<Enum>
 	{
 		public EnumDrawer(Enum value) : base(value, false) { }
 

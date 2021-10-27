@@ -1,26 +1,26 @@
 combobox {
-	min-height: 24px;
+  min-height: 24px;
 }
 
 combobox arrow {
-	color: @text-dark;
-	-gtk-icon-source: -gtk-icontheme('dropdown_open');
+  color: @midground;
+  -gtk-icon-source: -gtk-icontheme("dropdown_open");
 }
 
 combobox button {
-	padding: 4px;
+  padding: 4px;
 }
 
 combobox window.popup cellview {
-	padding: 0 4px;
+  padding: 0 4px;
 }
 
 combobox window.popup cellview:hover {
-	background-color: @selection-background;
-	color: @red;
+  background-color: @accent;
+  color: @red;
 }
 
 combobox window.popup :hover cellview {
-	color: @selection-color;
-	background-color: @selection-background;
+  color: @accent-foreground;
+  background-color: @accent;
 }

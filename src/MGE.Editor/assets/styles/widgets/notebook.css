@@ -1,52 +1,60 @@
 notebook header {
-	min-height: 24px;
+  min-height: 24px;
 }
 
 notebook > header > tabs > tab {
-	min-height: 24px;
-	padding: 0 8px;
+  min-height: 24px;
+  padding: 0 8px;
 }
 
-notebook > header.top > tabs > tab { border-top: solid 2px transparent; }
-notebook > header.bottom > tabs > tab { border-bottom: solid 2px transparent; }
-notebook > header.left > tabs > tab { border-left: solid 2px transparent; }
-notebook > header.right > tabs > tab { border-right: solid 2px transparent; }
+notebook > header.top > tabs > tab {
+  border-top: solid 2px transparent;
+}
+notebook > header.bottom > tabs > tab {
+  border-bottom: solid 2px transparent;
+}
+notebook > header.left > tabs > tab {
+  border-left: solid 2px transparent;
+}
+notebook > header.right > tabs > tab {
+  border-right: solid 2px transparent;
+}
 
 notebook > header > tabs > tab * {
-	color: @text-dark;
+  color: @midground;
 }
 
 notebook > header > tabs > tab:hover * {
-	color: @text;
+  color: @foreground;
 }
 
 notebook > header > tabs > tab:checked {
-	background-color: @background;
-	border-color: @accent;
+  background-color: @background;
+  border-color: @accent;
 }
 
 notebook > header > tabs > tab:checked * {
-	color: @text;
+  color: @foreground;
 }
 
 notebook > header > tabs > arrow {
-	color: @text-dark;
+  color: @midground;
 }
 
 notebook > header > tabs > arrow:hover {
-	color: @accent;
+  color: @accent;
 }
 
 notebook > header > tabs > arrow:disabled {
-	color: @background;
+  color: @background;
 }
 
 notebook > stack {
-	padding: 8px;
-	background-color: @background;
+  padding: 8px;
+  background-color: @background;
 }
 
 notebook.empty > stack {
-	background-color: @base;
-	transition: background-color 500ms;
+  background-color: @base;
+  transition: background-color 500ms;
 }

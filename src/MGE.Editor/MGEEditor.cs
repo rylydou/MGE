@@ -33,6 +33,8 @@ namespace MGE.Editor
 			// Idk which one I should use
 			IconTheme.Default.PrependSearchPath(Environment.CurrentDirectory + "/assets/icons");
 			IconTheme.Default.AppendSearchPath(Environment.CurrentDirectory + "/assets/icons");
+			IconTheme.Default.AddResourcePath(Environment.CurrentDirectory + "/assets/icons");
+			IconTheme.Default.AppendSearchPath(Environment.CurrentDirectory + "/assets/icons");
 			IconTheme.Default.RescanIfNeeded();
 
 			var mainLayout = new Box(Orientation.Vertical, 0);
@@ -46,6 +48,7 @@ namespace MGE.Editor
 
 			var centerDock = new Dock();
 			centerDock.AddWindow(new SceneWindow());
+			centerDock.AddWindow(new SettingsWindow());
 
 			var bottomDock = new Dock();
 			bottomDock.AddWindow(new AssetsWindow());

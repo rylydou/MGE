@@ -2,10 +2,8 @@
 @define-color background #202020;
 @define-color element #2C2C2C;
 
-@define-color text #FFF;
-@define-color text-dark #CCC;
+@define-color foreground #FFF;
+@define-color midground #CCC;
 
 @define-color accent #2D9FD6;
-
-@define-color selection-color @base;
-@define-color selection-background @accent;
+@define-color accent-foreground @base;

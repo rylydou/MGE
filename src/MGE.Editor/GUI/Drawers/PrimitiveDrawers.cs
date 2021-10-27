@@ -1,30 +1,30 @@
-namespace MGE.Editor.GUI.ObjectDrawers
+namespace MGE.Editor.GUI.Drawers
 {
-	public class BoolDrawer : ObjectDrawer<bool>
+	public class BoolDrawer : Drawer<bool>
 	{
 		public BoolDrawer(bool value) : base(value, false) { }
 		protected override void Draw() => EditorGUI.Checkbox(value).onToggled += value => ValueChanged();
 	}
 
-	public class StringDrawer : ObjectDrawer<string>
+	public class StringDrawer : Drawer<string>
 	{
 		public StringDrawer(string value) : base(value, false) { }
 		protected override void Draw() => EditorGUI.TextFeild(value).onSubmitted += value => ValueChanged();
 	}
 
-	public class IntDrawer : ObjectDrawer<int>
+	public class IntDrawer : Drawer<int>
 	{
 		public IntDrawer(int value) : base(value, false) { }
 		protected override void Draw() => EditorGUI.NumberFeild(value).onSubmitted += value => ValueChanged();
 	}
 
-	public class FloatDrawer : ObjectDrawer<float>
+	public class FloatDrawer : Drawer<float>
 	{
 		public FloatDrawer(float value) : base(value, false) { }
 		protected override void Draw() => EditorGUI.NumberFeild(value).onSubmitted += value => ValueChanged();
 	}
 
-	public class Vector2Drawer : ObjectDrawer<Vector2>
+	public class Vector2Drawer : Drawer<Vector2>
 	{
 		public Vector2Drawer(Vector2 value) : base(value, false) { }
 		protected override void Draw()

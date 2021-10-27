@@ -1,41 +1,41 @@
 treeview.view {
-	padding: 2px;
-	border-color: alpha(@text, 0.1);
+  padding: 2px;
+  border-color: alpha(@foreground, 0.1);
 }
 
 treeview .expander {
-	color: alpha(@text, 0.1);
-	-gtk-icon-source: -gtk-icontheme('tree_closed');
+  color: alpha(@foreground, 0.1);
+  -gtk-icon-source: -gtk-icontheme("tree_closed");
 }
 
 treeview .expander:hover {
-	color: @text;
+  color: @foreground;
 }
 
 treeview .expander:checked {
-	-gtk-icon-source: -gtk-icontheme('tree_open');
+  -gtk-icon-source: -gtk-icontheme("tree_open");
 }
 
 treeview:hover {
-	background-color: @element;
+  background-color: @element;
 }
 
 treeview:selected {
-	color: @selection-color;
-	background-color: @selection-background;
-	border-color: @selection-color;
+  color: @accent-foreground;
+  background-color: @accent;
+  border-color: @accent-foreground;
 }
 
 treeview:drop(active) {
-	border: solid 1px @accent;
+  border: solid 1px @accent;
 }
 
 treeview:drop(active).before {
-	border: none;
-	border-top: solid 1px @accent;
+  border: none;
+  border-top: solid 1px @accent;
 }
 
 treeview:drop(active).after {
-	border: none;
-	border-bottom: solid 1px @accent;
+  border: none;
+  border-bottom: solid 1px @accent;
 }

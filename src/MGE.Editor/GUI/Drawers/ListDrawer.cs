@@ -1,8 +1,8 @@
 using System.Collections;
 
-namespace MGE.Editor.GUI.ObjectDrawers
+namespace MGE.Editor.GUI.Drawers
 {
-	public class ListDrawer : ObjectDrawer<IEnumerable>
+	public class ListDrawer : Drawer<IEnumerable>
 	{
 		public ListDrawer(IEnumerable value) : base(value, true) { }
 

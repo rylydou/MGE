@@ -5,6 +5,7 @@ using Gtk;
 
 namespace MGE.Editor.GUI.Windows
 {
+	[EditorWindow("Console")]
 	public class ConsoleWindow : EditorWindow
 	{
 		class TextBufferWriter : TextWriter
@@ -51,8 +52,6 @@ namespace MGE.Editor.GUI.Windows
 			}
 		}
 
-		public override string title => "Console";
-
 		public string[] consoles = new[]
 		{
 			"Editor",
@@ -79,7 +78,7 @@ namespace MGE.Editor.GUI.Windows
 			EditorGUI.horizontalExpand = false;
 			EditorGUI.Combobox(consoles, currentConsole).onItemIndexChanged += index => currentConsole = index;
 
-			EditorGUI.Expand();
+			EditorGUI.Flex();
 
 			EditorGUI.horizontalExpand = false;
 			EditorGUI.Button("Clear");

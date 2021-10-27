@@ -1,22 +1,30 @@
+using System.Reflection;
 using Gtk;
 
 namespace MGE.Editor.GUI
 {
 	public abstract class EditorWindow : EditorContainer
 	{
-		public virtual Orientation preferedOrientation { get => Orientation.Vertical; }
-
 		public readonly Label label;
-		public abstract string title { get; }
 
-		Container _content = new Box(Orientation.Vertical, 4);
+		Container _content;
 		public override Container content => _content;
 
-		protected EditorWindow() : base(new ScrolledWindow())
+		protected EditorWindow(bool scrolled = true) : base(scrolled ? new ScrolledWindow() : new Box(Orientation.Vertical, 4))
 		{
-			label = new Label(title);
+			if (scrolled)
+			{
+				_content = new Box(Orientation.Vertical, 4);
+				root.Add(_content);
+			}
+			else
+			{
+				_content = root;
+			}
 
-			root.Add(_content);
+			var windowAttr = GetType().GetCustomAttribute<EditorWindowAttribute>();
+
+			label = new Label(windowAttr?.name ?? GetType().ToString());
 
 			Redraw();
 		}
@@ -24,7 +32,7 @@ namespace MGE.Editor.GUI
 		protected override void Draw()
 		{
 			EditorGUI.verticalExpand = true;
-			EditorGUI.Header(title);
+			EditorGUI.Header(label.Text);
 		}
 	}
 }

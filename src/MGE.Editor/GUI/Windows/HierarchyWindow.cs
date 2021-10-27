@@ -6,10 +6,9 @@ using Gtk;
 
 namespace MGE.Editor.GUI.Windows
 {
+	[EditorWindow("Hierarchy")]
 	public class HierarchyWindow : ContextWindow
 	{
-		public override string title => "Hierarchy";
-
 		ScrolledWindow hierarchyContainer = new();
 		TreeView hierarchyView;
 		TreeStore hierarchyStore = new(typeof(string), typeof(string), typeof(int));

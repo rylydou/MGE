@@ -2,10 +2,8 @@
 @define-color background #191e2a;
 @define-color element @base;
 
-@define-color text #cbccc6;
-@define-color text-dark #5c6773;
+@define-color foreground #cbccc6;
+@define-color midground #5c6773;
 
 @define-color accent #ffcc66;
-
-@define-color selection-color @base;
-@define-color selection-background @accent;
+@define-color accent-foreground @base;
