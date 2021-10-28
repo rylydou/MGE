@@ -5,8 +5,6 @@ RES=64x64
 echo "Checking for encoder"
 command -v gtk-encode-symbolic-svg || {
 	echo "GTK tools are not installed."
-
-	read
 	exit 1
 }
 
@@ -21,6 +19,4 @@ do
 done
 
 echo "Done!"
-
-read
 exit 0

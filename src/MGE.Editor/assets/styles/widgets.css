@@ -14,8 +14,14 @@ entry:hover /* Why doesn't this work */, entry:focus {
 	border-color: @accent;
 }
 
+rubberband {
+	background-color: alpha(@accent, 0.5);
+	border: 1px solid @accent-foreground;
+}
+
 @import url("widgets/notebook.css");
 @import url("widgets/tree.css");
+@import url("widgets/iconview.css");
 
 @import url("widgets/link.css");
 @import url("widgets/button.css");

@@ -20,7 +20,7 @@ namespace MGE.Editor.GUI.Windows
 		DirectoryInfo _topLevel = new(Environment.CurrentDirectory);
 
 		TreeStore folderContents = new(typeof(Pixbuf), typeof(string));
-		IconView folderContentsView = new();
+		IconView folderContentsView = new() { SelectionMode = SelectionMode.Multiple, ItemWidth = 80, RowSpacing = 0, ColumnSpacing = 0, };
 
 		public AssetsWindow() : base(false)
 		{

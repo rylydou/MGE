@@ -563,7 +563,7 @@ namespace MGE.Editor.GUI
 			AddContainer(box);
 		}
 
-		public static void StartHorizonalFlow(int spacing = 8)
+		public static void StartHorizonalFlow(int spacing = 4)
 		{
 			var widget = new FlowBox()
 			{

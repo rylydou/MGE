@@ -47,7 +47,7 @@ namespace MGE.Editor.GUI.Windows
 				newParent.AttachNode(node, newPosition);
 			};
 
-			hierarchyView = new(hierarchyStore) { HeadersVisible = false, Reorderable = true, EnableTreeLines = true, RubberBanding = true, Vexpand = true, LevelIndentation = 1 };
+			hierarchyView = new(hierarchyStore) { HeadersVisible = false, Reorderable = true, EnableTreeLines = true, RubberBanding = false, Vexpand = true, LevelIndentation = 1, };
 			hierarchyView.Selection.Mode = SelectionMode.Multiple;
 
 			hierarchyView.AppendColumn("Name", new CellRendererText(), "text", 0);

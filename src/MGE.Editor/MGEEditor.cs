@@ -26,6 +26,7 @@ namespace MGE.Editor
 
 			SetPosition(WindowPosition.Center);
 			SetDefaultSize(1280, 720);
+			// Maximize();
 
 			// FocusInEvent += (sender, args) => ReloadStyles();
 			Destroyed += (sender, args) => Application.Quit();
@@ -54,19 +55,19 @@ namespace MGE.Editor
 			bottomDock.AddWindow(new AssetsWindow());
 			bottomDock.AddWindow(new ConsoleWindow());
 
-			var rightPaned = new Paned(Orientation.Horizontal) { Position = 360 };
-			rightPaned.Add(centerDock);
-			rightPaned.Add(rightDock);
+			var topDock = new Paned(Orientation.Horizontal) { Position = DefaultSize.Width / 4 };
+			topDock.Add(leftDock);
+			topDock.Add(centerDock);
 
-			var leftPaned = new Paned(Orientation.Horizontal) { Position = 360 };
-			leftPaned.Add(leftDock);
-			leftPaned.Add(rightPaned);
+			var leftPaned = new Paned(Orientation.Vertical) { Position = DefaultSize.Height / 3 * 2 };
+			leftPaned.Add(topDock);
+			leftPaned.Add(bottomDock);
 
-			var bottomPaned = new Paned(Orientation.Vertical) { Position = 480 };
-			bottomPaned.Add(leftPaned);
-			bottomPaned.Add(bottomDock);
+			var mainPaned = new Paned(Orientation.Horizontal) { Position = DefaultSize.Width / 4 * 3 };
+			mainPaned.Add(leftPaned);
+			mainPaned.Add(rightDock);
 
-			mainLayout.Add(bottomPaned);
+			mainLayout.Add(mainPaned);
 
 			EditorGUI.PushContainer(titlebar);
 
