@@ -1,0 +1,33 @@
+* {
+	border-width: 1px;
+	border-color: alpha(@green, 0.5);
+}
+
+:nth-child(odd) {
+	border-style: dotted;
+}
+
+:nth-child(even) {
+	border-style: dashed;
+}
+
+:first-child {
+	border-color: alpha(@red, 0.75);
+}
+
+:last-child {
+	border-color: alpha(@blue, 0.75);
+}
+
+:only-child {
+	border-color: alpha(@green, 0.5);
+}
+
+:hover, :focus, :selected {
+	border-color: @red;
+	border-style: solid;
+}
+
+separator {
+	border: none;
+}

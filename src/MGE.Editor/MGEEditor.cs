@@ -18,6 +18,16 @@ namespace MGE.Editor
 
 		CssProvider styleProvider = new();
 
+		Box mainLayout = new(Orientation.Vertical, 0);
+		Dock leftDock = new();
+		Dock rightDock = new();
+		Dock centerDock = new();
+		Dock bottomDock = new();
+
+		Paned topPaned = new(Orientation.Horizontal);
+		Paned leftPaned = new(Orientation.Vertical);
+		Paned mainPaned = new(Orientation.Horizontal);
+
 		public MGEEditor() : base("MGE EDITOR")
 		{
 			if (_current is not null) throw new Exception("A MGE editor window already exists");
@@ -30,6 +40,7 @@ namespace MGE.Editor
 
 			// FocusInEvent += (sender, args) => ReloadStyles();
 			Destroyed += (sender, args) => Application.Quit();
+			Shown += (sender, args) => UpdatePanedSizes();
 
 			// Idk which one I should use
 			IconTheme.Default.PrependSearchPath(Environment.CurrentDirectory + "/assets/icons");
@@ -38,32 +49,23 @@ namespace MGE.Editor
 			IconTheme.Default.AppendSearchPath(Environment.CurrentDirectory + "/assets/icons");
 			IconTheme.Default.RescanIfNeeded();
 
-			var mainLayout = new Box(Orientation.Vertical, 0);
-
-			var leftDock = new Dock();
 			leftDock.AddWindow(new HierarchyWindow());
 
-			var rightDock = new Dock();
 			rightDock.AddWindow(new InspectorWindow());
 			rightDock.AddWindow(new RealHierarchyWindow());
 
-			var centerDock = new Dock();
 			centerDock.AddWindow(new SceneWindow());
 			centerDock.AddWindow(new SettingsWindow());
 
-			var bottomDock = new Dock();
 			bottomDock.AddWindow(new AssetsWindow());
 			bottomDock.AddWindow(new ConsoleWindow());
 
-			var topDock = new Paned(Orientation.Horizontal) { Position = DefaultSize.Width / 4 };
-			topDock.Add(leftDock);
-			topDock.Add(centerDock);
+			topPaned.Add(leftDock);
+			topPaned.Add(centerDock);
 
-			var leftPaned = new Paned(Orientation.Vertical) { Position = DefaultSize.Height / 3 * 2 };
-			leftPaned.Add(topDock);
+			leftPaned.Add(topPaned);
 			leftPaned.Add(bottomDock);
 
-			var mainPaned = new Paned(Orientation.Horizontal) { Position = DefaultSize.Width / 4 * 3 };
 			mainPaned.Add(leftPaned);
 			mainPaned.Add(rightDock);
 
@@ -87,11 +89,16 @@ namespace MGE.Editor
 
 			Add(mainLayout);
 
-			// Styles
-
 			ReloadStyles();
 
 			StyleContext.AddProviderForScreen(Screen, styleProvider, int.MaxValue);
+		}
+
+		void UpdatePanedSizes()
+		{
+			topPaned.Position = Allocation.Width / 4;
+			leftPaned.Position = Allocation.Height / 3 * 2;
+			mainPaned.Position = Allocation.Width / 4 * 3;
 		}
 
 		void MakeMenubar()
@@ -141,6 +148,9 @@ namespace MGE.Editor
 			viewmenu.Append(new CheckMenuItem("Static GUI"));
 			viewmenu.Append(new CheckMenuItem("Focus Outlines"));
 			viewmenu.Append(new SeparatorMenuItem());
+			var resetDocksSizesMenuItem = new MenuItem("Reset Docks Sizes");
+			resetDocksSizesMenuItem.Activated += (sender, args) => UpdatePanedSizes();
+			viewmenu.Append(resetDocksSizesMenuItem);
 			var reloadStylesMenuItem = new MenuItem("Reload Styles");
 			reloadStylesMenuItem.Activated += (sender, args) => ReloadStyles();
 			viewmenu.Append(reloadStylesMenuItem);
@@ -158,8 +168,8 @@ namespace MGE.Editor
 			windowmenu.Append(new MenuItem("Inspector")); // alt 3
 			windowmenu.Append(new MenuItem("Assets")); // alt 4
 			windowmenu.Append(new MenuItem("Problems")); // alt 5
-			windowmenu.Append(new MenuItem("Console")); // alt 6
-			windowmenu.Append(new SeparatorMenuItem()); // Recently used windows
+			windowmenu.Append(new MenuItem("Console")); // alt
+			windowmenu.Append(new SeparatorMenuItem()); // Recenty used windows
 			windowmenu.Append(new MenuItem("Source Control"));
 			windowmenu.Append(new MenuItem("Profiler"));
 			windowmenu.Append(new MenuItem("Autodocs")); // Gets all the info of types in an assembly and shows the xml docs
@@ -207,6 +217,8 @@ namespace MGE.Editor
 			Trace.WriteLine("Reloading styles...");
 
 			SetIconFromFile("assets/favicons/normal.svg");
+
+			EditorGUI.ReloadIcons();
 
 			try
 			{

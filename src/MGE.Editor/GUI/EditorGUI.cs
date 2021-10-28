@@ -1,7 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using Gdk;
 using Gtk;
 using MGE.Editor.GUI.Data;
 using MGE.Editor.GUI.Drawers;
@@ -43,6 +47,38 @@ namespace MGE.Editor.GUI
 
 			RegisterDrawer<Vector2, Vector2Drawer>();
 		}
+
+		#region Icons
+
+		readonly static string _iconsPath = $"{Environment.CurrentDirectory}/assets/icons";
+
+		static Pixbuf _fallbackIcon = new($"{Environment.CurrentDirectory}/assets/icons/image.symbolic.png");
+		static Dictionary<string, Gdk.Pixbuf> _nameToIcon = new();
+
+		internal static void ReloadIcons()
+		{
+			foreach (var icon in _nameToIcon.Values)
+			{
+				icon.Dispose();
+			}
+
+			_nameToIcon.Clear();
+
+			foreach (var item in new DirectoryInfo(_iconsPath).GetFiles("*.symbolic.png"))
+			{
+				var icon = new Gdk.Pixbuf(item.FullName);
+
+				_nameToIcon.Add(item.Name.Substring(0, item.Name.Length - 13), icon);
+			}
+		}
+
+		public static Pixbuf GetIcon(string name)
+		{
+			if (_nameToIcon.TryGetValue(name, out var icon)) return icon;
+			return _fallbackIcon;
+		}
+
+		#endregion
 
 		#region Drawers
 
@@ -88,9 +124,7 @@ namespace MGE.Editor.GUI
 
 		#endregion Drawers
 
-		public
-
-		static ExpressionDictionaryContext _dictionaryContext = new ExpressionDictionaryContext(new()
+		public static ExpressionDictionaryContext _dictionaryContext = new ExpressionDictionaryContext(new()
 		{
 			{ "pi", () => Math.PI },
 			{ "tau", () => Math.Tau },

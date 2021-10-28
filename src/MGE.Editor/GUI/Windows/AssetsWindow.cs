@@ -37,16 +37,27 @@ namespace MGE.Editor.GUI.Windows
 
 			folderContents.Clear();
 
-			var folderIcon = IconTheme.Default.LoadIcon("folder", 64, 0);
+			var folderIcon = EditorGUI.GetIcon("folder");
 			foreach (var folder in folders)
 			{
 				folderContents.AppendValues(folderIcon, folder.Name);
 			}
 
-			var fileIcon = IconTheme.Default.LoadIcon("file", 64, 0);
+			var fileIcon = EditorGUI.GetIcon("file");
+			var imageIcon = EditorGUI.GetIcon("image");
 			foreach (var file in files)
 			{
-				folderContents.AppendValues(fileIcon, file.Name);
+				var icon = imageIcon;
+				switch (file.Extension)
+				{
+					case ".png":
+					case ".jpg":
+					case ".ico":
+					case ".svg":
+						icon = imageIcon;
+						break;
+				}
+				folderContents.AppendValues(icon, file.Name);
 			}
 
 			EditorGUI.HorizontalFlex();
