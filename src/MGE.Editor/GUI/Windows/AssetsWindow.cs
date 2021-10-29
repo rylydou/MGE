@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Gdk;
 using Gtk;
 
@@ -32,30 +33,35 @@ namespace MGE.Editor.GUI.Windows
 
 		protected override void Draw()
 		{
-			var folders = _currentFolder.GetDirectories("*", _enumerationOptions);
-			var files = _currentFolder.GetFiles("*", _enumerationOptions);
+			var folders = _currentFolder.GetDirectories("*", _enumerationOptions).ToList();
+			folders.Sort((left, right) => left.Name.CompareTo(right.Name));
+
+			var files = _currentFolder.GetFiles("*", _enumerationOptions).ToList();
+			files.Sort((left, right) => left.Name.CompareTo(right.Name));
 
 			folderContents.Clear();
 
-			var folderIcon = EditorGUI.GetIcon("folder");
 			foreach (var folder in folders)
 			{
-				folderContents.AppendValues(folderIcon, folder.Name);
+				folderContents.AppendValues(EditorGUI.GetIcon("folder"), folder.Name);
 			}
 
-			var fileIcon = EditorGUI.GetIcon("file");
-			var imageIcon = EditorGUI.GetIcon("image");
 			foreach (var file in files)
 			{
-				var icon = imageIcon;
+				var icon = EditorGUI.GetIcon("file");
 				switch (file.Extension)
 				{
 					case ".png":
 					case ".jpg":
 					case ".ico":
+						icon = EditorGUI.GetIcon("image"); break;
 					case ".svg":
-						icon = imageIcon;
-						break;
+						icon = EditorGUI.GetIcon("svg"); break;
+					case ".cs":
+						icon = EditorGUI.GetIcon("csharp"); break;
+					case ".txt":
+					case ".md":
+						icon = EditorGUI.GetIcon("textfile"); break;
 				}
 				folderContents.AppendValues(icon, file.Name);
 			}
@@ -121,33 +127,3 @@ namespace MGE.Editor.GUI.Windows
 		}
 	}
 }
-
-// foreach (var folder in folders)
-// {
-// 	EditorGUI.verticalExpand = false;
-// 	EditorGUI.horizontalExpand = false;
-// 	EditorGUI.ButtonWithContent().onPressed += () => { _currentFolder = folder; Redraw(); };
-// 	EditorGUI.verticalExpand = false;
-// 	EditorGUI.StartVertical();
-
-// 	EditorGUI.Icon("folder");
-// 	EditorGUI.horizontalAlign = 0.5f;
-// 	EditorGUI.Text(folder.Name);
-
-// 	EditorGUI.End();
-// }
-
-// foreach (var file in files)
-// {
-// 	EditorGUI.verticalExpand = false;
-// 	EditorGUI.horizontalExpand = false;
-// 	EditorGUI.ButtonWithContent().onPressed += () => Trace.WriteLine(file.FullName);
-// 	EditorGUI.verticalExpand = false;
-// 	EditorGUI.StartVertical();
-
-// 	EditorGUI.Icon("file");
-// 	EditorGUI.horizontalAlign = 0.5f;
-// 	EditorGUI.Text(file.Name);
-
-// 	EditorGUI.End();
-// }

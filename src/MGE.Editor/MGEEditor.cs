@@ -42,10 +42,10 @@ namespace MGE.Editor
 			Destroyed += (sender, args) => Application.Quit();
 			Shown += (sender, args) => UpdatePanedSizes();
 
+			ReloadStyles();
+			StyleContext.AddProviderForScreen(Screen, styleProvider, int.MaxValue);
+
 			// Idk which one I should use
-			IconTheme.Default.PrependSearchPath(Environment.CurrentDirectory + "/assets/icons");
-			IconTheme.Default.AppendSearchPath(Environment.CurrentDirectory + "/assets/icons");
-			IconTheme.Default.AddResourcePath(Environment.CurrentDirectory + "/assets/icons");
 			IconTheme.Default.AppendSearchPath(Environment.CurrentDirectory + "/assets/icons");
 			IconTheme.Default.RescanIfNeeded();
 
@@ -88,10 +88,6 @@ namespace MGE.Editor
 			mainLayout.Add(statusbar);
 
 			Add(mainLayout);
-
-			ReloadStyles();
-
-			StyleContext.AddProviderForScreen(Screen, styleProvider, int.MaxValue);
 		}
 
 		void UpdatePanedSizes()
