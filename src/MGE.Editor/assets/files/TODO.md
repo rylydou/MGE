@@ -1,0 +1,33 @@
+- Common
+  - generic
+  - txt
+  - md
+  - zip
+  - dll
+  - so
+- Code
+  - C#
+    - cs
+    - csproj
+- Image
+  - Raster
+    - png
+    - jpg
+    - ico
+    - psd
+    - ase
+  - Vector
+    - svg
+- Audio
+  - wav
+  - ogg
+  - mp3
+- Video
+  - mp4
+  - mov
+- Shader
+  - hlsl
+  - glsl
+- Font
+  - tff
+  - otf

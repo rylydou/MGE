@@ -637,9 +637,29 @@ namespace MGE.Editor.GUI
 
 		#region Bins
 
+		public static ScrolledData Overflow()
+		{
+			var widget = new ScrolledWindow() { Hexpand = true, Vexpand = true, HscrollbarPolicy = PolicyType.Automatic, VscrollbarPolicy = PolicyType.Automatic, };
+			var data = new ScrolledData(widget);
+
+			AddContainer(widget);
+
+			return data;
+		}
+
+		public static ScrolledData HorizontalOverflow()
+		{
+			var widget = new ScrolledWindow() { Hexpand = true, Vexpand = false, HscrollbarPolicy = PolicyType.Automatic, VscrollbarPolicy = PolicyType.Never, };
+			var data = new ScrolledData(widget);
+
+			AddContainer(widget);
+
+			return data;
+		}
+
 		public static ScrolledData VerticalOverflow()
 		{
-			var widget = new ScrolledWindow() { Vexpand = true, Hexpand = true, };
+			var widget = new ScrolledWindow() { Hexpand = false, Vexpand = true, HscrollbarPolicy = PolicyType.Never, VscrollbarPolicy = PolicyType.Automatic, };
 			var data = new ScrolledData(widget);
 
 			AddContainer(widget);

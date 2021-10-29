@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -96,5 +97,29 @@ namespace MGE.Editor
 			propNameCache.Clear();
 			propNameCache.TrimExcess();
 		}
+
+		#region Util
+
+		public static void OpenInApp(string file)
+		{
+			if (OperatingSystem.IsLinux())
+			{
+				System.Diagnostics.Process.Start("xdg-open", file);
+			}
+			else if (OperatingSystem.IsWindows())
+			{
+				System.Diagnostics.Process.Start("explorer", file);
+			}
+		}
+
+		public static void ShowInExplorer(string file)
+		{
+			if (OperatingSystem.IsWindows())
+			{
+				System.Diagnostics.Process.Start("explorer.exe", $"/select, \"{file}\"");
+			}
+		}
+
+		#endregion
 	}
 }

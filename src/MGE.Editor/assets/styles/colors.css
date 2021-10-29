@@ -6,7 +6,7 @@
 @define-color foreground #FFF;
 @define-color midground #9A9A9A;
 
-@define-color accent #FE9137; /* #00B7C3 */
+@define-color accent #FE9137;
 @define-color accent-foreground @base;
 
 @define-color black @000;
@@ -21,4 +21,3 @@
 
 @define-color error @red;
 @define-color warning @yellow;
-
