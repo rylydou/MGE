@@ -13,7 +13,7 @@ namespace MGE.Editor.GUI.Windows
 		TreeView hierarchyView;
 		TreeStore hierarchyStore = new(typeof(string), typeof(string), typeof(int));
 
-		public HierarchyWindow() : base()
+		public HierarchyWindow() : base(false)
 		{
 			foreach (var child in context.root)
 			{
@@ -75,11 +75,23 @@ namespace MGE.Editor.GUI.Windows
 
 		void AddNodeHierarchy(TreeIter iter, GameNode node)
 		{
+			EditorGUI.StartHorizontal();
+
+			EditorGUI.IconButton("Add");
+			EditorGUI.IconButton("Search");
+
+			EditorGUI.End();
+
+			EditorGUI.VerticalOverflow();
+			EditorGUI.StartVertical();
+
 			foreach (var child in node)
 			{
 				var nodeIter = hierarchyStore.AppendValues(iter, child.name, child.GetType().ToString(), child.id);
 				AddNodeHierarchy(nodeIter, child);
 			}
+
+			EditorGUI.End();
 		}
 
 		protected override void Draw()

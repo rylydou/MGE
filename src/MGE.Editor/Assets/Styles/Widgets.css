@@ -14,6 +14,12 @@ entry:hover /* Why doesn't this work */, entry:focus {
 	border-color: @accent;
 }
 
+button:disabled,
+checkbutton:disabled,
+entry:disabled {
+	background-color: transparent;
+}
+
 rubberband {
 	background-color: alpha(@accent, 0.5);
 	border: 1px dotted @accent-foreground;

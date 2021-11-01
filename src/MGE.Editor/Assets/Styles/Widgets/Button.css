@@ -41,3 +41,7 @@ button.icon:active * {
 
   transition: -gtk-icon-transform 0;
 }
+
+button.icon:disabled {
+	color: @midground;
+}

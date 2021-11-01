@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Gdk;
@@ -9,6 +11,45 @@ namespace MGE.Editor.GUI.Windows
 	[EditorWindow("Assets")]
 	public class AssetsWindow : EditorWindow
 	{
+		class FilePreviewCache
+		{
+			public readonly FileInfo file;
+
+			Pixbuf _image;
+			public Pixbuf image
+			{
+				get
+				{
+					if (this.lastWriteTime != file.LastWriteTimeUtc) ReloadImage();
+
+					return _image!;
+				}
+			}
+			public DateTime lastWriteTime;
+
+			void ReloadImage()
+			{
+				this.lastWriteTime = file.LastWriteTimeUtc;
+
+				_image = new(file.FullName, 64, 64, true);
+
+				// var image = new Pixbuf(file.FullName);
+				// image.Scale(_image, 0, 0, 64, 64, 0, 0, 64.0 / image.Width, 64.0 / image.Height, InterpType.Nearest);
+			}
+
+			public FilePreviewCache(string path)
+			{
+				if (!File.Exists(path)) throw new System.Exception("File does not exsist");
+
+				file = new(path);
+
+				if (file.Extension == ".svg") _image = EditorGUI.GetFileIcon("SVG");
+				else _image = EditorGUI.GetFileIcon("Image");
+
+				ReloadImage();
+			}
+		}
+
 		static EnumerationOptions _enumerationOptions = new()
 		{
 			IgnoreInaccessible = true,
@@ -16,24 +57,25 @@ namespace MGE.Editor.GUI.Windows
 			ReturnSpecialDirectories = false,
 		};
 
+		Dictionary<string, FilePreviewCache> _filePreviewCache = new();
+
 		DirectoryInfo _currentFolder = Editor.project.assets;
-		DirectoryInfo _topLevel = Editor.project.assets;
 
-		TreeStore folderContents = new(typeof(Pixbuf), typeof(string), typeof(string), typeof(bool));
-		IconView folderContentsView = new() { SelectionMode = SelectionMode.Multiple, ItemWidth = 80, RowSpacing = 0, ColumnSpacing = 0, Reorderable = true, };
+		ListStore _folderContents = new(typeof(Pixbuf), typeof(string), typeof(string), typeof(bool));
+		IconView _folderContentsView = new() { SelectionMode = SelectionMode.Multiple, ItemWidth = 64, RowSpacing = 0, ColumnSpacing = 0, ItemPadding = 4, Spacing = 0, };
 
-		List<DirectoryInfo> folders = new();
-		List<FileInfo> files = new();
+		List<DirectoryInfo> _folders = new();
+		List<FileInfo> _files = new();
 
 		public AssetsWindow() : base(false)
 		{
-			folderContentsView.Model = folderContents;
+			_folderContentsView.Model = _folderContents;
 
-			folderContentsView.ItemActivated += (sender, args) =>
+			_folderContentsView.ItemActivated += (sender, args) =>
 			{
-				folderContents.GetIter(out var iter, args.Path);
-				var path = (string)folderContents.GetValue(iter, 2);
-				var isFolder = (bool)folderContents.GetValue(iter, 3);
+				_folderContents.GetIter(out var iter, args.Path);
+				var path = (string)_folderContents.GetValue(iter, 2);
+				var isFolder = (bool)_folderContents.GetValue(iter, 3);
 
 				if (isFolder)
 				{
@@ -42,42 +84,65 @@ namespace MGE.Editor.GUI.Windows
 				}
 				else
 				{
-					Editor.OpenInApp(path);
+					Editor.OpenFile(path);
 				}
 			};
 
-			folderContentsView.PixbufColumn = 0;
-			folderContentsView.TextColumn = 1;
+			_folderContentsView.PixbufColumn = 0;
+			_folderContentsView.TextColumn = 1;
 
 			Reload();
 		}
 
 		void Reload()
 		{
-			folders = _currentFolder.GetDirectories("*", _enumerationOptions).ToList();
-			folders.Sort((left, right) => left.Name.CompareTo(right.Name));
+			_folders = _currentFolder.GetDirectories("*", _enumerationOptions).ToList();
+			_folders.Sort((left, right) => left.Name.CompareTo(right.Name));
 
-			files = _currentFolder.GetFiles("*", _enumerationOptions).ToList();
-			files.Sort((left, right) => left.Name.CompareTo(right.Name));
+			_files = _currentFolder.GetFiles("*", _enumerationOptions).ToList();
+			_files.Sort((left, right) => left.Name.CompareTo(right.Name));
 
-			folderContents.Clear();
+			_folderContents.Clear();
 
-			foreach (var folder in folders)
+			// _folderContentsView.DragDataGet += (sender, args) =>
+			// {
+			// 	_folderContents.GetIter(out var iter, _folderContentsView.SelectedItems[0]);
+			// 	var path = (string)_folderContents.GetValue(iter, 2);
+			// 	args.SelectionData.Text = path;
+			// 	Trace.WriteLine(path);
+			// };
+			// var target = new TargetEntry();
+			// _folderContentsView.EnableModelDragSource(ModifierType.None, new[] { target }, DragAction.Default);
+			// _folderContentsView.EnableModelDragDest(new[] { target }, DragAction.Default);
+			// _folderContentsView.DragDataReceived += (sender, args) =>
+			// {
+			// 	Trace.WriteLine("Rec " + args.SelectionData.Text);
+			// };
+
+			foreach (var folder in _folders)
 			{
-				folderContents.AppendValues(EditorGUI.GetFileIcon("Folder"), folder.Name, folder.FullName, true);
+				var iter = _folderContents.AppendValues(EditorGUI.GetFileIcon("Folder"), folder.Name, folder.FullName, true);
+				_folderContentsView.SetDragDestItem(_folderContents.GetPath(iter), IconViewDropPosition.DropInto);
 			}
 
-			foreach (var file in files)
+			foreach (var file in _files)
 			{
 				var icon = EditorGUI.GetFileIcon("File");
+
 				switch (file.Extension)
 				{
 					case ".png":
 					case ".jpg":
 					case ".ico":
+					case ".bmp":
 					case ".svg":
-						try { icon = new Pixbuf(file.FullName, 64, 64, true); break; }
-						catch { icon = EditorGUI.GetFileIcon("Image"); break; }
+						if (!_filePreviewCache.TryGetValue(file.FullName, out var cache))
+						{
+							cache = new(file.FullName);
+							_filePreviewCache.Add(file.FullName, cache);
+						}
+						icon = cache.image;
+						break;
 					case ".txt":
 					case ".md":
 						icon = EditorGUI.GetFileIcon("Text"); break;
@@ -100,7 +165,7 @@ namespace MGE.Editor.GUI.Windows
 					case ".yml":
 						icon = EditorGUI.GetFileIcon("Object"); break;
 				}
-				folderContents.AppendValues(icon, file.Name, file.FullName, false);
+				_folderContents.AppendValues(icon, file.Name, file.FullName, false);
 			}
 
 			Redraw();
@@ -108,32 +173,12 @@ namespace MGE.Editor.GUI.Windows
 
 		protected override void Draw()
 		{
-			EditorGUI.HorizontalFlex();
-
-			EditorGUI.VerticalOverflow();
-			EditorGUI.StartVertical(0);
-
-			if (_currentFolder.FullName != _topLevel.FullName)
-			{
-				EditorGUI.horizontalAlign = 0;
-				EditorGUI.Button("↩ Back").onPressed += () =>
-				{
-					_currentFolder = _currentFolder.Parent!;
-					Reload();
-				};
-			}
-
-			foreach (var folder in folders)
-			{
-				EditorGUI.horizontalAlign = 0;
-				EditorGUI.Button(folder.Name).onPressed += () => { _currentFolder = folder; Reload(); };
-			}
-
-			EditorGUI.End();
-
 			EditorGUI.StartVertical();
 
 			EditorGUI.StartHorizontal();
+
+			EditorGUI.sensitive = !_currentFolder.Equals(Editor.project.assets);
+			EditorGUI.IconButton("Back").onPressed += () => { _currentFolder = _currentFolder.Parent!; Reload(); };
 
 			EditorGUI.HorizontalOverflow();
 			EditorGUI.StartHorizontal(0);
@@ -142,7 +187,7 @@ namespace MGE.Editor.GUI.Windows
 
 			{
 				var folder = _currentFolder;
-				var topLevelParent = _topLevel.Parent!;
+				var topLevelParent = Editor.project.assets.Parent!;
 
 				do
 				{
@@ -162,16 +207,16 @@ namespace MGE.Editor.GUI.Windows
 
 			EditorGUI.End();
 
+			EditorGUI.Text($"{_files.Count + _folders.Count} Items");
+
 			EditorGUI.IconButton("Redo").onPressed += Reload;
 
 			EditorGUI.End();
 
 			EditorGUI.VerticalOverflow();
 
-			folderContentsView.Unparent();
-			EditorGUI.Add(folderContentsView);
-
-			EditorGUI.End();
+			_folderContentsView.Unparent();
+			EditorGUI.Add(_folderContentsView);
 
 			EditorGUI.End();
 		}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -104,21 +105,32 @@ namespace MGE.Editor
 
 		#region Util
 
-		public static void OpenInApp(string file)
+		public static void OpenFile(string file)
 		{
-			if (OperatingSystem.IsLinux())
+			try
 			{
-				System.Diagnostics.Process.Start("xdg-open", file);
+				Process.Start(new ProcessStartInfo(file) { UseShellExecute = true, WorkingDirectory = Editor.project.root.FullName });
 			}
-			else if (OperatingSystem.IsWindows())
+			catch
 			{
-				System.Diagnostics.Process.Start("explorer", file);
+				if (OperatingSystem.IsLinux())
+				{
+					System.Diagnostics.Process.Start("xdg-open", file);
+				}
+				else if (OperatingSystem.IsWindows())
+				{
+					System.Diagnostics.Process.Start("explorer", file);
+				}
 			}
 		}
 
-		public static void ShowInExplorer(string file)
+		public static void ShowFile(string file)
 		{
-			if (OperatingSystem.IsWindows())
+			if (OperatingSystem.IsLinux())
+			{
+				System.Diagnostics.Process.Start("explorer.exe", $"/select, \"{file}\"");
+			}
+			else if (OperatingSystem.IsWindows())
 			{
 				System.Diagnostics.Process.Start("explorer.exe", $"/select, \"{file}\"");
 			}

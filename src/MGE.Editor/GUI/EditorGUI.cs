@@ -752,6 +752,11 @@ namespace MGE.Editor.GUI
 			return data;
 		}
 
+		public static void AttachMenu()
+		{
+
+		}
+
 		#endregion Menu
 
 		#region Utils
