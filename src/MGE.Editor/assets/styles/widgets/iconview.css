@@ -1,9 +1,0 @@
-iconview:hover {
-	background-color: @element;
-}
-
-iconview:selected {
-	color: @accent-foreground;
-	background-color: @accent;
-}
-

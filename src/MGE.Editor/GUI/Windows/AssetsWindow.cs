@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,8 +16,8 @@ namespace MGE.Editor.GUI.Windows
 			ReturnSpecialDirectories = false,
 		};
 
-		DirectoryInfo _currentFolder = new(Environment.CurrentDirectory);
-		DirectoryInfo _topLevel = new(Environment.CurrentDirectory);
+		DirectoryInfo _currentFolder = Editor.project.assets;
+		DirectoryInfo _topLevel = Editor.project.assets;
 
 		TreeStore folderContents = new(typeof(Pixbuf), typeof(string), typeof(string), typeof(bool));
 		IconView folderContentsView = new() { SelectionMode = SelectionMode.Multiple, ItemWidth = 80, RowSpacing = 0, ColumnSpacing = 0, Reorderable = true, };
@@ -65,12 +64,12 @@ namespace MGE.Editor.GUI.Windows
 
 			foreach (var folder in folders)
 			{
-				folderContents.AppendValues(EditorGUI.GetIcon("folder"), folder.Name, folder.FullName, true);
+				folderContents.AppendValues(EditorGUI.GetFileIcon("Folder"), folder.Name, folder.FullName, true);
 			}
 
 			foreach (var file in files)
 			{
-				var icon = EditorGUI.GetIcon("file");
+				var icon = EditorGUI.GetFileIcon("File");
 				switch (file.Extension)
 				{
 					case ".png":
@@ -78,12 +77,28 @@ namespace MGE.Editor.GUI.Windows
 					case ".ico":
 					case ".svg":
 						try { icon = new Pixbuf(file.FullName, 64, 64, true); break; }
-						catch { icon = EditorGUI.GetIcon("image"); break; }
-					case ".cs":
-						icon = EditorGUI.GetIcon("csharp"); break;
+						catch { icon = EditorGUI.GetFileIcon("Image"); break; }
 					case ".txt":
 					case ".md":
-						icon = EditorGUI.GetIcon("textfile"); break;
+						icon = EditorGUI.GetFileIcon("Text"); break;
+					case ".wav":
+					case ".ogg":
+						icon = EditorGUI.GetFileIcon("SFX"); break;
+					case ".mp3":
+						icon = EditorGUI.GetFileIcon("Music"); break;
+					case ".zip":
+					case ".7z":
+					case ".rar":
+						icon = EditorGUI.GetFileIcon("Archive"); break;
+					case ".dll":
+					case ".so":
+						icon = EditorGUI.GetFileIcon("Library"); break;
+					case ".cs":
+						icon = EditorGUI.GetFileIcon("CSharp"); break;
+					case ".node":
+						icon = EditorGUI.GetFileIcon("Node"); break;
+					case ".yml":
+						icon = EditorGUI.GetFileIcon("Object"); break;
 				}
 				folderContents.AppendValues(icon, file.Name, file.FullName, false);
 			}
@@ -147,7 +162,7 @@ namespace MGE.Editor.GUI.Windows
 
 			EditorGUI.End();
 
-			EditorGUI.IconButton("redo").onPressed += Reload;
+			EditorGUI.IconButton("Redo").onPressed += Reload;
 
 			EditorGUI.End();
 

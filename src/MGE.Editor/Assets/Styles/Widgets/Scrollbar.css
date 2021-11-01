@@ -1,0 +1,22 @@
+scrollbar {
+	min-width: 8px;
+	min-height: 8px;
+}
+
+scrollbar * {
+	min-width: 8px;
+	min-height: 8px;
+}
+
+scrollbar slider {
+	background: @midground;
+}
+
+scrollbar slider:hover {
+	background: @foreground;
+}
+
+slider:active {
+	background: @accent;
+}
+

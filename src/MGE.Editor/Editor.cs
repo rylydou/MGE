@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace MGE.Editor
 {
 	internal static class Editor
 	{
+		public static DirectoryInfo assets = new($"{Environment.CurrentDirectory}/Assets");
+
+		public static Project project = new($"{Environment.CurrentDirectory}/Data/Projects/Untitled-Game");
 		public static List<EditorContext> contexts = new() { new() };
 
 		#region Property Name

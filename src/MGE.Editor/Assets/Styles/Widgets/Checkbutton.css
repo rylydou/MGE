@@ -1,0 +1,41 @@
+checkbutton {
+  padding: 4px;
+
+  transition: background-color 150ms;
+}
+
+checkbutton:active {
+  background-color: @accent;
+
+  transition: background-color 0;
+}
+
+checkbutton check {
+  /* Sometimes in cinnamon you can see the unchecked box when you click */
+  -gtk-icon-source: none;
+  -gtk-icon-transform: scale(0);
+
+  transition: -gtk-icon-transform 50ms;
+}
+
+checkbutton:checked check {
+  -gtk-icon-source: -gtk-icontheme("Check");
+}
+
+checkbutton:indeterminate > check {
+  -gtk-icon-source: -gtk-icontheme("Indeterminate");
+}
+
+checkbutton:active check {
+  color: @accent-foreground;
+}
+
+checkbutton:checked check {
+  -gtk-icon-transform: scale(1);
+
+  transition: -gtk-icon-transform 250ms cubic-bezier(0, 2, 0.25, 1);
+}
+
+checkbutton check {
+  color: @accent;
+}

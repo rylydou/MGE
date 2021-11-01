@@ -1,8 +1,0 @@
-trough slider {
-  background-color: @midground;
-  border-radius: 4px;
-}
-
-trough:hover slider {
-  background-color: @accent;
-}

@@ -1,0 +1,40 @@
+button,
+checkbutton,
+entry {
+	padding: 4px;
+	background-color: @element;
+	border: solid 1px @element;
+	border-radius: 0px;
+	box-shadow: 0 1px 1px 0 @base;
+}
+
+button:hover, button:focus,
+checkbutton:hover, checkbutton:focus,
+entry:hover /* Why doesn't this work */, entry:focus {
+	border-color: @accent;
+}
+
+rubberband {
+	background-color: alpha(@accent, 0.5);
+	border: 1px dotted @accent-foreground;
+}
+
+@import url("Widgets/Notebook.css");
+@import url("Widgets/Tree.css");
+@import url("Widgets/Iconview.css");
+
+@import url("Widgets/Link.css");
+@import url("Widgets/Button.css");
+@import url("Widgets/Checkbutton.css");
+
+@import url("Widgets/Range.css");
+
+@import url("Widgets/Entry.css");
+@import url("Widgets/Combobox.css");
+
+@import url("Widgets/Popovers.css");
+@import url("Widgets/Tooltip.css");
+@import url("Widgets/Menu.css");
+
+@import url("Widgets/Separator.css");
+@import url("Widgets/Scrollbar.css");

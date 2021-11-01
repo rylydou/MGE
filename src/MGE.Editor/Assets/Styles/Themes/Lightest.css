@@ -1,0 +1,11 @@
+@define-color base #E6E6E6;
+@define-color background #FFF;
+@define-color element #F0F0F0;
+@define-color popup #FFF;
+
+@define-color foreground #555;
+@define-color midground #999;
+
+@define-color accent #FE9137;
+@define-color accent-foreground @background;
+

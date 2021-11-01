@@ -1,0 +1,9 @@
+# Folders
+Builds/
+Cache/
+Logs/
+
+# Files
+settings_local.yml
+
+# Custom

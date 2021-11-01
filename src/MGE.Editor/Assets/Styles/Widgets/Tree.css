@@ -1,0 +1,41 @@
+treeview.view {
+  padding: 2px;
+  border-color: alpha(@foreground, 0.1);
+}
+
+treeview .expander {
+  color: alpha(@foreground, 0.1);
+  -gtk-icon-source: -gtk-icontheme("Tree Closed");
+}
+
+treeview .expander:hover {
+  color: @foreground;
+}
+
+treeview .expander:checked {
+  -gtk-icon-source: -gtk-icontheme("Tree Open");
+}
+
+treeview:hover {
+  background-color: @element;
+}
+
+treeview:selected {
+  color: @accent-foreground;
+  background-color: @accent;
+  border-color: @accent-foreground;
+}
+
+treeview:drop(active) {
+  border: solid 1px @accent;
+}
+
+treeview:drop(active).before {
+  border: none;
+  border-top: solid 1px @accent;
+}
+
+treeview:drop(active).after {
+  border: none;
+  border-bottom: solid 1px @accent;
+}

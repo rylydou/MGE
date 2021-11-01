@@ -46,7 +46,7 @@ namespace MGE.Editor
 			StyleContext.AddProviderForScreen(Screen, styleProvider, int.MaxValue);
 
 			// Idk which one I should use
-			IconTheme.Default.AppendSearchPath(Environment.CurrentDirectory + "/assets/icons");
+			IconTheme.Default.AppendSearchPath($"{Editor.assets.FullName}/Icons");
 			IconTheme.Default.RescanIfNeeded();
 
 			leftDock.AddWindow(new HierarchyWindow());
@@ -74,7 +74,7 @@ namespace MGE.Editor
 			EditorGUI.PushContainer(titlebar);
 
 			EditorGUI.classes.Add("favicon");
-			EditorGUI.IconButton("icon");
+			EditorGUI.IconButton("Icon");
 			MakeMenubar();
 			EditorGUI.Add(menubar);
 
@@ -92,7 +92,7 @@ namespace MGE.Editor
 
 		void UpdatePanedSizes()
 		{
-			topPaned.Position = Allocation.Width / 4;
+			topPaned.Position = Allocation.Width / 5;
 			leftPaned.Position = Allocation.Height / 3 * 2;
 			mainPaned.Position = Allocation.Width / 4 * 3;
 		}
@@ -212,13 +212,13 @@ namespace MGE.Editor
 		{
 			Trace.WriteLine("Reloading styles...");
 
-			SetIconFromFile("assets/favicons/normal.svg");
+			SetIconFromFile($"{Editor.assets.FullName}/Favicons/Normal.svg");
 
 			EditorGUI.ReloadIcons();
 
 			try
 			{
-				styleProvider.LoadFromPath("assets/styles/styles.css");
+				styleProvider.LoadFromPath($"{Editor.assets.FullName}/Styles/Styles.css");
 			}
 			catch (Exception e)
 			{

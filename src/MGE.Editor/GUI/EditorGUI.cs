@@ -50,32 +50,47 @@ namespace MGE.Editor.GUI
 
 		#region Icons
 
-		readonly static string _iconsPath = $"{Environment.CurrentDirectory}/assets/icons";
+		static Dictionary<string, Gdk.Pixbuf> _icons = new();
+		readonly static string _iconsPath = $"{Editor.assets.FullName}/Icons";
+		static Pixbuf _fallbackIcon = new($"{_iconsPath}/Unknown.symbolic.png");
 
-		static Pixbuf _fallbackIcon = new($"{Environment.CurrentDirectory}/assets/icons/image.symbolic.png");
-		static Dictionary<string, Gdk.Pixbuf> _nameToIcon = new();
+		static Dictionary<string, Gdk.Pixbuf> _fileIcons = new();
+		readonly static string _fileIconsPath = $"{Editor.assets.FullName}/Files";
+		static Pixbuf _fallbackFileIcon = new($"{Editor.assets.FullName}/Files/File.svg", 64, 64, true);
 
 		internal static void ReloadIcons()
 		{
-			foreach (var icon in _nameToIcon.Values)
-			{
-				icon.Dispose();
-			}
+			foreach (var icon in _icons.Values) icon.Dispose();
+			foreach (var icon in _fileIcons.Values) icon.Dispose();
 
-			_nameToIcon.Clear();
+			_icons.Clear();
+			_fileIcons.Clear();
 
 			foreach (var item in new DirectoryInfo(_iconsPath).GetFiles("*.symbolic.png"))
 			{
 				var icon = new Gdk.Pixbuf(item.FullName);
 
-				_nameToIcon.Add(item.Name.Substring(0, item.Name.Length - 13), icon);
+				_icons.Add(item.Name.Substring(0, item.Name.Length - 13), icon);
+			}
+
+			foreach (var item in new DirectoryInfo(_fileIconsPath).GetFiles("*.svg"))
+			{
+				var icon = new Gdk.Pixbuf(item.FullName, 64, 64, true);
+
+				_fileIcons.Add(item.Name.Substring(0, item.Name.Length - 4), icon);
 			}
 		}
 
 		public static Pixbuf GetIcon(string name)
 		{
-			if (_nameToIcon.TryGetValue(name, out var icon)) return icon;
+			if (_icons.TryGetValue(name, out var icon)) return icon;
 			return _fallbackIcon;
+		}
+
+		public static Pixbuf GetFileIcon(string name)
+		{
+			if (_fileIcons.TryGetValue(name, out var icon)) return icon;
+			return _fallbackFileIcon;
 		}
 
 		#endregion

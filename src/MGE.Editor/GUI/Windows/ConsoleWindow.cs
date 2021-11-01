@@ -63,10 +63,11 @@ namespace MGE.Editor.GUI.Windows
 
 		TextView logTextView = new() { Editable = false, };
 
-		public ConsoleWindow() : base() { }
+		public ConsoleWindow() : base(false) { }
 
 		protected override void Draw()
 		{
+
 			var consoleWriter = new TextBufferWriter(logTextView.Buffer);
 			// Console.SetOut(consoleWriter);
 			var traceWriter = new TextBufferTraceListener(logTextView.Buffer);
@@ -87,6 +88,7 @@ namespace MGE.Editor.GUI.Windows
 
 			EditorGUI.End();
 
+			EditorGUI.VerticalOverflow();
 			EditorGUI.Add(logTextView);
 		}
 	}
