@@ -99,103 +99,108 @@ namespace MGE.Editor
 
 		void MakeMenubar()
 		{
-			var filemenu = new Menu();
-			var file = new MenuItem("File");
-			file.Submenu = filemenu;
-			filemenu.Append(new MenuItem("New Project..."));
-			filemenu.Append(new SeparatorMenuItem());
-			filemenu.Append(new MenuItem("Open Project..."));
-			filemenu.Append(new SeparatorMenuItem());
-			filemenu.Append(new MenuItem("Save"));
-			filemenu.Append(new MenuItem("Save As..."));
-			filemenu.Append(new SeparatorMenuItem());
-			filemenu.Append(new MenuItem("Backups..."));
-			filemenu.Append(new SeparatorMenuItem());
-			var exit = new MenuItem("Exit...");
-			exit.Activated += (sender, args) => Application.Quit();
+			EditorGUI.StartMenubar();
 
-			filemenu.Append(exit);
-			menubar.Append(file);
+			EditorGUI.MenuButton("File");
+			EditorGUI.StartMenu();
+			EditorGUI.MenuButton("Projects...");
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("Save");
+			EditorGUI.MenuButton("Save As...");
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("Backups...");
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("Exit...").onClicked += () => Application.Quit();
+			EditorGUI.EndMenu();
 
-			var editmenu = new Menu();
-			var edit = new MenuItem("Edit");
-			edit.Submenu = editmenu;
-			editmenu.Append(new MenuItem("Undo"));
-			editmenu.Append(new MenuItem("Redo"));
-			editmenu.Append(new SeparatorMenuItem());
-			editmenu.Append(new MenuItem("Cut"));
-			editmenu.Append(new MenuItem("Copy"));
-			editmenu.Append(new MenuItem("Paste"));
-			editmenu.Append(new SeparatorMenuItem());
-			editmenu.Append(new MenuItem("Previous Selection"));
-			editmenu.Append(new SeparatorMenuItem());
-			editmenu.Append(new MenuItem("Recompile Project"));
-			editmenu.Append(new SeparatorMenuItem());
-			editmenu.Append(new MenuItem("Manage 2 Contexts..."));
-			editmenu.Append(new SeparatorMenuItem());
-			editmenu.Append(new MenuItem("Editor Settings..."));
-			editmenu.Append(new MenuItem("Project Settings..."));
-			menubar.Append(edit);
+			EditorGUI.MenuButton("Edit");
+			EditorGUI.StartMenu();
+			EditorGUI.MenuButton("Undo");
+			EditorGUI.MenuButton("Redo");
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("Cut");
+			EditorGUI.MenuButton("Copy");
+			EditorGUI.MenuButton("Paste");
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("Editor Settings...");
+			EditorGUI.MenuButton("Project Settings...");
+			EditorGUI.EndMenu();
 
-			var viewmenu = new Menu();
-			var view = new MenuItem("View");
-			view.Submenu = viewmenu;
-			viewmenu.Append(new CheckMenuItem("Large GUI"));
-			viewmenu.Append(new CheckMenuItem("Static GUI"));
-			viewmenu.Append(new CheckMenuItem("Focus Outlines"));
-			viewmenu.Append(new SeparatorMenuItem());
-			var resetDocksSizesMenuItem = new MenuItem("Reset Docks Sizes");
-			resetDocksSizesMenuItem.Activated += (sender, args) => UpdatePanedSizes();
-			viewmenu.Append(resetDocksSizesMenuItem);
-			var reloadStylesMenuItem = new MenuItem("Reload Styles");
-			reloadStylesMenuItem.Activated += (sender, args) => ReloadStyles();
-			viewmenu.Append(reloadStylesMenuItem);
-			menubar.Append(view);
+			EditorGUI.MenuButton("View");
+			EditorGUI.StartMenu();
+			EditorGUI.MenuCheckbox("Large Interface", false);
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("Reset Dock Sizes").onClicked += () => UpdatePanedSizes();
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("Reload Theme").onClicked += () => { ReloadStyles(); EditorGUI.ReloadIcons(); };
+			EditorGUI.EndMenu();
 
-			var windowmenu = new Menu();
-			var window = new MenuItem("Window");
-			window.Submenu = windowmenu;
-			windowmenu.Append(new CheckMenuItem("Lock Docked Windows"));
-			windowmenu.Append(new SeparatorMenuItem());
-			windowmenu.Append(new MenuItem("All Windows..."));
-			windowmenu.Append(new SeparatorMenuItem()); // Pinned windows (windows assigned to hotkeys)
-			windowmenu.Append(new MenuItem("Scene")); // alt 1, goes to the last focused context of that window
-			windowmenu.Append(new MenuItem("Hierarchy")); // alt 2
-			windowmenu.Append(new MenuItem("Inspector")); // alt 3
-			windowmenu.Append(new MenuItem("Assets")); // alt 4
-			windowmenu.Append(new MenuItem("Problems")); // alt 5
-			windowmenu.Append(new MenuItem("Console")); // alt
-			windowmenu.Append(new SeparatorMenuItem()); // Recenty used windows
-			windowmenu.Append(new MenuItem("Source Control"));
-			windowmenu.Append(new MenuItem("Profiler"));
-			windowmenu.Append(new MenuItem("Autodocs")); // Gets all the info of types in an assembly and shows the xml docs
-			windowmenu.Append(new MenuItem("Music Player")); // A mini music player, mostly as an example on how to write custom windows
-			windowmenu.Append(new SeparatorMenuItem());
-			windowmenu.Append(new MenuItem("Editor Debugger...")); // Will open a mostly isolated editor debugger
-			menubar.Append(window);
+			EditorGUI.MenuButton("Window");
+			EditorGUI.StartMenu();
+			EditorGUI.MenuCheckbox("Freeze Docks", false);
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("All Windows...");
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("Scene");
+			EditorGUI.MenuButton("Hierarchy");
+			EditorGUI.MenuButton("Inspector");
+			EditorGUI.MenuButton("Assets");
+			EditorGUI.MenuButton("Problems");
+			EditorGUI.MenuButton("Console");
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("Source Control");
+			EditorGUI.MenuButton("Profiler");
+			EditorGUI.MenuButton("Autodocs");
+			EditorGUI.MenuButton("Music Player");
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("GUI Debugger...");
+			EditorGUI.EndMenu();
 
-			var helpmenu = new Menu();
-			var help = new MenuItem("Help");
-			help.Submenu = helpmenu;
-			helpmenu.Append(new MenuItem("Tutorials"));
-			helpmenu.Append(new MenuItem("Documentation"));
-			helpmenu.Append(new SeparatorMenuItem());
-			helpmenu.Append(new MenuItem("Command Palette"));
-			helpmenu.Append(new MenuItem("Project Search"));
-			helpmenu.Append(new SeparatorMenuItem());
-			helpmenu.Append(new MenuItem("Reload Assets"));
-			var clearCacheMenuItem = new MenuItem("Reload Cache");
-			clearCacheMenuItem.Activated += (sender, args) => Editor.ClearCache();
-			helpmenu.Append(clearCacheMenuItem);
-			helpmenu.Append(new MenuItem("Reload Editor"));
-			helpmenu.Append(new SeparatorMenuItem());
-			helpmenu.Append(new MenuItem("Request a Feature..."));
-			helpmenu.Append(new MenuItem("Report an Issue..."));
-			helpmenu.Append(new SeparatorMenuItem());
-			helpmenu.Append(new MenuItem("Check for Updates..."));
-			helpmenu.Append(new SeparatorMenuItem());
-			helpmenu.Append(new MenuItem("About..."));
-			menubar.Append(help);
+			EditorGUI.MenuButton("Help");
+			EditorGUI.StartMenu();
+			EditorGUI.MenuButton("Get Started");
+			EditorGUI.MenuButton("Documentation...");
+			EditorGUI.MenuButton("Tutorials...");
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("Command Palette");
+			EditorGUI.MenuButton("Super Search");
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("Report an Issue...");
+			EditorGUI.MenuButton("Request a Feature...");
+			EditorGUI.MenuSeparator();
+			EditorGUI.MenuButton("Copy Info").onClicked += () =>
+			{
+				var asmName = typeof(MGEEditor).Assembly.GetName();
+				Clipboard.GetDefault(Display).Text = $"`{asmName.Name} {asmName.Version} OS={Environment.OSVersion.ToString()}; CLR={Environment.Version}`";
+			};
+			EditorGUI.MenuButton("Check for Updates...");
+			EditorGUI.MenuButton("About...");
+			EditorGUI.EndMenu();
+
+			menubar = (MenuBar)EditorGUI.EndMenu();
+
+			// var helpmenu = new Menu();
+			// var help = new MenuItem("Help");
+			// help.Submenu = helpmenu;
+			// helpmenu.Append(new MenuItem("Tutorials"));
+			// helpmenu.Append(new MenuItem("Documentation"));
+			// helpmenu.Append(new SeparatorMenuItem());
+			// helpmenu.Append(new MenuItem("Command Palette"));
+			// helpmenu.Append(new MenuItem("Project Search"));
+			// helpmenu.Append(new SeparatorMenuItem());
+			// helpmenu.Append(new MenuItem("Reload Assets"));
+			// var clearCacheMenuItem = new MenuItem("Reload Cache");
+			// clearCacheMenuItem.Activated += (sender, args) => Editor.ClearCache();
+			// helpmenu.Append(clearCacheMenuItem);
+			// helpmenu.Append(new MenuItem("Reload Editor"));
+			// helpmenu.Append(new SeparatorMenuItem());
+			// helpmenu.Append(new MenuItem("Request a Feature..."));
+			// helpmenu.Append(new MenuItem("Report an Issue..."));
+			// helpmenu.Append(new SeparatorMenuItem());
+			// helpmenu.Append(new MenuItem("Check for Updates..."));
+			// helpmenu.Append(new SeparatorMenuItem());
+			// helpmenu.Append(new MenuItem("About..."));
+			// menubar.Append(help);
 		}
 
 		void MakeStatusbar()

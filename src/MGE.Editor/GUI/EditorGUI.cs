@@ -14,7 +14,7 @@ namespace MGE.Editor.GUI
 {
 	public static class EditorGUI
 	{
-		class ContainerInfo
+		public class ContainerInfo
 		{
 			public Container container;
 
@@ -225,7 +225,7 @@ namespace MGE.Editor.GUI
 
 		static Stack<ContainerInfo> _containerStack = new();
 		static ContainerInfo? _containerInfo;
-		static ContainerInfo containerInfo { get => _containerInfo is not null ? _containerInfo : throw new NullReferenceException("No active container"); }
+		public static ContainerInfo containerInfo { get => _containerInfo is not null ? _containerInfo : throw new NullReferenceException("No active container"); }
 		public static Container container { get => containerInfo.container; }
 		public static bool isHorizontal { get => containerInfo.isHorizontal; }
 		public static bool isBin { get => containerInfo.isBin; }
@@ -702,37 +702,60 @@ namespace MGE.Editor.GUI
 
 		#region Menu
 
-		static Menu? _menu;
+		static Stack<MenuShell> _menuStack = new();
+		static MenuShell? _menu;
+		static MenuItem? _currentMenuItem;
 
-		public static void StartMenu()
+		public static void AddToMenu(MenuItem widget)
 		{
-			_menu = new Menu();
+			if (_menu is null) throw new InvalidOperationException("There is no active menu");
+
+			_menu.Append(widget);
+			_currentMenuItem = widget;
 		}
 
-		public static void EndMenu()
+		public static void PushMenu(MenuShell menu)
 		{
-			if (_menu is null) throw new Exception($"{nameof(StartMenu)} has not been called yet");
+			if (_menu is not null)
+			{
+				_menuStack.Push(_menu);
+			}
 
-			_menu.ShowAll();
-			_menu.Popup();
+			if (_currentMenuItem is not null)
+			{
+				_currentMenuItem.Submenu = menu;
+				_currentMenuItem = null;
+			}
+
+			_menu = menu;
+		}
+
+		public static void StartMenu() => PushMenu(new Menu());
+		public static void StartMenubar() => PushMenu(new MenuBar());
+
+		public static MenuShell EndMenu()
+		{
+			_menuStack.TryPop(out var menu);
+
+			var popedMenu = _menu;
+			_menu = menu;
+			_currentMenuItem = null;
+
+			return popedMenu ?? throw new Exception();
 		}
 
 		public static void MenuSeparator()
 		{
-			if (_menu is null) throw new Exception($"{nameof(StartMenu)} has not been called yet");
-
-			_menu.Add(new SeparatorMenuItem());
+			AddToMenu(new SeparatorMenuItem());
 		}
 
 		public static MenuItemData MenuButton(string label)
 		{
-			if (_menu is null) throw new Exception($"{nameof(StartMenu)} has not been called yet");
-
 			var widget = new MenuItem(label);
 			var data = new MenuItemData(widget);
 
 			widget.Activated += (sender, args) => data.onClicked();
-			_menu.Add(widget);
+			AddToMenu(widget);
 
 			return data;
 		}
@@ -745,14 +768,9 @@ namespace MGE.Editor.GUI
 			var data = new CheckboxMenuItemData(widget);
 
 			widget.Activated += (sender, args) => data.onToggled(widget.Active);
-			_menu.Add(widget);
+			AddToMenu(widget);
 
 			return data;
-		}
-
-		public static void AttachMenu()
-		{
-
 		}
 
 		#endregion Menu

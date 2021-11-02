@@ -214,6 +214,17 @@ namespace MGE.Editor.GUI.Windows
 
 			EditorGUI.End();
 
+			EditorGUI.StartHorizontal();
+
+			EditorGUI.IconButton("New Folder").onPressed += () =>
+			{
+				_currentFolder.CreateSubdirectory("Folder");
+				Reload();
+			};
+			EditorGUI.IconButton("New Object");
+
+			EditorGUI.End();
+
 			EditorGUI.VerticalOverflow();
 
 			_folderContentsView.Unparent();

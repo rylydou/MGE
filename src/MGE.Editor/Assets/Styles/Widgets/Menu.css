@@ -22,7 +22,7 @@ menuitem > check {
 }
 
 menuitem > check:checked {
-  -gtk-icon-source: -gtk-icontheme("check");
+  -gtk-icon-source: -gtk-icontheme("Check");
 }
 
 menuitem check,
