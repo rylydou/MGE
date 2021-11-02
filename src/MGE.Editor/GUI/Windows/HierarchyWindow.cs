@@ -75,6 +75,15 @@ namespace MGE.Editor.GUI.Windows
 
 		void AddNodeHierarchy(TreeIter iter, GameNode node)
 		{
+			foreach (var child in node)
+			{
+				var nodeIter = hierarchyStore.AppendValues(iter, child.name, child.GetType().ToString(), child.id);
+				AddNodeHierarchy(nodeIter, child);
+			}
+		}
+
+		protected override void Draw()
+		{
 			EditorGUI.StartHorizontal();
 
 			EditorGUI.IconButton("Add");
@@ -85,18 +94,9 @@ namespace MGE.Editor.GUI.Windows
 			EditorGUI.VerticalOverflow();
 			EditorGUI.StartVertical();
 
-			foreach (var child in node)
-			{
-				var nodeIter = hierarchyStore.AppendValues(iter, child.name, child.GetType().ToString(), child.id);
-				AddNodeHierarchy(nodeIter, child);
-			}
+			EditorGUI.Add(hierarchyContainer);
 
 			EditorGUI.End();
-		}
-
-		protected override void Draw()
-		{
-			EditorGUI.Add(hierarchyContainer);
 		}
 	}
 }

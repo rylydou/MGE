@@ -42,6 +42,8 @@ button.icon:active * {
   transition: -gtk-icon-transform 0;
 }
 
-button.icon:disabled {
+button.icon:disabled * {
+	opacity: 0.5;
 	color: @midground;
 }
+

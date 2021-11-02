@@ -62,7 +62,7 @@ namespace MGE.Editor.GUI.Windows
 		DirectoryInfo _currentFolder = Editor.project.assets;
 
 		ListStore _folderContents = new(typeof(Pixbuf), typeof(string), typeof(string), typeof(bool));
-		IconView _folderContentsView = new() { SelectionMode = SelectionMode.Multiple, ItemWidth = 64, RowSpacing = 0, ColumnSpacing = 0, ItemPadding = 4, Spacing = 0, };
+		IconView _folderContentsView = new() { SelectionMode = SelectionMode.Multiple, ItemWidth = 48, RowSpacing = 0, ColumnSpacing = 0, ItemPadding = 0, Spacing = 0, };
 
 		List<DirectoryInfo> _folders = new();
 		List<FileInfo> _files = new();
@@ -177,7 +177,7 @@ namespace MGE.Editor.GUI.Windows
 
 			EditorGUI.StartHorizontal();
 
-			EditorGUI.sensitive = !_currentFolder.Equals(Editor.project.assets);
+			EditorGUI.sensitive = _currentFolder.FullName != Editor.project.assets.FullName;
 			EditorGUI.IconButton("Back").onPressed += () => { _currentFolder = _currentFolder.Parent!; Reload(); };
 
 			EditorGUI.HorizontalOverflow();
@@ -209,6 +209,7 @@ namespace MGE.Editor.GUI.Windows
 
 			EditorGUI.Text($"{_files.Count + _folders.Count} Items");
 
+			EditorGUI.IconButton("Search");
 			EditorGUI.IconButton("Redo").onPressed += Reload;
 
 			EditorGUI.End();
