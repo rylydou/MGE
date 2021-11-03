@@ -3,7 +3,7 @@ using Gtk;
 
 namespace MGE.Editor.GUI
 {
-	public abstract class Drawer : EditorContainer
+	public abstract class Drawer : EditorWidget
 	{
 		public abstract Type type { get; }
 		public Action<object> onValueChanged = value => { };

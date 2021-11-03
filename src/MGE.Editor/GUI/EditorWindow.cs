@@ -3,7 +3,7 @@ using Gtk;
 
 namespace MGE.Editor.GUI
 {
-	public abstract class EditorWindow : EditorContainer
+	public abstract class EditorWindow : EditorWidget
 	{
 		public readonly Label label;
 

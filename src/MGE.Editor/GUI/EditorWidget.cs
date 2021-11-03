@@ -2,13 +2,13 @@ using Gtk;
 
 namespace MGE.Editor.GUI
 {
-	public abstract class EditorContainer
+	public abstract class EditorWidget
 	{
 		public Container root { get; protected set; }
 
 		public virtual Container content { get => root; }
 
-		protected EditorContainer(Container root)
+		protected EditorWidget(Container root)
 		{
 			this.root = root;
 		}
@@ -22,14 +22,17 @@ namespace MGE.Editor.GUI
 			}
 
 			EditorGUI.PushContainer(content);
+			var containerIsBin = EditorGUI.containerInfo.isBin;
 
 			Draw();
 
-			EditorGUI.PopContainer();
+			if (!containerIsBin) EditorGUI.PopContainer();
 
 			root.ShowAll();
 		}
 
 		protected abstract void Draw();
+
+		public static implicit operator Widget(EditorWidget widget) => widget.root;
 	}
 }

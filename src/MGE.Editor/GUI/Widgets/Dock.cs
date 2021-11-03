@@ -30,10 +30,10 @@ namespace MGE.Editor.GUI.Widgets
 
 		public void AddWindow(EditorWindow window)
 		{
-			AppendPage(window.root, window.label);
+			AppendPage(window, window.label);
 
-			SetTabDetachable(window.root, true);
-			SetTabReorderable(window.root, true);
+			SetTabDetachable(window, true);
+			SetTabReorderable(window, true);
 		}
 
 		protected override Notebook OnCreateWindow(Widget page, int x, int y)
@@ -48,7 +48,7 @@ namespace MGE.Editor.GUI.Widgets
 			};
 			window.Move(x, y);
 
-			MGEEditor.current.WindowStateEvent += (sender, args) =>
+			MGEEditorWindow.current.WindowStateEvent += (sender, args) =>
 			{
 				// TODO Get this working
 				// var state = args.Event.NewWindowState;

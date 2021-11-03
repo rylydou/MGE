@@ -35,7 +35,7 @@ namespace MGE.Editor
 		{
 			Application.Init();
 
-			var window = new MGEEditor();
+			var window = new MGEEditorWindow();
 			window.ShowAll();
 
 			Application.Run();

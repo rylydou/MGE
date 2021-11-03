@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Gtk;
 
 namespace MGE.Editor
 {
@@ -104,6 +105,22 @@ namespace MGE.Editor
 		}
 
 		#region Util
+
+		static Clipboard? _clipboard;
+		public static Clipboard clipboard
+		{
+			get
+			{
+				if (_clipboard is null)
+					_clipboard = Clipboard.GetDefault(MGEEditorWindow.current.Display);
+				return _clipboard;
+			}
+		}
+
+		public static void CopyText(string text)
+		{
+			clipboard.Text = text;
+		}
 
 		public static void OpenFile(string file)
 		{

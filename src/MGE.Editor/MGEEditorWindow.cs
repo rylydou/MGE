@@ -7,10 +7,10 @@ using MGE.Editor.GUI.Windows;
 
 namespace MGE.Editor
 {
-	class MGEEditor : Gtk.Window
+	class MGEEditorWindow : Gtk.Window
 	{
-		public static MGEEditor current { get { if (_current is null) throw new NullReferenceException("_current is null"); return _current; } }
-		static MGEEditor? _current;
+		public static MGEEditorWindow current { get { if (_current is null) throw new NullReferenceException("_current is null"); return _current; } }
+		static MGEEditorWindow? _current;
 
 		public HeaderBar titlebar = new() { ShowCloseButton = true };
 		public MenuBar menubar = new();
@@ -28,7 +28,7 @@ namespace MGE.Editor
 		Paned leftPaned = new(Orientation.Vertical);
 		Paned mainPaned = new(Orientation.Horizontal);
 
-		public MGEEditor() : base("MGE EDITOR")
+		public MGEEditorWindow() : base("MGE EDITOR")
 		{
 			if (_current is not null) throw new Exception("A MGE editor window already exists");
 
@@ -110,7 +110,7 @@ namespace MGE.Editor
 			EditorGUI.MenuSeparator();
 			EditorGUI.MenuButton("Backups...");
 			EditorGUI.MenuSeparator();
-			EditorGUI.MenuButton("Exit...").onClicked += () => Application.Quit();
+			EditorGUI.MenuButton("Exit...").onPressed += () => Application.Quit();
 			EditorGUI.EndMenu();
 
 			EditorGUI.MenuButton("Edit");
@@ -130,9 +130,9 @@ namespace MGE.Editor
 			EditorGUI.StartMenu();
 			EditorGUI.MenuCheckbox("Large Interface", false);
 			EditorGUI.MenuSeparator();
-			EditorGUI.MenuButton("Reset Dock Sizes").onClicked += () => UpdatePanedSizes();
+			EditorGUI.MenuButton("Reset Dock Sizes").onPressed += () => UpdatePanedSizes();
 			EditorGUI.MenuSeparator();
-			EditorGUI.MenuButton("Reload Theme").onClicked += () => { ReloadStyles(); EditorGUI.ReloadIcons(); };
+			EditorGUI.MenuButton("Reload Theme").onPressed += () => { ReloadStyles(); EditorGUI.ReloadIcons(); };
 			EditorGUI.EndMenu();
 
 			EditorGUI.MenuButton("Window");
@@ -168,8 +168,7 @@ namespace MGE.Editor
 			EditorGUI.MenuButton("Report an Issue...");
 			EditorGUI.MenuButton("Request a Feature...");
 			EditorGUI.MenuSeparator();
-			EditorGUI.MenuButton("Copy Info").onClicked += () => Clipboard.GetDefault(Display).Text =
-				$"`{typeof(MGEEditor).Assembly.GetName().Version}; OS={Environment.OSVersion.ToString()}; CLR={Environment.Version};`";
+			EditorGUI.MenuButton("Copy Info").onPressed += () => Editor.CopyText($"`{typeof(MGEEditorWindow).Assembly.GetName().Version}; OS={Environment.OSVersion.ToString()}; CLR={Environment.Version};`");
 			EditorGUI.MenuButton("Check for Updates...");
 			EditorGUI.MenuButton("About...");
 			EditorGUI.EndMenu();
