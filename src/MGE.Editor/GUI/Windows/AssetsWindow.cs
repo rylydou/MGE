@@ -178,7 +178,7 @@ namespace MGE.Editor.GUI.Windows
 			EditorGUI.StartHorizontal();
 
 			EditorGUI.sensitive = _currentFolder.FullName != Editor.project.assets.FullName;
-			EditorGUI.IconButton("Back").onPressed += () => { _currentFolder = _currentFolder.Parent!; Reload(); };
+			EditorGUI.IconButton("Arrow Up Left").onPressed += () => { _currentFolder = _currentFolder.Parent!; Reload(); };
 
 			EditorGUI.HorizontalOverflow();
 			EditorGUI.StartHorizontal(0);
@@ -216,19 +216,24 @@ namespace MGE.Editor.GUI.Windows
 
 			EditorGUI.StartHorizontal();
 
+			EditorGUI.StartVertical();
+
+			EditorGUI.IconButton("New Object");
+
 			EditorGUI.IconButton("New Folder").onPressed += () =>
 			{
 				_currentFolder.CreateSubdirectory("Folder");
 				Reload();
 			};
-			EditorGUI.IconButton("New Object");
 
 			EditorGUI.End();
 
+			EditorGUI.horizontalExpand = true;
 			EditorGUI.VerticalOverflow();
-
 			_folderContentsView.Unparent();
 			EditorGUI.Add(_folderContentsView);
+
+			EditorGUI.End();
 
 			EditorGUI.End();
 		}

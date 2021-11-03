@@ -168,11 +168,8 @@ namespace MGE.Editor
 			EditorGUI.MenuButton("Report an Issue...");
 			EditorGUI.MenuButton("Request a Feature...");
 			EditorGUI.MenuSeparator();
-			EditorGUI.MenuButton("Copy Info").onClicked += () =>
-			{
-				var asmName = typeof(MGEEditor).Assembly.GetName();
-				Clipboard.GetDefault(Display).Text = $"`{asmName.Name} {asmName.Version} OS={Environment.OSVersion.ToString()}; CLR={Environment.Version}`";
-			};
+			EditorGUI.MenuButton("Copy Info").onClicked += () => Clipboard.GetDefault(Display).Text =
+				$"`{typeof(MGEEditor).Assembly.GetName().Version}; OS={Environment.OSVersion.ToString()}; CLR={Environment.Version};`";
 			EditorGUI.MenuButton("Check for Updates...");
 			EditorGUI.MenuButton("About...");
 			EditorGUI.EndMenu();
