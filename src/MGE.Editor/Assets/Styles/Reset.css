@@ -51,6 +51,8 @@
 	transition-duration: initial;
 	transition-timing-function: initial;
 	transition-delay: initial;
+	min-width: 0;
+	min-height: 0;
 	/* engine: initial; */
 
 	-gtk-key-bindings: initial;

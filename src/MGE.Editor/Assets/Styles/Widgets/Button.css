@@ -1,29 +1,29 @@
-button:not(.titlebutton):not(.icon) {
+button:not(:link):not(.titlebutton):not(.icon) {
   padding: 0 4px;
 
   transition: background-color 250ms;
 }
 
-button:not(.titlebutton):not(.icon) * {
+button:not(:link):not(.titlebutton):not(.icon) * {
   transition: color 250ms;
 }
 
-button:not(.titlebutton):not(.icon):active {
+button:not(:link):not(.titlebutton):not(.icon):active {
   background-color: @accent;
 
   transition: background-color 0;
 }
 
-button:not(.titlebutton):not(.icon):active * {
+button:not(:link):not(.titlebutton):not(.icon):active * {
   color: @accent-foreground;
 
   transition: color 0;
 }
 
+/* Why did icons break */
 button.icon {
-  min-width: 16px;
-  min-height: 16px;
-  background-color: unset;
+	padding: 2px;
+  background: none;
   border: none;
   box-shadow: none;
 }
@@ -46,3 +46,14 @@ button.icon:disabled * {
 	color: @element;
 }
 
+button:link * {
+	text-decoration: none;
+}
+
+button:link:hover *, :link:focus * {
+	text-decoration: underline;
+}
+
+button:link:active * {
+	color: @accent;
+}

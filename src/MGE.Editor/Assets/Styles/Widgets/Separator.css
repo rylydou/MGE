@@ -1,5 +1,6 @@
 separator {
 	padding: 1px;
+	min-width: 1px;
+	min-height: 1px;
 	background-color: @base;
-	border-radius: 4px;
 }

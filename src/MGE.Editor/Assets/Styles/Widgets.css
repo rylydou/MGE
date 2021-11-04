@@ -1,4 +1,4 @@
-button,
+button:not(:link):not(.titlebutton),
 checkbutton,
 entry {
 	padding: 4px;
@@ -8,7 +8,7 @@ entry {
 	box-shadow: 0 1px 1px 0 @base;
 }
 
-button:hover, button:focus,
+button:not(:link):not(.titlebutton):hover, button:not(:link):not(.titlebutton):focus,
 checkbutton:hover, checkbutton:focus,
 entry:hover /* Why doesn't this work */, entry:focus {
 	border-color: @accent;
@@ -25,17 +25,20 @@ rubberband {
 	border: 1px dotted @accent-foreground;
 }
 
+check {
+	min-height: 16px;
+	min-width: 16px;
+}
+
 @import url("Widgets/Notebook.css");
 @import url("Widgets/Tree.css");
 @import url("Widgets/Iconview.css");
 
-@import url("Widgets/Link.css");
 @import url("Widgets/Button.css");
 @import url("Widgets/Checkbutton.css");
 
-@import url("Widgets/Range.css");
-
 @import url("Widgets/Entry.css");
+@import url("Widgets/Range.css");
 @import url("Widgets/Combobox.css");
 
 @import url("Widgets/Popovers.css");

@@ -356,6 +356,17 @@ namespace MGE.Editor.GUI
 			return data;
 		}
 
+		public static ButtonData Link(string text)
+		{
+			var widget = new LinkButton(text);
+			var data = new ButtonData(widget);
+			widget.Clicked += (sender, args) => data.onPressed();
+
+			Add(widget);
+
+			return data;
+		}
+
 		public static ButtonData ButtonWithContent()
 		{
 			var widget = new Button() { Hexpand = true, };

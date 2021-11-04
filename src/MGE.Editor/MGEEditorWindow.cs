@@ -36,7 +36,7 @@ namespace MGE.Editor
 
 			SetPosition(WindowPosition.Center);
 			SetDefaultSize(1280, 720);
-			// Maximize();
+			Maximize();
 
 			// FocusInEvent += (sender, args) => ReloadStyles();
 			Destroyed += (sender, args) => Application.Quit();
@@ -45,7 +45,6 @@ namespace MGE.Editor
 			ReloadStyles();
 			StyleContext.AddProviderForScreen(Screen, styleProvider, int.MaxValue);
 
-			// Idk which one I should use
 			IconTheme.Default.AppendSearchPath($"{Editor.assets.FullName}/Icons");
 			IconTheme.Default.RescanIfNeeded();
 
@@ -174,29 +173,6 @@ namespace MGE.Editor
 			EditorGUI.EndMenu();
 
 			menubar = (MenuBar)EditorGUI.EndMenu();
-
-			// var helpmenu = new Menu();
-			// var help = new MenuItem("Help");
-			// help.Submenu = helpmenu;
-			// helpmenu.Append(new MenuItem("Tutorials"));
-			// helpmenu.Append(new MenuItem("Documentation"));
-			// helpmenu.Append(new SeparatorMenuItem());
-			// helpmenu.Append(new MenuItem("Command Palette"));
-			// helpmenu.Append(new MenuItem("Project Search"));
-			// helpmenu.Append(new SeparatorMenuItem());
-			// helpmenu.Append(new MenuItem("Reload Assets"));
-			// var clearCacheMenuItem = new MenuItem("Reload Cache");
-			// clearCacheMenuItem.Activated += (sender, args) => Editor.ClearCache();
-			// helpmenu.Append(clearCacheMenuItem);
-			// helpmenu.Append(new MenuItem("Reload Editor"));
-			// helpmenu.Append(new SeparatorMenuItem());
-			// helpmenu.Append(new MenuItem("Request a Feature..."));
-			// helpmenu.Append(new MenuItem("Report an Issue..."));
-			// helpmenu.Append(new SeparatorMenuItem());
-			// helpmenu.Append(new MenuItem("Check for Updates..."));
-			// helpmenu.Append(new SeparatorMenuItem());
-			// helpmenu.Append(new MenuItem("About..."));
-			// menubar.Append(help);
 		}
 
 		void MakeStatusbar()

@@ -97,34 +97,6 @@ namespace MGE.Editor.GUI.Windows
 			_folderContentsView.PixbufColumn = 0;
 			_folderContentsView.TextColumn = 1;
 
-			// fsw = new(Editor.project.assets.FullName) { EnableRaisingEvents = true };
-
-			// fsw.Changed += (sender, args) =>
-			// {
-			// 	Trace.WriteLine(args.ChangeType + " " + args.FullPath);
-			// 	Reload();
-			// };
-
-			Reload();
-		}
-
-		void Reload()
-		{
-			#region Icons
-
-			while (!_currentFolder.Exists)
-			{
-				_currentFolder = _currentFolder.Parent!;
-			}
-
-			_folders = _currentFolder.GetDirectories("*", _enumerationOptions).ToList();
-			_folders.Sort((left, right) => left.Name.CompareTo(right.Name));
-
-			_files = _currentFolder.GetFiles("*", _enumerationOptions).ToList();
-			_files.Sort((left, right) => left.Name.CompareTo(right.Name));
-
-			_folderContents.Clear();
-
 			_folderContentsView.ButtonPressEvent += (sender, args) =>
 			{
 				if (args.Event.Button == 3)
@@ -165,6 +137,26 @@ namespace MGE.Editor.GUI.Windows
 					EditorGUI.MenuPopup(args.Event);
 				}
 			};
+
+			Reload();
+		}
+
+		void Reload()
+		{
+			#region Icons
+
+			while (!_currentFolder.Exists)
+			{
+				_currentFolder = _currentFolder.Parent!;
+			}
+
+			_folders = _currentFolder.GetDirectories("*", _enumerationOptions).ToList();
+			_folders.Sort((left, right) => left.Name.CompareTo(right.Name));
+
+			_files = _currentFolder.GetFiles("*", _enumerationOptions).ToList();
+			_files.Sort((left, right) => left.Name.CompareTo(right.Name));
+
+			_folderContents.Clear();
 
 			// _folderContentsView.DragDataGet += (sender, args) =>
 			// {
@@ -259,54 +251,53 @@ namespace MGE.Editor.GUI.Windows
 
 			breadcrums.Redraw();
 
-			#endregion
+			#endregion Breadcrums
 		}
 
 		protected override void Draw()
 		{
-			EditorGUI.StartVertical();
-
 			EditorGUI.StartHorizontal();
-
-			// EditorGUI.sensitive = _currentFolder.FullName != Editor.project.assets.FullName;
-			EditorGUI.IconButton("Arrow Up Left").onPressed += () =>
 			{
-				if (_currentFolder.FullName != Editor.project.assets.FullName)
+				EditorGUI.StartVertical(spacing: 0);
 				{
-					_currentFolder = _currentFolder.Parent!;
-					Reload();
+					EditorGUI.IconButton("Arrow Up Left").onPressed += () =>
+					{
+						if (_currentFolder.FullName != Editor.project.assets.FullName)
+						{
+							_currentFolder = _currentFolder.Parent!;
+							Reload();
+						}
+					};
+
+					EditorGUI.IconButton("New Object");
+
+					EditorGUI.IconButton("New Folder").onPressed += () =>
+					{
+						_currentFolder.CreateSubdirectory("Folder");
+						Reload();
+					};
 				}
-			};
+				EditorGUI.End();
 
-			EditorGUI.Add(breadcrums);
+				EditorGUI.StartVertical();
+				{
+					EditorGUI.StartHorizontal();
+					{
+						EditorGUI.Add(breadcrums);
 
-			EditorGUI.Text($"{_files.Count + _folders.Count} Items");
+						EditorGUI.Text($"{_files.Count + _folders.Count} Items");
 
-			EditorGUI.IconButton("Search");
-			EditorGUI.IconButton("Redo").onPressed += Reload;
+						EditorGUI.IconButton("Search");
+						EditorGUI.IconButton("Redo").onPressed += Reload;
+					}
+					EditorGUI.End();
 
-			EditorGUI.End();
-
-			EditorGUI.StartHorizontal();
-
-			EditorGUI.StartVertical();
-
-			EditorGUI.IconButton("New Object");
-
-			EditorGUI.IconButton("New Folder").onPressed += () =>
-			{
-				_currentFolder.CreateSubdirectory("Folder");
-				Reload();
-			};
-
-			EditorGUI.End();
-
-			EditorGUI.horizontalExpand = true;
-			EditorGUI.VerticalOverflow();
-			EditorGUI.Add(_folderContentsView);
-
-			EditorGUI.End();
-
+					EditorGUI.horizontalExpand = true;
+					EditorGUI.VerticalOverflow();
+					EditorGUI.Add(_folderContentsView);
+				}
+				EditorGUI.End();
+			}
 			EditorGUI.End();
 		}
 	}

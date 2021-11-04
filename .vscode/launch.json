@@ -50,6 +50,9 @@
       "preLaunchTask": "build editor",
       "program": "${workspaceFolder}/src/MGE.Editor/bin/Debug/net5.0/MGE.Editor.dll",
       "args": [],
+      "env": {
+        "data-dir": "${workspaceFolder}/Data"
+      },
       "cwd": "${workspaceFolder}/src/MGE.Editor",
       "console": "internalConsole",
       "stopAtEntry": false,

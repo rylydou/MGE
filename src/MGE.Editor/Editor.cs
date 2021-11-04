@@ -11,7 +11,10 @@ namespace MGE.Editor
 	{
 		public static DirectoryInfo assets = new($"{Environment.CurrentDirectory}/Assets");
 
-		public static Project project = new($"{Environment.CurrentDirectory}/Data/Projects/Untitled-Game");
+#if DEBUG
+		public static Project project = new($"{Environment.GetEnvironmentVariable("data-dir")}/MGE Projects/Untitled-Game");
+#endif
+
 		public static List<EditorContext> contexts = new() { new() };
 
 		#region Property Name

@@ -11,12 +11,12 @@ namespace MGE.Editor.GUI.Widgets
 
 		protected override void Draw()
 		{
-			EditorGUI.StartHorizontal(spacing: 2);
+			EditorGUI.StartHorizontal();
 
 			foreach (var item in items)
 			{
 				EditorGUI.horizontalExpand = false;
-				EditorGUI.Button(item.Item1).onPressed += item.Item2;
+				EditorGUI.Link(item.Item1).onPressed += item.Item2;
 			}
 
 			EditorGUI.End();
