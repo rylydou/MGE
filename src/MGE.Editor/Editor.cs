@@ -145,7 +145,7 @@ namespace MGE.Editor
 		{
 			if (OperatingSystem.IsLinux())
 			{
-				System.Diagnostics.Process.Start("explorer.exe", $"/select, \"{file}\"");
+				System.Diagnostics.Process.Start("xdg-open", file);
 			}
 			else if (OperatingSystem.IsWindows())
 			{
