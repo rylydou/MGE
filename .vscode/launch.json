@@ -2,11 +2,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "MGE DEBUG",
+      "name": "MGE",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build engine",
-      "program": "${workspaceFolder}/MGE/bin/Debug/net5.0/MGE.dll",
+      "program": "${workspaceFolder}/MGE/bin/Debug/MGE.dll",
       "args": [],
       "cwd": "${workspaceFolder}/MGE",
       "console": "internalConsole",
@@ -23,11 +23,11 @@
       }
     },
     {
-      "name": "Game DEBUG",
+      "name": "Game",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build game",
-      "program": "${workspaceFolder}/Playground/bin/Debug/net5.0/Playground.dll",
+      "program": "${workspaceFolder}/Playground/bin/Debug/Playground.dll",
       "args": [],
       "cwd": "${workspaceFolder}/Playground",
       "console": "internalConsole",
@@ -44,11 +44,11 @@
       }
     },
     {
-      "name": "Editor DEBUG",
+      "name": "Editor",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build editor",
-      "program": "${workspaceFolder}/MGE.Editor/bin/Debug/net5.0/MGE.Editor.dll",
+      "program": "${workspaceFolder}/MGE.Editor/bin/Debug/MGE.Editor.dll",
       "args": [],
       "env": {
         "data-dir": "${workspaceFolder}/Data"

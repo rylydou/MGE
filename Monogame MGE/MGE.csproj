@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
 	<PropertyGroup>
+
 		<TargetFramework>net5.0</TargetFramework>
 		<DefineConstants>MGE_ENABLE_LOGGING;MGE_ENABLE_FILE_LOGGING;$(DefineConstants)</DefineConstants>
 		<NoWarn>$(NoWarn);SYSLIB0011</NoWarn>
@@ -8,12 +10,20 @@
 		<AssemblyTitle>Mangrove Game Engine</AssemblyTitle>
 		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 		<Company>Ciber_Turtle</Company>
+
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
 	</PropertyGroup>
+
 	<ItemGroup>
+
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641">
 			<PrivateAssets>All</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="YamlDotNet" Version="11.2.1" />
+
 	</ItemGroup>
+
 </Project>

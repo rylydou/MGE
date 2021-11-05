@@ -8,7 +8,7 @@ namespace MGE
 {
 	public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
-		public GameWindow() : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = new Vector2i(800, 600), Title = "LearnOpenTK - Creating a Window", })
+		public GameWindow() : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = new Vector2i(1600, 900), Title = "LearnOpenTK - Creating a Window", })
 		{
 		}
 
@@ -16,7 +16,7 @@ namespace MGE
 		{
 			base.OnLoad();
 
-			GL.ClearColor(0f, 0.1f, 0.025f, 1f);
+			GL.ClearColor(22f / 255, 22f / 255, 22f / 255, 1f);
 		}
 
 		protected override void OnUpdateFrame(FrameEventArgs e)
