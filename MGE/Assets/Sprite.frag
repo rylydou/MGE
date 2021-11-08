@@ -2,12 +2,12 @@
 
 uniform sampler2D texture0;
 
-in vec4 color;
+in vec4 vertColor;
 in vec2 textureCoord;
 
-out vec4 outputColor;
+out vec4 color;
 
 void main()
 {
-	outputColor = (1 - texture(texture0, textureCoord)) * color;
+	color = (1 - texture(texture0, textureCoord)) * vertColor;
 }

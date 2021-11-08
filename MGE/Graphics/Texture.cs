@@ -7,7 +7,7 @@ using SixLabors.ImageSharp.Processing;
 
 namespace MGE.Graphics
 {
-	public class Texture : GraphicsObject
+	public class Texture : GraphicsResource
 	{
 		public readonly int width;
 		public readonly int height;
@@ -46,11 +46,10 @@ namespace MGE.Graphics
 
 		public static Texture LoadFromFile(string path)
 		{
-			using (var image = Image.Load<Rgba32>(Environment.CurrentDirectory + "/Assets/" + path))
+			using (var image = Image.Load<Rgba32>($"{Environment.CurrentDirectory}/Assets/{path}"))
 			{
 				image.Mutate(x => x.Flip(FlipMode.Vertical));
 
-				// Convert ImageSharp's format into a byte array, so we can use it with OpenGL.
 				var pixels = new List<Color>(image.Width * image.Height);
 
 				for (int y = 0; y < image.Height; y++)
@@ -69,7 +68,7 @@ namespace MGE.Graphics
 
 		public static OpenTK.Windowing.Common.Input.Image LoadIconData(string path)
 		{
-			using (var image = Image.Load<Rgba32>(Environment.CurrentDirectory + "/Assets/" + path))
+			using (var image = Image.Load<Rgba32>($"{Environment.CurrentDirectory}/Assets/{path}"))
 			{
 				var pixels = new List<byte>(image.Width * image.Height * 4);
 

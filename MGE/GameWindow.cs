@@ -1,33 +1,19 @@
+using MGE.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
-using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace MGE
 {
 	public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
-		private float[] _vertices =
+		Vector2 _position;
+
+		SpriteBatch _sb;
+
+		public GameWindow() : base(new(), new() { Size = new(1600, 900) })
 		{
-			// Position	 Texture	 Color
-				 0,  0,    0,  0,    1.0f,  1.0f,  1.0f,  1.0f,
-				 0,  1,    0,  1,    1.0f,  1.0f,  1.0f,  1.0f,
-				 1,  1,    1,  1,    1.0f,  1.0f,  1.0f,  1.0f,
-
-				 0,  0,    0,  0,    1.0f,  1.0f,  1.0f,  1.0f,
-				 1,  0,    1,  0,    1.0f,  1.0f,  1.0f,  1.0f,
-				 1,  1,    1,  1,    1.0f,  1.0f,  1.0f,  1.0f,
-		};
-
-		int _vertexBufferObject;
-		int _vertexArrayObject;
-		Shader _shader;
-		Texture _sprite;
-
-		public GameWindow() : base(new GameWindowSettings(), new NativeWindowSettings())
-		{
-			_shader = new("Assets/Sprite.vert", "Assets/Sprite.frag");
-			_sprite = Texture.LoadFromFile("Sprite.png");
+			_sb = new();
 		}
 
 		protected override void OnLoad()
@@ -35,40 +21,25 @@ namespace MGE
 			base.OnLoad();
 
 			GL.ClearColor(new Color("#161616"));
-
-			_vertexBufferObject = GL.GenBuffer();
-
-			GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-			GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StreamDraw);
-
-			_vertexArrayObject = GL.GenVertexArray();
-			GL.BindVertexArray(_vertexArrayObject);
-
-			GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
-			GL.EnableVertexAttribArray(0);
-
-			GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 2 * sizeof(float));
-			GL.EnableVertexAttribArray(2);
-
-			GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, 8 * sizeof(float), 4 * sizeof(float));
-			GL.EnableVertexAttribArray(1);
-
-			_shader.Use();
+			GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 		}
 
-		protected override void OnRenderFrame(FrameEventArgs e)
+		protected override void OnUnload()
 		{
-			base.OnRenderFrame(e);
+			GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+			GL.BindVertexArray(0);
+			GL.UseProgram(0);
 
-			GL.Clear(ClearBufferMask.ColorBufferBit);
+			_sb.Dispose();
 
-			GL.BindVertexArray(_vertexArrayObject);
-			_shader.Use();
-			_sprite.Use();
+			base.OnUnload();
+		}
 
-			GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+		protected override void OnResize(ResizeEventArgs e)
+		{
+			base.OnResize(e);
 
-			SwapBuffers();
+			GL.Viewport(0, 0, Size.X, Size.Y);
 		}
 
 		protected override void OnUpdateFrame(FrameEventArgs e)
@@ -79,53 +50,35 @@ namespace MGE
 
 			if (input.IsKeyDown(Keys.Up))
 			{
-				_vertices[1] += (float)e.Time;
+				_position.y += (float)e.Time;
 			}
 			if (input.IsKeyDown(Keys.Down))
 			{
-				_vertices[1] -= (float)e.Time;
+				_position.y -= (float)e.Time;
 			}
-
 			if (input.IsKeyDown(Keys.Right))
 			{
-				_vertices[0] += (float)e.Time;
+				_position.x += (float)e.Time;
 			}
 			if (input.IsKeyDown(Keys.Left))
 			{
-				_vertices[0] -= (float)e.Time;
-			}
-
-			GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-			GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StreamDraw);
-
-			if (input.IsKeyDown(Keys.Escape))
-			{
-				Close();
+				_position.x -= (float)e.Time;
 			}
 		}
 
-		protected override void OnResize(ResizeEventArgs e)
+		protected override void OnRenderFrame(FrameEventArgs e)
 		{
-			base.OnResize(e);
+			base.OnRenderFrame(e);
 
-			GL.Viewport(0, 0, Size.X, Size.Y);
-		}
+			GL.Clear(ClearBufferMask.ColorBufferBit);
 
-		protected override void OnUnload()
-		{
-			GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-			GL.BindVertexArray(0);
-			GL.UseProgram(0);
+			_sb.Start();
 
-			GL.DeleteBuffer(_vertexBufferObject);
-			GL.DeleteVertexArray(_vertexArrayObject);
+			_sb.DrawBox(new(_position, 1, 1), new(1, 0, 0, 0.5f));
 
-			GL.DeleteProgram(_shader.handle);
+			_sb.End();
 
-			_shader.Dispose();
-			_sprite.Dispose();
-
-			base.OnUnload();
+			SwapBuffers();
 		}
 	}
 }
