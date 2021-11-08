@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace MGE
 {
@@ -18,7 +19,7 @@ namespace MGE
 	// 	}
 	// }
 
-	[Serializable]
+	[Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct Color : IEquatable<Color>
 	{
 		public static readonly Color red = new Color(1f, 0f, 0f);

@@ -1,6 +1,6 @@
 using System;
 
-namespace MGE
+namespace MGE.Graphics
 {
 	public abstract class GraphicsResource : IDisposable
 	{

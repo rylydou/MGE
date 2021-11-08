@@ -2252,6 +2252,13 @@ namespace MGE
 					this.m41, this.m42, this.m43, this.m44);
 		}
 
+		public static implicit operator OpenTK.Mathematics.Matrix4(Matrix matrix) => new OpenTK.Mathematics.Matrix4(
+			matrix.m11, matrix.m12, matrix.m13, matrix.m14,
+			matrix.m21, matrix.m22, matrix.m23, matrix.m24,
+			matrix.m31, matrix.m32, matrix.m33, matrix.m34,
+			matrix.m41, matrix.m42, matrix.m43, matrix.m44
+		);
+
 		/// <summary>
 		/// Helper method for using the Laplace expansion theorem using two rows expansions to calculate major and
 		/// minor determinants of a 4x4 matrix. This method is used for inverting a matrix.

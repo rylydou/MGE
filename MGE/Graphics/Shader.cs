@@ -108,10 +108,11 @@ namespace MGE.Graphics
 			GL.Uniform4(_uniformLocations[name], color.r, color.g, color.b, color.a);
 		}
 
-		public void SetMatrix(string name, Matrix4 data)
+		public void SetMatrix(string name, Matrix data)
 		{
 			GL.UseProgram(handle);
-			GL.UniformMatrix4(_uniformLocations[name], true, ref data);
+			var mat = (Matrix4)data;
+			GL.UniformMatrix4(_uniformLocations[name], true, ref mat);
 		}
 
 		protected override void Dispose(bool manual)

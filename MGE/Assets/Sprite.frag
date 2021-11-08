@@ -9,5 +9,5 @@ out vec4 color;
 
 void main()
 {
-	color = (1 - texture(texture0, textureCoord)) * vertColor;
+	color = texture(texture0, textureCoord) * vertColor;
 }

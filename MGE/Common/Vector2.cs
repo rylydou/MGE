@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 
 namespace MGE
 {
@@ -17,7 +18,7 @@ namespace MGE
 	// 	}
 	// }
 
-	[Serializable]
+	[Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct Vector2 : IEquatable<Vector2>
 	{
 		public static readonly Vector2 zero = new Vector2(0, 0);

@@ -9,11 +9,12 @@ namespace MGE.Graphics
 {
 	public class Texture : GraphicsResource
 	{
-		public readonly int width;
-		public readonly int height;
+		public readonly Vector2Int size;
 
 		public Texture(Vector2Int size) : base(GL.GenTexture())
 		{
+			this.size = size;
+
 			GL.ActiveTexture(TextureUnit.Texture0);
 			GL.BindTexture(TextureTarget.Texture2D, handle);
 
@@ -30,6 +31,8 @@ namespace MGE.Graphics
 
 		public Texture(Vector2Int size, Color[] pixels) : base(GL.GenTexture())
 		{
+			this.size = size;
+
 			GL.ActiveTexture(TextureUnit.Texture0);
 			GL.BindTexture(TextureTarget.Texture2D, handle);
 
@@ -58,7 +61,7 @@ namespace MGE.Graphics
 
 					for (int x = 0; x < image.Width; x++)
 					{
-						pixels.Add(new Color(row[x].R, row[x].G, row[x].B, row[x].A));
+						pixels.Add(Color.FromBytes(row[x].R, row[x].G, row[x].B, row[x].A));
 					}
 				}
 
@@ -90,7 +93,7 @@ namespace MGE.Graphics
 		}
 
 		public Vector2 GetTextureCoord(Vector2 position) => GetTextureCoord(position.x, position.y);
-		public Vector2 GetTextureCoord(float x, float y) => new Vector2(x / width, y / height);
+		public Vector2 GetTextureCoord(float x, float y) => new Vector2(x / size.x, y / size.y);
 
 		public void Use(byte unit)
 		{
