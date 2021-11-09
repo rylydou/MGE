@@ -1,13 +1,6 @@
-﻿namespace MGE
+﻿using MGE;
+
+using (var window = new GameWindow())
 {
-	class Program
-	{
-		static void Main(string[] args)
-		{
-			using (var window = new GameWindow())
-			{
-				window.Run();
-			}
-		}
-	}
+	window.Run();
 }

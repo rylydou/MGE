@@ -3,102 +3,101 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
-namespace MGE
+namespace MGE;
+
+public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 {
-	public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
+	static GameWindow? _current;
+	public static GameWindow current { get => _current!; }
+
+	Vector2 _position;
+
+	Texture _texSprite;
+	Texture _texNone;
+
+	SpriteBatch _sb;
+
+	public GameWindow() : base(new(), new() { Size = new(1600, 900) })
 	{
-		static GameWindow? _current;
-		public static GameWindow current { get => _current!; }
+		_current = this;
 
-		Vector2 _position;
+		_sb = new();
 
-		Texture _texSprite;
-		Texture _texNone;
+		_texSprite = Texture.LoadFromFile("Sprite.png");
+		_texNone = Texture.LoadFromFile("None.png");
+	}
 
-		SpriteBatch _sb;
+	protected override void OnLoad()
+	{
+		base.OnLoad();
 
-		public GameWindow() : base(new(), new() { Size = new(1600, 900) })
+		GL.ClearColor(new Color("#1C2923"));
+		GL.Enable(EnableCap.Blend);
+		GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+	}
+
+	protected override void OnUnload()
+	{
+		GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+		GL.BindVertexArray(0);
+		GL.UseProgram(0);
+
+		_sb.Dispose();
+
+		base.OnUnload();
+	}
+
+	protected override void OnResize(ResizeEventArgs e)
+	{
+		base.OnResize(e);
+
+		GL.Viewport(0, 0, Size.X, Size.Y);
+	}
+
+	protected override void OnUpdateFrame(FrameEventArgs e)
+	{
+		base.OnUpdateFrame(e);
+
+		var input = KeyboardState;
+
+		if (input.IsKeyDown(Keys.Up))
 		{
-			_current = this;
-
-			_sb = new();
-
-			_texSprite = Texture.LoadFromFile("Sprite.png");
-			_texNone = Texture.LoadFromFile("None.png");
+			_position.y += (float)e.Time * 64;
 		}
-
-		protected override void OnLoad()
+		if (input.IsKeyDown(Keys.Down))
 		{
-			base.OnLoad();
-
-			GL.ClearColor(new Color("#1C2923"));
-			GL.Enable(EnableCap.Blend);
-			GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+			_position.y -= (float)e.Time * 64;
 		}
-
-		protected override void OnUnload()
+		if (input.IsKeyDown(Keys.Right))
 		{
-			GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-			GL.BindVertexArray(0);
-			GL.UseProgram(0);
-
-			_sb.Dispose();
-
-			base.OnUnload();
+			_position.x += (float)e.Time * 64;
 		}
-
-		protected override void OnResize(ResizeEventArgs e)
+		if (input.IsKeyDown(Keys.Left))
 		{
-			base.OnResize(e);
-
-			GL.Viewport(0, 0, Size.X, Size.Y);
+			_position.x -= (float)e.Time * 64;
 		}
+	}
 
-		protected override void OnUpdateFrame(FrameEventArgs e)
-		{
-			base.OnUpdateFrame(e);
+	protected override void OnRenderFrame(FrameEventArgs e)
+	{
+		base.OnRenderFrame(e);
 
-			var input = KeyboardState;
+		GL.Clear(ClearBufferMask.ColorBufferBit);
 
-			if (input.IsKeyDown(Keys.Up))
-			{
-				_position.y += (float)e.Time * 64;
-			}
-			if (input.IsKeyDown(Keys.Down))
-			{
-				_position.y -= (float)e.Time * 64;
-			}
-			if (input.IsKeyDown(Keys.Right))
-			{
-				_position.x += (float)e.Time * 64;
-			}
-			if (input.IsKeyDown(Keys.Left))
-			{
-				_position.x -= (float)e.Time * 64;
-			}
-		}
+		_sb.Start(_texSprite);
 
-		protected override void OnRenderFrame(FrameEventArgs e)
-		{
-			base.OnRenderFrame(e);
+		_sb.DrawBox(new(_position, 64, 64), Color.white);
 
-			GL.Clear(ClearBufferMask.ColorBufferBit);
+		_sb.DrawBox(new(_position, 16, 16), Color.white);
 
-			_sb.Start(_texSprite);
+		_sb.End();
 
-			_sb.DrawBox(new(_position, 64, 64), Color.white);
+		_sb.Start(_texNone);
 
-			_sb.DrawBox(new(_position, 16, 16), Color.white);
+		_sb.DrawBox(new(-_position, 32, 32), Color.white);
 
-			_sb.End();
+		_sb.End();
 
-			_sb.Start(_texNone);
-
-			_sb.DrawBox(new(-_position, 32, 32), Color.white);
-
-			_sb.End();
-
-			SwapBuffers();
-		}
+		SwapBuffers();
 	}
 }
