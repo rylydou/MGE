@@ -161,22 +161,16 @@ public static class Math
 
 	public static float Clamp01(float value)
 	{
-		if (value < 0)
-			return 0;
-		else if (value > 1)
-			return 1;
-		else
-			return value;
+		if (value < 0) return 0;
+		else if (value > 1) return 1;
+		else return value;
 	}
 
-	public static float ClampSign(float value)
+	public static float ClampUnit(float value)
 	{
-		if (value < -1)
-			return -1;
-		else if (value > 1)
-			return 1;
-		else
-			return value;
+		if (value < -1) return -1;
+		else if (value > 1) return 1;
+		else return value;
 	}
 
 	////////////////////////////////////////////////////////////

@@ -23,12 +23,16 @@ public struct Vector2 : IEquatable<Vector2>
 {
 	public static readonly Vector2 zero = new Vector2(0, 0);
 	public static readonly Vector2 one = new Vector2(1, 1);
+
 	public static readonly Vector2 up = new Vector2(0, 1);
 	public static readonly Vector2 down = new Vector2(0, -1);
 	public static readonly Vector2 left = new Vector2(-1, 0);
 	public static readonly Vector2 right = new Vector2(1, 0);
-	public static readonly Vector2 positiveInfinity = new Vector2(float.PositiveInfinity);
-	public static readonly Vector2 negativeInfinity = new Vector2(float.NegativeInfinity);
+
+	public static readonly Vector2 upLeft = new Vector2(-1, 1);
+	public static readonly Vector2 upRight = new Vector2(1, 1);
+	public static readonly Vector2 downLeft = new Vector2(-1, -1);
+	public static readonly Vector2 downRight = new Vector2(1, -1);
 
 	////////////////////////////////////////////////////////////
 
@@ -51,26 +55,19 @@ public struct Vector2 : IEquatable<Vector2>
 		);
 	}
 
-	public static Vector2 MoveTowards(Vector2 from, Vector2 to, float maxDistanceDelta)
+	public static Vector2 MoveTowards(Vector2 from, Vector2 to, float maxDistance)
 	{
-		var toVector_x = to.x - from.x;
-		var toVector_y = to.y - from.y;
+		var direction = to - from;
+		var sqDist = direction.sqrMagnitude;
 
-		var sqDist = toVector_x * toVector_x + toVector_y * toVector_y;
+		if (sqDist == 0 || (maxDistance >= 0 && sqDist <= maxDistance * maxDistance)) return to;
 
-		if (sqDist == 0 || (maxDistanceDelta >= 0 && sqDist <= maxDistanceDelta * maxDistanceDelta)) return to;
-
-		var dist = Math.Sqrt(sqDist);
-
-		return new Vector2(
-			from.x + toVector_x / dist * maxDistanceDelta,
-			from.y + toVector_y / dist * maxDistanceDelta
-		);
+		return from + direction / Math.Sqrt(sqDist) * maxDistance;
 	}
 
 	public static Vector2 Reflect(Vector2 inDirection, Vector2 inNormal)
 	{
-		var factor = -2f * Dot(inNormal, inDirection);
+		var factor = -2 * Dot(inNormal, inDirection);
 		return new Vector2(factor * inNormal.x + inDirection.x, factor * inNormal.y + inDirection.y);
 	}
 
@@ -84,15 +81,15 @@ public struct Vector2 : IEquatable<Vector2>
 		if (denominator < Math.epsilonSqrt)
 			return 0;
 
-		var dot = Math.Clamp(Dot(from, to) / denominator, -1.0f, 1.0f);
+		var dot = Math.ClampUnit(Dot(from, to) / denominator);
 		return Math.Acos(dot) * Math.rad2Deg;
 	}
 
 	public static float SignedAngle(Vector2 from, Vector2 to)
 	{
-		var uangle = Angle(from, to);
+		var angle = Angle(from, to);
 		var sign = Math.Sign(from.x * to.y - from.y * to.x);
-		return uangle * sign;
+		return angle * sign;
 	}
 
 	public static float DistanceSqr(Vector2 from, Vector2 to) => (from - to).sqrMagnitude;
@@ -105,10 +102,10 @@ public struct Vector2 : IEquatable<Vector2>
 	public static Vector2 Clamp(Vector2 vector, float length) => new Vector2(Math.Clamp(vector.x, -length, length), Math.Clamp(vector.y, -length, length));
 	public static Vector2 Clamp(Vector2 vector, Vector2 size) => new Vector2(Math.Clamp(vector.x, -size.x, size.x), Math.Clamp(vector.y, -size.y, size.y));
 
-	public static Vector2 ClampMagnitude(Vector2 vector, float maxLength)
+	public static Vector2 ClampMagnitude(Vector2 vector, float length)
 	{
-		if (vector.sqrMagnitude > maxLength * maxLength)
-			return vector.normalized * maxLength;
+		if (vector.sqrMagnitude > length * length)
+			return vector.normalized * length;
 		return vector;
 	}
 

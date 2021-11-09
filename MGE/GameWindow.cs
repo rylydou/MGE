@@ -1,3 +1,4 @@
+using System;
 using MGE.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
@@ -7,24 +8,77 @@ namespace MGE;
 
 public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 {
+	class Ball
+	{
+		public Vector2 position;
+		public Vector2 velocity;
+		public Color color;
+
+		public Ball()
+		{
+			color = Color.red;
+			velocity.x = Random.Shared.Next(-256, 256);
+			velocity.y = Random.Shared.Next(-256, 256);
+		}
+
+		public void Update(FrameEventArgs args)
+		{
+			if (position.x > 400 || position.x < -400)
+			{
+				velocity.x = -velocity.x;
+			}
+
+			if (position.y > 300 || position.y < -300)
+			{
+				velocity.y = -velocity.y;
+			}
+
+			position += velocity * (float)args.Time;
+		}
+
+		public void Draw(SpriteBatch sb, Texture texture)
+		{
+			sb.DrawTexture(texture, new Rect(position, 64, 64), color);
+		}
+	}
+
 	static GameWindow? _current;
 	public static GameWindow current { get => _current!; }
 
-	Vector2 _position;
+	Ball[] _balls;
 
-	Texture _texSprite;
-	Texture _texNone;
-
+	Texture _ballTexture;
 	SpriteBatch _sb;
 
-	public GameWindow() : base(new(), new() { Size = new(1600, 900) })
+	public GameWindow() : base(new(), new() { Size = new(800, 600) })
 	{
 		_current = this;
 
-		_sb = new();
+		_balls = new Ball[]
+		{
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+			new(),
+		};
 
-		_texSprite = Texture.LoadFromFile("Sprite.png");
-		_texNone = Texture.LoadFromFile("None.png");
+		_ballTexture = Texture.LoadFromFile("Ball.png");
+		_sb = new();
 	}
 
 	protected override void OnLoad()
@@ -47,56 +101,37 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		base.OnUnload();
 	}
 
-	protected override void OnResize(ResizeEventArgs e)
+	protected override void OnResize(ResizeEventArgs args)
 	{
-		base.OnResize(e);
+		base.OnResize(args);
 
 		GL.Viewport(0, 0, Size.X, Size.Y);
 	}
 
-	protected override void OnUpdateFrame(FrameEventArgs e)
+	protected override void OnUpdateFrame(FrameEventArgs args)
 	{
-		base.OnUpdateFrame(e);
+		base.OnUpdateFrame(args);
 
 		var input = KeyboardState;
 
-		if (input.IsKeyDown(Keys.Up))
+		foreach (var ball in _balls)
 		{
-			_position.y += (float)e.Time * 64;
-		}
-		if (input.IsKeyDown(Keys.Down))
-		{
-			_position.y -= (float)e.Time * 64;
-		}
-		if (input.IsKeyDown(Keys.Right))
-		{
-			_position.x += (float)e.Time * 64;
-		}
-		if (input.IsKeyDown(Keys.Left))
-		{
-			_position.x -= (float)e.Time * 64;
+			ball.Update(args);
 		}
 	}
 
-	protected override void OnRenderFrame(FrameEventArgs e)
+	protected override void OnRenderFrame(FrameEventArgs args)
 	{
-		base.OnRenderFrame(e);
+		base.OnRenderFrame(args);
 
 		GL.Clear(ClearBufferMask.ColorBufferBit);
 
-		_sb.Start(_texSprite);
+		foreach (var ball in _balls)
+		{
+			ball.Draw(_sb, _ballTexture);
+		}
 
-		_sb.DrawBox(new(_position, 64, 64), Color.white);
-
-		_sb.DrawBox(new(_position, 16, 16), Color.white);
-
-		_sb.End();
-
-		_sb.Start(_texNone);
-
-		_sb.DrawBox(new(-_position, 32, 32), Color.white);
-
-		_sb.End();
+		_sb.Flush();
 
 		SwapBuffers();
 	}
