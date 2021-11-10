@@ -50,10 +50,10 @@ internal class SpriteBatchItem : IComparable<SpriteBatchItem>
 
 		vertices = new Vertex[]
 		{
-			new(destination.topRight, Vector2.upRight, color),	// Top right
-			new(destination.bottomRight, Vector2.right, color),	// Bottom right
-			new(destination.bottomLeft, Vector2.zero, color),		// Bottom left
-			new(destination.topLeft, Vector2.up, color),				// Top left
+			new(destination.topRight, new(1, 0), color),		// Top right
+			new(destination.bottomRight, new(1, 1), color),	// Bottom right
+			new(destination.bottomLeft, new(0, 1), color),	// Bottom left
+			new(destination.topLeft, new(0, 0), color),			// Top left
 		};
 
 		indices = new ushort[]

@@ -12,11 +12,9 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		public Vector2 position;
 		public Vector2 velocity;
-		public Color color;
 
 		public Ball()
 		{
-			color = Color.red;
 			velocity.x = Random.Shared.Next(-256, 256);
 			velocity.y = Random.Shared.Next(-256, 256);
 		}
@@ -38,7 +36,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		public void Draw(SpriteBatch sb, Texture texture)
 		{
-			sb.DrawTexture(texture, new Rect(position, 64, 64), color);
+			sb.DrawTexture(texture, new Rect(position, 64, 64));
 		}
 	}
 
@@ -50,34 +48,18 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	Texture _ballTexture;
 	SpriteBatch _sb;
 
-	public GameWindow() : base(new(), new() { Size = new(800, 600) })
+	public GameWindow() : base(new(), new() { Title = "Mangrove Game Engine", Size = new(800, 600) })
 	{
 		_current = this;
 
-		_balls = new Ball[]
-		{
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-			new(),
-		};
+		_balls = new Ball[64];
 
-		_ballTexture = Texture.LoadFromFile("Ball.png");
+		for (int i = 0; i < _balls.Length; i++)
+		{
+			_balls[i] = new();
+		}
+
+		_ballTexture = Texture.LoadFromFile("Tree.png");
 		_sb = new();
 	}
 
@@ -85,7 +67,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnLoad();
 
-		GL.ClearColor(new Color("#1C2923"));
+		GL.ClearColor(new Color("#394778"));
 		GL.Enable(EnableCap.Blend);
 		GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 	}

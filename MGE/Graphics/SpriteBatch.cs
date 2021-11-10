@@ -86,7 +86,7 @@ public class SpriteBatch : IDisposable
 				}
 
 				// Add all the indices
-				var startingIndex = _indexPosition;
+				var startingIndex = _vertexPosition;
 				foreach (var index in item.indices)
 				{
 					SetIndex((ushort)(startingIndex + index));
