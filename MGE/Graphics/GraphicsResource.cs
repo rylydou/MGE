@@ -18,8 +18,10 @@ public abstract class GraphicsResource : IDisposable
 	~GraphicsResource()
 	{
 		Dispose(false);
-		throw new Exception($"Graphics Resource leaked: {this}");
+		throw new Exception($"Graphics resource leaked: {this}");
 	}
+
+	public static explicit operator int(GraphicsResource res) => res.handle;
 
 	public void Dispose()
 	{

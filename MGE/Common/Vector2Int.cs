@@ -140,6 +140,11 @@ public struct Vector2Int : IEquatable<Vector2Int>
 	public static bool operator ==(Vector2Int left, Vector2Int right) => left.x == right.x && left.y == right.y;
 	public static bool operator !=(Vector2Int lhs, Vector2Int rhs) => !(lhs == rhs);
 
+	public static implicit operator Vector2Int(Vector2 vector) => new((int)vector.x, (int)vector.y);
+
+	public static implicit operator (int, int)(Vector2Int vector) => (vector.x, vector.y);
+	public static implicit operator Vector2Int((int, int) vector) => new(vector.Item1, vector.Item2);
+
 	////////////////////////////////////////////////////////////
 
 	public override string ToString() => $"({x}, {y})";

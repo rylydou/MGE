@@ -2,7 +2,7 @@ using System;
 
 namespace MGE.Graphics;
 
-internal class SpriteBatchItem : IComparable<SpriteBatchItem>
+internal sealed class SpriteBatchItem : IComparable<SpriteBatchItem>
 {
 	public Texture texture;
 	public Shader shader;

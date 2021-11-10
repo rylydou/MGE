@@ -220,6 +220,11 @@ public struct RectInt : IEquatable<RectInt>
 
 	////////////////////////////////////////////////////////////
 
+	public static implicit operator (int, int, int, int)(RectInt rect) => (rect.x, rect.y, rect.width, rect.height);
+	public static implicit operator RectInt((int, int, int, int) rect) => new(rect.Item1, rect.Item2, rect.Item3, rect.Item4);
+
+	////////////////////////////////////////////////////////////
+
 	public override string ToString() => $"({x} {y} {width}x{height})";
 	public string ToString(string format) => string.Format(format, x, y, width, height);
 

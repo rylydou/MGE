@@ -2,6 +2,7 @@ using System;
 using MGE.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
 using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace MGE;
@@ -15,8 +16,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		public Ball()
 		{
-			velocity.x = Random.Shared.Next(-256, 256);
-			velocity.y = Random.Shared.Next(-256, 256);
+			velocity.x = Random.Shared.Next(-320 / 2, 320 / 2);
+			velocity.y = Random.Shared.Next(-180 / 2, 180 / 2);
 		}
 
 		public void Update(FrameEventArgs args)
@@ -46,10 +47,14 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	Ball[] _balls;
 
 	Texture _ballTexture;
-	SpriteBatch _sb;
 
-	public GameWindow() : base(new(), new() { Title = "Mangrove Game Engine", Size = new(800, 600) })
+	SpriteBatch _sb;
+	RenderTexture _gameRender;
+
+	public GameWindow() : base(GameWindowSettings.Default, new() { Title = "Mangrove Game Engine", DepthBits = 0, StencilBits = 0, NumberOfSamples = 0, })
 	{
+		CenterWindow(new(320 * 4, 180 * 4));
+
 		_current = this;
 
 		_balls = new Ball[64];
@@ -60,7 +65,9 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		}
 
 		_ballTexture = Texture.LoadFromFile("Tree.png");
+
 		_sb = new();
+		_gameRender = new(new(320, 180));
 	}
 
 	protected override void OnLoad()
@@ -78,33 +85,36 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		GL.BindVertexArray(0);
 		GL.UseProgram(0);
 
+		_ballTexture.Dispose();
+
 		_sb.Dispose();
+		_gameRender.Dispose();
 
 		base.OnUnload();
 	}
 
 	protected override void OnResize(ResizeEventArgs args)
 	{
-		base.OnResize(args);
-
 		GL.Viewport(0, 0, Size.X, Size.Y);
+
+		base.OnResize(args);
 	}
 
 	protected override void OnUpdateFrame(FrameEventArgs args)
 	{
-		base.OnUpdateFrame(args);
-
 		var input = KeyboardState;
 
 		foreach (var ball in _balls)
 		{
 			ball.Update(args);
 		}
+
+		base.OnUpdateFrame(args);
 	}
 
 	protected override void OnRenderFrame(FrameEventArgs args)
 	{
-		base.OnRenderFrame(args);
+		_gameRender.Use();
 
 		GL.Clear(ClearBufferMask.ColorBufferBit);
 
@@ -115,6 +125,16 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		_sb.Flush();
 
+		_gameRender.StopUse();
+
+		GL.Clear(ClearBufferMask.ColorBufferBit);
+
+		_sb.DrawTexture(_gameRender.texture, new Rect(0, 0, Size.X, Size.Y));
+
+		_sb.Flush();
+
 		SwapBuffers();
+
+		base.OnRenderFrame(args);
 	}
 }

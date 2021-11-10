@@ -244,6 +244,9 @@ public struct Rect : IEquatable<Rect>
 	public static implicit operator Rect(RectInt rect) => new Rect(rect.x, rect.y, rect.width, rect.height);
 	public static implicit operator RectInt(Rect rect) => new RectInt((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 
+	public static implicit operator (float, float, float, float)(Rect rect) => (rect.x, rect.y, rect.width, rect.height);
+	public static implicit operator Rect((float, float, float, float) rect) => new(rect.Item1, rect.Item2, rect.Item3, rect.Item4);
+
 	////////////////////////////////////////////////////////////
 
 	public override string ToString() => $"({x.ToString("F3")} {y.ToString("F3")} {width.ToString("F3")}x{height.ToString("F3")})";

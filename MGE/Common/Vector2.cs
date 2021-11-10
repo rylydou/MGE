@@ -237,14 +237,16 @@ public struct Vector2 : IEquatable<Vector2>
 
 	////////////////////////////////////////////////////////////
 
-	public static implicit operator Vector2Int(Vector2 vector) => new Vector2Int((int)vector.x, (int)vector.y);
-	public static implicit operator Vector2(Vector2Int vector) => new Vector2(vector.x, vector.y);
+	public static implicit operator Vector2(Vector2Int vector) => new(vector.x, vector.y);
 
-	public static implicit operator OpenTK.Mathematics.Vector2(Vector2 vector) => new OpenTK.Mathematics.Vector2(vector.x, vector.y);
-	public static implicit operator Vector2(OpenTK.Mathematics.Vector2 vector) => new Vector2(vector.X, vector.Y);
+	public static implicit operator OpenTK.Mathematics.Vector2(Vector2 vector) => new(vector.x, vector.y);
+	public static implicit operator Vector2(OpenTK.Mathematics.Vector2 vector) => new(vector.X, vector.Y);
 
-	public static implicit operator OpenTK.Mathematics.Vector3(Vector2 vector) => new OpenTK.Mathematics.Vector3(vector.x, vector.y, 0);
-	public static implicit operator Vector2(OpenTK.Mathematics.Vector3 vector) => new Vector2(vector.X, vector.Y);
+	public static implicit operator OpenTK.Mathematics.Vector3(Vector2 vector) => new(vector.x, vector.y, 0);
+	public static implicit operator Vector2(OpenTK.Mathematics.Vector3 vector) => new(vector.X, vector.Y);
+
+	public static implicit operator (float, float)(Vector2 vector) => (vector.x, vector.y);
+	public static implicit operator Vector2((float, float) vector) => new(vector.Item1, vector.Item2);
 
 	// public static implicit operator Vector2(Microsoft.Xna.Framework.Point vector) => new Vector2(vector.x, vector.y);
 	// public static implicit operator Microsoft.Xna.Framework.Point(Vector2 vector) => new Microsoft.Xna.Framework.Point((int)vector.x, (int)vector.y);

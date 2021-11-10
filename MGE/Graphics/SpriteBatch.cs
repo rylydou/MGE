@@ -2,22 +2,33 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using OpenTK.Graphics.OpenGL;
+#if MGE_UINT32_INDICES
+using VertIndex = System.UInt32;
+#else
+using VertIndex = System.UInt16;
+#endif
 
 namespace MGE.Graphics;
 
 public class SpriteBatch : IDisposable
 {
+#if MGE_UINT32_INDICES
+	const DrawElementsType drawElementsType = DrawElementsType.UnsignedInt;
+#else
+	const DrawElementsType ELEMENTS_TYPE = DrawElementsType.UnsignedShort;
+#endif
+
 	readonly int _capacity;
 
-	Dictionary<(Texture, Shader, sbyte), List<SpriteBatchItem>> _itemGroups = new();
+	Dictionary<(Texture, Shader, sbyte), List<SpriteBatchItem>> _batches = new();
 
-	ushort _vertexPosition;
-	ushort _vertexItemPosition;
+	VertIndex _vertexPosition;
+	VertIndex _vertexItemPosition;
 	float[] _vertices;
 	// Vertex layout: Position X, Position Y, Texture Coordinate X, Texture Coordinate Y, Color R, Color G, Color B, Color A
 
-	ushort _indexPosition;
-	ushort[] _indices;
+	VertIndex _indexPosition;
+	VertIndex[] _indices;
 
 	int _vertexBufferObject;
 	int _vertexArrayObject;
@@ -29,7 +40,7 @@ public class SpriteBatch : IDisposable
 		_capacity = capacity;
 
 		_vertices = new float[capacity * 4 * Vertex.SIZE];
-		_indices = new ushort[capacity * 6];
+		_indices = new VertIndex[capacity * 6];
 
 		#region Vertex Buffer Object
 
@@ -72,12 +83,12 @@ public class SpriteBatch : IDisposable
 	{
 		GL.BindVertexArray(_vertexBufferObject);
 
-		foreach (var group in _itemGroups)
+		foreach (var batch in _batches)
 		{
-			group.Key.Item2!.SetMatrix("projection", Matrix.CreateOrthographic(GameWindow.current.Size.X, GameWindow.current.Size.Y, -1, 1));
+			batch.Key.Item2!.SetMatrix("transform", Matrix.CreateOrthographic(GameWindow.current.Size.X, GameWindow.current.Size.Y, -1, 1));
 
 			// Loop over all the items and add their vertices and indexes
-			foreach (var item in group.Value)
+			foreach (var item in batch.Value)
 			{
 				// Add all the vertices
 				foreach (var vertex in item.vertices)
@@ -89,46 +100,29 @@ public class SpriteBatch : IDisposable
 				var startingIndex = _vertexPosition;
 				foreach (var index in item.indices)
 				{
-					SetIndex((ushort)(startingIndex + index));
+					SetIndex((VertIndex)(startingIndex + index));
 				}
 			}
 
-			group.Value.Clear();
+			batch.Value.Clear();
 
-			GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StreamDraw);
-			GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(ushort), _indices, BufferUsageHint.StreamDraw);
+			GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(VertIndex), _vertices, BufferUsageHint.StreamDraw);
+			GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(VertIndex), _indices, BufferUsageHint.StreamDraw);
 
-			group.Key.Item1?.Use();
-			group.Key.Item2?.Use();
+			batch.Key.Item1?.Use();
+			batch.Key.Item2?.Use();
 
-			GL.DrawElements(PrimitiveType.Triangles, (int)_indexPosition, DrawElementsType.UnsignedShort, 0);
+			GL.DrawElements(PrimitiveType.Triangles, (int)_indexPosition, ELEMENTS_TYPE, 0);
 
-			_vertexPosition = 0;
-			_vertexItemPosition = 0;
-			_indexPosition = 0;
+			ResetPosition();
 		}
 	}
 
-	public void DrawTexture(Texture texture, Vector2 position, Color? color = null)
-	{
-		if (!color.HasValue) color = Color.white;
+	public void DrawTexture(Texture texture, Vector2 position, Color? color = null) => SetItem(new(texture, _spriteShader, 0, new(position / ((Vector2)texture.size / 2), texture.size), color ?? Color.white));
 
-		SetItem(new(texture, _spriteShader, 0, new(position / ((Vector2)texture.size / 2), texture.size), color.Value));
-	}
+	public void DrawTexture(Texture texture, Rect destination, Color? color = null) => SetItem(new(texture, _spriteShader, 0, destination, color ?? Color.white));
 
-	public void DrawTexture(Texture texture, Rect destination, Color? color = null)
-	{
-		if (!color.HasValue) color = Color.white;
-
-		SetItem(new(texture, _spriteShader, 0, destination, color.Value));
-	}
-
-	public void DrawTextureRegion(Texture texture, Rect destination, RectInt source, Color? color = null)
-	{
-		if (!color.HasValue) color = Color.white;
-
-		SetItem(new(texture, _spriteShader, 0, destination, source, color.Value));
-	}
+	public void DrawTextureRegion(Texture texture, Rect destination, RectInt source, Color? color = null) => SetItem(new(texture, _spriteShader, 0, destination, source, color ?? Color.white));
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	void SetVertex(Vertex vertex)
@@ -148,31 +142,31 @@ public class SpriteBatch : IDisposable
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	void SetValue(float value)
-	{
-		_vertices[_vertexItemPosition] = value;
-
-		_vertexItemPosition++;
-	}
+	void SetValue(float value) => _vertices[_vertexItemPosition++] = value;
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	void SetIndex(ushort index)
+	void SetIndex(VertIndex index) => _indices[_indexPosition++] = index;
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	void ResetPosition()
 	{
-		_indices[_indexPosition] = index;
-		_indexPosition++;
+		_vertexPosition = 0;
+		_vertexItemPosition = 0;
+		_indexPosition = 0;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	void SetItem(SpriteBatchItem item)
 	{
 		var key = (item.texture, item.shader, item.priority);
-		if (_itemGroups.TryGetValue(key, out var list))
+		if (_batches.TryGetValue(key, out var list))
 		{
 			list.Add(item);
 			return;
 		}
-		_itemGroups.Add(key, new() { item });
+		_batches.Add(key, new() { item });
 	}
+
 
 	public void Dispose()
 	{

@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
 namespace MGE.Graphics;
 
-public class Shader : GraphicsResource
+public class Shader : GraphicsResource, IUseable
 {
 	readonly Dictionary<string, int> _uniformLocations;
 
@@ -47,16 +47,20 @@ public class Shader : GraphicsResource
 		}
 	}
 
+	public void Use() => GL.UseProgram(handle);
+
+	public void StopUse() => GL.UseProgram(0);
+
 	static void CompileShader(int shader)
 	{
 		GL.CompileShader(shader);
 		GL.GetShader(shader, ShaderParameter.CompileStatus, out var code);
 
-		if (code != (int)All.True)
+		if (code != 1)
 		{
 			var infoLog = GL.GetShaderInfoLog(shader);
 
-			throw new Exception($"Error occurred when compiling Shader({shader}).\n\n{infoLog}");
+			throw new Exception($"Error occurred when compiling Shader\n\n{infoLog}");
 		}
 	}
 
@@ -65,10 +69,8 @@ public class Shader : GraphicsResource
 		GL.LinkProgram(program);
 		GL.GetProgram(program, GetProgramParameterName.LinkStatus, out var code);
 
-		if (code != (int)All.True) throw new Exception($"Error occurred when linking Program({program})");
+		if (code != 1) throw new Exception($"Error occurred when linking Program");
 	}
-
-	public void Use() => GL.UseProgram(handle);
 
 	public int GetAttribLocation(string attribName) => GL.GetAttribLocation(handle, attribName);
 
