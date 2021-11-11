@@ -10,6 +10,21 @@ public class Shader : GraphicsResource, IUseable
 {
 	readonly Dictionary<string, int> _uniformLocations;
 
+	public Shader(int handle) : base(handle)
+	{
+		GL.GetProgram(handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
+
+		_uniformLocations = new Dictionary<string, int>();
+
+		for (var i = 0; i < numberOfUniforms; i++)
+		{
+			var key = GL.GetActiveUniform(handle, i, out _, out _);
+			var location = GL.GetUniformLocation(handle, key);
+
+			_uniformLocations.Add(key, location);
+		}
+	}
+
 	public Shader(string vertPath, string fragPath) : base(GL.CreateProgram())
 	{
 		var shaderSource = File.ReadAllText($"{Environment.CurrentDirectory}/Assets/{vertPath}");
@@ -117,10 +132,8 @@ public class Shader : GraphicsResource, IUseable
 		GL.UniformMatrix4(_uniformLocations[name], true, ref mat);
 	}
 
-	protected override void Dispose(bool manual)
+	protected override void Delete()
 	{
-		if (!manual) return;
-
 		GL.DeleteProgram(handle);
 	}
 }

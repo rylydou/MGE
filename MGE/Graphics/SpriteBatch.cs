@@ -87,6 +87,10 @@ public class SpriteBatch : IDisposable
 
 		foreach (var batch in _batches)
 		{
+			if (batch.Value.Count == 0) continue;
+
+			// Debug.LogVarible(batch.Value.Count);
+
 			batch.Key.Item2!.SetMatrix("transform", Matrix.CreateOrthographic(GameWindow.current.Size.X, GameWindow.current.Size.Y, -1, 1));
 
 			// Loop over all the items and add their vertices and indexes
@@ -120,7 +124,8 @@ public class SpriteBatch : IDisposable
 		}
 	}
 
-	public void DrawTexture(Texture texture, Vector2 position, Color? color = null) => SetItem(new(texture, _spriteShader, 0, new(position / ((Vector2)texture.size / 2), texture.size), color ?? Color.white));
+	public void DrawTexture(Texture texture, Vector2 position) => DrawTexture(texture, position, Color.white);
+	public void DrawTexture(Texture texture, Vector2 position, Color color) => SetItem(new(texture, _spriteShader, 0, new(position - ((Vector2)texture.size / 2), texture.size), color));
 
 	public void DrawTexture(Texture texture, Rect destination, Color? color = null) => SetItem(new(texture, _spriteShader, 0, destination, color ?? Color.white));
 

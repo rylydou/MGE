@@ -29,10 +29,10 @@ internal sealed class SpriteBatchItem : IComparable<SpriteBatchItem>
 
 		vertices = new Vertex[]
 		{
-			new(destination.topRight, texture.GetTextureCoord(source.topRight), color),				// Top right
-			new(destination.bottomRight,texture.GetTextureCoord(source.bottomRight), color),	// Bottom right
-			new(destination.bottomLeft, texture.GetTextureCoord(source.bottomLeft), color),		// Bottom left
-			new(destination.topLeft, texture.GetTextureCoord(source.topLeft), color),					// Top left
+			new(destination.topRight, texture.GetTextureCoord(source.bottomRight), color),				// Top right
+			new(destination.bottomRight,texture.GetTextureCoord(source.topRight), color),	// Bottom right
+			new(destination.bottomLeft, texture.GetTextureCoord(source.topLeft), color),		// Bottom left
+			new(destination.topLeft, texture.GetTextureCoord(source.bottomLeft), color),					// Top left
 		};
 
 		indices = new ushort[]
@@ -50,10 +50,10 @@ internal sealed class SpriteBatchItem : IComparable<SpriteBatchItem>
 
 		vertices = new Vertex[]
 		{
-			new(destination.topRight, new(1, 0), color),		// Top right
-			new(destination.bottomRight, new(1, 1), color),	// Bottom right
-			new(destination.bottomLeft, new(0, 1), color),	// Bottom left
-			new(destination.topLeft, new(0, 0), color),			// Top left
+			new(destination.topRight, new(1, 1), color),		// Top right
+			new(destination.bottomRight, new(1, 0), color),	// Bottom right
+			new(destination.bottomLeft, new(0, 0), color),	// Bottom left
+			new(destination.topLeft, new(0, 1), color),			// Top left
 		};
 
 		indices = new ushort[]

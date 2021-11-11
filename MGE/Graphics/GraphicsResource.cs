@@ -17,7 +17,6 @@ public abstract class GraphicsResource : IDisposable
 
 	~GraphicsResource()
 	{
-		Dispose(false);
 		throw new Exception($"Graphics resource leaked: {this}");
 	}
 
@@ -28,11 +27,11 @@ public abstract class GraphicsResource : IDisposable
 		if (isDisposed) return;
 		isDisposed = true;
 
-		Dispose(true);
+		Delete();
 
 		GC.SuppressFinalize(this);
 		GC.KeepAlive(this);
 	}
 
-	protected abstract void Dispose(bool manual);
+	protected abstract void Delete();
 }

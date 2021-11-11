@@ -16,20 +16,32 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		public Ball()
 		{
-			velocity.x = Random.Shared.Next(-320 / 2, 320 / 2);
-			velocity.y = Random.Shared.Next(-180 / 2, 180 / 2);
+			velocity.x = Random.Shared.Next(-320, 320);
+			velocity.y = Random.Shared.Next(-180, 180);
+			position.x = Random.Shared.Next(-GameWindow.current.Size.X / 2, GameWindow.current.Size.X / 2);
+			position.y = Random.Shared.Next(-GameWindow.current.Size.Y / 2, GameWindow.current.Size.Y / 2);
 		}
 
 		public void Update(FrameEventArgs args)
 		{
-			if (position.x > 400 || position.x < -400)
+			if (position.x > GameWindow.current.Size.X / 2 || position.x < -GameWindow.current.Size.X / 2)
 			{
 				velocity.x = -velocity.x;
 			}
 
-			if (position.y > 300 || position.y < -300)
+			if (position.y > GameWindow.current.Size.Y / 2 || position.y < -GameWindow.current.Size.Y / 2)
 			{
 				velocity.y = -velocity.y;
+			}
+
+			foreach (var ball in GameWindow.current._balls)
+			{
+				if (ball == this) continue;
+				if (Vector2.DistanceLessThan(position, ball.position, 32))
+				{
+					velocity.x = -velocity.x;
+					velocity.y = -velocity.y;
+				}
 			}
 
 			position += velocity * (float)args.Time;
@@ -37,7 +49,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		public void Draw(SpriteBatch sb, Texture texture)
 		{
-			sb.DrawTexture(texture, new Rect(position, 64, 64));
+			sb.DrawTexture(texture, position);
 		}
 	}
 
@@ -49,11 +61,12 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	Texture _ballTexture;
 
 	SpriteBatch _sb;
-	RenderTexture _gameRender;
+	// RenderTexture _gameRender;
 
-	public GameWindow() : base(GameWindowSettings.Default, new() { Title = "Mangrove Game Engine", DepthBits = 0, StencilBits = 0, NumberOfSamples = 0, })
+	public GameWindow() : base(GameWindowSettings.Default, new() { Title = "Mangrove Game Engine" })
 	{
 		CenterWindow(new(320 * 4, 180 * 4));
+		Focus();
 
 		_current = this;
 
@@ -67,7 +80,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		_ballTexture = Texture.LoadFromFile("Tree.png");
 
 		_sb = new();
-		_gameRender = new(new(320, 180));
+		// _gameRender = new(new(320, 180));
 	}
 
 	protected override void OnLoad()
@@ -88,7 +101,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		_ballTexture.Dispose();
 
 		_sb.Dispose();
-		_gameRender.Dispose();
+		// _gameRender.Dispose();
 
 		base.OnUnload();
 	}
@@ -114,7 +127,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 	protected override void OnRenderFrame(FrameEventArgs args)
 	{
-		_gameRender.Use();
+		// _gameRender.Use();
 
 		GL.Clear(ClearBufferMask.ColorBufferBit);
 
@@ -123,14 +136,13 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 			ball.Draw(_sb, _ballTexture);
 		}
 
-		_sb.Flush();
+		// _sb.Flush();
 
-		_gameRender.StopUse();
+		// _gameRender.StopUse();
 
-		GL.Clear(ClearBufferMask.ColorBufferBit);
+		// GL.Clear(ClearBufferMask.ColorBufferBit);
 
 		// _sb.DrawTexture(_gameRender.texture, new Rect(0, 0, Size.X, Size.Y));
-		_sb.DrawTexture(_ballTexture, new Rect(0, 0, Size.X, Size.Y));
 
 		_sb.Flush();
 

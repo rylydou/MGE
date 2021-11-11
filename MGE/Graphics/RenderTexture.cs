@@ -7,16 +7,20 @@ public class RenderTexture : GraphicsResource, IUseable
 {
 	public readonly Texture texture;
 
+	int _rbo;
+
 	public RenderTexture(Vector2Int size) : base(GL.GenFramebuffer())
 	{
 		texture = new(size);
 
 		Use();
 
-		GL.FramebufferParameter(FramebufferTarget.Framebuffer, FramebufferDefaultParameter.FramebufferDefaultWidth, size.x);
-		GL.FramebufferParameter(FramebufferTarget.Framebuffer, FramebufferDefaultParameter.FramebufferDefaultHeight, size.y);
-
 		GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.Color, TextureTarget.Texture2D, texture.handle, 0);
+
+		_rbo = GL.GenRenderbuffer();
+		GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _rbo);
+		GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Depth24Stencil8, size.x, size.y);
+		GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, _rbo);
 
 		var errorCode = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
 		if (errorCode != FramebufferErrorCode.FramebufferComplete) throw new Exception($"Error when initialising RenderTexture {((int)errorCode)} - {errorCode.ToString()}");
@@ -28,10 +32,8 @@ public class RenderTexture : GraphicsResource, IUseable
 
 	public void StopUse() => GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-	protected override void Dispose(bool manual)
+	protected override void Delete()
 	{
-		if (!manual) return;
-
 		GL.DeleteFramebuffer(handle);
 	}
 }
