@@ -129,7 +129,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		GL.Clear(ClearBufferMask.ColorBufferBit);
 
-		_sb.DrawTexture(_gameRender.texture, new Rect(0, 0, Size.X, Size.Y));
+		// _sb.DrawTexture(_gameRender.texture, new Rect(0, 0, Size.X, Size.Y));
+		_sb.DrawTexture(_ballTexture, new Rect(0, 0, Size.X, Size.Y));
 
 		_sb.Flush();
 

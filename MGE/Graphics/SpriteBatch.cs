@@ -13,19 +13,21 @@ namespace MGE.Graphics;
 public class SpriteBatch : IDisposable
 {
 #if MGE_UINT32_INDICES
-	const DrawElementsType drawElementsType = DrawElementsType.UnsignedInt;
+	const DrawElementsType ELEMENTS_TYPE = DrawElementsType.UnsignedInt;
 #else
 	const DrawElementsType ELEMENTS_TYPE = DrawElementsType.UnsignedShort;
 #endif
 
-	readonly int _capacity;
+	public readonly int capacity;
+
+	// SortedDictionary<sbyte, Dictionary<Shader, Dictionary<Texture, SpriteBatchItem>>> _batches = new();
 
 	Dictionary<(Texture, Shader, sbyte), List<SpriteBatchItem>> _batches = new();
 
 	VertIndex _vertexPosition;
 	VertIndex _vertexItemPosition;
-	float[] _vertices;
 	// Vertex layout: Position X, Position Y, Texture Coordinate X, Texture Coordinate Y, Color R, Color G, Color B, Color A
+	float[] _vertices;
 
 	VertIndex _indexPosition;
 	VertIndex[] _indices;
@@ -37,7 +39,7 @@ public class SpriteBatch : IDisposable
 
 	public SpriteBatch(int capacity = 256)
 	{
-		_capacity = capacity;
+		this.capacity = capacity;
 
 		_vertices = new float[capacity * 4 * Vertex.SIZE];
 		_indices = new VertIndex[capacity * 6];
