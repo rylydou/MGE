@@ -1,4 +1,9 @@
 using System;
+#if MGE_UINT32_INDICES
+using VertIndex = System.UInt32;
+#else
+using VertIndex = System.UInt16;
+#endif
 
 namespace MGE.Graphics;
 
@@ -9,9 +14,9 @@ internal sealed class SpriteBatchItem : IComparable<SpriteBatchItem>
 	public sbyte priority;
 
 	public Vertex[] vertices;
-	public ushort[] indices;
+	public VertIndex[] indices;
 
-	public SpriteBatchItem(Texture texture, Shader shader, sbyte priority, Vertex[] vertices, ushort[] indices)
+	public SpriteBatchItem(Texture texture, Shader shader, sbyte priority, Vertex[] vertices, VertIndex[] indices)
 	{
 		this.texture = texture;
 		this.shader = shader;
@@ -29,10 +34,10 @@ internal sealed class SpriteBatchItem : IComparable<SpriteBatchItem>
 
 		vertices = new Vertex[]
 		{
-			new(destination.topRight, texture.GetTextureCoord(source.bottomRight), color),				// Top right
-			new(destination.bottomRight,texture.GetTextureCoord(source.topRight), color),	// Bottom right
+			new(destination.topRight, texture.GetTextureCoord(source.bottomRight), color),	// Top right
+			new(destination.bottomRight,texture.GetTextureCoord(source.topRight), color),		// Bottom right
 			new(destination.bottomLeft, texture.GetTextureCoord(source.topLeft), color),		// Bottom left
-			new(destination.topLeft, texture.GetTextureCoord(source.bottomLeft), color),					// Top left
+			new(destination.topLeft, texture.GetTextureCoord(source.bottomLeft), color),		// Top left
 		};
 
 		indices = new ushort[]

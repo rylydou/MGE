@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using OpenTK.Graphics.OpenGL;
-// using SixLabors.ImageSharp;
-// using SixLabors.ImageSharp.PixelFormats;
-// using SixLabors.ImageSharp.Processing;
 using StbImageSharp;
 
 namespace MGE.Graphics;
@@ -55,7 +51,7 @@ public class Texture : GraphicsResource, IUseable
 		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
 	}
 
-	public static Texture LoadFromFile(string path)
+	public static Texture LoadTexture(string path)
 	{
 		using (var stream = File.OpenRead($"{Environment.CurrentDirectory}/Assets/{path}"))
 		{
@@ -64,29 +60,14 @@ public class Texture : GraphicsResource, IUseable
 		}
 	}
 
-	// TODO
-	// public static OpenTK.Windowing.Common.Input.Image LoadIconData(string path)
-	// {
-	// 	using (var image = Image.Load<Rgba32>($"{Environment.CurrentDirectory}/Assets/{path}"))
-	// 	{
-	// 		var pixels = new List<byte>(image.Width * image.Height * 4);
-
-	// 		for (int y = 0; y < image.Height; y++)
-	// 		{
-	// 			var row = image.GetPixelRowSpan(y);
-
-	// 			for (int x = 0; x < image.Width; x++)
-	// 			{
-	// 				pixels.Add(row[x].R);
-	// 				pixels.Add(row[x].G);
-	// 				pixels.Add(row[x].B);
-	// 				pixels.Add(row[x].A);
-	// 			}
-	// 		}
-
-	// 		return new OpenTK.Windowing.Common.Input.Image(image.Width, image.Height, pixels.ToArray());
-	// 	}
-	// }
+	public static OpenTK.Windowing.Common.Input.Image LoadImageData(string path)
+	{
+		using (var stream = File.OpenRead($"{Environment.CurrentDirectory}/Assets/{path}"))
+		{
+			var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+			return new(image.Width, image.Height, image.Data);
+		}
+	}
 
 	public Vector2 GetTextureCoord(Vector2 position) => GetTextureCoord(position.x, position.y);
 	public Vector2 GetTextureCoord(float x, float y) => new Vector2(x / size.x, y / size.y);

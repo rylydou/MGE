@@ -89,7 +89,7 @@ public class SpriteBatch : IDisposable
 		{
 			if (batch.Value.Count == 0) continue;
 
-			// Debug.LogVarible(batch.Value.Count);
+			Debug.LogVariable(batch.Value.Count);
 
 			batch.Key.Item2!.SetMatrix("transform", Matrix.CreateOrthographic(GameWindow.current.Size.X, GameWindow.current.Size.Y, -1, 1));
 

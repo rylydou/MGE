@@ -87,7 +87,7 @@ public class Shader : GraphicsResource, IUseable
 		if (code != 1) throw new Exception($"Error occurred when linking Program");
 	}
 
-	public int GetAttribLocation(string attribName) => GL.GetAttribLocation(handle, attribName);
+	public int GetAttribLocation(string attrName) => GL.GetAttribLocation(handle, attrName);
 
 	public void SetInt(string name, int data)
 	{

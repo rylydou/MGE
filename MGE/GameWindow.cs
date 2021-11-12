@@ -2,8 +2,6 @@ using System;
 using MGE.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
-using OpenTK.Windowing.Desktop;
-using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace MGE;
 
@@ -54,7 +52,11 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	}
 
 	static GameWindow? _current;
-	public static GameWindow current { get => _current!; }
+	public static GameWindow current { get => _current ?? throw new NullReferenceException(); }
+
+	double updateTime;
+	double renderTime;
+	int updatesSinceLastStats;
 
 	Ball[] _balls;
 
@@ -63,7 +65,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	SpriteBatch _sb;
 	// RenderTexture _gameRender;
 
-	public GameWindow() : base(GameWindowSettings.Default, new() { Title = "Mangrove Game Engine" })
+	public GameWindow() : base(new() { UpdateFrequency = 60, RenderFrequency = 60, }, new() { Title = "Mangrove Game Engine", })
 	{
 		CenterWindow(new(320 * 4, 180 * 4));
 		Focus();
@@ -77,7 +79,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 			_balls[i] = new();
 		}
 
-		_ballTexture = Texture.LoadFromFile("Tree.png");
+		_ballTexture = Texture.LoadTexture("Tree.png");
 
 		_sb = new();
 		// _gameRender = new(new(320, 180));
@@ -115,6 +117,15 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 	protected override void OnUpdateFrame(FrameEventArgs args)
 	{
+		updateTime = args.Time;
+
+		updatesSinceLastStats--;
+		if (updatesSinceLastStats < 0)
+		{
+			updatesSinceLastStats = 10;
+			Title = $"Mangrove Game Engine Update: {1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)";
+		}
+
 		var input = KeyboardState;
 
 		foreach (var ball in _balls)
@@ -127,6 +138,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 	protected override void OnRenderFrame(FrameEventArgs args)
 	{
+		renderTime = args.Time;
+
 		// _gameRender.Use();
 
 		GL.Clear(ClearBufferMask.ColorBufferBit);
