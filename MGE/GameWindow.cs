@@ -157,6 +157,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		// _sb.DrawTexture(_gameRender.texture, new Rect(0, 0, Size.X, Size.Y));
 
+		Font.current.DrawText(_sb, "Hello World", new(8, 8));
+
 		_sb.Flush();
 
 		SwapBuffers();

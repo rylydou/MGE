@@ -7,6 +7,7 @@ using VertIndex = System.UInt32;
 #else
 using VertIndex = System.UInt16;
 #endif
+// using VertIndex = System.UInt32;
 
 namespace MGE.Graphics;
 
@@ -24,72 +25,97 @@ public class SpriteBatch : IDisposable
 
 	Dictionary<(Texture, Shader, sbyte), List<SpriteBatchItem>> _batches = new();
 
+	VertexArray _verts;
+	Buffer<float> _vertBuffer;
+	Buffer<VertIndex> _indexBuffer;
+
 	VertIndex _vertexPosition;
 	VertIndex _vertexItemPosition;
-	// Vertex layout: Position X, Position Y, Texture Coordinate X, Texture Coordinate Y, Color R, Color G, Color B, Color A
+	// // Vertex layout: Position X, Position Y, Texture Coordinate X, Texture Coordinate Y, Color R, Color G, Color B, Color A
 	float[] _vertices;
 
 	VertIndex _indexPosition;
 	VertIndex[] _indices;
 
-	int _vertexBufferObject;
-	int _vertexArrayObject;
-	int _elementBufferObject;
+	// int _vertexBufferObject;
+	// int _vertexArrayObject;
+	// int _elementBufferObject;
+
+	// IntPtr _vertMap;
+	// IntPtr _indexMap;
+
 	Shader _spriteShader;
 
 	public SpriteBatch(int capacity = 256)
 	{
 		this.capacity = capacity;
 
+		_vertBuffer = new();
+		_vertBuffer.Init(BufferTarget.ArrayBuffer, capacity * 4 * Vertex.SIZE, BufferUsageHint.StreamDraw);
+		_indexBuffer = new();
+		_indexBuffer.Init(BufferTarget.ElementArrayBuffer, capacity * 6, BufferUsageHint.StreamDraw);
+
+		_verts = new();
+		_verts.Bind();
+		_verts.BindAttribute(0, _vertBuffer, 2, VertexAttribPointerType.Float, Vertex.FULL_SIZE, 0, false);
+		_verts.BindAttribute(1, _vertBuffer, 2, VertexAttribPointerType.Float, Vertex.FULL_SIZE, 2 * sizeof(float), false);
+		_verts.BindAttribute(2, _vertBuffer, 4, VertexAttribPointerType.Float, Vertex.FULL_SIZE, 4 * sizeof(float), false);
+
 		_vertices = new float[capacity * 4 * Vertex.SIZE];
 		_indices = new VertIndex[capacity * 6];
 
-		#region Vertex Buffer Object
+		// #region Vertex Buffer Object
 
-		_vertexBufferObject = GL.GenBuffer();
-		GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
+		// _vertexBufferObject = GL.GenBuffer();
+		// GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
 		// GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StreamDraw);
+		// _vertMap = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadWrite);
 
-		#endregion Vertex Buffer Object
+		// #endregion Vertex Buffer Object
 
-		#region Vertex Array Object
+		// #region Element Buffer Object
 
-		_vertexArrayObject = GL.GenVertexArray();
-		GL.BindVertexArray(_vertexArrayObject);
+		// _elementBufferObject = GL.GenBuffer();
+		// GL.BindBuffer(BufferTarget.ElementArrayBuffer, _elementBufferObject);
+		// GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(VertIndex), _indices, BufferUsageHint.StreamDraw);
+		// _indexMap = GL.MapBuffer(BufferTarget.ElementArrayBuffer, BufferAccess.ReadWrite);
 
-		// Position
-		GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, Vertex.FULL_SIZE, 0);
-		GL.EnableVertexAttribArray(0);
+		// #endregion Element Buffer Object
 
-		// Texture Coordinate
-		GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, Vertex.FULL_SIZE, 2 * sizeof(float));
-		GL.EnableVertexAttribArray(1);
+		// #region Vertex Array Object
 
-		// Color
-		GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, Vertex.FULL_SIZE, 4 * sizeof(float));
-		GL.EnableVertexAttribArray(2);
+		// _vertexArrayObject = GL.GenVertexArray();
+		// GL.BindVertexArray(_vertexArrayObject);
 
-		#endregion Vertex Array Object
+		// // Position
+		// GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, Vertex.FULL_SIZE, 0);
+		// GL.EnableVertexAttribArray(0);
 
-		#region Element Buffer Object
+		// // Texture Coordinate
+		// GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, Vertex.FULL_SIZE, 2 * sizeof(float));
+		// GL.EnableVertexAttribArray(1);
 
-		_elementBufferObject = GL.GenBuffer();
-		GL.BindBuffer(BufferTarget.ElementArrayBuffer, _elementBufferObject);
+		// // Color
+		// GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, Vertex.FULL_SIZE, 4 * sizeof(float));
+		// GL.EnableVertexAttribArray(2);
 
-		#endregion Element Buffer Object
+		// #endregion Vertex Array Object
 
 		_spriteShader = new("Sprite.vert", "Sprite.frag");
 	}
 
 	public void Flush()
 	{
-		GL.BindVertexArray(_vertexBufferObject);
+		// GL.BindVertexArray(_vertexBufferObject);
+
 
 		foreach (var batch in _batches)
 		{
 			if (batch.Value.Count == 0) continue;
 
-			Debug.LogVariable(batch.Value.Count);
+			ResetPosition();
+
+			// Debug.LogVariable(batch.Value.Count);
 
 			batch.Key.Item2!.SetMatrix("transform", Matrix.CreateOrthographic(GameWindow.current.Size.X, GameWindow.current.Size.Y, -1, 1));
 
@@ -112,15 +138,27 @@ public class SpriteBatch : IDisposable
 
 			batch.Value.Clear();
 
-			GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(VertIndex), _vertices, BufferUsageHint.StreamDraw);
-			GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(VertIndex), _indices, BufferUsageHint.StreamDraw);
+			_vertBuffer.SubData(BufferTarget.ArrayBuffer, _vertices, 0, (int)_vertexPosition);
+			_indexBuffer.SubData(BufferTarget.ElementArrayBuffer, _indices, 0, (int)_indexPosition);
 
-			batch.Key.Item1?.Use();
-			batch.Key.Item2?.Use();
+			// GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, _vertices.Length * sizeof(float), _vertices);
+			// GFX.CheckError();
+			// GL.BufferSubData(BufferTarget.ElementArrayBuffer, IntPtr.Zero, _indices.Length * sizeof(VertIndex), _indices);
+			// GFX.CheckError();
+			// GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StreamDraw);
+			// GFX.CheckError();
+			// GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(VertIndex), _indices, BufferUsageHint.StreamDraw);
 
-			GL.DrawElements(PrimitiveType.Triangles, (int)_indexPosition, ELEMENTS_TYPE, 0);
+			// GL.BindTexture(TextureTarget.Texture2D, 0);
+			// GL.UseProgram(0);
 
-			ResetPosition();
+			batch.Key.Item1!.Use();
+			batch.Key.Item2!.Use();
+
+			_verts.DrawElements(PrimitiveType.Triangles, (int)_indexPosition, ELEMENTS_TYPE);
+
+			// GL.DrawElements(PrimitiveType.Triangles, (int)_indexPosition, ELEMENTS_TYPE, 0);
+			// GFX.CheckError();
 		}
 	}
 
@@ -177,7 +215,9 @@ public class SpriteBatch : IDisposable
 
 	public void Dispose()
 	{
-		GL.DeleteBuffer(_vertexBufferObject);
+		// GL.DeleteBuffer(_vertexBufferObject);
+		_verts.Dispose();
+		_vertBuffer.Dispose();
 		_spriteShader.Dispose();
 	}
 }

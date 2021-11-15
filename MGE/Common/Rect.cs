@@ -249,7 +249,7 @@ public struct Rect : IEquatable<Rect>
 
 	////////////////////////////////////////////////////////////
 
-	public override string ToString() => $"({x.ToString("F3")} {y.ToString("F3")} {width.ToString("F3")}x{height.ToString("F3")})";
+	public override string ToString() => $"{{ {x:F2} {y:F2} {width:F2} x {height:F2} }}";
 	public string ToString(string format) => string.Format(format, x, y, width, height);
 
 	public override int GetHashCode() => HashCode.Combine(x, y, width, height);
