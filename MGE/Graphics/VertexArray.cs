@@ -83,8 +83,7 @@ namespace MGE.Graphics
 		/// <summary>
 		/// Binds the given buffer to the element array buffer target.
 		/// </summary>
-		public void BindElementBuffer<T>(Buffer<T> buffer)
-				where T : struct
+		public void BindElementBuffer<T>(Buffer<T> buffer) where T : struct
 		{
 			AssertActive();
 			GL.BindBuffer(BufferTarget.ElementArrayBuffer, buffer.handle);

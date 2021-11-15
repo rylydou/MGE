@@ -34,13 +34,14 @@ namespace MGE
 			}
 		}
 
-		public void DrawText(SpriteBatch sb, string text, Vector2 position)
+		public void DrawText(SpriteBatch sb, IEnumerable<char> text, Vector2 position)
 		{
 			var offset = 0;
+
 			foreach (var ch in text)
 			{
 				if (char.IsWhiteSpace(ch)) { offset++; continue; }
-				if (!chars.TryGetValue(ch, out var rect)) { Debug.Log($"Unknown Char: {ch} ({(ushort)ch})"); continue; }
+				if (!chars.TryGetValue(ch, out var rect)) { Debug.Log($"Unknown Char: {ch} #{(ushort)ch}"); continue; }
 
 				sb.DrawTextureRegion(texture, new((charSize.x + spaceBtwChars) * offset + position.x, position.y, charSize), rect);
 				offset++;

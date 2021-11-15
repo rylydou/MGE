@@ -67,10 +67,13 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 	public GameWindow() : base(new() { UpdateFrequency = 60, RenderFrequency = 60, }, new() { Title = "Mangrove Game Engine", })
 	{
-		CenterWindow(new(320 * 4, 180 * 4));
-		Focus();
-
 		_current = this;
+
+		_sb = new();
+
+		// _gameRender = new(new(320, 180));
+
+		_ballTexture = Texture.LoadTexture("Tree.png");
 
 		_balls = new Ball[64];
 
@@ -79,10 +82,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 			_balls[i] = new();
 		}
 
-		_ballTexture = Texture.LoadTexture("Tree.png");
-
-		_sb = new();
-		// _gameRender = new(new(320, 180));
+		CenterWindow(new(320 * 4, 180 * 4));
+		Focus();
 	}
 
 	protected override void OnLoad()
@@ -97,6 +98,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	protected override void OnUnload()
 	{
 		GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+		GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
 		GL.BindVertexArray(0);
 		GL.UseProgram(0);
 
@@ -110,7 +112,9 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 	protected override void OnResize(ResizeEventArgs args)
 	{
+		// Debug.LogVariable(Size);
 		GL.Viewport(0, 0, Size.X, Size.Y);
+		_sb.transform = Matrix.CreateOrthographic(Size.X, Size.Y, -1, 1);
 
 		base.OnResize(args);
 	}
