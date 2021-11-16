@@ -34,16 +34,18 @@ namespace MGE
 			}
 		}
 
-		public void DrawText(SpriteBatch sb, IEnumerable<char> text, Vector2 position)
+		public void DrawText(SpriteBatch sb, IEnumerable<char> text, Vector2 position) => DrawText(sb, text, position, Color.white);
+		public void DrawText(SpriteBatch sb, IEnumerable<char> text, Vector2 position, Color color)
 		{
 			var offset = 0;
 
 			foreach (var ch in text)
 			{
-				if (char.IsWhiteSpace(ch)) { offset++; continue; }
-				if (!chars.TryGetValue(ch, out var rect)) { Debug.Log($"Unknown Char: {ch} #{(ushort)ch}"); continue; }
+				if (ch == ' ') { offset++; continue; }
+				if (ch == '\t') { offset += 2; continue; }
+				if (!chars.TryGetValue(ch, out var rect)) { Debug.Log($"Unknown Char: '{ch}' #{(ushort)ch}"); continue; }
 
-				sb.DrawTextureRegion(texture, new((charSize.x + spaceBtwChars) * offset + position.x, position.y, charSize), rect);
+				sb.DrawTextureRegion(texture, new((charSize.x + spaceBtwChars) * offset + position.x, position.y, charSize), rect, color);
 				offset++;
 			}
 		}

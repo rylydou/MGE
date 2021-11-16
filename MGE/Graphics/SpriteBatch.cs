@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using OpenTK.Graphics.OpenGL;
 #if MGE_UINT32_INDICES
@@ -51,8 +52,8 @@ public class SpriteBatch : IDisposable
 	VertexArray _verts;
 
 	Buffer<float> _vertBuffer;
-	VertIndex _vertexPosition;
-	VertIndex _arrayPosition;
+	VertIndex _vertexCount;
+	VertIndex _itemPosition;
 	// Vertex layout: Position X, Position Y, Texture Coordinate X, Texture Coordinate Y, Color R, Color G, Color B, Color A
 	float[] _items;
 
@@ -86,30 +87,26 @@ public class SpriteBatch : IDisposable
 
 	public void Flush()
 	{
-		// Debug.LogVariable(_batches.Count);
-
 		foreach (var batch in _batches)
 		{
 			if (batch.Value.Count == 0) continue;
-
-			// Debug.LogVariable(batch.Value.Count);
 
 			ResetPosition();
 
 			// Loop over all the items and add their vertices and indexes
 			foreach (var item in batch.Value)
 			{
+				// Add all the indices
+				var indexOffset = _vertexCount;
+				foreach (var index in item.indices)
+				{
+					SetIndex((VertIndex)(indexOffset + index));
+				}
+
 				// Add all the vertices
 				foreach (var vertex in item.vertices)
 				{
 					SetVertex(vertex);
-				}
-
-				// Add all the indices
-				var startingIndex = _vertexPosition;
-				foreach (var index in item.indices)
-				{
-					SetIndex((VertIndex)(startingIndex + index));
 				}
 			}
 
@@ -118,7 +115,7 @@ public class SpriteBatch : IDisposable
 			batch.Key.texture.Use();
 			batch.Key.shader.SetMatrix("transform", transform);
 
-			_vertBuffer.SubData(BufferTarget.ArrayBuffer, _items, 0, (int)_arrayPosition);
+			_vertBuffer.SubData(BufferTarget.ArrayBuffer, _items, 0, (int)_itemPosition);
 			_indexBuffer.SubData(BufferTarget.ElementArrayBuffer, _elements, 0, (int)_elementPosition);
 
 			_verts.DrawElements(PrimitiveType.Triangles, (int)_elementPosition, ELEMENTS_TYPE);
@@ -129,9 +126,11 @@ public class SpriteBatch : IDisposable
 	public void DrawTexture(Texture texture, Vector2 position) => DrawTexture(texture, position, Color.white);
 	public void DrawTexture(Texture texture, Vector2 position, Color color) => SetItem(new(texture, _spriteShader, 0, new(position - ((Vector2)texture.size / 2), texture.size), color));
 
-	public void DrawTexture(Texture texture, Rect destination, Color? color = null) => SetItem(new(texture, _spriteShader, 0, destination, color ?? Color.white));
+	public void DrawTexture(Texture texture, Rect destination) => SetItem(new(texture, _spriteShader, 0, destination, Color.white));
+	public void DrawTexture(Texture texture, Rect destination, Color color) => SetItem(new(texture, _spriteShader, 0, destination, color));
 
-	public void DrawTextureRegion(Texture texture, Rect destination, RectInt source, Color? color = null) => SetItem(new(texture, _spriteShader, 0, destination, source, color ?? Color.white));
+	public void DrawTextureRegion(Texture texture, Rect destination, RectInt source) => SetItem(new(texture, _spriteShader, 0, destination, source, Color.white));
+	public void DrawTextureRegion(Texture texture, Rect destination, RectInt source, Color color) => SetItem(new(texture, _spriteShader, 0, destination, source, color));
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	void SetVertex(Vertex vertex)
@@ -147,18 +146,18 @@ public class SpriteBatch : IDisposable
 		SetValue(vertex.color.b);
 		SetValue(vertex.color.a);
 
-		_vertexPosition++;
+		_vertexCount++;
 	}
 
-	[MethodImpl(MethodImplOptions.AggressiveInlining)] void SetValue(float value) => _items[_arrayPosition++] = value;
+	[MethodImpl(MethodImplOptions.AggressiveInlining)] void SetValue(float value) => _items[_itemPosition++] = value;
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)] void SetIndex(VertIndex index) => _elements[_elementPosition++] = index;
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	void ResetPosition()
 	{
-		_vertexPosition = 0;
-		_arrayPosition = 0;
+		_vertexCount = 0;
+		_itemPosition = 0;
 		_elementPosition = 0;
 	}
 

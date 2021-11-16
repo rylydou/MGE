@@ -11,11 +11,11 @@ public class RenderTexture : GraphicsResource, IUseable
 
 	public RenderTexture(Vector2Int size) : base(GL.GenFramebuffer())
 	{
-		texture = new(size);
-
 		Use();
 
-		GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.Color, TextureTarget.Texture2D, texture.handle, 0);
+		texture = new(size);
+
+		GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture.handle, 0);
 
 		_rbo = GL.GenRenderbuffer();
 		GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _rbo);
@@ -35,5 +35,6 @@ public class RenderTexture : GraphicsResource, IUseable
 	protected override void Delete()
 	{
 		GL.DeleteFramebuffer(handle);
+		GL.DeleteRenderbuffer(_rbo);
 	}
 }

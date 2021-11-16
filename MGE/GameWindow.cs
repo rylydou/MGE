@@ -2,6 +2,7 @@ using System;
 using MGE.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace MGE;
 
@@ -22,25 +23,26 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		public void Update(FrameEventArgs args)
 		{
-			if (position.x > GameWindow.current.Size.X / 2 || position.x < -GameWindow.current.Size.X / 2)
+			if (position.x < -320 + 24 || position.x > 320 - 24)
 			{
 				velocity.x = -velocity.x;
 			}
 
-			if (position.y > GameWindow.current.Size.Y / 2 || position.y < -GameWindow.current.Size.Y / 2)
+			if (position.y < -180 + 24 || position.y > 180 - 24)
 			{
 				velocity.y = -velocity.y;
 			}
 
-			foreach (var ball in GameWindow.current._balls)
-			{
-				if (ball == this) continue;
-				if (Vector2.DistanceLessThan(position, ball.position, 32))
-				{
-					velocity.x = -velocity.x;
-					velocity.y = -velocity.y;
-				}
-			}
+			// foreach (var ball in GameWindow.current._balls)
+			// {
+			// 	if (ball == this) continue;
+			// 	if (Vector2.DistanceLessThan(position, ball.position, 32))
+			// 	{
+			// 		velocity.x = -velocity.x;
+			// 		velocity.y = -velocity.y;
+			// 		position += velocity * (float)args.Time * Random.Shared.NextSingle() * 2;
+			// 	}
+			// }
 
 			position += velocity * (float)args.Time;
 		}
@@ -63,7 +65,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	Texture _ballTexture;
 
 	SpriteBatch _sb;
-	// RenderTexture _gameRender;
+	RenderTexture _gameRender;
 
 	public GameWindow() : base(new() { UpdateFrequency = 60, RenderFrequency = 60, }, new() { Title = "Mangrove Game Engine", })
 	{
@@ -71,7 +73,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		_sb = new();
 
-		// _gameRender = new(new(320, 180));
+		_gameRender = new(new(320 * 2, 180 * 2));
 
 		_ballTexture = Texture.LoadTexture("Tree.png");
 
@@ -105,7 +107,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		_ballTexture.Dispose();
 
 		_sb.Dispose();
-		// _gameRender.Dispose();
+		_gameRender.Dispose();
 
 		base.OnUnload();
 	}
@@ -113,8 +115,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	protected override void OnResize(ResizeEventArgs args)
 	{
 		// Debug.LogVariable(Size);
-		GL.Viewport(0, 0, Size.X, Size.Y);
-		_sb.transform = Matrix.CreateOrthographic(Size.X, Size.Y, -1, 1);
+		GL.Viewport(0, 0, args.Size.X, args.Size.Y);
+		_sb.transform = Matrix.CreateOrthographic(args.Size.X, args.Size.Y, -1, 1);
 
 		base.OnResize(args);
 	}
@@ -132,6 +134,13 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		var input = KeyboardState;
 
+		var alt = input.IsKeyDown(Keys.LeftAlt) || input.IsKeyDown(Keys.RightAlt);
+
+		if (input.IsKeyPressed(Keys.F11) || (alt && input.IsKeyPressed(Keys.Enter)))
+		{
+			WindowState = WindowState == WindowState.Fullscreen ? WindowState.Normal : WindowState.Fullscreen;
+		}
+
 		foreach (var ball in _balls)
 		{
 			ball.Update(args);
@@ -144,7 +153,10 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		renderTime = args.Time;
 
-		// _gameRender.Use();
+		GL.Viewport(0, 0, _gameRender.texture.size.x, _gameRender.texture.size.y);
+		_sb.transform = Matrix.CreateOrthographic(_gameRender.texture.size.x, _gameRender.texture.size.y, -1, 1);
+
+		_gameRender.Use();
 
 		GL.Clear(ClearBufferMask.ColorBufferBit);
 
@@ -153,15 +165,16 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 			ball.Draw(_sb, _ballTexture);
 		}
 
-		// _sb.Flush();
+		_sb.Flush();
 
-		// _gameRender.StopUse();
+		_gameRender.StopUse();
 
-		// GL.Clear(ClearBufferMask.ColorBufferBit);
+		GL.Viewport(0, 0, Size.X, Size.Y);
+		_sb.transform = Matrix.CreateOrthographic(Size.X, Size.Y, -1, 1);
 
-		// _sb.DrawTexture(_gameRender.texture, new Rect(0, 0, Size.X, Size.Y));
+		_sb.DrawTexture(_gameRender.texture, new Rect(-Size.X / 2, Size.Y / 2, Size.X, -Size.Y));
 
-		Font.current.DrawText(_sb, "Hello World", new(8, 8));
+		Font.current.DrawText(_sb, $"{1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
 
 		_sb.Flush();
 
