@@ -14,11 +14,18 @@
 
 	</PropertyGroup>
 
-	<ItemGroup>
+	<PropertyGroup>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<ApplicationIcon>icon.ico</ApplicationIcon>
+	</PropertyGroup>
 
+	<ItemGroup>
+		<EmbeddedResource Include="icon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="OpenTK" Version="4.6.7" />
 		<PackageReference Include="StbImageSharp" Version="2.22.6" />
-
 	</ItemGroup>
 
 </Project>

@@ -75,7 +75,9 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		_gameRender = new(new(320 * 2, 180 * 2));
 
-		_ballTexture = Texture.LoadTexture("Tree.png");
+		_ballTexture = Texture.LoadTexture("Icon.png");
+
+		Icon = new(Texture.LoadImageData("Icon.png"));
 
 		_balls = new Ball[64];
 
@@ -138,6 +140,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		if (input.IsKeyPressed(Keys.F11) || (alt && input.IsKeyPressed(Keys.Enter)))
 		{
+			Debug.Log("Toggled");
 			WindowState = WindowState == WindowState.Fullscreen ? WindowState.Normal : WindowState.Fullscreen;
 		}
 
@@ -175,6 +178,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		_sb.DrawTexture(_gameRender.texture, new Rect(-Size.X / 2, Size.Y / 2, Size.X, -Size.Y));
 
 		Font.current.DrawText(_sb, $"{1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
+
+		Font.current.DrawText(_sb, @"!""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ Hello World! Lorem ipsum dolor sit amet", new(-Size.X / 2 + 4, 0));
 
 		_sb.Flush();
 
