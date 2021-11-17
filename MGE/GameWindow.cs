@@ -2,7 +2,7 @@ using System;
 using MGE.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace MGE;
 
@@ -125,6 +125,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 	protected override void OnUpdateFrame(FrameEventArgs args)
 	{
+		base.OnUpdateFrame(args);
+
 		updateTime = args.Time;
 
 		updatesSinceLastStats--;
@@ -132,6 +134,11 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		{
 			updatesSinceLastStats = 10;
 			Title = $"Mangrove Game Engine Update: {1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)";
+		}
+
+		foreach (var ball in _balls)
+		{
+			ball.Update(args);
 		}
 
 		var input = KeyboardState;
@@ -143,13 +150,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 			Debug.Log("Toggled");
 			WindowState = WindowState == WindowState.Fullscreen ? WindowState.Normal : WindowState.Fullscreen;
 		}
-
-		foreach (var ball in _balls)
-		{
-			ball.Update(args);
-		}
-
-		base.OnUpdateFrame(args);
 	}
 
 	protected override void OnRenderFrame(FrameEventArgs args)
@@ -175,7 +175,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		GL.Viewport(0, 0, Size.X, Size.Y);
 		_sb.transform = Matrix.CreateOrthographic(Size.X, Size.Y, -1, 1);
 
-		_sb.DrawTexture(_gameRender.texture, new Rect(-Size.X / 2, Size.Y / 2, Size.X, -Size.Y));
+		_sb.DrawTexture(_gameRender.texture, new Rect(-Size.X / 2, -Size.Y / 2, Size.X, Size.Y));
 
 		Font.current.DrawText(_sb, $"{1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
 

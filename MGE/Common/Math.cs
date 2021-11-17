@@ -56,6 +56,18 @@ public static class Math
 	public static float Sign(float value) => value == 0 ? 0 : value >= 0 ? 1 : -1;
 	public static int Sign(int value) => value == 0 ? 0 : value >= 0 ? 1 : -1;
 
+	public static uint NextPowerOf2(uint value)
+	{
+		value--;
+		value |= value >> 1;
+		value |= value >> 2;
+		value |= value >> 4;
+		value |= value >> 8;
+		value |= value >> 16;
+		value++;
+		return value;
+	}
+
 	////////////////////////////////////////////////////////////
 
 	public static float Min(float a, float b) => a < b ? a : b;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using MGE.Graphics;
 
 namespace MGE
@@ -41,13 +42,31 @@ namespace MGE
 
 			foreach (var ch in text)
 			{
-				if (ch == ' ') { offset++; continue; }
-				if (ch == '\t') { offset += 2; continue; }
-				if (!chars.TryGetValue(ch, out var rect)) { Debug.Log($"Unknown Char: '{ch}' #{(ushort)ch}"); continue; }
-
-				sb.DrawTextureRegion(texture, new((charSize.x + spaceBtwChars) * offset + position.x, position.y, charSize), rect, color);
+				if (!DrawChar(sb, ch, new((charSize.x + spaceBtwChars) * offset + position.x, position.y), color)) continue;
 				offset++;
 			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="sb"></param>
+		/// <param name="ch"></param>
+		/// <param name="position"></param>
+		/// <param name="color"></param>
+		/// <returns>true if the char has width</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool DrawChar(SpriteBatch sb, char ch, Vector2 position, Color color)
+		{
+			if (ch == ' ') return true;
+			if (!chars.TryGetValue(ch, out var rect))
+			{
+				Debug.Log($"Unknown Char: '{ch}' #{(ushort)ch}");
+				return false;
+			}
+
+			sb.DrawTextureRegion(texture, new(position, charSize), rect, color);
+			return true;
 		}
 	}
 }
