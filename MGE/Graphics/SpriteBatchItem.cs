@@ -1,5 +1,5 @@
 using System;
-#if MGE_UINT32_INDICES
+#if MGE_MORE_VERTICES
 using VertIndex = System.UInt32;
 #else
 using VertIndex = System.UInt16;
@@ -7,6 +7,7 @@ using VertIndex = System.UInt16;
 
 namespace MGE.Graphics;
 
+[Obsolete]
 internal sealed class SpriteBatchItem : IComparable<SpriteBatchItem>
 {
 	public Texture texture;

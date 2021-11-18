@@ -1,11 +1,9 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MGE
 {
-	public class LowLevelList<T> : IList<T>
+	public class LowLevelList<T> : IEnumerable<T>
 	{
 		class LowLevelListEnumerator : IEnumerator<T>
 		{
@@ -33,60 +31,53 @@ namespace MGE
 			public void Dispose() { }
 		}
 
-		public T[] items;
+		public T[] array;
 		int _count;
 		public int Count => _count;
 
 		public LowLevelList()
 		{
-			items = new T[256];
+			array = new T[256];
 		}
 
 		public LowLevelList(uint capacity)
 		{
-			items = new T[Math.NextPowerOf2(capacity)];
+			array = new T[Math.NextPowerOf2(capacity)];
 		}
 
-		public T this[int index] { get => items[index]; set => items[index] = value; }
-
-		public bool IsReadOnly => false;
+		public T this[int index] { get => array[index]; set => array[index] = value; }
 
 		public void Add(T item)
 		{
 			EnsureCapacity(_count + 1);
-			items[_count++] = item;
+			array[_count++] = item;
 		}
 		public void Add(T[] items)
 		{
 			EnsureCapacity(_count + items.Length);
-			items.ForEach(item => this.items[_count++] = item);
+			items.ForEach(item => this.array[_count++] = item);
 		}
 		public void Add(IEnumerable<T> items, int count)
 		{
 			EnsureCapacity(_count + count);
-			items.ForEach(item => this.items[_count++] = item);
+			items.ForEach(item => this.array[_count++] = item);
 		}
-		public void Insert(int index, T item) => throw new System.NotImplementedException();
 
-		public bool Remove(T item) => throw new System.NotImplementedException();
-		public void RemoveAt(int index) => throw new System.NotImplementedException();
 		public void Clear() => _count = 0;
 
-		public bool Contains(T item) => this.Contains<T>(item);
-		public int IndexOf(T item) => this.IndexOf(item);
-
-		public void CopyTo(T[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
+		public void CopyTo(T[] array, int arrayIndex) => this.array.CopyTo(array, arrayIndex);
 
 		public IEnumerator<T> GetEnumerator() => new LowLevelListEnumerator(this);
 		IEnumerator IEnumerable.GetEnumerator() => new LowLevelListEnumerator(this);
 
 		public bool EnsureCapacity(int capacity)
 		{
-			if (items.Length < capacity)
+			if (array.Length < capacity)
 			{
 				var tmp = new T[Math.NextPowerOf2((uint)(capacity + 1u))];
-				items.CopyTo(tmp, 0);
-				items = tmp;
+				array.CopyTo(tmp, 0);
+				array = tmp;
+				Debug.Log("Expanded to " + tmp.Length);
 				return true;
 			}
 			return false;

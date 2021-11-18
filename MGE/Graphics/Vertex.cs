@@ -5,8 +5,8 @@ namespace MGE.Graphics;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 internal struct Vertex
 {
-	public const int SIZE = 8;
-	public const int FULL_SIZE = SIZE * sizeof(float);
+	public const int SIZE_IN_ELEMENTS = 8;
+	public const int SIZE_IN_BYTES = SIZE_IN_ELEMENTS * sizeof(float);
 
 	public Vector2 position;
 	public Vector2 textureCoordinate;
