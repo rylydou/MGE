@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MGE
 {
-	public class LowLevelList<T> : IEnumerable<T>
+	public class LowLevelList<T> : IEnumerable<T> where T : struct
 	{
 		class LowLevelListEnumerator : IEnumerator<T>
 		{
@@ -37,7 +37,7 @@ namespace MGE
 
 		public LowLevelList()
 		{
-			array = new T[256];
+			array = new T[128];
 		}
 
 		public LowLevelList(uint capacity)
@@ -47,16 +47,27 @@ namespace MGE
 
 		public T this[int index] { get => array[index]; set => array[index] = value; }
 
+		/// <summary>
+		/// Does not check if there is enough space to insert the item, only call if you are confident that there will be enough space
+		/// </summary>
+		/// <param name="item"></param>
+		public void AddUnsafe(T item)
+		{
+			array[_count++] = item;
+		}
+
 		public void Add(T item)
 		{
 			EnsureCapacity(_count + 1);
 			array[_count++] = item;
 		}
+
 		public void Add(T[] items)
 		{
 			EnsureCapacity(_count + items.Length);
 			items.ForEach(item => this.array[_count++] = item);
 		}
+
 		public void Add(IEnumerable<T> items, int count)
 		{
 			EnsureCapacity(_count + count);
@@ -77,7 +88,7 @@ namespace MGE
 				var tmp = new T[Math.NextPowerOf2((uint)(capacity + 1u))];
 				array.CopyTo(tmp, 0);
 				array = tmp;
-				Debug.Log("Expanded to " + tmp.Length);
+				// Debug.Log("Expanded to " + tmp.Length);
 				return true;
 			}
 			return false;
