@@ -1,11 +1,39 @@
+using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace MGE
 {
-	public struct Folder
+	public struct Folder : IEquatable<Folder>
 	{
+		#region Static
+
+		static Folder()
+		{
+			dataFolder = Environment.GetEnvironmentVariable("data-dir") ?? appDataFolder;
+
+			dataFolder = dataFolder / "MGE Game";
+		}
+
+		public static Folder rootFolder = new(Directory.GetDirectoryRoot(userFolder));
+		public static Folder userFolder = new(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+
+		public static Folder appDataFolder = new(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+		public static Folder localAppDataFolder = new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+		public static Folder commonAppDataFolder = new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
+
+		public static Folder assetsFolder = new Folder(Environment.CurrentDirectory) + "Assets";
+		public static Folder resourcePacks = new Folder(Environment.CurrentDirectory) + "Resource Packs";
+
+		public static Folder dataFolder;
+
+		#endregion
+
+		#region Instance
+
 		public readonly string path;
+
+		public bool exists => Directory.Exists(path);
 
 		public Folder(string path)
 		{
@@ -31,7 +59,9 @@ namespace MGE
 
 		#region File
 
-		public FileStream FileCreate(string path) => File.Create(GetAbsolutePath(path));
+		public File FileCreate(string path) => File.Create(GetAbsolutePath(path));
+
+		public File GetFile(string path) => new(GetAbsolutePath(path));
 
 		public FileStream FileOpenRead(string path) => new FileStream(GetAbsolutePath(path), FileMode.Open, FileAccess.Read, FileShare.Read);
 
@@ -71,5 +101,7 @@ namespace MGE
 
 		public bool Equals(Folder other) => path == other.path;
 		public override bool Equals(object? other) => other is Folder folder && Equals(folder);
+
+		#endregion
 	}
 }

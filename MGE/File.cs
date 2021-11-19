@@ -1,18 +1,29 @@
+using System;
 using System.IO;
 using FileIO = System.IO.File;
 
 namespace MGE;
 
-public class File
+public struct File : IEquatable<File>
 {
+	public static File Create(string path)
+	{
+		FileIO.Create(path).Dispose();
+
+		return new(path);
+	}
+
 	public readonly string path;
 
 	public bool exists => FileIO.Exists(path);
 
 	public File(string path) => this.path = path;
 
-	public FileStream OpenRead() => FileIO.OpenRead(path);
-	public FileStream OpenWrite() => FileIO.OpenWrite(path);
+	public FileStream OpenRead() => FileIO.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+	public StreamReader OpenReadText() => FileIO.OpenText(path);
+
+	public FileStream OpenWrite(FileMode mode = FileMode.CreateNew) => FileIO.Open(path, mode, FileAccess.ReadWrite, FileShare.Read);
+	public FileStream OpenAppend() => FileIO.Open(path, FileMode.Append, FileAccess.ReadWrite, FileShare.Read);
 
 	public string ReadText() => FileIO.ReadAllText(path);
 	public string[] ReadLines() => FileIO.ReadAllLines(path);
@@ -24,4 +35,19 @@ public class File
 
 	public void AppendText(string? text) => FileIO.AppendAllText(path, text);
 	public void AppendLines(string[] lines) => FileIO.AppendAllLines(path, lines);
+
+	public void Delete() => FileIO.Delete(path);
+
+	public static bool operator ==(File left, File right) => left.path == right.path;
+	public static bool operator !=(File left, File right) => left.path != right.path;
+
+	public static implicit operator string(File folder) => folder.path;
+	public static implicit operator File(string str) => new(str);
+
+	public override string ToString() => path;
+
+	public override int GetHashCode() => path.GetHashCode();
+
+	public bool Equals(File other) => path == other.path;
+	public override bool Equals(object? other) => other is Folder folder && Equals(folder);
 }

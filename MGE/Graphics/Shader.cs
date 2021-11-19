@@ -27,14 +27,14 @@ public class Shader : GraphicsResource, IUseable
 
 	public Shader(string vertPath, string fragPath) : base(GL.CreateProgram())
 	{
-		var shaderSource = File.ReadAllText($"{Environment.CurrentDirectory}/Assets/{vertPath}");
+		var shaderSource = Folder.assetsFolder.GetFile(vertPath).ReadText();
 		var vertexShader = GL.CreateShader(ShaderType.VertexShader);
 
 		GL.ShaderSource(vertexShader, shaderSource);
 
 		CompileShader(vertexShader);
 
-		shaderSource = File.ReadAllText($"{Environment.CurrentDirectory}/Assets/{fragPath}");
+		shaderSource = Folder.assetsFolder.GetFile(fragPath).ReadText();
 		var fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
 		GL.ShaderSource(fragmentShader, shaderSource);
 		CompileShader(fragmentShader);

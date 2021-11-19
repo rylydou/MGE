@@ -8,6 +8,9 @@
       "preLaunchTask": "build engine",
       "program": "${workspaceFolder}/MGE/bin/Debug/MGE.dll",
       "args": [],
+      "env": {
+        "data-dir": "${workspaceFolder}/Data"
+      },
       "cwd": "${workspaceFolder}/MGE",
       "console": "internalConsole",
       "stopAtEntry": false,

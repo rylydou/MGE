@@ -50,7 +50,7 @@ public class Texture : GraphicsResource, IUseable
 
 	public static Texture LoadTexture(string path)
 	{
-		using (var stream = File.OpenRead($"{Environment.CurrentDirectory}/Assets/{path}"))
+		using (var stream = Folder.assetsFolder.GetFile(path).OpenRead())
 		{
 			var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
 			var pixels = new byte[image.Width * image.Height * 4];
@@ -78,7 +78,7 @@ public class Texture : GraphicsResource, IUseable
 
 	public static OpenTK.Windowing.Common.Input.Image LoadImageData(string path)
 	{
-		using (var stream = File.OpenRead($"{Environment.CurrentDirectory}/Assets/{path}"))
+		using (var stream = Folder.assetsFolder.GetFile(path).OpenRead())
 		{
 			var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
 			return new(image.Width, image.Height, image.Data);
