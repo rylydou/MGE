@@ -15,7 +15,7 @@ namespace MGE
 			dataFolder = dataFolder / "MGE Game";
 		}
 
-		public static Folder rootFolder = new(Directory.GetDirectoryRoot(userFolder));
+		public static Folder rootFolder = new("");
 		public static Folder userFolder = new(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
 
 		public static Folder appDataFolder = new(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
@@ -35,10 +35,7 @@ namespace MGE
 
 		public bool exists => Directory.Exists(path);
 
-		public Folder(string path)
-		{
-			this.path = CleanPath(path);
-		}
+		public Folder(string path) => this.path = CleanPath(path);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static string CleanPath(string path) => path.Replace('\\', '/');
@@ -95,7 +92,7 @@ namespace MGE
 		public static implicit operator string(Folder folder) => folder.path;
 		public static implicit operator Folder(string str) => new Folder(str);
 
-		public override string ToString() => path;
+		public override string ToString() => path.StartsWith(userFolder.path) ? "~" + path.Remove(0, userFolder.path.Length) : path;
 
 		public override int GetHashCode() => path.GetHashCode();
 

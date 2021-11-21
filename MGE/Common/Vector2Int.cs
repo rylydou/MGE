@@ -50,10 +50,8 @@ public struct Vector2Int : IEquatable<Vector2Int>
 
 	////////////////////////////////////////////////////////////
 
-	/* [Prop] */
-	public int x;
-	/* [Prop] */
-	public int y;
+	[Prop] public int x;
+	[Prop] public int y;
 
 	public Vector2Int(int value)
 	{

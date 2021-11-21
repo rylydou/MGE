@@ -116,10 +116,8 @@ public struct Vector2 : IEquatable<Vector2>
 
 	////////////////////////////////////////////////////////////
 
-	/* [Prop] */
-	public float x;
-	/* [Prop] */
-	public float y;
+	[Prop] public float x;
+	[Prop] public float y;
 
 	public Vector2(float value)
 	{

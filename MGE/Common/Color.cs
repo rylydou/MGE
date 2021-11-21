@@ -73,8 +73,7 @@ public struct Color : IEquatable<Color>
 	public float b { get => (float)intB / 255; set => intB = (byte)(value * 255); }
 	public float a { get => (float)intA / 255; set => intA = (byte)(value * 255); }
 
-	/* [Prop] */
-	public string hex { get => ToHex(); set => this = new Color(value); }
+	[Prop] public string hex { get => ToHex(); set => this = new Color(value); }
 
 	public Color(float r, float g, float b, float a = 1.0f) : this()
 	{
@@ -208,7 +207,7 @@ public struct Color : IEquatable<Color>
 			case 6: return string.Format("#{0:X2}{1:X2}{2:X2}", intR, intG, intB);
 			case 8: return string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", intR, intG, intB, intA);
 		}
-		throw new ArgumentException($"Color '{this.ToString()}' can not be convered to hex string a length of {length}!", nameof(length));
+		throw new ArgumentException($"Color '{this.ToString()}' can not be converted to hex string a length of {length}!", nameof(length));
 	}
 
 	public Color WithAlpha(float a) => new Color(r, g, b, a);

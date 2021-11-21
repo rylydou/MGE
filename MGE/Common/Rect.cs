@@ -172,14 +172,10 @@ public struct Rect : IEquatable<Rect>
 	public float xMax { get => _width + _xMin; set => _width = value - _xMin; }
 	public float yMax { get => _height + _yMin; set => _height = value - _yMin; }
 
-	/* [Prop] */
-	public float x { get => _xMin; set => _xMin = value; }
-	/* [Prop] */
-	public float y { get => _yMin; set => _yMin = value; }
-	/* [Prop] */
-	public float width { get => _width; set => _width = value; }
-	/* [Prop] */
-	public float height { get => _height; set => _height = value; }
+	[Prop] public float x { get => _xMin; set => _xMin = value; }
+	[Prop] public float y { get => _yMin; set => _yMin = value; }
+	[Prop] public float width { get => _width; set => _width = value; }
+	[Prop] public float height { get => _height; set => _height = value; }
 
 	public Vector2 min { get => new Vector2(xMin, yMin); set { xMin = value.x; yMin = value.y; } }
 	public Vector2 max { get => new Vector2(xMax, yMax); set { xMax = value.x; yMax = value.y; } }
