@@ -47,9 +47,9 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 			position += velocity * (float)args.Time;
 		}
 
-		public void Draw(SpriteBatch sb, Texture texture)
+		public void Draw(Texture texture)
 		{
-			sb.DrawTexture(texture, position);
+			GFX.DrawTexture(texture, position);
 		}
 	}
 
@@ -64,14 +64,11 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 	Texture _ballTexture;
 
-	SpriteBatch _sb;
 	RenderTexture _gameRender;
 
 	public GameWindow() : base(new() { UpdateFrequency = 60, RenderFrequency = 60, }, new() { Title = "Mangrove Game Engine", })
 	{
 		_current = this;
-
-		_sb = new();
 
 		_gameRender = new(new(320 * 2, 180 * 2));
 
@@ -108,7 +105,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		_ballTexture.Dispose();
 
-		_sb.Dispose();
 		_gameRender.Dispose();
 
 		base.OnUnload();
@@ -118,7 +114,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		// Debug.LogVariable(Size);
 		GL.Viewport(0, 0, args.Size.X, args.Size.Y);
-		_sb.transform = Matrix.CreateOrthographic(args.Size.X, args.Size.Y, -1, 1);
+		GFX.transform = Matrix.CreateOrthographic(args.Size.X, args.Size.Y, -1, 1);
 
 		base.OnResize(args);
 	}
@@ -157,7 +153,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		renderTime = args.Time;
 
 		GL.Viewport(0, 0, _gameRender.texture.size.x, _gameRender.texture.size.y);
-		_sb.transform = Matrix.CreateOrthographic(_gameRender.texture.size.x, _gameRender.texture.size.y, -1, 1);
+		GFX.transform = Matrix.CreateOrthographic(_gameRender.texture.size.x, _gameRender.texture.size.y, -1, 1);
 
 		_gameRender.Use();
 
@@ -165,23 +161,23 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		foreach (var ball in _balls)
 		{
-			ball.Draw(_sb, _ballTexture);
+			ball.Draw(_ballTexture);
 		}
 
-		_sb.Flush();
+		GFX.Flush();
 
 		_gameRender.StopUse();
 
 		GL.Viewport(0, 0, Size.X, Size.Y);
-		_sb.transform = Matrix.CreateOrthographic(Size.X, Size.Y, -1, 1);
+		GFX.transform = Matrix.CreateOrthographic(Size.X, Size.Y, -1, 1);
 
-		_sb.DrawTexture(_gameRender.texture, new Rect(-Size.X / 2, -Size.Y / 2, Size.X, Size.Y));
+		GFX.DrawTexture(_gameRender.texture, new Rect(-Size.X / 2, -Size.Y / 2, Size.X, Size.Y));
 
-		Font.current.DrawText(_sb, $"{1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
+		Font.current.DrawText($"{1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
 
-		Font.current.DrawText(_sb, @"!""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ Hello World! Lorem ipsum dolor sit amet", new(-Size.X / 2 + 4, 0));
+		Font.current.DrawText(@"!""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ Hello World! Lorem ipsum dolor sit amet", new(-Size.X / 2 + 4, 0));
 
-		_sb.Flush();
+		GFX.Flush();
 
 		SwapBuffers();
 

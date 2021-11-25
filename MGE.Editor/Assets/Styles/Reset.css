@@ -51,13 +51,13 @@
 	transition-duration: initial;
 	transition-timing-function: initial;
 	transition-delay: initial;
-	min-width: 0;
-	min-height: 0;
+	min-width: initial;
+	min-height: initial;
 	/* engine: initial; */
 
 	-gtk-key-bindings: initial;
 
-	-gtkwidget-focus-line-width: 0;
-	-gtkwidget-focus-padding: 0;
-	-gtknotebook-initial-gap: 0;
+	-gtkwidget-focus-line-width: initial;
+	-gtkwidget-focus-padding: initial;
+	-gtknotebook-initial-gap: initial;
 }

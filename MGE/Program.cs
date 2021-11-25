@@ -1,12 +1,12 @@
 ﻿using System;
 using MGE;
 
-// using (var window = new GameWindow())
-// {
-// 	window.Run();
-// }
+using (var window = new GameWindow())
+{
+	window.Run();
+}
 
-var write = new TestObject()
+/* var write = new TestObject()
 {
 	name = "Name",
 	enabled = true,
@@ -17,9 +17,9 @@ var write = new TestObject()
 	hitbox = new Square(12, 14),
 };
 
-Folder.dataFolder.FileCreate("object.yml").WriteObject(write);
+Folder.dataFolder.FileCreate("object.json").WriteObject(write);
 
-var read = Folder.dataFolder.GetFile("object.yml").ReadObject<TestObject>();
+var read = Folder.dataFolder.GetFile("object.json").ReadObject<TestObject>();
 
 Console.WriteLine(write.Equals(read));
 
@@ -75,3 +75,4 @@ class Circle : Shape
 		this.radius = radius;
 	}
 }
+ */

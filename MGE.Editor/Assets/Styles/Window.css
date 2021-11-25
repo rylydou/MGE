@@ -1,85 +1,90 @@
 window {
-  background-color: @base;
+	background-color: @base;
 }
 
 window:not(.popup) decoration {
-  border: 2px solid @base;
+	border: 2px solid @base;
+	box-shadow: 0 0 8px 0 alpha(black, 0.5);
+}
+
+window:not(.popup):backdrop decoration {
+	box-shadow: 0 0 8px 0 alpha(black, 0.25);
 }
 
 headerbar {
-  background-color: @base;
-  padding-left: 4px;
-  min-height: 0;
-  border-top: solid 2px @accent;
+	background-color: @base;
+	padding-left: 4px;
+	min-height: 0;
+	border-top: solid 2px @accent;
 
-  transition: border-top-color 100ms;
+	transition: border-top-color 100ms;
 }
 
 headerbar:drop(active) {
-  background-color: @red;
+	background-color: @red;
 }
 
 window:backdrop headerbar {
-  border-top-color: transparent;
+	border-top-color: transparent;
 
-  transition: border-top-color 1000ms;
+	transition: border-top-color 1000ms;
 }
 
 window.maximized headerbar,
 window.fullscreen headerbar,
 window.tiled headerbar {
-  border-top: none;
+	border-top: none;
 }
 
 headerbar .favicon * {
-  color: @accent;
+	color: @accent;
 }
 
 headerbar .title {
-  color: @midground;
+	color: @midground;
 }
 
 .titlebutton {
-  min-height: 32px;
-  min-width: 30px;
-  color: @midground;
-  background: none;
-  border: none;
-  box-shadow: none;
+	min-height: 24px;
+	min-width: 30px;
+	color: @midground;
+	background: none;
+	border: none;
+	box-shadow: none;
 }
 
 .titlebutton * {
-  color: @midground;
+	color: @midground;
 }
 
 .titlebutton:hover {
-  background-color: @accent;
+	background-color: @accent;
 }
 
 .titlebutton:hover * {
-  color: @accent-foreground;
+	color: @accent-foreground;
 }
 
 .titlebutton.close:hover {
-  background-color: @error;
+	background-color: @error;
 }
 
 .titlebutton.maximize:hover {
-  background-color: @green;
+	background-color: @green;
 }
 
 .titlebutton.minimize:hover {
-  background-color: @yellow;
+	background-color: @yellow;
 }
 
 window.popup {
-  background-color: @popup;
-  border-radius: 0px;
+	background-color: @popup;
+	border-radius: 0px;
 }
 
 window.popup decoration {
-  background-color: @base;
-  border-radius: 0px;
+	background-color: @base;
+	border-radius: 0px;
 
-  /* box-shadow: 0 0 8px 0 alpha(black, 0.05); */
+	/* box-shadow: 0 0 8px 0 alpha(black, 0.05); */
 }

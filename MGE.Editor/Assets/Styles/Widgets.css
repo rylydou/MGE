@@ -1,6 +1,6 @@
-button:not(:link):not(.titlebutton),
+button,
 checkbutton,
-entry {
+entry {	
 	padding: 4px;
 	background-color: @element;
 	border: solid 1px @element;

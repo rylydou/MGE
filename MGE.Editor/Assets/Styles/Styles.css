@@ -22,11 +22,11 @@ selection {
 	color: @accent-foreground;
 }
 
-/* SECTIONS */
-@import url("Window.css");
 @import url("Statusbar.css");
 @import url("Widgets.css");
 
 @import url("Important.css");
+
+@import url("Window.css");
 
 /* @import url("Debug.css"); */

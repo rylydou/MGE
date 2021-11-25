@@ -35,14 +35,14 @@ namespace MGE
 			}
 		}
 
-		public void DrawText(SpriteBatch sb, IEnumerable<char> text, Vector2 position) => DrawText(sb, text, position, Color.white);
-		public void DrawText(SpriteBatch sb, IEnumerable<char> text, Vector2 position, Color color)
+		public void DrawText(IEnumerable<char> text, Vector2 position) => DrawText(text, position, Color.white);
+		public void DrawText(IEnumerable<char> text, Vector2 position, Color color)
 		{
 			var offset = 0;
 
 			foreach (var ch in text)
 			{
-				if (!DrawChar(sb, ch, new((charSize.x + spaceBtwChars) * offset + position.x, position.y), color)) continue;
+				if (!DrawChar(ch, new((charSize.x + spaceBtwChars) * offset + position.x, position.y), color)) continue;
 				offset++;
 			}
 		}
@@ -50,13 +50,12 @@ namespace MGE
 		/// <summary>
 		///
 		/// </summary>
-		/// <param name="sb"></param>
 		/// <param name="ch"></param>
 		/// <param name="position"></param>
 		/// <param name="color"></param>
 		/// <returns>true if the char has width</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool DrawChar(SpriteBatch sb, char ch, Vector2 position, Color color)
+		public bool DrawChar(char ch, Vector2 position, Color color)
 		{
 			if (ch == ' ') return true;
 			if (!chars.TryGetValue(ch, out var rect))
@@ -65,7 +64,7 @@ namespace MGE
 				return false;
 			}
 
-			sb.DrawTextureRegion(texture, new(position, charSize), rect, color);
+			GFX.DrawTextureRegion(texture, new(position, charSize), rect, color);
 			return true;
 		}
 	}

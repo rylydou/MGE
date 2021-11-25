@@ -1,6 +1,3 @@
-// Using C# 6
-// using MGE; No need because of implicit using tags
-
 namespace Game;
 
 public class Player : TransformNode
