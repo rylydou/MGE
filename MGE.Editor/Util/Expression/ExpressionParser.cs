@@ -12,7 +12,7 @@ namespace MGE.Editor.Util
 		Tokenizer _tokenizer;
 
 		// Parse an entire expression and check EOF was reached
-		Node ParseExpression()
+		MGE.Editor.Util.Expression.Node ParseExpression()
 		{
 			// For the moment, all we understand is add and subtract
 			var expr = ParseAddSubtract();
@@ -24,7 +24,7 @@ namespace MGE.Editor.Util
 		}
 
 		// Parse an sequence of add/subtract operators
-		Node ParseAddSubtract()
+		MGE.Editor.Util.Expression.Node ParseAddSubtract()
 		{
 			// Parse the left hand side
 			var lhs = ParseMultiplyDivide();
@@ -57,7 +57,7 @@ namespace MGE.Editor.Util
 		}
 
 		// Parse an sequence of add/subtract operators
-		Node ParseMultiplyDivide()
+		MGE.Editor.Util.Expression.Node ParseMultiplyDivide()
 		{
 			// Parse the left hand side
 			var lhs = ParseUnary();
@@ -91,7 +91,7 @@ namespace MGE.Editor.Util
 
 
 		// Parse a unary operator (eg: negative/positive)
-		Node ParseUnary()
+		MGE.Editor.Util.Expression.Node ParseUnary()
 		{
 			while (true)
 			{
@@ -124,7 +124,7 @@ namespace MGE.Editor.Util
 
 		// Parse a leaf node
 		// (For the moment this is just a number)
-		Node ParseLeaf()
+		MGE.Editor.Util.Expression.Node ParseLeaf()
 		{
 			// Is it a number?
 			if (_tokenizer.token == EToken.Number)
@@ -168,7 +168,7 @@ namespace MGE.Editor.Util
 					_tokenizer.NextToken();
 
 					// Parse arguments
-					var arguments = new List<Node>();
+					var arguments = new List<MGE.Editor.Util.Expression.Node>();
 					while (true)
 					{
 						// Parse argument and add to list
@@ -195,12 +195,12 @@ namespace MGE.Editor.Util
 			}
 
 			// Don't Understand
-			throw new SyntaxException($"Unexpect token: {_tokenizer.token}");
+			throw new SyntaxException($"Unexpected token: {_tokenizer.token}");
 		}
 
-		public static Node Parse(string str) => Parse(new Tokenizer(new StringReader(str)));
+		public static MGE.Editor.Util.Expression.Node Parse(string str) => Parse(new Tokenizer(new StringReader(str)));
 
-		static Node Parse(Tokenizer tokenizer)
+		static MGE.Editor.Util.Expression.Node Parse(Tokenizer tokenizer)
 		{
 			var parser = new ExpressionParser(tokenizer);
 			return parser.ParseExpression();

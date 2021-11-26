@@ -137,39 +137,39 @@ namespace MGE.Editor.GUI
 
 		#endregion Drawers
 
-		public static ExpressionDictionaryContext _dictionaryContext = new ExpressionDictionaryContext(new()
+		public static ExpressionDictionaryContext _dictionaryContext = new(new()
 		{
-			{ "pi", () => Math.PI },
-			{ "tau", () => Math.Tau },
-			{ "e", () => Math.E },
+			{ "pi", () => Math.pi },
+			{ "tau", () => Math.pi2 },
+			{ "e", () => Math.e },
 			{ "inf", () => double.PositiveInfinity },
 			{ "ninf", () => double.NegativeInfinity },
 			{ "nan", () => double.NaN },
 
 			{ "rand", () => new Random().NextDouble() },
-		}, new Dictionary<string, Func<double[], double>>()
+		}, new()
 		{
-			{ "sin", (args) => Math.Sin(args[0]) },
-			{ "cos", (args) => Math.Cos(args[0]) },
-			{ "tan", (args) => Math.Tan(args[0]) },
+			// { "sin", (args) => Math.Sin(args[0]) },
+			// { "cos", (args) => Math.Cos(args[0]) },
+			// { "tan", (args) => Math.Tan(args[0]) },
 
-			{ "asin", (args) => Math.Asin(args[0]) },
-			{ "acos", (args) => Math.Acos(args[0]) },
-			{ "atan", (args) => Math.Atan(args[0]) },
+			// { "asin", (args) => Math.Asin(args[0]) },
+			// { "acos", (args) => Math.Acos(args[0]) },
+			// { "atan", (args) => Math.Atan(args[0]) },
 
-			{ "pow", (args) => Math.Pow(args[0], args[1]) },
+			// { "pow", (args) => Math.Pow(args[0], args[1]) },
 
-			{ "abs", (args) => Math.Abs(args[0]) },
-			{ "sign", (args) => Math.Sign(args[0]) },
+			// { "abs", (args) => Math.Abs(args[0]) },
+			// { "sign", (args) => Math.Sign(args[0]) },
 
-			{ "round", (args) => Math.Round(args[0]) },
-			{ "floor", (args) => Math.Floor(args[0]) },
-			{ "ceil", (args) => Math.Ceiling(args[0]) },
-			{ "trunc", (args) => Math.Truncate(args[0]) },
+			// { "round", (args) => Math.Round(args[0]) },
+			// { "floor", (args) => Math.Floor(args[0]) },
+			// { "ceil", (args) => Math.Ceil(args[0]) },
+			// { "trunc", (args) => Math.Trunc(args[0]) },
 
-			{ "min", (args) => Math.Min(args[0], args[1]) },
-			{ "max", (args) => Math.Max(args[0], args[1]) },
-			{ "clamp", (args) => Math.Clamp(args[0], args[1], args[2]) },
+			// { "min", (args) => Math.Min(args[0], args[1]) },
+			// { "max", (args) => Math.Max(args[0], args[1]) },
+			// { "clamp", (args) => Math.Clamp(args[0], args[1], args[2]) },
 		});
 
 		#region Widget Properties
@@ -420,7 +420,7 @@ namespace MGE.Editor.GUI
 
 		#endregion Buttons
 
-		#region Feilds
+		#region Fields
 
 		static InternalEntryData MakeEntry(string text)
 		{
@@ -439,7 +439,7 @@ namespace MGE.Editor.GUI
 			{
 				switch (args.Event.Key)
 				{
-					// Reset the text feild when escape is pressed
+					// Reset the text field when escape is pressed
 					case Gdk.Key.Escape:
 						widget.Text = originalText;
 						widget.FinishEditing();
@@ -449,9 +449,9 @@ namespace MGE.Editor.GUI
 
 			// Finish when enter is pressed
 			widget.Activated += (sender, args) => widget.FinishEditing();
-			// Finish when the feild is unfocused
+			// Finish when the field is unfocused
 			widget.FocusOutEvent += (sender, args) => widget.FinishEditing();
-			// Finish when the feild is destroyed
+			// Finish when the field is destroyed
 			widget.Destroyed += (sender, args) => widget.FinishEditing();
 
 			widget.EditingDone += (sender, args) =>
@@ -476,7 +476,7 @@ namespace MGE.Editor.GUI
 			return data;
 		}
 
-		public static EntryData<string> TextFeild(string text)
+		public static EntryData<string> TextField(string text)
 		{
 			var widget = MakeEntry(text);
 			var data = new EntryData<string>(widget.entry);
@@ -494,7 +494,7 @@ namespace MGE.Editor.GUI
 			return data;
 		}
 
-		public static EntryData<int> NumberFeild(int number)
+		public static EntryData<int> NumberField(int number)
 		{
 			var widget = MakeEntry(number.ToString());
 			var data = new EntryData<int>(widget.entry);
@@ -503,7 +503,7 @@ namespace MGE.Editor.GUI
 			{
 				var val = 0;
 				if (!string.IsNullOrEmpty(text))
-					val = (int)Math.Round(Eval(text));
+					val = (int)Math.Round((float)Eval(text));
 				data.onSubmitted(val);
 				return val.ToString();
 			};
@@ -513,7 +513,7 @@ namespace MGE.Editor.GUI
 			return data;
 		}
 
-		public static EntryData<float> NumberFeild(float number)
+		public static EntryData<float> NumberField(float number)
 		{
 			var widget = MakeEntry(number.ToString());
 			var data = new EntryData<float>(widget.entry);
@@ -532,7 +532,7 @@ namespace MGE.Editor.GUI
 			return data;
 		}
 
-		public static EntryData<double> NumberFeild(double number)
+		public static EntryData<double> NumberField(double number)
 		{
 			var widget = MakeEntry(number.ToString());
 			var data = new EntryData<double>(widget.entry);
@@ -551,7 +551,7 @@ namespace MGE.Editor.GUI
 			return data;
 		}
 
-		#endregion Feilds
+		#endregion Fields
 
 		public static CheckboxData Checkbox(bool? value)
 		{
@@ -611,7 +611,7 @@ namespace MGE.Editor.GUI
 			AddContainer(box);
 		}
 
-		public static void StartHorizonalFlow(int spacing = 4)
+		public static void StartHorizontalFlow(int spacing = 4)
 		{
 			var widget = new FlowBox()
 			{

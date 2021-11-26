@@ -2,7 +2,7 @@ using System;
 using MGE.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
-using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace MGE;
 

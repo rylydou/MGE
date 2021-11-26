@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace MGE
 {
-	public class LowLevelList<T> : IEnumerable<T> where T : struct
+	public class ChunkedList<T> : IEnumerable<T> where T : struct
 	{
 		class LowLevelListEnumerator : IEnumerator<T>
 		{
@@ -11,18 +12,18 @@ namespace MGE
 
 			object IEnumerator.Current => _list[_position]!;
 
-			readonly LowLevelList<T> _list;
+			readonly ChunkedList<T> _list;
 
 			int _position;
 
-			public LowLevelListEnumerator(LowLevelList<T> list)
+			public LowLevelListEnumerator(ChunkedList<T> list)
 			{
 				_list = list;
 			}
 
 			public bool MoveNext()
 			{
-				if (_position++ < _list._count) return true;
+				if (_position++ < _list._position) return true;
 				return false;
 			}
 
@@ -32,15 +33,15 @@ namespace MGE
 		}
 
 		public T[] array;
-		int _count;
-		public int Count => _count;
+		int _position;
+		public int Count => _position;
 
-		public LowLevelList()
+		public ChunkedList()
 		{
 			array = new T[128];
 		}
 
-		public LowLevelList(uint capacity)
+		public ChunkedList(uint capacity)
 		{
 			array = new T[Math.NextPowerOf2(capacity)];
 		}
@@ -51,44 +52,43 @@ namespace MGE
 		/// Does not check if there is enough space to insert the item, only call if you are confident that there will be enough space
 		/// </summary>
 		/// <param name="item"></param>
-		public void AddUnsafe(T item)
-		{
-			array[_count++] = item;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void AddUnsafe(T item) => array[_position++] = item;
 
 		public void Add(T item)
 		{
-			EnsureCapacity(_count + 1);
-			array[_count++] = item;
+			EnsureSpaceFor(1);
+			array[_position++] = item;
 		}
 
 		public void Add(T[] items)
 		{
-			EnsureCapacity(_count + items.Length);
-			items.ForEach(item => this.array[_count++] = item);
+			EnsureSpaceFor(items.Length);
+			items.ForEach(item => AddUnsafe(item));
 		}
 
 		public void Add(IEnumerable<T> items, int count)
 		{
-			EnsureCapacity(_count + count);
-			items.ForEach(item => this.array[_count++] = item);
+			EnsureSpaceFor(count);
+			items.ForEach(item => AddUnsafe(item));
 		}
 
-		public void Clear() => _count = 0;
+		public void Clear() => _position = 0;
 
 		public void CopyTo(T[] array, int arrayIndex) => this.array.CopyTo(array, arrayIndex);
 
 		public IEnumerator<T> GetEnumerator() => new LowLevelListEnumerator(this);
 		IEnumerator IEnumerable.GetEnumerator() => new LowLevelListEnumerator(this);
 
+		public bool EnsureSpaceFor(int moreItemsCount) => EnsureCapacity(_position + moreItemsCount);
 		public bool EnsureCapacity(int capacity)
 		{
 			if (array.Length < capacity)
 			{
 				var tmp = new T[Math.NextPowerOf2((uint)(capacity + 1u))];
+				Debug.Log($"Chunked list expanded from {array.Length} to {tmp.Length}");
 				array.CopyTo(tmp, 0);
 				array = tmp;
-				// Debug.Log("Expanded to " + tmp.Length);
 				return true;
 			}
 			return false;

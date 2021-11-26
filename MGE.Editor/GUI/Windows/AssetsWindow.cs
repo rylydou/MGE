@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Gdk;
@@ -40,7 +39,7 @@ namespace MGE.Editor.GUI.Windows
 
 			public FilePreviewCache(string path)
 			{
-				if (!File.Exists(path)) throw new System.Exception("File does not exsist");
+				if (!Folder.rootFolder.GetFile(path).exists) throw new System.Exception("File does not exist");
 
 				file = new(path);
 
@@ -69,7 +68,7 @@ namespace MGE.Editor.GUI.Windows
 		List<DirectoryInfo> _folders = new();
 		List<FileInfo> _files = new();
 
-		Breadcrums breadcrums = new();
+		Breadcrumbs breadcrumbs = new();
 
 		// FileSystemWatcher fsw;
 
@@ -123,7 +122,7 @@ namespace MGE.Editor.GUI.Windows
 
 						// EditorGUI.StartWindow($"Rename {file.Name}...");
 						// EditorGUI.StartHorizontal();
-						// EditorGUI.TextFeild(newName).onSubmitted += text => newName = text;
+						// EditorGUI.TextField(newName).onSubmitted += text => newName = text;
 						// EditorGUI.IconButton("Check").onPressed += () => File.Move(file.DirectoryName!, $"{file.DirectoryName}/{newName}");
 						// EditorGUI.End();
 						// EditorGUI.EndWindow();
@@ -131,7 +130,7 @@ namespace MGE.Editor.GUI.Windows
 					EditorGUI.MenuButton("Delete").onPressed += () =>
 					{
 						if (isFolder) Directory.Delete(path, true);
-						else File.Delete(path);
+						else Folder.rootFolder.GetFile(path).Delete();
 						Reload();
 					};
 					EditorGUI.MenuPopup(args.Event);
@@ -224,7 +223,7 @@ namespace MGE.Editor.GUI.Windows
 
 			#endregion Icons
 
-			#region Breadcrums
+			#region Breadcrumbs
 
 			var parentFolders = new List<DirectoryInfo>();
 
@@ -242,16 +241,16 @@ namespace MGE.Editor.GUI.Windows
 
 			parentFolders.Reverse();
 
-			breadcrums.items.Clear();
+			breadcrumbs.items.Clear();
 
 			foreach (var folder in parentFolders)
 			{
-				breadcrums.items.Add((folder.Name, () => { _currentFolder = folder; Reload(); }));
+				breadcrumbs.items.Add((folder.Name, () => { _currentFolder = folder; Reload(); }));
 			}
 
-			breadcrums.Redraw();
+			breadcrumbs.Redraw();
 
-			#endregion Breadcrums
+			#endregion Breadcrumbs
 		}
 
 		protected override void Draw()
@@ -283,7 +282,7 @@ namespace MGE.Editor.GUI.Windows
 				{
 					EditorGUI.StartHorizontal();
 					{
-						EditorGUI.Add(breadcrums);
+						EditorGUI.Add(breadcrumbs);
 
 						EditorGUI.Text($"{_files.Count + _folders.Count} Items");
 

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace MGE.Graphics;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-internal struct Vertex
+public struct Vertex
 {
 	public const int SIZE_IN_ELEMENTS = 8;
 	public const int SIZE_IN_BYTES = SIZE_IN_ELEMENTS * sizeof(float);

@@ -9,6 +9,7 @@ public static class Math
 	public const float log2E = 1.442695f;
 
 	public const float pi = Mathf.PI;
+	public const float tau = Mathf.PI * 2;
 	public const float pi2 = Mathf.PI * 2;
 	public const float pi4 = Mathf.PI * 4;
 	public const float piOver2 = Mathf.PI / 2;

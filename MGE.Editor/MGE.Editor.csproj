@@ -3,7 +3,7 @@
 	<PropertyGroup>
 
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net5.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -18,6 +18,10 @@
 
 	<ItemGroup>
 		<EmbeddedResource Include="icon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MGE\MGE.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
