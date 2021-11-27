@@ -136,31 +136,43 @@ public static class GFX
 	public static void DrawPoint(Vector2 position, Color color)
 	{
 		StartVertexBatch(new(_pixelTexture, _spriteShader, 0) { primitiveType = PrimitiveType.Points });
+
 		SetVertex(position, Vector2.zero, color);
 		SetIndex(0);
 	}
 
-	public static void DrawFilledCircle(Vector2 position, float radius, Color color)
+	public static void DrawLine(Vector2 start, Vector2 end, Color color)
 	{
-		const int POINT_COUNT = 24;
+		StartVertexBatch(new(_pixelTexture, _spriteShader, 0) { primitiveType = PrimitiveType.Lines });
 
-		StartVertexBatch(new(_pixelTexture, _spriteShader, 0) { primitiveType = PrimitiveType.TriangleFan });
+		SetVertex(start, Vector2.zero, color);
+		SetIndex(0);
+		SetVertex(end, Vector2.zero, color);
+		SetIndex(1);
+	}
+
+	public static void DrawCircleFilled(Vector2 position, float radius, Color color)
+	{
+		const float CIRCLE_DETAIL_MUL = 3; // Use 2 for more detail
+		var vertexCount = (VertIndex)(radius / CIRCLE_DETAIL_MUL);
+
+		StartVertexBatch(new(_pixelTexture, _spriteShader, 0) { primitiveType = PrimitiveType.LineLoop });
 
 		SetVertex(position, Vector2.zero, color);
 
 		// Draw the vertices
-		for (int i = 0; i < POINT_COUNT; i++)
+		for (VertIndex i = 0; i < vertexCount; i++)
 		{
 			var vertexPosition = new Vector2(
-				position.x + (radius * Math.Cos(i * Math.pi2 / POINT_COUNT)),
-				position.y + (radius * Math.Sin(i * Math.pi2 / POINT_COUNT))
+				position.x + (radius * Math.Cos(i * Math.pi2 / vertexCount)),
+				position.y + (radius * Math.Sin(i * Math.pi2 / vertexCount))
 			);
 
 			SetVertex(vertexPosition, Vector2.zero, color);
 		}
 
 		// Connect the vertices
-		for (VertIndex i = 0; i < POINT_COUNT - 1; i++)
+		for (VertIndex i = 1; i < vertexCount; i++)
 		{
 			SetIndex(0);
 			SetIndex(i);
@@ -168,8 +180,27 @@ public static class GFX
 		}
 
 		SetIndex(0);
-		SetIndex(POINT_COUNT);
+		SetIndex(vertexCount);
 		SetIndex(1);
+	}
+
+	public static void DrawCircleOutline(Vector2 position, float radius, Color color)
+	{
+		const float CIRCLE_DETAIL_MUL = 3; // Use 2 for more detail
+		var vertexCount = (VertIndex)(radius / CIRCLE_DETAIL_MUL);
+
+		for (VertIndex i = 0; i < vertexCount; i++)
+		{
+			var vertexPosition = new Vector2(
+				position.x + (radius * Math.Cos(i * Math.pi2 / vertexCount)),
+				position.y + (radius * Math.Sin(i * Math.pi2 / vertexCount))
+			);
+
+			SetVertex(vertexPosition, Vector2.zero, color);
+			SetIndex(i);
+		}
+
+		SetIndex(0);
 	}
 
 	#endregion

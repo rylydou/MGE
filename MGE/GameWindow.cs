@@ -66,7 +66,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 	RenderTexture _gameRender;
 
-	public GameWindow() : base(new() { UpdateFrequency = 60, RenderFrequency = 60, }, new() { Title = "Mangrove Game Engine", })
+	public GameWindow() : base(new(), new() { Title = "Mangrove Game Engine", NumberOfSamples = 4, })
 	{
 		_current = this;
 
@@ -94,6 +94,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		GL.ClearColor(new Color("#394778"));
 		GL.Enable(EnableCap.Blend);
 		GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+		GL.Enable(EnableCap.Multisample);
 	}
 
 	protected override void OnUnload()
@@ -176,6 +177,9 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Font.current.DrawText($"{1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
 
 		Font.current.DrawText(@"!""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ Hello World! Lorem ipsum dolor sit amet", new(-Size.X / 2 + 4, 0));
+
+		GFX.DrawCircleFilled(Vector2.zero, 64, new(1, 0, 0, 0.5f));
+		GFX.DrawCircleFilled(new(256, 256), 64, new(0, 1, 0, 0.5f));
 
 		GFX.Flush();
 
