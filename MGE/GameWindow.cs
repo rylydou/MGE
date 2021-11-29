@@ -12,6 +12,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		public Vector2 position;
 		public Vector2 velocity;
+		public float rotation;
 
 		public Ball()
 		{
@@ -19,6 +20,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 			velocity.y = Random.Shared.Next(-180, 180);
 			position.x = Random.Shared.Next(-GameWindow.current.Size.X / 2, GameWindow.current.Size.X / 2);
 			position.y = Random.Shared.Next(-GameWindow.current.Size.Y / 2, GameWindow.current.Size.Y / 2);
+			rotation = Random.Shared.NextSingle() * Math.pi2;
 		}
 
 		public void Update(FrameEventArgs args)
@@ -45,11 +47,12 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 			// }
 
 			position += velocity * (float)args.Time;
+			rotation += (float)args.Time;
 		}
 
 		public void Draw(Texture texture)
 		{
-			GFX.DrawTexture(texture, position);
+			GFX.DrawTexture(texture, position, Vector2.one, rotation, Color.white);
 		}
 	}
 
@@ -66,7 +69,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 	RenderTexture _gameRender;
 
-	public GameWindow() : base(new(), new() { Title = "Mangrove Game Engine", NumberOfSamples = 4, })
+	public GameWindow() : base(new() { RenderFrequency = 60, UpdateFrequency = 60, }, new() { Title = "Mangrove Game Engine", NumberOfSamples = 4, })
 	{
 		_current = this;
 
@@ -94,7 +97,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		GL.ClearColor(new Color("#394778"));
 		GL.Enable(EnableCap.Blend);
 		GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-		GL.Enable(EnableCap.Multisample);
+		// GL.Enable(EnableCap.Multisample);
 	}
 
 	protected override void OnUnload()
@@ -176,10 +179,10 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		Font.current.DrawText($"{1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
 
-		Font.current.DrawText(@"!""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ Hello World! Lorem ipsum dolor sit amet", new(-Size.X / 2 + 4, 0));
-
 		GFX.DrawCircleFilled(new(-256, 128), 64, new(1, 0, 0, 0.5f));
 		GFX.DrawCircleFilled(new(256, 256), 64, new(0, 1, 0, 0.5f));
+
+		GFX.DrawLine(new(-256, 128), new(256, 256), 1, Color.yellow);
 
 		GFX.Flush();
 

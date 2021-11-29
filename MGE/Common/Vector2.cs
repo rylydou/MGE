@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace MGE;
@@ -78,8 +79,7 @@ public struct Vector2 : IEquatable<Vector2>
 	public static float Angle(Vector2 from, Vector2 to)
 	{
 		var denominator = Math.Sqrt(from.sqrMagnitude * to.sqrMagnitude);
-		if (denominator < Math.epsilonSqrt)
-			return 0;
+		if (denominator < Math.epsilonSqrt) return 0;
 
 		var dot = Math.ClampUnit(Dot(from, to) / denominator);
 		return Math.Acos(dot) * Math.rad2Deg;
@@ -90,6 +90,28 @@ public struct Vector2 : IEquatable<Vector2>
 		var angle = Angle(from, to);
 		var sign = Math.Sign(from.x * to.y - from.y * to.x);
 		return angle * sign;
+	}
+
+	public static Vector2 RotateAroundPoint(Vector2 center, Vector2 point, float rotationInRadians)
+	{
+		var cosTheta = Math.Cos(rotationInRadians);
+		var sinTheta = Math.Sin(rotationInRadians);
+
+		return new(
+			cosTheta * (point.x - center.x) - sinTheta * (point.y - center.y) + center.x,
+			sinTheta * (point.x - center.x) + cosTheta * (point.y - center.y) + center.y
+		);
+	}
+
+	public static Vector2 RotateAroundPoint(Vector2 point, float rotationInRadians)
+	{
+		var cosTheta = Math.Cos(rotationInRadians);
+		var sinTheta = Math.Sin(rotationInRadians);
+
+		return new(
+			cosTheta * point.x - sinTheta * point.y,
+			sinTheta * point.x + cosTheta * point.y
+		);
 	}
 
 	public static float DistanceSqr(Vector2 from, Vector2 to) => (from - to).sqrMagnitude;
@@ -109,9 +131,12 @@ public struct Vector2 : IEquatable<Vector2>
 		return vector;
 	}
 
-	public static Vector2 GetDirection(Vector2 start, Vector2 end) => (start - end).normalized;
+	public static Vector2 Direction(Vector2 start, Vector2 end) => (start - end).normalized;
+
+	public static Vector2 Middle(Vector2 a, Vector2 b) => (a + b) / 2;
 
 	public static Vector2 Min(Vector2 a, Vector2 b) => new Vector2(Math.Min(a.x, b.x), Math.Min(a.y, b.y));
+
 	public static Vector2 Max(Vector2 a, Vector2 b) => new Vector2(Math.Max(a.x, b.x), Math.Max(a.y, b.y));
 
 	////////////////////////////////////////////////////////////
@@ -218,6 +243,7 @@ public struct Vector2 : IEquatable<Vector2>
 	public static Vector2 operator *(Vector2 left, Vector2 right) => new Vector2(left.x * right.x, left.y * right.y);
 	public static Vector2 operator /(Vector2 left, Vector2 right) => new Vector2(left.x / right.x, left.y / right.y);
 	public static Vector2 operator -(Vector2 vector) => new Vector2(-vector.x, -vector.y);
+	public static Vector2 operator +(Vector2 vector) => vector;
 
 	public static Vector2 operator +(Vector2 left, float right) => new Vector2(left.x + right, left.y + right);
 	public static Vector2 operator -(Vector2 left, float right) => new Vector2(left.x - right, left.y - right);
