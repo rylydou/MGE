@@ -178,7 +178,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		Font.current.DrawText(@"!""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ Hello World! Lorem ipsum dolor sit amet", new(-Size.X / 2 + 4, 0));
 
-		GFX.DrawCircleFilled(Vector2.zero, 64, new(1, 0, 0, 0.5f));
+		GFX.DrawCircleFilled(new(-256, 128), 64, new(1, 0, 0, 0.5f));
 		GFX.DrawCircleFilled(new(256, 256), 64, new(0, 1, 0, 0.5f));
 
 		GFX.Flush();

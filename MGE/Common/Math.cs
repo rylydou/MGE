@@ -36,6 +36,8 @@ public static class Math
 
 	public static float Sqrt(float value) => Mathf.Sqrt(value);
 
+	public static float Sign(float value) => value == 0 ? 0 : value >= 0 ? 1 : -1;
+	public static int Sign(int value) => value == 0 ? 0 : value >= 0 ? 1 : -1;
 	public static float Abs(float value) => value < 0 ? -value : value;
 	public static int Abs(int value) => value < 0 ? -value : value;
 
@@ -54,8 +56,8 @@ public static class Math
 	public static float Trunc(float value) => Mathf.Truncate(value);
 	public static int TruncToInt(float value) => (int)Mathf.Truncate(value);
 
-	public static float Sign(float value) => value == 0 ? 0 : value >= 0 ? 1 : -1;
-	public static int Sign(int value) => value == 0 ? 0 : value >= 0 ? 1 : -1;
+	public static float CeilToEven(float value) => Mathf.Round(value / 2, System.MidpointRounding.AwayFromZero) * 2;
+	public static int CeilToEvenInt(float value) => (int)CeilToEven(value);
 
 	public static uint NextPowerOf2(uint value)
 	{

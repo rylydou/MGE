@@ -110,6 +110,8 @@ public static class GFX
 
 	public static void Flush()
 	{
+		// Debug.LogVariable(_batches.Count);
+
 		foreach (var batch in _batches)
 		{
 			if (batch.vertexCount == 0) continue;
@@ -127,6 +129,9 @@ public static class GFX
 
 			_vertexDataArray.DrawElements(batch.key.primitiveType, batch.elements.Count, ELEMENTS_TYPE);
 
+			// _pixelTexture.Use();
+			// _vertexDataArray.DrawElements(PrimitiveType.Lines, batch.elements.Count, ELEMENTS_TYPE);
+
 			batch.Clear();
 		}
 	}
@@ -138,25 +143,37 @@ public static class GFX
 		StartVertexBatch(new(_pixelTexture, _spriteShader, 0) { primitiveType = PrimitiveType.Points });
 
 		SetVertex(position, Vector2.zero, color);
+
 		SetIndex(0);
 	}
 
+	// FIXME Don't be lazy and draw triangles instead of lines
+	//       because the renderer dies when drawing lines
 	public static void DrawLine(Vector2 start, Vector2 end, Color color)
 	{
 		StartVertexBatch(new(_pixelTexture, _spriteShader, 0) { primitiveType = PrimitiveType.Lines });
 
 		SetVertex(start, Vector2.zero, color);
-		SetIndex(0);
 		SetVertex(end, Vector2.zero, color);
+
+		SetIndex(0);
 		SetIndex(1);
 	}
 
-	public static void DrawCircleFilled(Vector2 position, float radius, Color color)
-	{
-		const float CIRCLE_DETAIL_MUL = 3; // Use 2 for more detail
-		var vertexCount = (VertIndex)(radius / CIRCLE_DETAIL_MUL);
+	public static void DrawSquare(Rect rect, Color color) => DrawTexture(_pixelTexture, rect, color);
 
-		StartVertexBatch(new(_pixelTexture, _spriteShader, 0) { primitiveType = PrimitiveType.LineLoop });
+	/// <summary>
+	///
+	/// </summary>
+	/// <param name="position"></param>
+	/// <param name="radius"></param>
+	/// <param name="color"></param>
+	/// <param name="resolutionMultiplier">Higher values = lower resolution</param>
+	public static void DrawCircleFilled(Vector2 position, float radius, Color color, float resolutionMultiplier = 2f)
+	{
+		var vertexCount = (VertIndex)(Math.CeilToEven(radius / resolutionMultiplier));
+
+		StartVertexBatch(new(_pixelTexture, _spriteShader, 0));
 
 		SetVertex(position, Vector2.zero, color);
 
@@ -164,8 +181,8 @@ public static class GFX
 		for (VertIndex i = 0; i < vertexCount; i++)
 		{
 			var vertexPosition = new Vector2(
-				position.x + (radius * Math.Cos(i * Math.pi2 / vertexCount)),
-				position.y + (radius * Math.Sin(i * Math.pi2 / vertexCount))
+				position.x + (radius * Math.Sin(i * Math.pi2 / vertexCount)),
+				position.y + (radius * Math.Cos(i * Math.pi2 / vertexCount))
 			);
 
 			SetVertex(vertexPosition, Vector2.zero, color);
@@ -174,68 +191,65 @@ public static class GFX
 		// Connect the vertices
 		for (VertIndex i = 1; i < vertexCount; i++)
 		{
-			SetIndex(0);
-			SetIndex(i);
-			SetIndex((ushort)(i + 1));
+			SetTriangleIndices(0, i, (VertIndex)(i + 1));
 		}
 
-		SetIndex(0);
-		SetIndex(vertexCount);
-		SetIndex(1);
+		SetTriangleIndices(0, vertexCount, 1);
 	}
 
-	public static void DrawCircleOutline(Vector2 position, float radius, Color color)
-	{
-		const float CIRCLE_DETAIL_MUL = 3; // Use 2 for more detail
-		var vertexCount = (VertIndex)(radius / CIRCLE_DETAIL_MUL);
+	// public static void DrawCircleOutline(Vector2 position, float radius, Color color)
+	// {
+	// 	const float CIRCLE_DETAIL_MUL = 3; // Use 2 for more detail
+	// 	var vertexCount = (VertIndex)(radius / CIRCLE_DETAIL_MUL);
 
-		for (VertIndex i = 0; i < vertexCount; i++)
-		{
-			var vertexPosition = new Vector2(
-				position.x + (radius * Math.Cos(i * Math.pi2 / vertexCount)),
-				position.y + (radius * Math.Sin(i * Math.pi2 / vertexCount))
-			);
+	// 	for (VertIndex i = 0; i < vertexCount; i++)
+	// 	{
+	// 		var vertexPosition = new Vector2(
+	// 			position.x + (radius * Math.Cos(i * Math.pi2 / vertexCount)),
+	// 			position.y + (radius * Math.Sin(i * Math.pi2 / vertexCount))
+	// 		);
 
-			SetVertex(vertexPosition, Vector2.zero, color);
-			SetIndex(i);
-		}
-
-		SetIndex(0);
-	}
+	// 		SetVertex(vertexPosition, Vector2.zero, color);
+	// 		SetIndex(i);
+	// 	}
+	// }
 
 	#endregion
 
 	#region Texture Drawing
 
 	public static void DrawTexture(Texture texture, Vector2 position) => DrawTexture(texture, position, Color.white);
-	public static void DrawTexture(Texture texture, Vector2 position, Color color) => SetSprite(texture, _spriteShader, 0, new(position - ((Vector2)texture.size / 2), texture.size), color);
+	public static void DrawTexture(Texture texture, Vector2 position, Color color) => DrawTexture(texture, position, Vector2.one, color);
+	public static void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Color color) => SetTexture(texture, _spriteShader, 0, position, scale, color);
 
-	public static void DrawTexture(Texture texture, Rect destination) => SetSprite(texture, _spriteShader, 0, destination, Color.white);
-	public static void DrawTexture(Texture texture, Rect destination, Color color) => SetSprite(texture, _spriteShader, 0, destination, color);
+	public static void DrawTexture(Texture texture, Rect destination) => SetTexture(texture, _spriteShader, 0, destination, Color.white);
+	public static void DrawTexture(Texture texture, Rect destination, Color color) => SetTexture(texture, _spriteShader, 0, destination, color);
 
-	public static void DrawTextureRegion(Texture texture, Rect destination, RectInt source) => SetSpriteRegion(texture, _spriteShader, 0, destination, source, Color.white);
-	public static void DrawTextureRegion(Texture texture, Rect destination, RectInt source, Color color) => SetSpriteRegion(texture, _spriteShader, 0, destination, source, color);
+	public static void DrawTextureRegion(Texture texture, Rect destination, RectInt source) => SetTextureRegion(texture, _spriteShader, 0, destination, source, Color.white);
+	public static void DrawTextureRegion(Texture texture, Rect destination, RectInt source, Color color) => SetTextureRegion(texture, _spriteShader, 0, destination, source, color);
 
 	#endregion
 
 	#region Low Level Drawing
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	static void SetSpriteRegion(Texture texture, Shader shader, sbyte priority, Rect destination, RectInt source, Color color)
+	static void SetTexture(Texture texture, Shader shader, sbyte priority, Vector2 position, Vector2 scale, Color color)
 	{
+		var halfRealSize = (Vector2)texture.size * scale / 2;
+
 		StartVertexBatch(new(texture, shader, priority));
 
-		SetVertex(destination.topRight, texture.GetTextureCoord(source.bottomRight), color); // Top right
-		SetVertex(destination.bottomRight, texture.GetTextureCoord(source.topRight), color); // Bottom right
-		SetVertex(destination.bottomLeft, texture.GetTextureCoord(source.topLeft), color);   // Bottom left
-		SetVertex(destination.topLeft, texture.GetTextureCoord(source.bottomLeft), color);   // Top left
+		SetVertex(position + new Vector2(halfRealSize.x, -halfRealSize.y), new(1, 1), color);    // Top right
+		SetVertex(position + halfRealSize, new(1, 0), color); // Bottom right
+		SetVertex(position + new Vector2(-halfRealSize.x, halfRealSize.y), new(0, 0), color);  // Bottom left
+		SetVertex(position - halfRealSize, new(0, 1), color);     // Top left
 
 		SetTriangleIndices(0, 1, 3); // Bottom right
 		SetTriangleIndices(1, 2, 3); // Top left
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	static void SetSprite(Texture texture, Shader shader, sbyte priority, Rect destination, Color color)
+	static void SetTexture(Texture texture, Shader shader, sbyte priority, Rect destination, Color color)
 	{
 		StartVertexBatch(new(texture, shader, priority));
 
@@ -243,6 +257,20 @@ public static class GFX
 		SetVertex(destination.bottomRight, new(1, 0), color); // Bottom right
 		SetVertex(destination.bottomLeft, new(0, 0), color);  // Bottom left
 		SetVertex(destination.topLeft, new(0, 1), color);     // Top left
+
+		SetTriangleIndices(0, 1, 3); // Bottom right
+		SetTriangleIndices(1, 2, 3); // Top left
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	static void SetTextureRegion(Texture texture, Shader shader, sbyte priority, Rect destination, RectInt source, Color color)
+	{
+		StartVertexBatch(new(texture, shader, priority));
+
+		SetVertex(destination.topRight, texture.GetTextureCoord(source.bottomRight), color); // Top right
+		SetVertex(destination.bottomRight, texture.GetTextureCoord(source.topRight), color); // Bottom right
+		SetVertex(destination.bottomLeft, texture.GetTextureCoord(source.topLeft), color);   // Bottom left
+		SetVertex(destination.topLeft, texture.GetTextureCoord(source.bottomLeft), color);   // Top left
 
 		SetTriangleIndices(0, 1, 3); // Bottom right
 		SetTriangleIndices(1, 2, 3); // Top left

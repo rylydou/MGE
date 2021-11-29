@@ -135,11 +135,11 @@ namespace MGE.Editor
 			{
 				if (OperatingSystem.IsLinux())
 				{
-					System.Diagnostics.Process.Start("xdg-open", file);
+					System.Diagnostics.Process.Start("xdg-open", $"\"{file}\"");
 				}
 				else if (OperatingSystem.IsWindows())
 				{
-					System.Diagnostics.Process.Start("explorer", file);
+					System.Diagnostics.Process.Start("explorer", $"\"{file}\"");
 				}
 			}
 		}
@@ -148,7 +148,7 @@ namespace MGE.Editor
 		{
 			if (OperatingSystem.IsLinux())
 			{
-				System.Diagnostics.Process.Start("xdg-open", file);
+				System.Diagnostics.Process.Start("xdg-open", $"\"{file}\"");
 			}
 			else if (OperatingSystem.IsWindows())
 			{
