@@ -9,24 +9,24 @@ public class Node : Object, IEnumerable<Node>
 {
 	class ChildEnumerator : IEnumerator<Node>
 	{
-		public Node Current => _rawEnum.Current;
-		object IEnumerator.Current => _rawEnum.Current;
+		public Node Current => _intEnum.Current;
+		object IEnumerator.Current => _intEnum.Current;
 
 		Node _node;
-		IEnumerator<Node> _rawEnum;
+		IEnumerator<Node> _intEnum;
 
 		public ChildEnumerator(Node node)
 		{
 			_node = node;
-			_rawEnum = node.GetEnumerator();
+			_intEnum = node._children.GetEnumerator();
 			node._activeEnums++;
 		}
 
 		public bool MoveNext()
 		{
-			while (_rawEnum.MoveNext())
+			while (_intEnum.MoveNext())
 			{
-				var current = _rawEnum.Current;
+				var current = _intEnum.Current;
 
 				// Ignore the node if it is destroyed or not attached to the node anymore
 				if (current.destroyed) continue;
@@ -39,12 +39,12 @@ public class Node : Object, IEnumerable<Node>
 
 		public void Reset()
 		{
-			_rawEnum.Reset();
+			_intEnum.Reset();
 		}
 
 		public void Dispose()
 		{
-			_rawEnum.Dispose();
+			_intEnum.Dispose();
 			_node._activeEnums--;
 			_node.TryFlushActions();
 		}
@@ -95,17 +95,16 @@ public class Node : Object, IEnumerable<Node>
 
 	public string name;
 
-	public bool enabled;
-	public bool visible;
+	public bool enabled = true;
+	public bool visible = true;
 
 	bool destroyed;
 
-	public bool isOrphan { get; private set; }
 	public Node? parent { get; private set; }
 
 	public int childCount => _children.Count;
 
-	// public IEnumerator<Node> children => new ChildEnumerator(this);
+	public IEnumerable<Node> children => new NodeCollection(new ChildEnumerator(this));
 	public IEnumerable<Node> parents => new NodeCollection(new ParentEnumerator(this));
 
 	public Node this[int index] { get => _children.ElementAt(index); set => AttachNode(value, index); }
@@ -131,7 +130,7 @@ public class Node : Object, IEnumerable<Node>
 	{
 		if (_activeEnums > 0) return;
 
-		Debug.Log("Flushing actions");
+		// Debug.Log("Flushing actions");
 
 		while (_queuedActions.TryDequeue(out var action))
 		{
@@ -318,14 +317,14 @@ public class Node : Object, IEnumerable<Node>
 
 	#region Internal Util
 
-	internal void Attach(Node parent)
+	void Attach(Node parent)
 	{
 		this.parent = parent;
 
 		WhenAttached();
 	}
 
-	internal void Detach()
+	void Detach()
 	{
 		WhenDetached();
 

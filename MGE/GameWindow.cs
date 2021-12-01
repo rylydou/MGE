@@ -12,7 +12,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 	double updateTime;
 	double renderTime;
-	int updatesSinceLastStats;
 
 	public GameWindow() : base(new() { RenderFrequency = 60, UpdateFrequency = 60, }, new() { Title = "Mangrove Game Engine", NumberOfSamples = 4, })
 	{
@@ -22,13 +21,14 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		CenterWindow(new(320 * 4, 180 * 4));
 		Focus();
+
+		Scene.root.AttachNode(new SpriteNode(Texture.LoadTexture("Tree.png")));
 	}
 
 	protected override void OnLoad()
 	{
 		base.OnLoad();
 
-		GL.ClearColor(new Color("#394778"));
 		GL.Enable(EnableCap.Blend);
 		GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 		// GL.Enable(EnableCap.Multisample);
@@ -39,15 +39,20 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnUnload();
 
+		GL.BindVertexArray(0);
 		GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 		GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-		GL.BindVertexArray(0);
+
+		GL.BindTexture(TextureTarget.Texture2D, 0);
 		GL.UseProgram(0);
 	}
 
 	protected override void OnResize(ResizeEventArgs args)
 	{
 		base.OnResize(args);
+
+		GL.Viewport(0, 0, args.Size.X, args.Size.Y);
+		GFX.transform = Matrix.CreateOrthographic(args.Size.X, args.Size.Y, -1, 1);
 	}
 
 	protected override void OnUpdateFrame(FrameEventArgs args)
@@ -61,16 +66,20 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 	protected override void OnRenderFrame(FrameEventArgs args)
 	{
+		base.OnRenderFrame(args);
+
 		renderTime = args.Time;
+
+		GFX.Clear(new("#394778"));
 
 		Scene.Draw();
 
-		Font.current.DrawText($"{1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
+		GFX.Flush();
+
+		Font.current.DrawText($"Update: {1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
 
 		GFX.Flush();
 
 		SwapBuffers();
-
-		base.OnRenderFrame(args);
 	}
 }

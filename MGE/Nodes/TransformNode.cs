@@ -2,32 +2,27 @@ namespace MGE
 {
 	public class TransformNode : Node
 	{
-		public bool _needsAbsoluteUpdate = true;
-		public bool _needsLocalUpdate = true;
+		bool _needsWorldUpdate = true;
+		bool _needsLocalUpdate = true;
 
-		Vector2 _localPosition = Vector2.zero;
-		[Prop]
-		public Vector2 position
+		[Prop] Vector2 _localPosition = Vector2.zero;
+		public Vector2 localPosition
 		{
 			get => _localPosition;
 			set
 			{
 				if (_localPosition != value)
 				{
-					// onLocalPositionChanged.Invoke();
-					// SafelyCallFunction(OnLocalPositionChanged);
 					_localPosition = value;
 					SetNeedsLocalUpdate();
 				}
 			}
 		}
+		Vector2 _worldPosition;
+		public Vector2 worldPosition => UpdateWorldAndGet(ref _worldPosition);
 
-		Vector2 _absolutePosition;
-		public Vector2 absolutePosition => UpdateAbsoluteAndGet(ref _absolutePosition);
-
-		float _localRotation = 0;
-		[Prop]
-		public float rotation
+		[Prop] float _localRotation = 0;
+		public float localRotation
 		{
 			get => _localRotation;
 			set
@@ -39,13 +34,11 @@ namespace MGE
 				}
 			}
 		}
+		float _worldRotation;
+		public float worldRotation => UpdateWorldAndGet(ref _worldRotation);
 
-		float _absoluteRotation;
-		public float absoluteRotation => UpdateAbsoluteAndGet(ref _absoluteRotation);
-
-		Vector2 _localScale = Vector2.one;
-		[Prop]
-		public Vector2 scale
+		[Prop] Vector2 _localScale = Vector2.one;
+		public Vector2 localScale
 		{
 			get => _localScale;
 			set
@@ -57,37 +50,33 @@ namespace MGE
 				}
 			}
 		}
+		Vector2 _worldScale;
+		public Vector2 worldScale => UpdateWorldAndGet(ref _worldScale);
 
-		Vector2 _absoluteScale;
-		public Vector2 absoluteScale => UpdateAbsoluteAndGet(ref _absoluteScale);
+		Matrix _localTransform;
+		public Matrix localTransform => UpdateLocalAndGet(ref _worldTransform);
 
-		Matrix _local;
-		public Matrix local => UpdateLocalAndGet(ref _absolute);
+		Matrix _worldTransform;
+		public Matrix worldTransform => UpdateWorldAndGet(ref _worldTransform);
 
-		Matrix _absolute;
-		public Matrix absolute => UpdateAbsoluteAndGet(ref _absolute);
-
-		Matrix _invertAbsolute;
-		public Matrix invertAbsolute => UpdateAbsoluteAndGet(ref _invertAbsolute);
-
-		// public Event onLocalPositionChanged = new Event();
-		// public Event onAbsPositionChanged = new Event();
+		Matrix _invertWorldTransform;
+		public Matrix invertWorld => UpdateWorldAndGet(ref _invertWorldTransform);
 
 		#region Utils
 
-		public void ToLocalPosition(ref Vector2 absolute, out Vector2 local) => Vector2.Transform(ref absolute, ref _invertAbsolute, out local);
+		public void ToLocalPosition(ref Vector2 world, out Vector2 local) => Vector2.Transform(ref world, ref _invertWorldTransform, out local);
 
-		public void ToAbsolutePosition(ref Vector2 local, out Vector2 absolute) => Vector2.Transform(ref local, ref _absolute, out absolute);
+		public void ToWorldPosition(ref Vector2 local, out Vector2 world) => Vector2.Transform(ref local, ref _worldTransform, out world);
 
-		public Vector2 ToLocalPosition(Vector2 absolute)
+		public Vector2 ToLocalPosition(Vector2 world)
 		{
-			ToLocalPosition(ref absolute, out var result);
+			ToLocalPosition(ref world, out var result);
 			return result;
 		}
 
-		public Vector2 ToAbsolutePosition(Vector2 local)
+		public Vector2 ToWorldPosition(Vector2 local)
 		{
-			ToAbsolutePosition(ref local, out var result);
+			ToWorldPosition(ref local, out var result);
 			return result;
 		}
 
@@ -98,57 +87,51 @@ namespace MGE
 		void SetNeedsLocalUpdate()
 		{
 			_needsLocalUpdate = true;
-			SetNeedsAbsoluteUpdate();
+			SetNeedsWorldUpdate();
 		}
 
-		void SetNeedsAbsoluteUpdate()
+		void SetNeedsWorldUpdate()
 		{
-			_needsAbsoluteUpdate = true;
+			_needsWorldUpdate = true;
 
 			foreach (var child in this.Where<Node, TransformNode>())
 			{
-				child.SetNeedsAbsoluteUpdate();
+				child.SetNeedsWorldUpdate();
 			}
 		}
 
 		void UpdateLocal()
 		{
-			// Log("Updating Local...");
-
-			var result = Matrix.CreateScale(scale.x, scale.y, 1);
-			result *= Matrix.CreateRotationZ(rotation);
-			result *= Matrix.CreateTranslation(position.x, position.y, 0);
-			_local = result;
+			var result = Matrix.CreateScale(localScale.x, localScale.y, 1);
+			result *= Matrix.CreateRotationZ(localRotation);
+			result *= Matrix.CreateTranslation(localPosition.x, localPosition.y, 0);
+			_localTransform = result;
 
 			_needsLocalUpdate = false;
 		}
 
-		void UpdateAbsolute()
+		void UpdateWorld()
 		{
 			if (parents.First<Node, TransformNode>(out var t))
 			{
-				// Log("Updating Absolute based on Parent...");
-
-				var parentAbsolute = t.absolute;
-				Matrix.Multiply(ref _local, ref parentAbsolute, out _absolute);
-				_absoluteScale = t.absoluteScale * scale;
-				_absoluteRotation = t.absoluteRotation + rotation;
-				_absolutePosition = Vector2.zero;
-				ToAbsolutePosition(ref _absolutePosition, out _absolutePosition);
+				var parentWorld = t.worldTransform;
+				Matrix.Multiply(ref _localTransform, ref parentWorld, out _worldTransform);
+				_worldScale = t.worldScale * localScale;
+				_worldRotation = t.worldRotation + localRotation;
+				_worldPosition = Vector2.zero;
+				ToWorldPosition(ref _worldPosition, out _worldPosition);
 			}
 			else
 			{
-				// Log("Updating Absolute based on Local...");
-
-				_absolute = _local;
-				_absoluteScale = _localScale;
-				_absoluteRotation = _localRotation;
-				_absolutePosition = _localPosition;
+				_worldTransform = _localTransform;
+				_worldScale = _localScale;
+				_worldRotation = _localRotation;
+				_worldPosition = _localPosition;
 			}
 
-			Matrix.Invert(ref _absolute, out _invertAbsolute);
+			Matrix.Invert(ref _worldTransform, out _invertWorldTransform);
 
-			_needsAbsoluteUpdate = false;
+			_needsWorldUpdate = false;
 		}
 
 		T UpdateLocalAndGet<T>(ref T field)
@@ -157,15 +140,13 @@ namespace MGE
 			return field;
 		}
 
-		T UpdateAbsoluteAndGet<T>(ref T field)
+		T UpdateWorldAndGet<T>(ref T field)
 		{
 			if (_needsLocalUpdate) UpdateLocal();
-			if (_needsAbsoluteUpdate) UpdateAbsolute();
+			if (_needsWorldUpdate) UpdateWorld();
 			return field;
 		}
 
 		#endregion
-
-		// protected virtual void OnLocalPositionChanged() { }
 	}
 }

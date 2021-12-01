@@ -57,7 +57,6 @@ public static class GFX
 	static Buffer<float> _vertexBuffer;
 	static Buffer<VertIndex> _elementBuffer;
 
-	static Texture _pixelTexture;
 	static Shader _spriteShader;
 
 	public static Texture? texture;
@@ -82,8 +81,6 @@ public static class GFX
 		_elementBuffer.Init(BufferTarget.ElementArrayBuffer, (int)Math.NextPowerOf2(elementCapacity), BufferUsageHint.StreamDraw);
 
 		_spriteShader = new("Sprite.vert", "Sprite.frag");
-
-		_pixelTexture = new Texture(new(1, 1), new[] { Color.white });
 	}
 
 	public static void Clear(Color color)
@@ -130,19 +127,19 @@ public static class GFX
 		var center = Vector2.Midpoint(start, end);
 		var length = Vector2.Distance(start, end);
 
-		SetTextureScaledAndRotated(_pixelTexture, _spriteShader, center, new Vector2(length, width), angle, color);
+		SetTextureScaledAndRotated(Texture.pixelTexture, _spriteShader, center, new Vector2(length, width), angle, color);
 	}
 
-	public static void DrawSquare(Vector2 position, Vector2 scale, Color color) => DrawTexture(_pixelTexture, position, scale, color);
-	public static void DrawSquare(Vector2 position, Vector2 scale, float rotation, Color color) => DrawTexture(_pixelTexture, position, scale, rotation, color);
-	public static void DrawSquare(Rect rect, Color color) => DrawTexture(_pixelTexture, rect, color);
+	public static void DrawSquare(Vector2 position, Vector2 scale, Color color) => DrawTexture(Texture.pixelTexture, position, scale, color);
+	public static void DrawSquare(Vector2 position, Vector2 scale, float rotation, Color color) => DrawTexture(Texture.pixelTexture, position, scale, rotation, color);
+	public static void DrawSquare(Rect rect, Color color) => DrawTexture(Texture.pixelTexture, rect, color);
 
 	/// <param name="resolutionMultiplier">Higher values = lower resolution</param>
 	public static void DrawCircleFilled(Vector2 position, float radius, Color color, float resolutionMultiplier = 2f)
 	{
 		var vertexCount = (VertIndex)(Math.CeilToEven(radius / resolutionMultiplier));
 
-		texture = _pixelTexture;
+		texture = Texture.pixelTexture;
 		shader = _spriteShader;
 		StartVertexBatch();
 

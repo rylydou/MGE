@@ -8,6 +8,13 @@ namespace MGE.Graphics;
 
 public class Texture : GraphicsResource, IUseable
 {
+	public static readonly Texture pixelTexture;
+
+	static Texture()
+	{
+		pixelTexture = new Texture(new(1, 1), new[] { Color.white });
+	}
+
 	public readonly Vector2Int size;
 
 	public Texture(int handle) : base(handle)

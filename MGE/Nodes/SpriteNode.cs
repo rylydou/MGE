@@ -4,18 +4,25 @@ namespace MGE
 {
 	public class SpriteNode : TransformNode
 	{
-		public Texture? texture;
-		public Color color;
+		public Texture texture = Texture.pixelTexture;
+		public Color color = Color.white;
+
+		public SpriteNode() { }
+
+		public SpriteNode(Texture texture)
+		{
+			this.texture = texture;
+		}
 
 		protected override void Draw()
 		{
 			if (texture is not null)
 			{
-				GFX.DrawTexture(texture, position, scale, rotation, color);
+				GFX.DrawTexture(texture, worldPosition, worldScale, worldRotation, color);
 			}
 			else
 			{
-				GFX.DrawSquare(position, scale, rotation, color);
+				GFX.DrawSquare(worldPosition, worldScale, worldRotation, color);
 			}
 
 			base.Draw();

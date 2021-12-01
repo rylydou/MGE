@@ -52,7 +52,7 @@ static class Extensions
 	public static bool First<T, TType>(this IEnumerable<T> source, [MaybeNullWhen(false)] out TType result) where TType : T
 	{
 		var typeofTType = typeof(TType);
-		var item = source.First(item => item is null ? false : typeofTType.Equals(item));
+		var item = source.FirstOrDefault(item => item is null ? false : typeofTType.Equals(item));
 
 		result = default(TType);
 		if (item is null) return false;
