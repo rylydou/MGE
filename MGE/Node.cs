@@ -7,7 +7,7 @@ namespace MGE;
 
 public class Node : Object, IEnumerable<Node>
 {
-	class ChildrenEnumerator : IEnumerator<Node>
+	class ChildEnumerator : IEnumerator<Node>
 	{
 		public Node Current => _rawEnum.Current;
 		object IEnumerator.Current => _rawEnum.Current;
@@ -15,7 +15,7 @@ public class Node : Object, IEnumerable<Node>
 		Node _node;
 		IEnumerator<Node> _rawEnum;
 
-		public ChildrenEnumerator(Node node)
+		public ChildEnumerator(Node node)
 		{
 			_node = node;
 			_rawEnum = node.GetEnumerator();
@@ -50,6 +50,49 @@ public class Node : Object, IEnumerable<Node>
 		}
 	}
 
+	class ParentEnumerator : IEnumerator<Node>
+	{
+		readonly Node _node;
+
+		Node _currentParentNode;
+
+		public Node Current => _currentParentNode;
+		object IEnumerator.Current => _currentParentNode;
+
+		public ParentEnumerator(Node node)
+		{
+			_node = node;
+			_currentParentNode = node;
+		}
+
+		public bool MoveNext()
+		{
+			if (_currentParentNode.parent is not null)
+			{
+				_currentParentNode = _currentParentNode.parent;
+				return true;
+			}
+			return false;
+		}
+
+		public void Reset() => _currentParentNode = _node;
+
+		public void Dispose() { }
+	}
+
+	class NodeCollection : IEnumerable<Node>
+	{
+		readonly IEnumerator<Node> enumerator;
+
+		public NodeCollection(IEnumerator<Node> enumerator)
+		{
+			this.enumerator = enumerator;
+		}
+
+		public IEnumerator<Node> GetEnumerator() => enumerator;
+		IEnumerator IEnumerable.GetEnumerator() => enumerator;
+	}
+
 	public string name;
 
 	public bool enabled;
@@ -57,16 +100,19 @@ public class Node : Object, IEnumerable<Node>
 
 	bool destroyed;
 
-	public Node? parent { get; internal set; }
+	public bool isOrphan { get; private set; }
+	public Node? parent { get; private set; }
 
 	public int childCount => _children.Count;
+
+	// public IEnumerator<Node> children => new ChildEnumerator(this);
+	public IEnumerable<Node> parents => new NodeCollection(new ParentEnumerator(this));
 
 	public Node this[int index] { get => _children.ElementAt(index); set => AttachNode(value, index); }
 
 	List<Node> _children = new();
 	int _activeEnums;
 
-	// For actions that involes directly changing the raw list of children, this cannot be done during iteration so they will be queued for when iteration is done
 	#region Actions
 
 	Queue<Action> _queuedActions = new();
@@ -120,38 +166,37 @@ public class Node : Object, IEnumerable<Node>
 		TryDoAction(() => _children.Insert(index, node));
 	}
 
-	public bool DetachNode(Node node)
+	public void DetachNode(Node node)
 	{
 		if (node.parent != this) throw new Exception("Cannot detach node - This node does not own the node");
 
 		node.Detach();
-
 		TryDoAction(() => _children.Remove(node));
-
-		return true;
 	}
 
-	public void DetachNode(int index)
+	public Node DetachNode(int index)
 	{
 		if (index < 0 || index >= childCount) throw new IndexOutOfRangeException();
 
 		var node = this.ElementAt(index);
-
 		DetachNode(node);
+
+		return node;
 	}
 
-	public void DetachAllNodes()
+	public Node[] DetachAllNodes()
 	{
 		this.ForEach(child => child.Detach());
 		TryDoAction(() => _children.Clear());
+		return _children.ToArray();
 	}
 
-	public int FindIndexOfNode(Node node) => this.FindIndexOfNode(node);
+	public int FindIndexOfNode(Node node) => this.IndexOf(node);
 
 	public bool ContainsNode(Node node) => this.Contains<Node>(node);
 
-	public IEnumerator<Node> GetEnumerator() => new ChildrenEnumerator(this);
-	IEnumerator IEnumerable.GetEnumerator() => new ChildrenEnumerator(this);
+	public IEnumerator<Node> GetEnumerator() => new ChildEnumerator(this);
+	IEnumerator IEnumerable.GetEnumerator() => new ChildEnumerator(this);
 
 	#endregion Node Management
 
@@ -199,12 +244,12 @@ public class Node : Object, IEnumerable<Node>
 	/// </remarks>
 	internal void DoUpdate(float deltaTime)
 	{
+		if (!enabled) return;
+
 		Update(deltaTime);
 	}
 	protected virtual void Update(float deltaTime)
 	{
-		if (!enabled) return;
-
 		this.ForEach(child => child.DoUpdate(deltaTime));
 	}
 
@@ -229,10 +274,6 @@ public class Node : Object, IEnumerable<Node>
 
 	#region Events
 
-	internal void DoAttach()
-	{
-		Attached();
-	}
 	/// <summary>
 	/// Called after the node is attached to a parent.
 	/// </summary>
@@ -240,24 +281,20 @@ public class Node : Object, IEnumerable<Node>
 	/// Handle referencing parents here.
 	/// <see cref="parent"/> is not null.
 	/// </remarks>
-	protected virtual void Attached()
+	protected virtual void WhenAttached()
 	{
-		this.ForEach(child => child.DoAttach());
+		this.ForEach(child => child.WhenAttached());
 	}
 
-	internal void DoDetach()
-	{
-		Detached();
-	}
 	/// <summary>
 	/// Called before the node is detached from its parent and before the node is destroyed.
 	/// </summary>
 	/// <remarks>
 	/// <see cref="parent"/> is not null.
 	/// </remarks>
-	protected virtual void Detached()
+	protected virtual void WhenDetached()
 	{
-		this.ForEach(child => child.DoDetach());
+		this.ForEach(child => child.WhenDetached());
 	}
 
 	public void Destroy()
@@ -267,7 +304,7 @@ public class Node : Object, IEnumerable<Node>
 		destroyed = true;
 	}
 	/// <summary>
-	/// Called when the object is being destroyed after <see cref="Detached"/> is called.
+	/// Called when the object is being destroyed after <see cref="WhenDetached"/> is called.
 	/// </summary>
 	/// <remarks>
 	/// Handle things like deleting <see cref="IDisposable"/> resources here like <see cref="Graphics.Texture"/>.
@@ -285,12 +322,12 @@ public class Node : Object, IEnumerable<Node>
 	{
 		this.parent = parent;
 
-		DoAttach();
+		WhenAttached();
 	}
 
 	internal void Detach()
 	{
-		DoDetach();
+		WhenDetached();
 
 		parent = null;
 	}

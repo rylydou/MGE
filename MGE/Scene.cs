@@ -16,7 +16,7 @@ namespace MGE
 
 		public static void Draw()
 		{
-			// root.DoDraw();
+			root.DoDraw();
 		}
 	}
 }

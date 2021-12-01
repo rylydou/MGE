@@ -1,18 +1,17 @@
-namespace MGE
+namespace MGE;
+
+public class ArrayBuilder<T>
 {
-	public class ArrayBuilder<T>
+	public T[] array;
+	public int position;
+
+	public ArrayBuilder(int length)
 	{
-		public T[] array;
-		public int position;
+		array = new T[length];
+	}
 
-		public ArrayBuilder(int length)
-		{
-			array = new T[length];
-		}
-
-		public void Add(T item)
-		{
-			array[position++] = item;
-		}
+	public void Add(T item)
+	{
+		array[position++] = item;
 	}
 }

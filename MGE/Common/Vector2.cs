@@ -59,7 +59,7 @@ public struct Vector2 : IEquatable<Vector2>
 	public static Vector2 MoveTowards(Vector2 from, Vector2 to, float maxDistance)
 	{
 		var direction = to - from;
-		var sqDist = direction.sqrMagnitude;
+		var sqDist = direction.lengthSqr;
 
 		if (sqDist == 0 || (maxDistance >= 0 && sqDist <= maxDistance * maxDistance)) return to;
 
@@ -72,18 +72,13 @@ public struct Vector2 : IEquatable<Vector2>
 		return new Vector2(factor * inNormal.x + inDirection.x, factor * inNormal.y + inDirection.y);
 	}
 
-	public static Vector2 Perpendicular(Vector2 inDirection) => new Vector2(-inDirection.y, inDirection.x);
+	public static Vector2 Perpendicular(Vector2 inDirection) => new(-inDirection.y, inDirection.x);
 
 	public static float Dot(Vector2 left, Vector2 right) => left.x * right.x + left.y * right.y;
 
-	public static float Angle(Vector2 from, Vector2 to)
-	{
-		var denominator = Math.Sqrt(from.sqrMagnitude * to.sqrMagnitude);
-		if (denominator < Math.epsilonSqrt) return 0;
+	public static Vector2 Direction(Vector2 start, Vector2 end) => (start - end).normalized;
 
-		var dot = Math.ClampUnit(Dot(from, to) / denominator);
-		return Math.Acos(dot) * Math.rad2Deg;
-	}
+	public static float Angle(Vector2 point, Vector2 target) => Direction(point, target).angle;
 
 	public static float SignedAngle(Vector2 from, Vector2 to)
 	{
@@ -114,30 +109,43 @@ public struct Vector2 : IEquatable<Vector2>
 		);
 	}
 
-	public static float DistanceSqr(Vector2 from, Vector2 to) => (from - to).sqrMagnitude;
+	public static float DistanceSqr(Vector2 from, Vector2 to) => (from - to).lengthSqr;
 	public static float Distance(Vector2 from, Vector2 to) => Math.Sqrt(DistanceSqr(from, to));
 
 	public static bool DistanceEqualTo(Vector2 from, Vector2 to, float value) => Math.Approximately(DistanceSqr(from, to), value * value);
 	public static bool DistanceLessThan(Vector2 from, Vector2 to, float value) => DistanceSqr(from, to) < value * value;
 	public static bool DistanceGreaterThan(Vector2 from, Vector2 to, float value) => DistanceSqr(from, to) > value * value;
 
-	public static Vector2 Clamp(Vector2 vector, float length) => new Vector2(Math.Clamp(vector.x, -length, length), Math.Clamp(vector.y, -length, length));
-	public static Vector2 Clamp(Vector2 vector, Vector2 size) => new Vector2(Math.Clamp(vector.x, -size.x, size.x), Math.Clamp(vector.y, -size.y, size.y));
+	public static Vector2 Midpoint(Vector2 a, Vector2 b) => (a + b) / 2;
 
-	public static Vector2 ClampMagnitude(Vector2 vector, float length)
+	// public static Vector2 Clamp(Vector2 vector, float length) => new Vector2(Math.Clamp(vector.x, -length, length), Math.Clamp(vector.y, -length, length));
+	// public static Vector2 Clamp(Vector2 vector, Vector2 size) => new Vector2(Math.Clamp(vector.x, -size.x, size.x), Math.Clamp(vector.y, -size.y, size.y));
+
+	public static Vector2 ClampLength(Vector2 vector, float length)
 	{
-		if (vector.sqrMagnitude > length * length)
+		if (vector.lengthSqr > length * length)
 			return vector.normalized * length;
 		return vector;
 	}
 
-	public static Vector2 Direction(Vector2 start, Vector2 end) => (start - end).normalized;
+	public static Vector2 Min(Vector2 a, Vector2 b) => new(Math.Min(a.x, b.x), Math.Min(a.y, b.y));
+	public static Vector2 Max(Vector2 a, Vector2 b) => new(Math.Max(a.x, b.x), Math.Max(a.y, b.y));
 
-	public static Vector2 Middle(Vector2 a, Vector2 b) => (a + b) / 2;
+	public static Vector2 Transform(Vector2 position, Matrix matrix) => new(
+		position.x * matrix.m11 + position.y * matrix.m21 + matrix.m41,
+		position.x * matrix.m12 + position.y * matrix.m22 + matrix.m42
+	);
 
-	public static Vector2 Min(Vector2 a, Vector2 b) => new Vector2(Math.Min(a.x, b.x), Math.Min(a.y, b.y));
+	public static void Transform(ref Vector2 position, ref Matrix matrix, out Vector2 result)
+	{
+		result.x = position.x * matrix.m11 + position.y * matrix.m21 + matrix.m41;
+		result.y = position.x * matrix.m12 + position.y * matrix.m22 + matrix.m42;
+	}
 
-	public static Vector2 Max(Vector2 a, Vector2 b) => new Vector2(Math.Max(a.x, b.x), Math.Max(a.y, b.y));
+	public static Vector2 TransformNormal(Vector2 position, Matrix matrix) => new(
+		position.x * matrix.m11 + position.y * matrix.m21,
+		position.x * matrix.m12 + position.y * matrix.m22
+	);
 
 	////////////////////////////////////////////////////////////
 
@@ -191,29 +199,29 @@ public struct Vector2 : IEquatable<Vector2>
 		}
 	}
 
-	public Vector2 sign { get => new Vector2(Math.Sign(x), Math.Sign(y)); }
+	public Vector2 sign => new Vector2(Math.Sign(x), Math.Sign(y));
 
-	public Vector2 abs { get => new Vector2(Math.Abs(x), Math.Abs(y)); }
+	public Vector2 abs => new Vector2(Math.Abs(x), Math.Abs(y));
 
-	public Vector2 isolateX { get => new Vector2(x, 0); }
-	public Vector2 isolateY { get => new Vector2(0, y); }
+	public Vector2 xVector => new Vector2(x, 0);
+	public Vector2 yVector => new Vector2(0, y);
 
-	public float sqrMagnitude { get => x * x + y * y; }
-	public float magnitude { get => Math.Sqrt(sqrMagnitude); }
+	public float lengthSqr => x * x + y * y;
+	public float length => Math.Sqrt(lengthSqr);
 
-	public float max { get => Math.Max(x, y); }
-	public float min { get => Math.Min(x, y); }
+	// public float max => Math.Max(x, y);
+	// public float min => Math.Min(x, y);
 
-	public float angle { get => Math.Atan2(y, x); }
+	public float angle => Math.Atan2(y, x);
 
 	////////////////////////////////////////////////////////////
 
 	public void Normalize()
 	{
-		var mag = magnitude;
-		// if (mag <= 1.0f) return;
-		if (mag > Math.epsilon)
-			this = this / mag;
+		var len = length;
+		// if (len <= 1.0f) return;
+		if (len > Math.epsilon)
+			this = this / len;
 		else
 			this = zero;
 	}
@@ -263,21 +271,18 @@ public struct Vector2 : IEquatable<Vector2>
 
 	public static implicit operator Vector2(Vector2Int vector) => new(vector.x, vector.y);
 
+	public static implicit operator (float, float)(Vector2 vector) => (vector.x, vector.y);
+	public static implicit operator Vector2((float, float) vector) => new(vector.Item1, vector.Item2);
+
 	public static implicit operator OpenTK.Mathematics.Vector2(Vector2 vector) => new(vector.x, vector.y);
 	public static implicit operator Vector2(OpenTK.Mathematics.Vector2 vector) => new(vector.X, vector.Y);
 
 	public static implicit operator OpenTK.Mathematics.Vector3(Vector2 vector) => new(vector.x, vector.y, 0);
 	public static implicit operator Vector2(OpenTK.Mathematics.Vector3 vector) => new(vector.X, vector.Y);
 
-	public static implicit operator (float, float)(Vector2 vector) => (vector.x, vector.y);
-	public static implicit operator Vector2((float, float) vector) => new(vector.Item1, vector.Item2);
-
-	// public static implicit operator Vector2(Microsoft.Xna.Framework.Point vector) => new Vector2(vector.x, vector.y);
-	// public static implicit operator Microsoft.Xna.Framework.Point(Vector2 vector) => new Microsoft.Xna.Framework.Point((int)vector.x, (int)vector.y);
-
 	////////////////////////////////////////////////////////////
 
-	public override string ToString() => $"({x.ToString("F3")}, {y.ToString("F3")})";
+	public override string ToString() => $"({x.ToString("F2")}, {y.ToString("F2")})";
 	public string ToString(string format) => string.Format(format, x, y);
 
 	public override int GetHashCode() => HashCode.Combine(x, y);
