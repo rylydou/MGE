@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using OpenTK.Graphics.OpenGL;
 
@@ -201,7 +200,7 @@ public static class GFX
 
 	#region Low Level Drawing
 
-	public static void StartVertexBatch() => StartVertexBatch(new(transform, texture!, shader!) { priority = priority });
+	public static void StartVertexBatch() => StartVertexBatch(new(texture!, shader!) { priority = priority });
 
 	public static void StartVertexBatch(BatchKey key)
 	{

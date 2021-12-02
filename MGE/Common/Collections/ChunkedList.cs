@@ -86,7 +86,7 @@ namespace MGE
 			if (array.Length < capacity)
 			{
 				var tmp = new T[Math.NextPowerOf2((uint)(capacity + 1u))];
-				Debug.Log($"Chunked list expanded from {array.Length} to {tmp.Length}");
+				// Debug.Log($"Chunked list expanded from {array.Length} to {tmp.Length}");
 				array.CopyTo(tmp, 0);
 				array = tmp;
 				return true;

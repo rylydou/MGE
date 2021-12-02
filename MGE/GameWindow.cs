@@ -51,8 +51,13 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnResize(args);
 
-		GL.Viewport(0, 0, args.Size.X, args.Size.Y);
-		GFX.transform = Matrix.CreateOrthographic(args.Size.X, args.Size.Y, -1, 1);
+		var size = new Vector2Int(args.Size.X, args.Size.Y);
+
+		size.x = Math.CeilToEvenInt(size.x);
+		size.y = Math.CeilToEvenInt(size.y);
+
+		GL.Viewport(0, 0, size.x, size.y);
+		GFX.transform = Matrix.CreateOrthographic(size.x, size.y, -1, 1);
 	}
 
 	protected override void OnUpdateFrame(FrameEventArgs args)
