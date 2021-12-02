@@ -1,31 +1,30 @@
 using MGE.Graphics;
 
-namespace MGE
+namespace MGE;
+
+public class SpriteNode : TransformNode
 {
-	public class SpriteNode : TransformNode
+	public Texture texture = Texture.pixelTexture;
+	public Color color = Color.white;
+
+	public SpriteNode() { }
+
+	public SpriteNode(Texture texture)
 	{
-		public Texture texture = Texture.pixelTexture;
-		public Color color = Color.white;
+		this.texture = texture;
+	}
 
-		public SpriteNode() { }
-
-		public SpriteNode(Texture texture)
+	protected override void Draw()
+	{
+		if (texture is not null)
 		{
-			this.texture = texture;
+			GFX.DrawTexture(texture, worldPosition, worldScale, worldRotation, color);
+		}
+		else
+		{
+			GFX.DrawSquare(worldPosition, worldScale, worldRotation, color);
 		}
 
-		protected override void Draw()
-		{
-			if (texture is not null)
-			{
-				GFX.DrawTexture(texture, worldPosition, worldScale, worldRotation, color);
-			}
-			else
-			{
-				GFX.DrawSquare(worldPosition, worldScale, worldRotation, color);
-			}
-
-			base.Draw();
-		}
+		base.Draw();
 	}
 }

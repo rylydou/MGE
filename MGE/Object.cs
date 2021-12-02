@@ -4,11 +4,11 @@ namespace MGE;
 
 public abstract class Object : IEquatable<Object>
 {
-	public readonly Guid guid;
+	public readonly int guid;
 
 	protected Object()
 	{
-		guid = Guid.NewGuid();
+		guid = RNG.sharedInternal.RandomSign() + RNG.sharedInternal.RandomInt();
 	}
 
 	public override bool Equals(object? other) => other is Object obj && Equals(obj);

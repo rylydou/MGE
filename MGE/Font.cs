@@ -2,70 +2,69 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using MGE.Graphics;
 
-namespace MGE
+namespace MGE;
+
+public class Font
 {
-	public class Font
+	public static Font current = new("Font.png", new(10, 24));
+
+	public readonly Texture texture;
+	public readonly Vector2Int charSize;
+	public int spaceBtwChars = 2;
+
+	Vector2Int charsCount;
+	Dictionary<char, RectInt> chars;
+
+	public Font(string path, Vector2Int charSize, ushort offset = 32)
 	{
-		public static Font current = new("Font.png", new(10, 24));
+		this.texture = Texture.LoadTexture(path);
+		this.charSize = charSize;
 
-		public readonly Texture texture;
-		public readonly Vector2Int charSize;
-		public int spaceBtwChars = 2;
+		charsCount = texture.size / charSize;
+		chars = new(charsCount.x * charsCount.y);
 
-		Vector2Int charsCount;
-		Dictionary<char, RectInt> chars;
-
-		public Font(string path, Vector2Int charSize, ushort offset = 32)
+		var ch = offset;
+		for (int y = 0; y < charsCount.y; y++)
 		{
-			this.texture = Texture.LoadTexture(path);
-			this.charSize = charSize;
-
-			charsCount = texture.size / charSize;
-			chars = new(charsCount.x * charsCount.y);
-
-			var ch = offset;
-			for (int y = 0; y < charsCount.y; y++)
+			for (int x = 0; x < charsCount.x; x++)
 			{
-				for (int x = 0; x < charsCount.x; x++)
-				{
-					var rect = new Rect(x * charSize.x, y * charSize.y, charSize);
-					var chr = (char)++ch;
-					chars.Add(chr, rect);
-				}
+				var rect = new Rect(x * charSize.x, y * charSize.y, charSize);
+				var chr = (char)++ch;
+				chars.Add(chr, rect);
 			}
 		}
+	}
 
-		public void DrawText(IEnumerable<char> text, Vector2 position) => DrawText(text, position, Color.white);
-		public void DrawText(IEnumerable<char> text, Vector2 position, Color color)
+	public void DrawText(IEnumerable<char> text, Vector2 position) => DrawText(text, position, Color.white);
+	public void DrawText(IEnumerable<char> text, Vector2 position, Color color)
+	{
+		var offset = 0;
+
+		foreach (var ch in text)
 		{
-			var offset = 0;
+			if (!DrawChar(ch, new((charSize.x + spaceBtwChars) * offset + position.x, position.y), color)) continue;
+			offset++;
+		}
+	}
 
-			foreach (var ch in text)
-			{
-				if (!DrawChar(ch, new((charSize.x + spaceBtwChars) * offset + position.x, position.y), color)) continue;
-				offset++;
-			}
+	/// <summary>
+	///
+	/// </summary>
+	/// <param name="ch"></param>
+	/// <param name="position"></param>
+	/// <param name="color"></param>
+	/// <returns>true if the char has width</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public bool DrawChar(char ch, Vector2 position, Color color)
+	{
+		if (ch == ' ') return true;
+		if (!chars.TryGetValue(ch, out var rect))
+		{
+			Debug.Log($"Unknown Char: '{ch}' #{(ushort)ch}");
+			return false;
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="ch"></param>
-		/// <param name="position"></param>
-		/// <param name="color"></param>
-		/// <returns>true if the char has width</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool DrawChar(char ch, Vector2 position, Color color)
-		{
-			if (ch == ' ') return true;
-			if (!chars.TryGetValue(ch, out var rect))
-			{
-				Debug.Log($"Unknown Char: '{ch}' #{(ushort)ch}");
-				return false;
-			}
-
-			GFX.DrawTextureRegion(texture, new(position, charSize), rect, color);
-			return true;
-		}
+		GFX.DrawTextureRegion(texture, new(position, charSize), rect, color);
+		return true;
 	}
 }

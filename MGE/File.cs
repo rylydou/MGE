@@ -37,7 +37,7 @@ public struct File : IEquatable<File>
 	public void AppendText(string? text) => FileIO.AppendAllText(path, text);
 	public void AppendLines(string[] lines) => FileIO.AppendAllLines(path, lines);
 
-	public T ReadObject<T>() => Serializer.Deserialize<T>(ReadText()) ?? throw new Exception();
+	public T ReadObject<T>() => Serializer.Deserialize<T>(ReadText()) ?? throw new MGEException("Value is null, how?");
 	public object? ReadObject(Type type) => Serializer.Deserialize(ReadText(), type);
 
 	public void WriteObject(object obj) => WriteText(Serializer.Serialize(obj));

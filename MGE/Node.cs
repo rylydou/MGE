@@ -29,7 +29,7 @@ public class Node : Object, IEnumerable<Node>
 				var current = _intEnum.Current;
 
 				// Ignore the node if it is destroyed or not attached to the node anymore
-				if (current.destroyed) continue;
+				if (current._isDestroyed) continue;
 				if (current.parent != _node) continue;
 
 				return true;
@@ -98,7 +98,9 @@ public class Node : Object, IEnumerable<Node>
 	public bool enabled = true;
 	public bool visible = true;
 
-	bool destroyed;
+	bool _isActive;
+	bool _isInitialized;
+	bool _isDestroyed;
 
 	public Node? parent { get; private set; }
 
@@ -143,33 +145,38 @@ public class Node : Object, IEnumerable<Node>
 	public Node()
 	{
 		name = GetType().ToString();
+
+		if (this is RootNode)
+		{
+			_isActive = true;
+		}
 	}
 
 	#region Node Management
 
 	public void AttachNode(Node node)
 	{
-		if (node.parent is not null) throw new Exception("Cannot attach node - Node already has an owner");
+		if (node.parent is not null) throw new MGEException("Attach node", "Node already has an owner");
 
-		node.parent = this;
+		node.DoAttach(this);
 
 		TryDoAction(() => _children.Add(node));
 	}
 
 	public void AttachNode(Node node, int index)
 	{
-		if (node.parent is not null) throw new Exception("Cannot attach node - Node already has an owner");
+		if (node.parent is not null) throw new MGEException("Attach node", "Node already has an owner");
 
-		node.parent = this;
+		node.DoAttach(this);
 
 		TryDoAction(() => _children.Insert(index, node));
 	}
 
 	public void DetachNode(Node node)
 	{
-		if (node.parent != this) throw new Exception("Cannot detach node - This node does not own the node");
+		if (node.parent != this) throw new MGEException("Detach node", "This node does not own the node");
 
-		node.Detach();
+		node.DoDetach();
 		TryDoAction(() => _children.Remove(node));
 	}
 
@@ -179,13 +186,14 @@ public class Node : Object, IEnumerable<Node>
 
 		var node = this.ElementAt(index);
 		DetachNode(node);
+		TryDoAction(() => _children.RemoveAt(index));
 
 		return node;
 	}
 
 	public Node[] DetachAllNodes()
 	{
-		this.ForEach(child => child.Detach());
+		this.ForEach(child => child.DoDetach());
 		TryDoAction(() => _children.Clear());
 		return _children.ToArray();
 	}
@@ -203,6 +211,12 @@ public class Node : Object, IEnumerable<Node>
 
 	internal void DoInit()
 	{
+		if (_isInitialized) throw new MGEException("Initialize node", "Node is already initialized");
+		if (!_isActive) throw new MGEException("Initialize node", "Node is not active in scene");
+
+		Debug.Log("Inited " + this);
+
+		_isInitialized = true;
 		Init();
 	}
 	/// <summary>
@@ -273,6 +287,19 @@ public class Node : Object, IEnumerable<Node>
 
 	#region Events
 
+	void DoAttach(Node parent)
+	{
+		this.parent = parent;
+
+		_isActive = parent._isActive;
+
+		if (_isActive && !_isInitialized)
+		{
+			DoInit();
+		}
+
+		WhenAttached();
+	}
 	/// <summary>
 	/// Called after the node is attached to a parent.
 	/// </summary>
@@ -282,9 +309,16 @@ public class Node : Object, IEnumerable<Node>
 	/// </remarks>
 	protected virtual void WhenAttached()
 	{
-		this.ForEach(child => child.WhenAttached());
+		this.ForEach(child => child.DoDetach());
 	}
 
+	void DoDetach()
+	{
+		WhenDetached();
+
+		parent = null;
+		_isActive = false;
+	}
 	/// <summary>
 	/// Called before the node is detached from its parent and before the node is destroyed.
 	/// </summary>
@@ -293,14 +327,24 @@ public class Node : Object, IEnumerable<Node>
 	/// </remarks>
 	protected virtual void WhenDetached()
 	{
-		this.ForEach(child => child.WhenDetached());
+		this.ForEach(child => child.DoDetach());
 	}
 
+	/// <summary>
+	/// A Node can be destroyed even if its not active in the scene
+	/// </summary>
 	public void Destroy()
 	{
-		if (destroyed) throw new Exception("Cannot destroy - Node is already destroyed");
+		if (_isInitialized) throw new MGEException("Destroy node", "Node is not initialized");
+		if (_isDestroyed) throw new MGEException("Destroy node", "Node is already destroyed");
+
+		if (parent is not null)
+		{
+			parent.DetachNode(this);
+		}
+
 		Destroyed();
-		destroyed = true;
+		_isDestroyed = true;
 	}
 	/// <summary>
 	/// Called when the object is being destroyed after <see cref="WhenDetached"/> is called.
@@ -314,22 +358,4 @@ public class Node : Object, IEnumerable<Node>
 	}
 
 	#endregion Events
-
-	#region Internal Util
-
-	void Attach(Node parent)
-	{
-		this.parent = parent;
-
-		WhenAttached();
-	}
-
-	void Detach()
-	{
-		WhenDetached();
-
-		parent = null;
-	}
-
-	#endregion Internal Util
 }

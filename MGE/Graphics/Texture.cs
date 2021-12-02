@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using System.Runtime.CompilerServices;
 using OpenTK.Graphics.OpenGL;
 using StbImageSharp;

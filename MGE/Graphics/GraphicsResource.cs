@@ -17,7 +17,7 @@ public abstract class GraphicsResource : IDisposable
 
 	~GraphicsResource()
 	{
-		throw new Exception($"Graphics resource leaked: {this}");
+		throw new MGEException($"Graphics resource leaked: {this}");
 	}
 
 	public static explicit operator int(GraphicsResource res) => res.handle;

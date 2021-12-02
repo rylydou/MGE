@@ -386,7 +386,7 @@ public static class GFX
 
 		if (error != ErrorCode.NoError)
 		{
-			throw new Exception($"Open GL Error: {((int)error)} - {error.ToString()}");
+			throw new MGEException($"Open GL Error: {((int)error)} - {error.ToString()}");
 		}
 	}
 

@@ -75,7 +75,7 @@ public class Shader : GraphicsResource, IUseable
 		{
 			var infoLog = GL.GetShaderInfoLog(shader);
 
-			throw new Exception($"Error occurred when compiling Shader\n\n{infoLog}");
+			throw new MGEException($"Error occurred when compiling Shader\n\n{infoLog}");
 		}
 	}
 
@@ -84,7 +84,7 @@ public class Shader : GraphicsResource, IUseable
 		GL.LinkProgram(program);
 		GL.GetProgram(program, GetProgramParameterName.LinkStatus, out var code);
 
-		if (code != 1) throw new Exception($"Error occurred when linking Program");
+		if (code != 1) throw new MGEException($"Error occurred when linking Program");
 	}
 
 	public int GetAttribLocation(string attrName) => GL.GetAttribLocation(handle, attrName);

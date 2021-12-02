@@ -50,7 +50,7 @@ public static class Serializer
 		var sw = new StringReader(json);
 		using (var jsonReader = new JsonTextReader(sw))
 		{
-			return jsonSerializer.Deserialize<T>(jsonReader) ?? throw new Exception();
+			return jsonSerializer.Deserialize<T>(jsonReader) ?? throw new MGEException("Value is null, how?");
 		}
 	}
 

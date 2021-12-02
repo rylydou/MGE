@@ -27,7 +27,7 @@ public class RenderTexture : GraphicsResource, IUseable
 		GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, _rbo);
 
 		var errorCode = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
-		if (errorCode != FramebufferErrorCode.FramebufferComplete) throw new Exception($"Error when initializing RenderTexture {((int)errorCode)} - {errorCode.ToString()}");
+		if (errorCode != FramebufferErrorCode.FramebufferComplete) throw new MGEException($"Error when initializing RenderTexture {((int)errorCode)} - {errorCode.ToString()}");
 
 		StopUse();
 	}
