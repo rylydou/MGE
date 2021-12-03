@@ -55,7 +55,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		GL.Enable(EnableCap.Blend);
 		GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 		GL.Enable(EnableCap.Multisample);
-		// GL.Disable(EnableCap.Multisample);
 	}
 
 	protected override void OnUnload()
