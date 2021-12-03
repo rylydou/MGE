@@ -214,9 +214,8 @@ public class Node : Object, IEnumerable<Node>
 		if (_isInitialized) throw new MGEException("Initialize node", "Node is already initialized");
 		if (!_isActive) throw new MGEException("Initialize node", "Node is not active in scene");
 
-		Debug.Log("Inited " + this);
-
 		_isInitialized = true;
+
 		Init();
 	}
 	/// <summary>
@@ -358,4 +357,6 @@ public class Node : Object, IEnumerable<Node>
 	}
 
 	#endregion Events
+
+	public override string? ToString() => $"{name} ({GetType().Name})";
 }

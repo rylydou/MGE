@@ -58,26 +58,7 @@ public class Texture : GraphicsResource, IUseable
 		using (var stream = Folder.assetsFolder.GetFile(path).OpenRead())
 		{
 			var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
-			var pixels = new byte[image.Width * image.Height * 4];
-
-			// return new(new(image.Width, image.Height), image.Data);
-
-			var i = 0;
-			for (int y = image.Height - 1; y >= 0; y--)
-			{
-				for (int x = 0; x < image.Width; x++)
-				{
-					var pix = (y * image.Width + x) * 4;
-					var img = i++ * 4;
-
-					pixels[pix + 0] = image.Data[img + 0];
-					pixels[pix + 1] = image.Data[img + 1];
-					pixels[pix + 2] = image.Data[img + 2];
-					pixels[pix + 3] = image.Data[img + 3];
-				}
-			}
-
-			return new(new(image.Width, image.Height), pixels);
+			return new(new(image.Width, image.Height), image.Data);
 		}
 	}
 
@@ -91,7 +72,7 @@ public class Texture : GraphicsResource, IUseable
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)] public Vector2 GetTextureCoord(Vector2 position) => GetTextureCoord(position.x, position.y);
-	[MethodImpl(MethodImplOptions.AggressiveInlining)] public Vector2 GetTextureCoord(float x, float y) => new Vector2(x / size.x, 1 - y / size.y);
+	[MethodImpl(MethodImplOptions.AggressiveInlining)] public Vector2 GetTextureCoord(float x, float y) => new Vector2(x / size.x, y / size.y);
 
 	public void Use() => Use(TextureUnit.Texture0);
 	public void Use(TextureUnit unit)

@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.CompilerServices;
 using OpenTK.Graphics.OpenGL;
 
@@ -163,23 +162,6 @@ public static class GFX
 
 		SetTriangleIndices(0, vertexCount, 1);
 	}
-
-	// public static void DrawCircleOutline(Vector2 position, float radius, Color color)
-	// {
-	// 	const float CIRCLE_DETAIL_MUL = 3; // Use 2 for more detail
-	// 	var vertexCount = (VertIndex)(radius / CIRCLE_DETAIL_MUL);
-
-	// 	for (VertIndex i = 0; i < vertexCount; i++)
-	// 	{
-	// 		var vertexPosition = new Vector2(
-	// 			position.x + (radius * Math.Cos(i * Math.pi2 / vertexCount)),
-	// 			position.y + (radius * Math.Sin(i * Math.pi2 / vertexCount))
-	// 		);
-
-	// 		SetVertex(vertexPosition, Vector2.zero, color);
-	// 		SetIndex(i);
-	// 	}
-	// }
 
 	#endregion
 

@@ -13,10 +13,13 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	double updateTime;
 	double renderTime;
 
+	Texture sprite;
+
 	public GameWindow() : base(new() { RenderFrequency = 60, UpdateFrequency = 60, }, new() { Title = "Mangrove Game Engine", NumberOfSamples = 4, })
 	{
 		_current = this;
 
+		sprite = Texture.LoadTexture("Icon.png");
 		Icon = new(Texture.LoadImageData("Icon.png"));
 
 		CenterWindow(new(320 * 4, 180 * 4));
@@ -82,6 +85,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		GFX.Flush();
 
 		Font.current.DrawText($"Update: {1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
+
+		GFX.DrawTextureRegion(sprite, new(256, 256, 32, 32), new(0, 0, sprite.size));
 
 		GFX.Flush();
 

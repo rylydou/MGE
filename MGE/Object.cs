@@ -4,17 +4,19 @@ namespace MGE;
 
 public abstract class Object : IEquatable<Object>
 {
-	public readonly int guid;
+	static uint nextInstanceID = 1;
+
+	internal readonly uint instanceID;
 
 	protected Object()
 	{
-		guid = RNG.sharedInternal.RandomSign() + RNG.sharedInternal.RandomInt();
+		instanceID = nextInstanceID++;
 	}
 
 	public override bool Equals(object? other) => other is Object obj && Equals(obj);
-	public bool Equals(Object? other) => other?.guid.Equals(guid) ?? false;
+	public bool Equals(Object? other) => other is null ? false : other.instanceID == instanceID;
 
-	public override int GetHashCode() => guid.GetHashCode();
+	public override int GetHashCode() => instanceID.GetHashCode();
 
-	public override string? ToString() => $"{GetType().Name}#{guid}";
+	public override string? ToString() => GetType().Name;
 }

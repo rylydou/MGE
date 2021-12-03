@@ -5,7 +5,6 @@ namespace MGE
 	public class RNG
 	{
 		public readonly static RNG shared = new();
-		internal readonly static RNG sharedInternal = new();
 
 		int _state;
 
@@ -18,81 +17,26 @@ namespace MGE
 			_state = seed;
 		}
 
-		/// <summary>
-		/// Gets the next random integer value.
-		/// </summary>
-		/// <returns>A random positive integer.</returns>
-		public int RandomInt()
-		{
-			_state = 214013 * _state + 2531011;
-			return (_state >> 16) & 0x7FFF;
-		}
+		public int RandomInt() => ((214013 * _state + 2531011) >> 16) & 0x7FFF;
+		public int RandomInt(int max) => (int)(max * RandomFloat() + 0.5f);
+		public int RandomInt(int min, int max) => (int)((max - min) * RandomFloat() + 0.5f) + min;
 
-		/// <summary>
-		/// Gets the next random integer value which is greater than zero and less than or equal to
-		/// the specified maximum value.
-		/// </summary>
-		/// <param name="max">The maximum random integer value to return.</param>
-		/// <returns>A random integer value between zero and the specified maximum value.</returns>
-		public int RandomInt(int max)
-		{
-			return (int)(max * RandomFloat() + 0.5f);
-		}
+		public float RandomFloat() => RandomInt() / (float)short.MaxValue;
+		public float RandomFloat(float max) => max * RandomFloat();
+		public float RandomFloat(float min, float max) => (max - min) * RandomFloat() + min;
 
-		/// <summary>
-		/// Gets the next random integer between the specified minimum and maximum values.
-		/// </summary>
-		/// <param name="min">The inclusive minimum value.</param>
-		/// <param name="max">The inclusive maximum value.</param>
-		public int RandomInt(int min, int max)
-		{
-			return (int)((max - min) * RandomFloat() + 0.5f) + min;
-		}
+		public bool RandomBool() => RandomInt(1) == 0;
 
-		/// <summary>
-		/// Gets the next random single value.
-		/// </summary>
-		/// <returns>A random single value between 0 and 1.</returns>
-		public float RandomFloat()
-		{
-			return RandomInt() / (float)short.MaxValue;
-		}
+		public int RandomSign() => RandomBool() ? 1 : -1;
 
-		/// <summary>
-		/// Gets the next random single value which is greater than zero and less than or equal to the specified maximum value.
-		/// </summary>
-		/// <param name="max">The maximum random single value to return.</param>
-		/// <returns>A random single value between zero and the specified maximum value.</returns>
-		public float RandomFloat(float max)
-		{
-			return max * RandomFloat();
-		}
+		public float RandomAngle() => RandomFloat(Math.pi2);
 
-		/// <summary>
-		/// Gets the next random single value between the specified minimum and maximum values.
-		/// </summary>
-		/// <param name="min">The inclusive minimum value.</param>
-		/// <param name="max">The inclusive maximum value.</param>
-		/// <returns>A random single value between the specified minimum and maximum values.</returns>
-		public float RandomFloat(float min, float max)
-		{
-			return (max - min) * RandomFloat() + min;
-		}
-
-		public float RandomAngle()
-		{
-			return RandomFloat(-Math.pi, Math.pi);
-		}
-
-		public int RandomSign()
-		{
-			return RandomInt() % 2 == 0 ? 1 : -1;
-		}
-
-		public void RandomUnitVector(out Vector2 vector)
+		public Vector2 RandomUnitVector()
 		{
 			var angle = RandomAngle();
-			vector = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+			return new((float)Math.Cos(angle), (float)Math.Sin(angle));
 		}
+
+		public Color RandomColor() => new(RandomFloat(), RandomFloat(), RandomFloat());
 	}
 }
