@@ -7,7 +7,7 @@ namespace MGE;
 public class WorldNode : Node
 {
 	public World world;
-	public Vector2 gravity = new(0, -128f);
+	public Vector2 gravity = new(0, -32f);
 
 	protected override void Init()
 	{

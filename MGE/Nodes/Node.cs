@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -94,6 +93,11 @@ public class Node : Object
 		throw new MGEException($"Cannot find child of type {typeof(T)}");
 	}
 
+	public Node[] GetChildren()
+	{
+		return _children.ToArray();
+	}
+
 	public IEnumerable<T> GetChildren<T>() where T : Node
 	{
 		var foundChildren = new List<T>(_children.Count);
@@ -160,6 +164,22 @@ public class Node : Object
 	{
 		foreach (var child in _children.ToArray())
 			child.DoInit();
+	}
+
+	internal void DoReady()
+	{
+		Ready();
+	}
+	/// <summary>
+	/// Called only once when the node is created.
+	/// </summary>
+	/// <remarks>
+	/// Handle loading assets here.
+	/// </remarks>
+	protected virtual void Ready()
+	{
+		foreach (var child in _children.ToArray())
+			child.DoReady();
 	}
 
 	internal void DoTick(float deltaTime)
@@ -234,6 +254,8 @@ public class Node : Object
 		}
 
 		WhenAttached();
+
+		DoReady();
 
 		parent.ChildAttached(this);
 	}

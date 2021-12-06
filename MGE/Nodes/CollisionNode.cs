@@ -11,7 +11,7 @@ public class CollisionNode : TransformNode
 	public int collisionLayer = 1;
 	public int collisionMask = 1;
 
-	public Body body { get; private set; }
+	public Body body { get; protected set; }
 
 	public WorldNode world { get; private set; }
 
@@ -38,6 +38,8 @@ public class CollisionNode : TransformNode
 		if (child is not ShapeNode shape) return true;
 
 		collisionShapes.Add(shape);
+
+		body.Add(shape.fixture);
 
 		return true;
 	}
