@@ -280,6 +280,12 @@ public struct Vector2 : IEquatable<Vector2>
 	public static implicit operator OpenTK.Mathematics.Vector3(Vector2 vector) => new(vector.x, vector.y, 0);
 	public static implicit operator Vector2(OpenTK.Mathematics.Vector3 vector) => new(vector.X, vector.Y);
 
+	public static implicit operator tainicom.Aether.Physics2D.Common.Vector2(Vector2 vector) => new(vector.x, vector.y);
+	public static implicit operator Vector2(tainicom.Aether.Physics2D.Common.Vector2 vector) => new(vector.X, vector.Y);
+
+	public static implicit operator tainicom.Aether.Physics2D.Common.Vector3(Vector2 vector) => new(vector.x, vector.y, 0);
+	public static implicit operator Vector2(tainicom.Aether.Physics2D.Common.Vector3 vector) => new(vector.X, vector.Y);
+
 	////////////////////////////////////////////////////////////
 
 	public override string ToString() => $"({x.ToString("F2")}, {y.ToString("F2")})";

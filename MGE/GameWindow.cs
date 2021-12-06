@@ -88,6 +88,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		updateTime = args.Time;
 
+		var state = KeyboardState;
+
 		_world.Step((float)args.Time);
 
 		Scene.Update();

@@ -94,7 +94,7 @@ public class TransformNode : Node
 	{
 		_needsWorldUpdate = true;
 
-		foreach (var child in this.Where<Node, TransformNode>())
+		foreach (var child in GetChildrenRecursive<TransformNode>())
 		{
 			child.SetNeedsWorldUpdate();
 		}
@@ -112,7 +112,7 @@ public class TransformNode : Node
 
 	void UpdateWorld()
 	{
-		if (parents.First<Node, TransformNode>(out var t))
+		if (TryGetParent<TransformNode>(out var t))
 		{
 			var parentWorld = t.worldTransform;
 			Matrix.Multiply(ref _localTransform, ref parentWorld, out _worldTransform);

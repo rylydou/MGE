@@ -1,98 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace MGE;
 
-public class Node : Object, IEnumerable<Node>
+public class Node : Object
 {
-	class ChildEnumerator : IEnumerator<Node>
-	{
-		public Node Current => _intEnum.Current;
-		object IEnumerator.Current => _intEnum.Current;
-
-		Node _node;
-		IEnumerator<Node> _intEnum;
-
-		public ChildEnumerator(Node node)
-		{
-			_node = node;
-			_intEnum = node._children.GetEnumerator();
-			node._activeEnums++;
-		}
-
-		public bool MoveNext()
-		{
-			while (_intEnum.MoveNext())
-			{
-				var current = _intEnum.Current;
-
-				// Ignore the node if it is destroyed or not attached to the node anymore
-				if (current._isDestroyed) continue;
-				if (current.parent != _node) continue;
-
-				return true;
-			}
-			return false;
-		}
-
-		public void Reset()
-		{
-			_intEnum.Reset();
-		}
-
-		public void Dispose()
-		{
-			_intEnum.Dispose();
-			_node._activeEnums--;
-			_node.TryFlushActions();
-		}
-	}
-
-	class ParentEnumerator : IEnumerator<Node>
-	{
-		readonly Node _node;
-
-		Node _currentParentNode;
-
-		public Node Current => _currentParentNode;
-		object IEnumerator.Current => _currentParentNode;
-
-		public ParentEnumerator(Node node)
-		{
-			_node = node;
-			_currentParentNode = node;
-		}
-
-		public bool MoveNext()
-		{
-			if (_currentParentNode.parent is not null)
-			{
-				_currentParentNode = _currentParentNode.parent;
-				return true;
-			}
-			return false;
-		}
-
-		public void Reset() => _currentParentNode = _node;
-
-		public void Dispose() { }
-	}
-
-	class NodeCollection : IEnumerable<Node>
-	{
-		readonly IEnumerator<Node> enumerator;
-
-		public NodeCollection(IEnumerator<Node> enumerator)
-		{
-			this.enumerator = enumerator;
-		}
-
-		public IEnumerator<Node> GetEnumerator() => enumerator;
-		IEnumerator IEnumerable.GetEnumerator() => enumerator;
-	}
-
 	public string name;
 
 	public bool enabled = true;
@@ -106,41 +21,9 @@ public class Node : Object, IEnumerable<Node>
 
 	public int childCount => _children.Count;
 
-	public IEnumerable<Node> children => new NodeCollection(new ChildEnumerator(this));
-	public IEnumerable<Node> parents => new NodeCollection(new ParentEnumerator(this));
-
 	public Node this[int index] { get => _children.ElementAt(index); set => AttachNode(value, index); }
 
 	List<Node> _children = new();
-	int _activeEnums;
-
-	#region Actions
-
-	Queue<Action> _queuedActions = new();
-
-	void TryDoAction(Action action)
-	{
-		if (_activeEnums < 1)
-		{
-			action.Invoke();
-			return;
-		}
-		_queuedActions.Enqueue(action);
-	}
-
-	void TryFlushActions()
-	{
-		if (_activeEnums > 0) return;
-
-		// Debug.Log("Flushing actions");
-
-		while (_queuedActions.TryDequeue(out var action))
-		{
-			action.Invoke();
-		}
-	}
-
-	#endregion Actions
 
 	public Node()
 	{
@@ -159,8 +42,7 @@ public class Node : Object, IEnumerable<Node>
 		if (node.parent is not null) throw new MGEException("Attach node", "Node already has an owner");
 
 		node.DoAttach(this);
-
-		TryDoAction(() => _children.Add(node));
+		_children.Add(node);
 	}
 
 	public void AttachNode(Node node, int index)
@@ -168,8 +50,7 @@ public class Node : Object, IEnumerable<Node>
 		if (node.parent is not null) throw new MGEException("Attach node", "Node already has an owner");
 
 		node.DoAttach(this);
-
-		TryDoAction(() => _children.Insert(index, node));
+		_children.Insert(index, node);
 	}
 
 	public void DetachNode(Node node)
@@ -177,35 +58,86 @@ public class Node : Object, IEnumerable<Node>
 		if (node.parent != this) throw new MGEException("Detach node", "This node does not own the node");
 
 		node.DoDetach();
-		TryDoAction(() => _children.Remove(node));
+		_children.Remove(node);
 	}
 
 	public Node DetachNode(int index)
 	{
 		if (index < 0 || index >= childCount) throw new IndexOutOfRangeException();
 
-		var node = this.ElementAt(index);
+		var node = _children[index];
 		DetachNode(node);
-		TryDoAction(() => _children.RemoveAt(index));
+		_children.Remove(node);
 
 		return node;
 	}
 
 	public Node[] DetachAllNodes()
 	{
-		this.ForEach(child => child.DoDetach());
-		TryDoAction(() => _children.Clear());
-		return _children.ToArray();
+		var children = _children.ToArray();
+
+		foreach (var child in _children)
+			child.DoDetach();
+		_children.Clear();
+
+		return children;
 	}
 
-	public int FindIndexOfNode(Node node) => this.IndexOf(node);
-
-	public bool ContainsNode(Node node) => this.Contains<Node>(node);
-
-	public IEnumerator<Node> GetEnumerator() => new ChildEnumerator(this);
-	IEnumerator IEnumerable.GetEnumerator() => new ChildEnumerator(this);
-
 	#endregion Node Management
+
+	#region Node Lookup
+
+	public T GetChild<T>() where T : Node
+	{
+		foreach (var child in _children)
+			if (child is T node) return node;
+		throw new MGEException($"Cannot find child of type {typeof(T)}");
+	}
+
+	public IEnumerable<T> GetChildren<T>() where T : Node
+	{
+		var foundChildren = new List<T>(_children.Count);
+		foreach (var child in _children)
+			if (child is T node) foundChildren.Add(node);
+		return foundChildren;
+	}
+
+	public IEnumerable<T> GetChildrenRecursive<T>() where T : Node
+	{
+		var foundChildren = new List<T>(_children.Count);
+		foreach (var child in _children)
+			foundChildren.AddRange(child.GetChildrenRecursive<T>());
+		return foundChildren;
+	}
+
+	public T GetParent<T>() where T : Node
+	{
+		var parent = this.parent;
+		while (parent is not null)
+		{
+			if (parent is T node) return node;
+			parent = parent.parent;
+		}
+		throw new MGEException($"Cannot find parent of type {typeof(T)}");
+	}
+
+	public bool TryGetParent<T>([MaybeNullWhen(false)] out T result) where T : Node
+	{
+		var parent = this.parent;
+		while (parent is not null)
+		{
+			if (parent is T node)
+			{
+				result = node;
+				return true;
+			}
+			parent = parent.parent;
+		}
+		result = default(T);
+		return false;
+	}
+
+	#endregion Node Lookup
 
 	#region Game Loop
 
@@ -226,7 +158,8 @@ public class Node : Object, IEnumerable<Node>
 	/// </remarks>
 	protected virtual void Init()
 	{
-		this.ForEach(child => child.DoInit());
+		foreach (var child in _children.ToArray())
+			child.DoInit();
 	}
 
 	internal void DoTick(float deltaTime)
@@ -244,7 +177,8 @@ public class Node : Object, IEnumerable<Node>
 	{
 		if (!enabled) return;
 
-		this.ForEach(child => child.DoTick(deltaTime));
+		foreach (var child in _children.ToArray())
+			child.DoTick(deltaTime);
 	}
 
 	/// <summary>
@@ -262,7 +196,8 @@ public class Node : Object, IEnumerable<Node>
 	}
 	protected virtual void Update(float deltaTime)
 	{
-		this.ForEach(child => child.DoUpdate(deltaTime));
+		foreach (var child in _children.ToArray())
+			child.DoUpdate(deltaTime);
 	}
 
 	internal void DoDraw()
@@ -279,7 +214,8 @@ public class Node : Object, IEnumerable<Node>
 	/// </remarks>
 	protected virtual void Draw()
 	{
-		this.ForEach(child => child.DoDraw());
+		foreach (var child in _children.ToArray())
+			child.DoDraw();
 	}
 
 	#endregion
@@ -298,6 +234,8 @@ public class Node : Object, IEnumerable<Node>
 		}
 
 		WhenAttached();
+
+		parent.ChildAttached(this);
 	}
 	/// <summary>
 	/// Called after the node is attached to a parent.
@@ -308,12 +246,15 @@ public class Node : Object, IEnumerable<Node>
 	/// </remarks>
 	protected virtual void WhenAttached()
 	{
-		this.ForEach(child => child.DoDetach());
+		foreach (var child in _children.ToArray())
+			child.DoDetach();
 	}
 
 	void DoDetach()
 	{
 		WhenDetached();
+
+		parent!.ChildDetached(this);
 
 		parent = null;
 		_isActive = false;
@@ -326,8 +267,33 @@ public class Node : Object, IEnumerable<Node>
 	/// </remarks>
 	protected virtual void WhenDetached()
 	{
-		this.ForEach(child => child.DoDetach());
+		foreach (var child in _children.ToArray())
+			child.DoDetach();
 	}
+
+	void ChildAttached(Node child)
+	{
+		if (WhenChildAttached(child))
+			parent?.ChildAttached(child);
+	}
+	/// <summary>
+	/// Called when a child is attached to the node or its children.
+	/// </summary>
+	/// <param name="child">The child that was attached.</param>
+	/// <returns><see langword="true"/> if the singal should be passed onto the parent.</returns>
+	protected virtual bool WhenChildAttached(Node child) => true;
+
+	/// <summary>
+	/// Called when a child is detached to the node or its children.
+	/// </summary>
+	/// <param name="child">The child that was detached.</param>
+	/// <returns><see langword="true"/> if the singal should be passed onto the parent.</returns>
+	void ChildDetached(Node child)
+	{
+		if (WhenChildDetached(child))
+			parent?.ChildDetached(child);
+	}
+	protected virtual bool WhenChildDetached(Node child) => true;
 
 	/// <summary>
 	/// A Node can be destroyed even if its not active in the scene
@@ -338,9 +304,7 @@ public class Node : Object, IEnumerable<Node>
 		if (_isDestroyed) throw new MGEException("Destroy node", "Node is already destroyed");
 
 		if (parent is not null)
-		{
 			parent.DetachNode(this);
-		}
 
 		Destroyed();
 		_isDestroyed = true;
@@ -353,7 +317,8 @@ public class Node : Object, IEnumerable<Node>
 	/// </remarks>
 	protected virtual void Destroyed()
 	{
-		foreach (var child in _children) child.Destroy();
+		foreach (var child in _children.ToArray())
+			child.Destroy();
 	}
 
 	#endregion Events
