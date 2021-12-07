@@ -5,14 +5,14 @@ using System.Linq;
 
 namespace MGE;
 
-public class Node : Object
+public abstract class Node : Object
 {
 	public string name;
 
 	public bool enabled = true;
 	public bool visible = true;
 
-	bool _isActive;
+	internal bool _isActive;
 	bool _isInitialized;
 	bool _isDestroyed;
 
@@ -27,11 +27,6 @@ public class Node : Object
 	public Node()
 	{
 		name = GetType().ToString();
-
-		if (this is RootNode)
-		{
-			_isActive = true;
-		}
 	}
 
 	#region Node Management
@@ -66,7 +61,6 @@ public class Node : Object
 
 		var node = _children[index];
 		DetachNode(node);
-		_children.Remove(node);
 
 		return node;
 	}
@@ -93,10 +87,7 @@ public class Node : Object
 		throw new MGEException($"Cannot find child of type {typeof(T)}");
 	}
 
-	public Node[] GetChildren()
-	{
-		return _children.ToArray();
-	}
+	public Node[] GetChildren() => _children.ToArray();
 
 	public IEnumerable<T> GetChildren<T>() where T : Node
 	{
