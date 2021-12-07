@@ -8,6 +8,8 @@ public class AreaNode : CollisionNode
 {
 	protected override void Init()
 	{
+		body = new() { Position = worldPosition, Rotation = worldRotation, BodyType = BodyType.Static, };
+
 		base.Init();
 	}
 }

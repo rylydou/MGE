@@ -5,15 +5,22 @@ using tainicom.Aether.Physics2D.Dynamics;
 
 namespace MGE;
 
-public class CollisionNode : TransformNode
+public abstract class CollisionNode : TransformNode
 {
-	public List<ShapeNode> collisionShapes { get; private set; } = new();
-	public int collisionLayer = 1;
-	public int collisionMask = 1;
+	[Prop] public int collisionLayer = 1;
+	[Prop] public int collisionMask = 1;
 
-	public Body body { get; protected set; }
+	internal List<CollisionShapeNode> collisionShapes = new();
+	internal Body body;
 
 	public WorldNode world { get; private set; }
+
+	protected override void Init()
+	{
+		body.Tag = this;
+
+		base.Init();
+	}
 
 	protected override void WhenAttached()
 	{
@@ -35,7 +42,7 @@ public class CollisionNode : TransformNode
 
 	protected override bool WhenChildAttached(Node child)
 	{
-		if (child is not ShapeNode shape) return true;
+		if (child is not CollisionShapeNode shape) return true;
 
 		collisionShapes.Add(shape);
 
@@ -46,7 +53,7 @@ public class CollisionNode : TransformNode
 
 	protected override bool WhenChildDetached(Node child)
 	{
-		if (child is not ShapeNode shape) return true;
+		if (child is not CollisionShapeNode shape) return true;
 
 		collisionShapes.Remove(shape);
 

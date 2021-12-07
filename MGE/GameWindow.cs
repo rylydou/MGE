@@ -2,7 +2,6 @@ using System;
 using MGE.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
-using tainicom.Aether.Physics2D.Dynamics;
 
 namespace MGE;
 

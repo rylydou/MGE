@@ -9,7 +9,7 @@ public class KinematicNode : PhysicsBody
 {
 	protected override void Init()
 	{
-		body = world.world.CreateBody(worldPosition, worldRotation, BodyType.Kinematic);
+		body = new() { Position = worldPosition, Rotation = worldRotation, BodyType = BodyType.Static, };
 
 		body.OnCollision += (sender, other, contact) =>
 		{
@@ -18,14 +18,6 @@ public class KinematicNode : PhysicsBody
 		};
 
 		base.Init();
-	}
-
-	protected override void Tick(float deltaTime)
-	{
-		localPosition = body.Position;
-		localRotation = body.Rotation;
-
-		base.Tick(deltaTime);
 	}
 
 	protected virtual void OnCollision(Fixture other, Contact contact) { }
