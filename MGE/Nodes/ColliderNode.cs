@@ -4,7 +4,7 @@ using tainicom.Aether.Physics2D.Dynamics;
 
 namespace MGE;
 
-public class CollisionShapeNode : TransformNode
+public class ColliderNode : TransformNode
 {
 	[Prop] public float density;
 

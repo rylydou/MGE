@@ -10,7 +10,7 @@ public abstract class CollisionNode : TransformNode
 	[Prop] public int collisionLayer = 1;
 	[Prop] public int collisionMask = 1;
 
-	internal List<CollisionShapeNode> collisionShapes = new();
+	internal List<ColliderNode> collisionShapes = new();
 	internal Body body;
 
 	public WorldNode world { get; private set; }
@@ -42,7 +42,7 @@ public abstract class CollisionNode : TransformNode
 
 	protected override bool WhenChildAttached(Node child)
 	{
-		if (child is not CollisionShapeNode shape) return true;
+		if (child is not ColliderNode shape) return true;
 
 		collisionShapes.Add(shape);
 
@@ -53,7 +53,7 @@ public abstract class CollisionNode : TransformNode
 
 	protected override bool WhenChildDetached(Node child)
 	{
-		if (child is not CollisionShapeNode shape) return true;
+		if (child is not ColliderNode shape) return true;
 
 		collisionShapes.Remove(shape);
 

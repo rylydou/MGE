@@ -26,24 +26,24 @@ public class WorldNode : Node
 		world.Step(deltaTime);
 	}
 
-	public CollisionShapeNode OverlapPoint(Vector2 point)
+	public ColliderNode OverlapPoint(Vector2 point)
 	{
 		var fixture = world.TestPoint(point);
 		if (fixture is null) return null;
-		return (CollisionShapeNode)fixture.Tag;
+		return (ColliderNode)fixture.Tag;
 	}
 
 	public RaycastHit Raycast(Vector2 from, Vector2 to)
 	{
 		RaycastHit hit = null;
-		world.RayCast((fixture, point, normal, fraction) => { hit = new RaycastHit(); return 0; /* Stop the raycast */ }, from, to);
+		world.RayCast((fixture, point, normal, fraction) => { hit = new((ColliderNode)fixture.Tag, point, normal); return 0; /* Stop the raycast */ }, from, to);
 		return hit;
 	}
 
 	public RaycastHit[] RaycastAll(Vector2 from, Vector2 to)
 	{
 		var hits = new List<RaycastHit>();
-		world.RayCast((fixture, point, normal, fraction) => { hits.Add(new RaycastHit()); return 1; /* Continue the raycast, I think */ }, from, to);
+		world.RayCast((fixture, point, normal, fraction) => { hits.Add(new((ColliderNode)fixture.Tag, point, normal)); return 1; /* Continue the raycast, I think */ }, from, to);
 		return hits.ToArray();
 	}
 }
