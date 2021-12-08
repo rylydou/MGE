@@ -1,15 +1,14 @@
-namespace MGE
+namespace MGE;
+
+public class PhysicsBody : CollisionNode
 {
-	public class PhysicsBody : CollisionNode
+	protected override void Tick(float deltaTime)
 	{
-		protected override void Tick(float deltaTime)
-		{
-			localPosition = body.Position;
-			localRotation = body.Rotation;
+		localPosition = body.Position;
+		localRotation = body.Rotation;
 
-			base.Tick(deltaTime);
+		base.Tick(deltaTime);
 
-			body.SetTransform(localPosition, worldRotation);
-		}
+		body.SetTransform(localPosition, worldRotation);
 	}
 }

@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using OpenTK.Graphics.OpenGL;
+using MGE.Graphics;
 
 #if MGE_MORE_VERTICES
 using VertIndex = System.UInt32;
@@ -7,7 +8,7 @@ using VertIndex = System.UInt32;
 using VertIndex = System.UInt16;
 #endif
 
-namespace MGE.Graphics;
+namespace MGE;
 
 public static class GFX
 {
@@ -114,41 +115,46 @@ public static class GFX
 
 	#region Primitive Drawing
 
-	public static void DrawPoint(Vector2 position, Color color, float radius = 1)
-	{
-		DrawSquare(new(position - radius, radius * 2), color);
-	}
+	public static void DrawPoint(Vector2 position, Color color, float radius = 1) => DrawBox(new(position - radius, radius * 2), color);
 
-	public static void DrawLine(Vector2 start, Vector2 end, float width, Color color)
+	public static void DrawLine(Vector2 start, Vector2 end, Color color, float thickness = 1)
 	{
 		var angle = Vector2.Angle(start, end);
 		var center = Vector2.Midpoint(start, end);
 		var length = Vector2.Distance(start, end);
 
-		SetTextureScaledAndRotated(Texture.pixelTexture, _spriteShader, center, new Vector2(length, width), angle, color);
+		SetTextureScaledAndRotated(Texture.pixelTexture, _spriteShader, center, new Vector2(length, thickness), angle, color);
 	}
 
-	public static void DrawSquare(Vector2 position, Vector2 scale, Color color) => DrawTexture(Texture.pixelTexture, position, scale, color);
-	public static void DrawSquare(Vector2 position, Vector2 scale, float rotation, Color color) => DrawTexture(Texture.pixelTexture, position, scale, rotation, color);
-	public static void DrawSquare(Rect rect, Color color) => DrawTexture(Texture.pixelTexture, rect, color);
+	public static void DrawBox(Vector2 position, Vector2 scale, Color color) => DrawTexture(Texture.pixelTexture, position, scale, color);
+	public static void DrawBox(Vector2 position, Vector2 scale, float rotation, Color color) => DrawTexture(Texture.pixelTexture, position, scale, rotation, color);
+	public static void DrawBox(Rect rect, Color color) => DrawTexture(Texture.pixelTexture, rect, color);
+
+	public static void DrawBoxOutline(Rect rect, Color color, float thickness = 1)
+	{
+		DrawBox(new Rect(rect.x - thickness, rect.y - thickness, rect.width + thickness * 2, thickness), color);   // Top
+		DrawBox(new Rect(rect.x - thickness, rect.y, thickness, rect.height), color);                              // Left
+		DrawBox(new Rect(rect.x - thickness, rect.y + rect.height, rect.width + thickness * 2, thickness), color); // Bottom
+		DrawBox(new Rect(rect.x + rect.width, rect.y, thickness, rect.height), color);                             // Right
+	}
 
 	/// <param name="resolutionMultiplier">Higher values = lower resolution</param>
-	public static void DrawCircleFilled(Vector2 position, float radius, Color color, float resolutionMultiplier = 2f)
+	public static void DrawCircleFilled(Vector2 center, float radius, Color color, float resolutionMultiplier = 4f)
 	{
-		var vertexCount = (VertIndex)(Math.CeilToEven(radius / resolutionMultiplier));
+		var vertexCount = (VertIndex)Math.CeilToEven(radius * Math.tau / resolutionMultiplier);
 
 		texture = Texture.pixelTexture;
 		shader = _spriteShader;
 		StartVertexBatch();
 
-		SetVertex(position, Vector2.zero, color);
+		SetVertex(center, Vector2.zero, color);
 
 		// Draw the vertices
 		for (VertIndex i = 0; i < vertexCount; i++)
 		{
 			var vertexPosition = new Vector2(
-				position.x + (radius * Math.Sin(i * Math.pi2 / vertexCount)),
-				position.y + (radius * Math.Cos(i * Math.pi2 / vertexCount))
+				center.x + (radius * Math.Sin(i * Math.pi2 / vertexCount)),
+				center.y + (radius * Math.Cos(i * Math.pi2 / vertexCount))
 			);
 
 			SetVertex(vertexPosition, Vector2.zero, color);
@@ -161,6 +167,30 @@ public static class GFX
 		}
 
 		SetTriangleIndices(0, vertexCount, 1);
+	}
+
+	public static void DrawCircleOutline(Vector2 center, float radius, Color color, float thickness = 1, float resolutionMultiplier = 4f)
+	{
+		var vertexCount = (int)Math.CeilToEven(radius * Math.tau / resolutionMultiplier);
+
+		var points = new Vector2[vertexCount];
+		for (int i = 0; i < vertexCount; i++)
+		{
+			points[i] = new(
+				center.x + (radius * Math.Sin(i * Math.pi2 / vertexCount)),
+				center.y + (radius * Math.Cos(i * Math.pi2 / vertexCount))
+			);
+		}
+
+		DrawPolygonOutline(points, color, thickness);
+	}
+
+	public static void DrawPolygonOutline(Vector2[] points, Color color, float thickness = 1)
+	{
+		if (points.Length < 2) return;
+		for (int i = 1; i < points.Length; i++)
+			DrawLine(points[i - 1], points[i], color, thickness);
+		DrawLine(points[points.Length - 1], points[0], color, thickness);
 	}
 
 	#endregion

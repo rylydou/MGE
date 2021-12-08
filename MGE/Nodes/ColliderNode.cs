@@ -1,3 +1,4 @@
+using MGE.Graphics;
 using tainicom.Aether.Physics2D.Dynamics;
 
 #nullable disable
@@ -15,5 +16,13 @@ public class ColliderNode : TransformNode
 		fixture.Tag = this;
 
 		base.Init();
+	}
+
+	protected override void Draw()
+	{
+		fixture.GetAABB(out var aabb, 0);
+		GFX.DrawBoxOutline(aabb, Color.yellow);
+
+		base.Draw();
 	}
 }

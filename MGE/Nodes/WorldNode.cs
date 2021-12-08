@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using tainicom.Aether.Physics2D.Collision;
 using tainicom.Aether.Physics2D.Dynamics;
 
 #nullable disable
@@ -43,7 +44,25 @@ public class WorldNode : Node
 	public RaycastHit[] RaycastAll(Vector2 from, Vector2 to)
 	{
 		var hits = new List<RaycastHit>();
-		world.RayCast((fixture, point, normal, fraction) => { hits.Add(new((ColliderNode)fixture.Tag, point, normal)); return 1; /* Continue the raycast, I think */ }, from, to);
+		world.RayCast((fixture, point, normal, fraction) => { hits.Add(new((ColliderNode)fixture.Tag, point, normal)); return fraction; /* Continue the raycast, I think */ }, from, to);
+		return hits.ToArray();
+	}
+
+	public ColliderNode OverlapBox(Rect rect) => OverlapBox(rect.center, rect.size);
+	public ColliderNode OverlapBox(Vector2 position, Vector2 size)
+	{
+		ColliderNode hit = null;
+		var aabb = new AABB(position, size.x, size.y);
+		world.QueryAABB((fixture) => { hit = (ColliderNode)fixture.Tag; return false; }, aabb);
+		return hit;
+	}
+
+	public ColliderNode[] OverlapBoxAll(Rect rect) => OverlapBoxAll(rect.center, rect.size);
+	public ColliderNode[] OverlapBoxAll(Vector2 position, Vector2 size)
+	{
+		var hits = new List<ColliderNode>();
+		var aabb = new AABB(position, size.x, size.y);
+		world.QueryAABB((fixture) => { hits.Add((ColliderNode)fixture.Tag); return true; }, aabb);
 		return hits.ToArray();
 	}
 }
