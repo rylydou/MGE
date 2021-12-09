@@ -5,7 +5,7 @@ using tainicom.Aether.Physics2D.Dynamics.Contacts;
 
 namespace MGE;
 
-public class KinematicNode : PhysicsBody
+public class KinematicNode : PhysicsBodyNode
 {
 	protected override void Init()
 	{
@@ -14,7 +14,7 @@ public class KinematicNode : PhysicsBody
 		body.OnCollision += (sender, other, contact) =>
 		{
 			OnCollision(other, contact);
-			return true; // TODO Figure out what the return is for
+			return true; // DOCS https://github.com/tainicom/Aether.Physics2D/blob/master/Physics2D/Dynamics/Contacts/Contact.cs#L317
 		};
 
 		base.Init();

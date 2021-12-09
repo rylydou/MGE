@@ -9,6 +9,11 @@ namespace MGE;
 
 public abstract class CollisionNode : TransformNode
 {
+	[Prop] public bool autoSleep = true;
+	[Prop] public bool isAwake = false;
+
+	[Prop] public bool enableSweeping = false;
+
 	[Prop] public int collisionLayer = 1;
 	[Prop] public int collisionMask = 1;
 
@@ -21,6 +26,11 @@ public abstract class CollisionNode : TransformNode
 	{
 		body.Tag = this;
 
+		body.SleepingAllowed = autoSleep;
+		body.Awake = isAwake;
+
+		body.IsBullet = enableSweeping;
+
 		base.Init();
 	}
 
@@ -29,7 +39,7 @@ public abstract class CollisionNode : TransformNode
 		foreach (var fixture in body.FixtureList)
 		{
 			var shape = fixture.Shape;
-			var color = fixture.Body.Awake ? Color.green : new Color(0, 1, 0, 1f / 3);
+			var color = fixture.Body.Awake ? new Color(0, 1, 0, 1f / 3) : new Color(0, 1, 0, 1f / 3);
 
 			if (shape is PolygonShape polygon)
 			{
@@ -62,15 +72,19 @@ public abstract class CollisionNode : TransformNode
 		base.WhenDetached();
 	}
 
+	protected virtual void ConnectCollider(ColliderNode collider) { }
+
 	protected override bool WhenChildAttached(Node child)
 	{
-		if (child is not ColliderNode shape) return true;
+		if (child is not ColliderNode collider) return true;
 
-		collisionShapes.Add(shape);
+		collisionShapes.Add(collider);
 
-		body.Add(shape.fixture);
+		body.Add(collider.fixture);
 
-		return true;
+		ConnectCollider(collider);
+
+		return false;
 	}
 
 	protected override bool WhenChildDetached(Node child)
@@ -79,6 +93,6 @@ public abstract class CollisionNode : TransformNode
 
 		collisionShapes.Remove(shape);
 
-		return true;
+		return false;
 	}
 }
