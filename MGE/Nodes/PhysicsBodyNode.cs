@@ -1,6 +1,6 @@
 namespace MGE;
 
-public class PhysicsBodyNode : CollisionNode
+public class PhysicsBodyNode : BodyNode
 {
 	protected override void Tick(float deltaTime)
 	{

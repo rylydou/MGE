@@ -4,7 +4,7 @@ using tainicom.Aether.Physics2D.Dynamics;
 
 namespace MGE;
 
-public class AreaNode : CollisionNode
+public class AreaNode : BodyNode
 {
 	protected override void Init()
 	{
@@ -19,7 +19,7 @@ public class AreaNode : CollisionNode
 
 		collider.fixture.BeforeCollision += (sender, other) => { OnAreaEnter((ColliderNode)other.Tag); return true; };
 		collider.fixture.OnCollision += (sender, other, contact) => { OnAreaEnter((ColliderNode)other.Tag); return true; };
-		collider.fixture.AfterCollision += (sender, other, contact, impulse) => OnAreaEnter((ColliderNode)other.Tag); ;
+		collider.fixture.AfterCollision += (sender, other, contact, impulse) => OnAreaEnter((ColliderNode)other.Tag);
 
 		base.ConnectCollider(collider);
 	}

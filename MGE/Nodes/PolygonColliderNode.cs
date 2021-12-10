@@ -12,7 +12,7 @@ public class PolygonColliderNode : ColliderNode
 
 	protected override void Init()
 	{
-		fixture = new(new PolygonShape(new(vertices.Select(x => (tainicom.Aether.Physics2D.Common.Vector2)x)), density));
+		fixture = new(new PolygonShape(new(vertices.Select(x => (tainicom.Aether.Physics2D.Common.Vector2)x)), 1));
 		base.Init();
 	}
 }

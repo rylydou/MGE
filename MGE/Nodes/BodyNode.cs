@@ -7,7 +7,7 @@ using tainicom.Aether.Physics2D.Dynamics;
 
 namespace MGE;
 
-public abstract class CollisionNode : TransformNode
+public abstract class BodyNode : TransformNode
 {
 	[Prop] public bool autoSleep = true;
 	[Prop] public bool isAwake = false;
