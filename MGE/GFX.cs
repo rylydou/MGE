@@ -115,7 +115,7 @@ public static class GFX
 
 	#region Primitive Drawing
 
-	public static void DrawPoint(Vector2 position, Color color, float radius = 1) => DrawBox(new(position - radius, radius * 2), color);
+	public static void DrawPoint(Vector2 position, Color color, float radius = 1) => DrawBoxFilled(new(position - radius, radius * 2), color);
 
 	public static void DrawLine(Vector2 start, Vector2 end, Color color, float thickness = 1)
 	{
@@ -126,16 +126,46 @@ public static class GFX
 		SetTextureScaledAndRotated(Texture.pixelTexture, _spriteShader, center, new Vector2(length, thickness), angle, color);
 	}
 
-	public static void DrawBox(Vector2 position, Vector2 scale, Color color) => DrawTexture(Texture.pixelTexture, position, scale, color);
-	public static void DrawBox(Vector2 position, Vector2 scale, float rotation, Color color) => DrawTexture(Texture.pixelTexture, position, scale, rotation, color);
-	public static void DrawBox(Rect rect, Color color) => DrawTexture(Texture.pixelTexture, rect, color);
+	public static void DrawBoxFilled(Vector2 position, Vector2 scale, Color color) => DrawTexture(Texture.pixelTexture, position, scale, color);
+	public static void DrawBoxFilled(Vector2 position, Vector2 scale, float rotation, Color color) => DrawTexture(Texture.pixelTexture, position, scale, rotation, color);
+	public static void DrawBoxFilled(Rect rect, Color color) => DrawTexture(Texture.pixelTexture, rect, color);
 
-	public static void DrawBoxOutline(Rect rect, Color color, float thickness = 1)
+	public static void DrawBoxOutline(Rect rect, Color color, float thickness = 4)
 	{
-		DrawBox(new Rect(rect.x - thickness, rect.y - thickness, rect.width + thickness * 2, thickness), color);   // Top
-		DrawBox(new Rect(rect.x - thickness, rect.y, thickness, rect.height), color);                              // Left
-		DrawBox(new Rect(rect.x - thickness, rect.y + rect.height, rect.width + thickness * 2, thickness), color); // Bottom
-		DrawBox(new Rect(rect.x + rect.width, rect.y, thickness, rect.height), color);                             // Right
+		StartVertexBatch(new(Texture.pixelTexture, _spriteShader) { priority = priority });
+
+		var outerRect = rect;
+		outerRect.Expand(thickness);
+
+		// The rectangle
+		// 4      5
+		//   0  1
+		//   2  3
+		// 6      7
+
+		// Inner
+		SetVertex(rect.topLeft, color);     // 0
+		SetVertex(rect.topRight, color);    // 1
+		SetVertex(rect.bottomLeft, color);  // 2
+		SetVertex(rect.bottomRight, color); // 3
+
+		// Outer
+		SetVertex(outerRect.topLeft, color);     // 4
+		SetVertex(outerRect.topRight, color);    // 5
+		SetVertex(outerRect.bottomLeft, color);  // 6
+		SetVertex(outerRect.bottomRight, color); // 7
+
+		SetTriangleIndices(0, 4, 1);
+		SetTriangleIndices(1, 4, 5);
+
+		SetTriangleIndices(1, 5, 3);
+		SetTriangleIndices(3, 5, 7);
+
+		SetTriangleIndices(3, 7, 2);
+		SetTriangleIndices(2, 7, 6);
+
+		SetTriangleIndices(2, 6, 0);
+		SetTriangleIndices(0, 6, 4);
 	}
 
 	/// <param name="resolutionMultiplier">Higher values = lower resolution</param>
@@ -307,6 +337,25 @@ public static class GFX
 
 		SetTriangleIndices(0, 1, 3); // Bottom right
 		SetTriangleIndices(1, 2, 3); // Top left
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void SetVertex(Vector2 position, Color color)
+	{
+		_batch.vertexCount++;
+
+		_batch.vertexData.EnsureSpaceFor(Vertex.SIZE_IN_ELEMENTS);
+
+		_batch.vertexData.AddUnsafe(position.x);
+		_batch.vertexData.AddUnsafe(position.y);
+
+		_batch.vertexData.AddUnsafe(0f);
+		_batch.vertexData.AddUnsafe(0f);
+
+		_batch.vertexData.AddUnsafe(color.r);
+		_batch.vertexData.AddUnsafe(color.g);
+		_batch.vertexData.AddUnsafe(color.b);
+		_batch.vertexData.AddUnsafe(color.a);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

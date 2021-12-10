@@ -1,5 +1,6 @@
 using System;
 using MGE.Graphics;
+using MGE.Nodes;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 
@@ -25,7 +26,16 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		CenterWindow(new(320 * 4, 180 * 4));
 		Focus();
 
-		Scene.root.AttachNode(new SpriteNode(Texture.LoadTexture("Tree.png")));
+		var world = new WorldNode();
+
+		var ball = new DynamicNode();
+
+		var ballColl = new CircleColliderNode();
+		ball.AttachNode(ballColl);
+
+		world.AttachNode(ball);
+
+		Scene.root.AttachNode(world);
 	}
 
 	protected override void OnLoad()

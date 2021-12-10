@@ -2,6 +2,9 @@ namespace MGE;
 
 public class PhysicsBodyNode : BodyNode
 {
+	public Vector2 velocity { get => body.LinearVelocity; set => body.LinearVelocity = value; }
+	public float angularVelocity { get => body.AngularVelocity; set => body.AngularVelocity = value; }
+
 	protected override void Tick(float deltaTime)
 	{
 		localPosition = body.Position;
@@ -9,6 +12,6 @@ public class PhysicsBodyNode : BodyNode
 
 		base.Tick(deltaTime);
 
-		body.SetTransform(localPosition, worldRotation);
+		// body.SetTransform(localPosition, worldRotation);
 	}
 }

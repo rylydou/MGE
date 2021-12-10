@@ -9,7 +9,7 @@ public class KinematicNode : PhysicsBodyNode
 {
 	protected override void Init()
 	{
-		body = new() { Position = worldPosition, Rotation = worldRotation, BodyType = BodyType.Static, };
+		body = new() { Position = worldPosition, Rotation = worldRotation, BodyType = BodyType.Kinematic, };
 
 		body.OnCollision += (sender, other, contact) =>
 		{

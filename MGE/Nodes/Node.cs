@@ -13,8 +13,8 @@ public abstract class Node : Object
 	public bool visible = true;
 
 	internal bool _isActive;
-	bool _isInitialized;
-	bool _isDestroyed;
+	internal bool _isInitialized;
+	internal bool _isDestroyed;
 
 	public Node? parent { get; private set; }
 
@@ -140,10 +140,18 @@ public abstract class Node : Object
 	{
 		if (_isInitialized) throw new MGEException("Initialize node", "Node is already initialized");
 		if (!_isActive) throw new MGEException("Initialize node", "Node is not active in scene");
+		if (_isDestroyed) throw new MGEException("Initialize node", "Node is destroyed");
+
+		Debug.Log($"{this} Inited");
 
 		_isInitialized = true;
 
 		Init();
+
+		// foreach (var child in _children)
+		// {
+		// 	child.DoAttach(this);
+		// }
 	}
 	/// <summary>
 	/// Called only once when the node is created.
@@ -153,28 +161,30 @@ public abstract class Node : Object
 	/// </remarks>
 	protected virtual void Init()
 	{
-		foreach (var child in _children.ToArray())
-			child.DoInit();
 	}
 
-	internal void DoReady()
-	{
-		Ready();
-	}
-	/// <summary>
-	/// Called only once when the node is created.
-	/// </summary>
-	/// <remarks>
-	/// Handle loading assets here.
-	/// </remarks>
-	protected virtual void Ready()
-	{
-		foreach (var child in _children.ToArray())
-			child.DoReady();
-	}
+	// internal void DoReady()
+	// {
+	// 	Ready();
+	// }
+	// /// <summary>
+	// /// Called only once when the node is created.
+	// /// </summary>
+	// /// <remarks>
+	// /// Handle loading assets here.
+	// /// </remarks>
+	// protected virtual void Ready()
+	// {
+	// 	foreach (var child in _children.ToArray())
+	// 		child.DoReady();
+	// }
 
 	internal void DoTick(float deltaTime)
 	{
+		if (!_isInitialized) throw new MGEException("Tick node", "Node is not initialized");
+		if (!_isActive) throw new MGEException("Tick node", "Node is not active in scene");
+		if (_isDestroyed) throw new MGEException("Tick node", "Node is destroyed");
+
 		Tick(deltaTime);
 	}
 	/// <summary>
@@ -201,6 +211,10 @@ public abstract class Node : Object
 	/// </remarks>
 	internal void DoUpdate(float deltaTime)
 	{
+		if (!_isInitialized) throw new MGEException("Update node", "Node is not initialized");
+		if (!_isActive) throw new MGEException("Update node", "Node is not active in scene");
+		if (_isDestroyed) throw new MGEException("Update node", "Node is destroyed");
+
 		if (!enabled) return;
 
 		Update(deltaTime);
@@ -213,6 +227,10 @@ public abstract class Node : Object
 
 	internal void DoDraw()
 	{
+		if (!_isInitialized) throw new MGEException("Draw node", "Node is not initialized");
+		if (!_isActive) throw new MGEException("Draw node", "Node is not active in scene");
+		if (_isDestroyed) throw new MGEException("Draw node", "Node is destroyed");
+
 		if (!visible) return;
 
 		Draw();
@@ -239,16 +257,17 @@ public abstract class Node : Object
 
 		_isActive = parent._isActive;
 
-		if (_isActive && !_isInitialized)
+		if (_isActive)
 		{
-			DoInit();
+			if (!_isInitialized)
+			{
+				DoInit();
+			}
+
+			WhenAttached();
+
+			parent.ChildAttached(this);
 		}
-
-		WhenAttached();
-
-		DoReady();
-
-		parent.ChildAttached(this);
 	}
 	/// <summary>
 	/// Called after the node is attached to a parent.
@@ -260,7 +279,7 @@ public abstract class Node : Object
 	protected virtual void WhenAttached()
 	{
 		foreach (var child in _children.ToArray())
-			child.DoDetach();
+			child.DoAttach(this);
 	}
 
 	void DoDetach()

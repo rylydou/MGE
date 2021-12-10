@@ -47,7 +47,7 @@ public abstract class BodyNode : TransformNode
 			}
 			else if (shape is CircleShape circle)
 			{
-				GFX.DrawCircleOutline(circle.Position, circle.Radius, color);
+				GFX.DrawCircleOutline(body.Position + circle.Position, circle.Radius, color);
 			}
 		}
 
@@ -59,6 +59,8 @@ public abstract class BodyNode : TransformNode
 		world = GetParent<WorldNode>();
 
 		world.world.Add(body);
+
+		Debug.Log($"Added {this} to {world}");
 
 		base.WhenAttached();
 	}
@@ -72,7 +74,10 @@ public abstract class BodyNode : TransformNode
 		base.WhenDetached();
 	}
 
-	protected virtual void ConnectCollider(ColliderNode collider) { }
+	protected virtual void ConnectCollider(ColliderNode collider)
+	{
+		Debug.Log($"Added {collider} to {this}");
+	}
 
 	protected override bool WhenChildAttached(Node child)
 	{
