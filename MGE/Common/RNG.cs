@@ -29,7 +29,7 @@ public class RNG
 
 	public int RandomSign() => RandomBool() ? 1 : -1;
 
-	public float RandomAngle() => RandomFloat(Math.pi2);
+	public float RandomAngle() => RandomFloat(Math.tau);
 
 	public Vector2 RandomUnitVector()
 	{

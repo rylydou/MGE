@@ -223,11 +223,10 @@ public struct Rect : IEquatable<Rect>
 
 	public void Expand(float amount)
 	{
-		amount = amount / 2;
-		top -= amount;
-		left -= amount;
-		bottom += amount;
-		right += amount;
+		_xMin -= amount / 2;
+		_yMin -= amount / 2;
+		_width += amount;
+		_height += amount;
 	}
 
 	////////////////////////////////////////////////////////////

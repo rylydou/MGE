@@ -99,7 +99,11 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		Font.current.DrawText($"Update: {1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
 
-		GFX.DrawTextureRegion(sprite, new(256, 256, 32, 32), new(0, 0, sprite.size));
+		GFX.DrawTextureRegion(sprite, new(128, 128, 32, 32), new(0, 0, sprite.size));
+
+		GFX.DrawBoxOutline(new(64, 128, 256, 64), new Color(1, 0, 0, 0.5f));
+
+		GFX.DrawCircleOutline(Vector2.zero, 256, Color.red);
 
 		GFX.Flush();
 

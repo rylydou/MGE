@@ -83,8 +83,8 @@ public abstract class BodyNode : TransformNode
 	{
 		if (child is not ColliderNode collider) return true;
 
+		collider.body = this;
 		collisionShapes.Add(collider);
-
 		body.Add(collider.fixture);
 
 		ConnectCollider(collider);

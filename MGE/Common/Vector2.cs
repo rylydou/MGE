@@ -1,5 +1,4 @@
 using System;
-using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace MGE;
@@ -22,6 +21,8 @@ namespace MGE;
 [Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct Vector2 : IEquatable<Vector2>
 {
+	#region Constants
+
 	public static readonly Vector2 zero = new Vector2(0, 0);
 	public static readonly Vector2 one = new Vector2(1, 1);
 
@@ -35,78 +36,29 @@ public struct Vector2 : IEquatable<Vector2>
 	public static readonly Vector2 downLeft = new Vector2(-1, -1);
 	public static readonly Vector2 downRight = new Vector2(1, -1);
 
-	////////////////////////////////////////////////////////////
+	#endregion Constants
 
-	public static Vector2 FromAngle(float angle) => new Vector2(Math.Cos(angle), Math.Sin(angle));
+	#region Static
 
-	public static Vector2 Lerp(Vector2 current, Vector2 target, float time)
+	public static Vector2 Lerp(Vector2 current, Vector2 target, float time) => current + (target - current) * time;
+	public static Vector2 LerpClamped(Vector2 current, Vector2 target, float time) => current + (target - current) * Math.Clamp01(time);
+
+	public static Vector2 MoveTowards(Vector2 point, Vector2 target, float maxDistance)
 	{
-		time = Math.Clamp01(time);
-		return new Vector2(
-			current.x + (target.x - current.x) * time,
-			current.y + (target.y - current.y) * time
-		);
-	}
-
-	public static Vector2 LerpUnclamped(Vector2 current, Vector2 target, float time)
-	{
-		return new Vector2(
-			current.x + (target.x - current.x) * time,
-			current.y + (target.y - current.y) * time
-		);
-	}
-
-	public static Vector2 MoveTowards(Vector2 from, Vector2 to, float maxDistance)
-	{
-		var direction = to - from;
+		var direction = target - point;
 		var sqDist = direction.lengthSqr;
 
-		if (sqDist == 0 || (maxDistance >= 0 && sqDist <= maxDistance * maxDistance)) return to;
+		if (sqDist == 0 || (maxDistance >= 0 && sqDist <= maxDistance * maxDistance)) return target;
 
-		return from + direction / Math.Sqrt(sqDist) * maxDistance;
+		return point + direction / Math.Sqrt(sqDist) * maxDistance;
 	}
 
-	public static Vector2 Reflect(Vector2 inDirection, Vector2 inNormal)
+	public static float Dot(Vector2 a, Vector2 b) => a.x * b.x + a.y * b.y;
+	public static Vector2 PerpendicularDir(Vector2 inDir) => new(-inDir.y, inDir.x);
+	public static Vector2 ReflectDir(Vector2 inDir, Vector2 inNormal)
 	{
-		var factor = -2 * Dot(inNormal, inDirection);
-		return new Vector2(factor * inNormal.x + inDirection.x, factor * inNormal.y + inDirection.y);
-	}
-
-	public static Vector2 Perpendicular(Vector2 inDirection) => new(-inDirection.y, inDirection.x);
-
-	public static float Dot(Vector2 left, Vector2 right) => left.x * right.x + left.y * right.y;
-
-	public static Vector2 Direction(Vector2 start, Vector2 end) => (start - end).normalized;
-
-	public static float Angle(Vector2 point, Vector2 target) => Direction(point, target).angle;
-
-	public static float SignedAngle(Vector2 from, Vector2 to)
-	{
-		var angle = Angle(from, to);
-		var sign = Math.Sign(from.x * to.y - from.y * to.x);
-		return angle * sign;
-	}
-
-	public static Vector2 RotateAroundPoint(Vector2 center, Vector2 point, float rotationInRadians)
-	{
-		var cosTheta = Math.Cos(rotationInRadians);
-		var sinTheta = Math.Sin(rotationInRadians);
-
-		return new(
-			cosTheta * (point.x - center.x) - sinTheta * (point.y - center.y) + center.x,
-			sinTheta * (point.x - center.x) + cosTheta * (point.y - center.y) + center.y
-		);
-	}
-
-	public static Vector2 RotateAroundPoint(Vector2 point, float rotationInRadians)
-	{
-		var cosTheta = Math.Cos(rotationInRadians);
-		var sinTheta = Math.Sin(rotationInRadians);
-
-		return new(
-			cosTheta * point.x - sinTheta * point.y,
-			sinTheta * point.x + cosTheta * point.y
-		);
+		var factor = -2 * Dot(inNormal, inDir);
+		return new Vector2(factor * inNormal.x + inDir.x, factor * inNormal.y + inDir.y);
 	}
 
 	public static float DistanceSqr(Vector2 from, Vector2 to) => (from - to).lengthSqr;
@@ -116,10 +68,39 @@ public struct Vector2 : IEquatable<Vector2>
 	public static bool DistanceLessThan(Vector2 from, Vector2 to, float value) => DistanceSqr(from, to) < value * value;
 	public static bool DistanceGreaterThan(Vector2 from, Vector2 to, float value) => DistanceSqr(from, to) > value * value;
 
+	public static Vector2 FromTo(Vector2 from, Vector2 to) => to - from;
 	public static Vector2 Midpoint(Vector2 a, Vector2 b) => (a + b) / 2;
+	public static Vector2 CenterDirection(Vector2 a, Vector2 b) => (a + b).normalized;
+	public static Vector2 Direction(Vector2 point, Vector2 target) => (point - target).normalized;
+	public static Vector2 FromAngle(float angle) => new Vector2(Math.Cos(angle), Math.Sin(angle));
 
-	// public static Vector2 Clamp(Vector2 vector, float length) => new Vector2(Math.Clamp(vector.x, -length, length), Math.Clamp(vector.y, -length, length));
-	// public static Vector2 Clamp(Vector2 vector, Vector2 size) => new Vector2(Math.Clamp(vector.x, -size.x, size.x), Math.Clamp(vector.y, -size.y, size.y));
+	public static float AngleTo(Vector2 point, Vector2 target) => Direction(point, target).angle;
+	public static float SignedAngle(Vector2 a, Vector2 b) => AngleBetween(a, b) * Math.Sign(Dot(a, b));
+	public static float AngleBetween(Vector2 a, Vector2 b) => Math.Acos(Math.ClampUnit(Vector2.Dot(a.normalized, b.normalized)));
+	public static float AngleFromToCW(Vector2 from, Vector2 to) => Dot(from, to) < 0f ? AngleBetween(from, to) : Math.tau - AngleBetween(from, to);
+	public static float AngleFromToCCW(Vector2 from, Vector2 to) => Dot(from, to) > 0f ? AngleBetween(from, to) : Math.tau - AngleBetween(from, to);
+
+	public static Vector2 RotateAroundPoint(Vector2 center, Vector2 point, float rotationRad)
+	{
+		var cosTheta = Math.Cos(rotationRad);
+		var sinTheta = Math.Sin(rotationRad);
+
+		return new(
+			cosTheta * (point.x - center.x) - sinTheta * (point.y - center.y) + center.x,
+			sinTheta * (point.x - center.x) + cosTheta * (point.y - center.y) + center.y
+		);
+	}
+
+	public static Vector2 RotateAroundPoint(Vector2 point, float rotationRad)
+	{
+		var cosTheta = Math.Cos(rotationRad);
+		var sinTheta = Math.Sin(rotationRad);
+
+		return new(
+			cosTheta * point.x - sinTheta * point.y,
+			sinTheta * point.x + cosTheta * point.y
+		);
+	}
 
 	public static Vector2 ClampLength(Vector2 vector, float length)
 	{
@@ -127,9 +108,6 @@ public struct Vector2 : IEquatable<Vector2>
 			return vector.normalized * length;
 		return vector;
 	}
-
-	public static Vector2 Min(Vector2 a, Vector2 b) => new(Math.Min(a.x, b.x), Math.Min(a.y, b.y));
-	public static Vector2 Max(Vector2 a, Vector2 b) => new(Math.Max(a.x, b.x), Math.Max(a.y, b.y));
 
 	public static Vector2 Transform(Vector2 position, Matrix matrix) => new(
 		position.x * matrix.m11 + position.y * matrix.m21 + matrix.m41,
@@ -147,7 +125,9 @@ public struct Vector2 : IEquatable<Vector2>
 		position.x * matrix.m12 + position.y * matrix.m22
 	);
 
-	////////////////////////////////////////////////////////////
+	#endregion Static
+
+	#region Instance
 
 	[Prop] public float x;
 	[Prop] public float y;
@@ -187,8 +167,6 @@ public struct Vector2 : IEquatable<Vector2>
 		}
 	}
 
-	////////////////////////////////////////////////////////////
-
 	public Vector2 normalized
 	{
 		get
@@ -209,12 +187,7 @@ public struct Vector2 : IEquatable<Vector2>
 	public float lengthSqr => x * x + y * y;
 	public float length => Math.Sqrt(lengthSqr);
 
-	// public float max => Math.Max(x, y);
-	// public float min => Math.Min(x, y);
-
 	public float angle => Math.Atan2(y, x);
-
-	////////////////////////////////////////////////////////////
 
 	public void Normalize()
 	{
@@ -244,7 +217,7 @@ public struct Vector2 : IEquatable<Vector2>
 		y = Math.Clamp(y, minY, maxY);
 	}
 
-	////////////////////////////////////////////////////////////
+	#region Operators
 
 	public static Vector2 operator +(Vector2 left, Vector2 right) => new Vector2(left.x + right.x, left.y + right.y);
 	public static Vector2 operator -(Vector2 left, Vector2 right) => new Vector2(left.x - right.x, left.y - right.y);
@@ -267,7 +240,9 @@ public struct Vector2 : IEquatable<Vector2>
 	}
 	public static bool operator !=(Vector2 left, Vector2 right) => !(left == right);
 
-	////////////////////////////////////////////////////////////
+	#endregion
+
+	#region Conversion
 
 	public static implicit operator Vector2(Vector2Int vector) => new(vector.x, vector.y);
 
@@ -286,7 +261,9 @@ public struct Vector2 : IEquatable<Vector2>
 	public static implicit operator tainicom.Aether.Physics2D.Common.Vector3(Vector2 vector) => new(vector.x, vector.y, 0);
 	public static implicit operator Vector2(tainicom.Aether.Physics2D.Common.Vector3 vector) => new(vector.X, vector.Y);
 
-	////////////////////////////////////////////////////////////
+	#endregion Conversion
+
+	#region Overrides
 
 	public override string ToString() => $"({x.ToString("F2")}, {y.ToString("F2")})";
 	public string ToString(string format) => string.Format(format, x, y);
@@ -295,4 +272,8 @@ public struct Vector2 : IEquatable<Vector2>
 
 	public bool Equals(Vector2 other) => x == other.x && y == other.y;
 	public override bool Equals(object? other) => other is Vector2 vector && Equals(vector);
+
+	#endregion Overloads
+
+	#endregion Instance
 }

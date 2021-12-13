@@ -68,7 +68,7 @@ public static class GFX
 		const VertIndex elementCapacity = 1024 * 6;
 
 		_vertexBuffer = new();
-		_vertexBuffer.Init(BufferTarget.ArrayBuffer, (int)Math.NextPowerOf2((uint)(vertexCapacity * Vertex.SIZE_IN_ELEMENTS)), BufferUsageHint.StreamDraw);
+		_vertexBuffer.Init(BufferTarget.ArrayBuffer, (int)Math.CeilToPowerOf2((uint)(vertexCapacity * Vertex.SIZE_IN_ELEMENTS)), BufferUsageHint.StreamDraw);
 
 		_vertexDataArray = new();
 		_vertexDataArray.Bind();
@@ -77,7 +77,7 @@ public static class GFX
 		_vertexDataArray.BindAttribute(2, _vertexBuffer, 4, VertexAttribPointerType.Float, Vertex.SIZE_IN_BYTES, 4 * sizeof(float), false); // Color
 
 		_elementBuffer = new();
-		_elementBuffer.Init(BufferTarget.ElementArrayBuffer, (int)Math.NextPowerOf2(elementCapacity), BufferUsageHint.StreamDraw);
+		_elementBuffer.Init(BufferTarget.ElementArrayBuffer, (int)Math.CeilToPowerOf2(elementCapacity), BufferUsageHint.StreamDraw);
 
 		_spriteShader = new("Sprite.vert", "Sprite.frag");
 	}
@@ -119,7 +119,7 @@ public static class GFX
 
 	public static void DrawLine(Vector2 start, Vector2 end, Color color, float thickness = 1)
 	{
-		var angle = Vector2.Angle(start, end);
+		var angle = Vector2.AngleTo(start, end);
 		var center = Vector2.Midpoint(start, end);
 		var length = Vector2.Distance(start, end);
 
@@ -130,12 +130,12 @@ public static class GFX
 	public static void DrawBoxFilled(Vector2 position, Vector2 scale, float rotation, Color color) => DrawTexture(Texture.pixelTexture, position, scale, rotation, color);
 	public static void DrawBoxFilled(Rect rect, Color color) => DrawTexture(Texture.pixelTexture, rect, color);
 
-	public static void DrawBoxOutline(Rect rect, Color color, float thickness = 4)
+	public static void DrawBoxOutline(Rect rect, Color color, float thickness = 1)
 	{
-		StartVertexBatch(new(Texture.pixelTexture, _spriteShader) { priority = priority });
-
 		var outerRect = rect;
-		outerRect.Expand(thickness);
+		outerRect.Expand(thickness * 2);
+
+		StartVertexBatch(new(Texture.pixelTexture, _spriteShader) { priority = priority });
 
 		// The rectangle
 		// 4      5
@@ -155,21 +155,23 @@ public static class GFX
 		SetVertex(outerRect.bottomLeft, color);  // 6
 		SetVertex(outerRect.bottomRight, color); // 7
 
-		SetTriangleIndices(0, 4, 1);
-		SetTriangleIndices(1, 4, 5);
+		SetIndices(
+			0, 4, 1,
+			1, 5, 4,
 
-		SetTriangleIndices(1, 5, 3);
-		SetTriangleIndices(3, 5, 7);
+			1, 5, 3,
+			3, 7, 5,
 
-		SetTriangleIndices(3, 7, 2);
-		SetTriangleIndices(2, 7, 6);
+			3, 7, 2,
+			2, 6, 7,
 
-		SetTriangleIndices(2, 6, 0);
-		SetTriangleIndices(0, 6, 4);
+			2, 6, 0,
+			0, 4, 6
+		);
 	}
 
 	/// <param name="resolutionMultiplier">Higher values = lower resolution</param>
-	public static void DrawCircleFilled(Vector2 center, float radius, Color color, float resolutionMultiplier = 4f)
+	public static void DrawCircleFilled(Vector2 center, float radius, Color color, float resolutionMultiplier = 8f)
 	{
 		var vertexCount = (VertIndex)Math.CeilToEven(radius * Math.tau / resolutionMultiplier);
 
@@ -183,8 +185,8 @@ public static class GFX
 		for (VertIndex i = 0; i < vertexCount; i++)
 		{
 			var vertexPosition = new Vector2(
-				center.x + (radius * Math.Sin(i * Math.pi2 / vertexCount)),
-				center.y + (radius * Math.Cos(i * Math.pi2 / vertexCount))
+				center.x + (radius * Math.Sin(i * Math.tau / vertexCount)),
+				center.y + (radius * Math.Cos(i * Math.tau / vertexCount))
 			);
 
 			SetVertex(vertexPosition, Vector2.zero, color);
@@ -199,7 +201,7 @@ public static class GFX
 		SetTriangleIndices(0, vertexCount, 1);
 	}
 
-	public static void DrawCircleOutline(Vector2 center, float radius, Color color, float thickness = 1, float resolutionMultiplier = 4f)
+	public static void DrawCircleOutline(Vector2 center, float radius, Color color, float thickness = 1, float resolutionMultiplier = 8f)
 	{
 		var vertexCount = (int)Math.CeilToEven(radius * Math.tau / resolutionMultiplier);
 
@@ -207,8 +209,8 @@ public static class GFX
 		for (int i = 0; i < vertexCount; i++)
 		{
 			points[i] = new(
-				center.x + (radius * Math.Sin(i * Math.pi2 / vertexCount)),
-				center.y + (radius * Math.Cos(i * Math.pi2 / vertexCount))
+				center.x + (radius * Math.Sin(i * Math.tau / vertexCount)),
+				center.y + (radius * Math.Cos(i * Math.tau / vertexCount))
 			);
 		}
 
