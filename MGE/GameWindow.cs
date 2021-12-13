@@ -14,17 +14,21 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	double updateTime;
 	double renderTime;
 
+	RenderTexture gameRender;
 	Texture sprite;
 
 	public GameWindow() : base(new() { RenderFrequency = 60, UpdateFrequency = 60, }, new() { Title = "Mangrove Game Engine", NumberOfSamples = 4, })
 	{
 		_current = this;
 
+		gameRender = new(new(320 * 2, 180 * 2));
 		sprite = Texture.LoadTexture("Icon.png");
 		Icon = new(Texture.LoadImageData("Icon.png"));
 
 		CenterWindow(new(320 * 4, 180 * 4));
 		Focus();
+
+		GFX.PushTransform(Matrix.identity);
 
 		var world = new WorldNode();
 
@@ -63,13 +67,9 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnResize(args);
 
-		var size = new Vector2Int(args.Size.X, args.Size.Y);
+		var size = new Vector2Int(Math.CeilToEvenInt(args.Size.X), Math.CeilToEvenInt(args.Size.Y));
 
-		size.x = Math.CeilToEvenInt(size.x);
-		size.y = Math.CeilToEvenInt(size.y);
-
-		GL.Viewport(0, 0, size.x, size.y);
-		GFX.transform = Matrix.CreateOrthographic(size.x, size.y, -1, 1);
+		GFX.windowScreenTransform = Matrix.CreateOrthographic(size.x, size.y, -1, 1);
 	}
 
 	protected override void OnUpdateFrame(FrameEventArgs args)
@@ -91,6 +91,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		renderTime = args.Time;
 
+		GFX.SetRenderTexture(gameRender);
+
 		GFX.Clear(new("#394778"));
 
 		Scene.Draw();
@@ -99,11 +101,17 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		Font.current.DrawText($"Update: {1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
 
-		GFX.DrawTextureRegion(sprite, new(128, 128, 32, 32), new(0, 0, sprite.size));
+		GFX.DrawTextureRegionAtDest(sprite, new(128, 128, 32, 32), new(0, 0, sprite.size), Color.white);
 
 		GFX.DrawBoxOutline(new(64, 128, 256, 64), new Color(1, 0, 0, 0.5f));
 
 		GFX.DrawCircleOutline(Vector2.zero, 256, Color.red);
+
+		GFX.Flush();
+
+		GFX.SetRenderTexture(null);
+
+		GFX.DrawRenderTexture(gameRender);
 
 		GFX.Flush();
 

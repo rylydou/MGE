@@ -1,25 +1,26 @@
-using System;
 using OpenTK.Graphics.OpenGL;
 
 namespace MGE.Graphics;
 
-public class RenderTexture : GraphicsResource, IUseable
+public class RenderTexture : GraphicsResource
 {
-	public readonly Texture texture;
-
 	public readonly Vector2Int size;
+	public readonly Matrix screenSpaceTransform;
+
+	public readonly Texture colorTexture;
 
 	int _rbo;
 
 	public RenderTexture(Vector2Int size) : base(GL.GenFramebuffer())
 	{
 		this.size = size;
+		screenSpaceTransform = Matrix.CreateOrthographic(size.x, size.y, -1, 1);
 
-		texture = new(this.size);
+		colorTexture = new(this.size);
 
-		Use();
+		SetAsTarget();
 
-		GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture.handle, 0);
+		GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, colorTexture.handle, 0);
 
 		_rbo = GL.GenRenderbuffer();
 		GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _rbo);
@@ -29,12 +30,12 @@ public class RenderTexture : GraphicsResource, IUseable
 		var errorCode = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
 		if (errorCode != FramebufferErrorCode.FramebufferComplete) throw new MGEException($"Error when initializing RenderTexture {((int)errorCode)} - {errorCode.ToString()}");
 
-		StopUse();
+		SetScreenAsTarget();
 	}
 
-	public void Use() => GL.BindFramebuffer(FramebufferTarget.Framebuffer, handle);
+	internal void SetAsTarget() => GL.BindFramebuffer(FramebufferTarget.Framebuffer, handle);
 
-	public void StopUse() => GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+	internal static void SetScreenAsTarget() => GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
 	protected override void Delete()
 	{

@@ -1,11 +1,12 @@
 using System.Runtime.CompilerServices;
 using OpenTK.Graphics.OpenGL;
 using MGE.Graphics;
+using System.Collections.Generic;
 
 #if MGE_MORE_VERTICES
 using VertIndex = System.UInt32;
 #else
-using VertIndex = System.UInt16;
+using VertexIndex = System.UInt16;
 #endif
 
 namespace MGE;
@@ -23,9 +24,9 @@ public static class GFX
 		public readonly BatchKey key;
 
 		public ChunkedList<float> vertexData = new();
-		public ChunkedList<VertIndex> elements = new();
+		public ChunkedList<VertexIndex> indices = new();
 
-		public VertIndex vertexCount;
+		public VertexIndex vertexCount;
 
 		public BatchItem(BatchKey key)
 		{
@@ -36,36 +37,41 @@ public static class GFX
 		public void Clear()
 		{
 			vertexData.Clear();
-			elements.Clear();
+			indices.Clear();
 
 			vertexCount = 0;
 		}
 	}
 
-	public static Matrix transform;
-
 	static AutoDictionary<BatchKey, BatchItem> _batches = new(v => v.key);
 #nullable disable
 	static BatchItem _batch;
-#nullable enable
-	static VertIndex _batchIndexOffset;
+#nullable restore
+	static VertexIndex _batchIndexOffset;
+
+	public static Stack<Matrix> transformStack = new();
+	public static Matrix transform;
+
+#nullable disable
+	public static Texture texture;
+	public static Shader shader;
+#nullable restore
+	public static float priority;
+
+	internal static Matrix windowScreenTransform;
+	static Matrix currentScreenTransform;
+	static Shader _basicSpriteShader;
 
 	// Vertex layout: Position X, Position Y, Texture Coordinate X, Texture Coordinate Y, Color R, Color G, Color B, Color A
 	static VertexArray _vertexDataArray;
 
 	static Buffer<float> _vertexBuffer;
-	static Buffer<VertIndex> _elementBuffer;
-
-	static Shader _spriteShader;
-
-	public static Texture? texture;
-	public static Shader? shader;
-	public static float priority;
+	static Buffer<VertexIndex> _indexBuffer;
 
 	static GFX()
 	{
-		const VertIndex vertexCapacity = 1024 * 4 /* * Vertex.SIZE_IN_ELEMENTS */;
-		const VertIndex elementCapacity = 1024 * 6;
+		const VertexIndex vertexCapacity = 1024 * 4 /* * Vertex.SIZE_IN_ELEMENTS */;
+		const VertexIndex indexCapacity = 1024 * 6;
 
 		_vertexBuffer = new();
 		_vertexBuffer.Init(BufferTarget.ArrayBuffer, (int)Math.CeilToPowerOf2((uint)(vertexCapacity * Vertex.SIZE_IN_ELEMENTS)), BufferUsageHint.StreamDraw);
@@ -76,16 +82,47 @@ public static class GFX
 		_vertexDataArray.BindAttribute(1, _vertexBuffer, 2, VertexAttribPointerType.Float, Vertex.SIZE_IN_BYTES, 2 * sizeof(float), false); // Texture Coord
 		_vertexDataArray.BindAttribute(2, _vertexBuffer, 4, VertexAttribPointerType.Float, Vertex.SIZE_IN_BYTES, 4 * sizeof(float), false); // Color
 
-		_elementBuffer = new();
-		_elementBuffer.Init(BufferTarget.ElementArrayBuffer, (int)Math.CeilToPowerOf2(elementCapacity), BufferUsageHint.StreamDraw);
+		_indexBuffer = new();
+		_indexBuffer.Init(BufferTarget.ElementArrayBuffer, (int)Math.CeilToPowerOf2(indexCapacity), BufferUsageHint.StreamDraw);
 
-		_spriteShader = new("Sprite.vert", "Sprite.frag");
+		_basicSpriteShader = new("Sprite.vert", "Sprite.frag");
 	}
 
 	public static void Clear(Color color)
 	{
 		GL.ClearColor(color);
 		GL.Clear(ClearBufferMask.ColorBufferBit);
+	}
+
+	public static void PushTransform(Matrix transform)
+	{
+		transformStack.Push(GFX.transform);
+		GFX.transform = transform;
+	}
+
+	public static void PopTransform()
+	{
+		transform = transformStack.Pop();
+	}
+
+	public static void SetRenderTexture(RenderTexture? renderTexture)
+	{
+		var size = Vector2Int.zero;
+
+		if (renderTexture is null)
+		{
+			size = GameWindow.current.Size;
+			currentScreenTransform = windowScreenTransform;
+			RenderTexture.SetScreenAsTarget();
+		}
+		else
+		{
+			size = renderTexture.size;
+			currentScreenTransform = renderTexture.screenSpaceTransform;
+			renderTexture.SetAsTarget();
+		}
+
+		GL.Viewport(0, 0, size.x, size.y);
 	}
 
 	public static void Flush()
@@ -101,13 +138,14 @@ public static class GFX
 			// Debug.Log($"Elements ({batch.elements.Count}):");
 			// Debug.Log(string.Join(' ', batch.elements.array.Select(x => x.ToString()).ToArray(), 0, batch.elements.Count));
 
-			batch.key.texture.Use();
+			batch.key.texture.Bind();
 			batch.key.shader.SetMatrix("transform", transform);
+			batch.key.shader.SetMatrix("screenTransform", currentScreenTransform);
 
 			_vertexBuffer.SubData(BufferTarget.ArrayBuffer, batch.vertexData.array, 0, batch.vertexData.Count);
-			_elementBuffer.SubData(BufferTarget.ElementArrayBuffer, batch.elements.array, 0, batch.elements.Count);
+			_indexBuffer.SubData(BufferTarget.ElementArrayBuffer, batch.indices.array, 0, batch.indices.Count);
 
-			_vertexDataArray.DrawElements(PrimitiveType.Triangles, batch.elements.Count, ELEMENTS_TYPE);
+			_vertexDataArray.DrawElements(PrimitiveType.Triangles, batch.indices.Count, ELEMENTS_TYPE);
 
 			batch.Clear();
 		}
@@ -123,25 +161,27 @@ public static class GFX
 		var center = Vector2.Midpoint(start, end);
 		var length = Vector2.Distance(start, end);
 
-		SetTextureScaledAndRotated(Texture.pixelTexture, _spriteShader, center, new Vector2(length, thickness), angle, color);
+		DrawTextureScaledAndRotated(Texture.pixelTexture, center, new Vector2(length, thickness), angle, color);
 	}
 
-	public static void DrawBoxFilled(Vector2 position, Vector2 scale, Color color) => DrawTexture(Texture.pixelTexture, position, scale, color);
-	public static void DrawBoxFilled(Vector2 position, Vector2 scale, float rotation, Color color) => DrawTexture(Texture.pixelTexture, position, scale, rotation, color);
-	public static void DrawBoxFilled(Rect rect, Color color) => DrawTexture(Texture.pixelTexture, rect, color);
+	public static void DrawBoxFilled(Vector2 position, Vector2 scale, Color color) => DrawTextureScaled(Texture.pixelTexture, position, scale, color);
+	public static void DrawBoxFilled(Vector2 position, Vector2 scale, float rotation, Color color) => DrawTextureScaledAndRotated(Texture.pixelTexture, position, scale, rotation, color);
+	public static void DrawBoxFilled(Rect rect, Color color) => DrawTextureAtDest(Texture.pixelTexture, rect, color);
 
 	public static void DrawBoxOutline(Rect rect, Color color, float thickness = 1)
 	{
 		var outerRect = rect;
 		outerRect.Expand(thickness * 2);
 
-		StartVertexBatch(new(Texture.pixelTexture, _spriteShader) { priority = priority });
+		SetBatch(Texture.pixelTexture);
 
 		// The rectangle
 		// 4      5
 		//   0  1
 		//   2  3
 		// 6      7
+
+		SetSpaceForVertices(8);
 
 		// Inner
 		SetVertex(rect.topLeft, color);     // 0
@@ -155,34 +195,34 @@ public static class GFX
 		SetVertex(outerRect.bottomLeft, color);  // 6
 		SetVertex(outerRect.bottomRight, color); // 7
 
-		SetIndices(
-			0, 4, 1,
-			1, 5, 4,
+		SetSpaceForIndices(24);
 
-			1, 5, 3,
-			3, 7, 5,
+		SetIndices(0, 4, 1);
+		SetIndices(1, 5, 4);
 
-			3, 7, 2,
-			2, 6, 7,
+		SetIndices(1, 5, 3);
+		SetIndices(3, 7, 5);
 
-			2, 6, 0,
-			0, 4, 6
-		);
+		SetIndices(3, 7, 2);
+		SetIndices(2, 6, 7);
+
+		SetIndices(2, 6, 0);
+		SetIndices(0, 4, 6);
 	}
 
 	/// <param name="resolutionMultiplier">Higher values = lower resolution</param>
 	public static void DrawCircleFilled(Vector2 center, float radius, Color color, float resolutionMultiplier = 8f)
 	{
-		var vertexCount = (VertIndex)Math.CeilToEven(radius * Math.tau / resolutionMultiplier);
+		var vertexCount = (VertexIndex)Math.CeilToEven(radius * Math.tau / resolutionMultiplier);
 
-		texture = Texture.pixelTexture;
-		shader = _spriteShader;
-		StartVertexBatch();
+		SetBatch(Texture.pixelTexture);
+
+		SetSpaceForVertices(vertexCount + 1);
 
 		SetVertex(center, Vector2.zero, color);
 
 		// Draw the vertices
-		for (VertIndex i = 0; i < vertexCount; i++)
+		for (VertexIndex i = 0; i < vertexCount; i++)
 		{
 			var vertexPosition = new Vector2(
 				center.x + (radius * Math.Sin(i * Math.tau / vertexCount)),
@@ -192,13 +232,15 @@ public static class GFX
 			SetVertex(vertexPosition, Vector2.zero, color);
 		}
 
+		SetSpaceForIndices(vertexCount);
+
 		// Connect the vertices
-		for (VertIndex i = 1; i < vertexCount; i++)
+		for (VertexIndex i = 1; i < vertexCount; i++)
 		{
-			SetTriangleIndices(0, i, (VertIndex)(i + 1));
+			SetIndices(0, i, (VertexIndex)(i + 1));
 		}
 
-		SetTriangleIndices(0, vertexCount, 1);
+		SetIndices(0, vertexCount, 1);
 	}
 
 	public static void DrawCircleOutline(Vector2 center, float radius, Color color, float thickness = 1, float resolutionMultiplier = 8f)
@@ -227,27 +269,18 @@ public static class GFX
 
 	#endregion
 
-	#region Texture Drawing
+	#region Batching
 
-	public static void DrawTexture(Texture texture, Vector2 position) => DrawTexture(texture, position, Color.white);
-	public static void DrawTexture(Texture texture, Vector2 position, Color color) => DrawTexture(texture, position, Vector2.one, color);
-	public static void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Color color) => SetTextureScaled(texture, _spriteShader, position, scale, color);
-	public static void DrawTexture(Texture texture, Vector2 position, Vector2 scale, float rotationInRadians, Color color) => SetTextureScaledAndRotated(texture, _spriteShader, position, scale, rotationInRadians, color);
-
-	public static void DrawTexture(Texture texture, Rect destination) => SetTextureUsingDest(texture, _spriteShader, destination, Color.white);
-	public static void DrawTexture(Texture texture, Rect destination, Color color) => SetTextureUsingDest(texture, _spriteShader, destination, color);
-
-	public static void DrawTextureRegion(Texture texture, Rect destination, RectInt source) => SetTextureRegionUsingDest(texture, _spriteShader, destination, source, Color.white);
-	public static void DrawTextureRegion(Texture texture, Rect destination, RectInt source, Color color) => SetTextureRegionUsingDest(texture, _spriteShader, destination, source, color);
-
-	#endregion
-
-	#region Low Level Drawing
-
-	public static void StartVertexBatch() => StartVertexBatch(new(texture!, shader!) { priority = priority });
-
-	public static void StartVertexBatch(BatchKey key)
+	public static void SetBatch() => StartBatch();
+	public static void SetBatch(Texture texture)
 	{
+		GFX.texture = texture;
+		StartBatch();
+	}
+
+	static void StartBatch()
+	{
+		var key = new BatchKey(texture ?? Texture.pixelTexture, shader ?? _basicSpriteShader) { priority = priority };
 		if (!_batches.TryGetValue(key, out var batch))
 		{
 			batch = new(key);
@@ -257,97 +290,221 @@ public static class GFX
 		_batchIndexOffset = batch.vertexCount;
 	}
 
+	#endregion
+
+	#region Drawing
+
+	#region Special
+
+	public static void DrawRenderTexture(RenderTexture renderTexture)
+	{
+		var size = (Vector2Int)GameWindow.current.Size;
+		SetBatch(renderTexture.colorTexture);
+		SetBoxAtDest(new(-size.x / 2, size.y / 2, size.x, -size.y), Color.white);
+	}
+
+	#endregion
+
+	public static void DrawTexture(Texture texture, Vector2 position, Color color)
+	{
+		SetBatch(texture);
+		SetBox(position, color);
+	}
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetTextureScaled(Texture texture, Shader shader, Vector2 position, Vector2 scale, Color color)
+	public static void SetBox(Vector2 position, Color color)
+	{
+		var halfRealSize = (Vector2)texture.size / 2;
+
+		SetQuadWithNormTexCoords(
+			position - halfRealSize, new(0, 0), color,
+			position + new Vector2(halfRealSize.x, -halfRealSize.y), new(1, 0), color,
+			position + new Vector2(-halfRealSize.x, halfRealSize.y), new(0, 1), color,
+			position + halfRealSize, new(1, 1), color
+		);
+	}
+
+	public static void DrawTextureRegion(Texture texture, Vector2 position, RectInt source, Color color)
+	{
+		SetBatch(texture);
+		SetBoxRegion(position, source, color);
+	}
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void SetBoxRegion(Vector2 position, RectInt source, Color color)
+	{
+		var halfRealSize = (Vector2)texture.size / 2;
+
+		SetQuadWithNormTexCoords(
+			position - halfRealSize, source.topLeft, color,
+			position + new Vector2(halfRealSize.x, -halfRealSize.y), source.topRight, color,
+			position + new Vector2(-halfRealSize.x, halfRealSize.y), source.bottomLeft, color,
+			position + halfRealSize, source.bottomRight, color
+		);
+	}
+
+	public static void DrawTextureScaled(Texture texture, Vector2 position, Vector2 scale, Color color)
+	{
+		SetBatch(texture);
+		SetBoxScaled(position, scale, color);
+	}
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void SetBoxScaled(Vector2 position, Vector2 scale, Color color)
 	{
 		var halfRealSize = (Vector2)texture.size * scale / 2;
 
-		GFX.texture = texture;
-		GFX.shader = shader;
-		StartVertexBatch();
-
-		SetVertex(position + new Vector2(halfRealSize.x, -halfRealSize.y), new(1, 1), color); // Top right
-		SetVertex(position + halfRealSize, new(1, 0), color);                                 // Bottom right
-		SetVertex(position + new Vector2(-halfRealSize.x, halfRealSize.y), new(0, 0), color); // Bottom left
-		SetVertex(position - halfRealSize, new(0, 1), color);                                 // Top left
-
-		SetTriangleIndices(0, 1, 3); // Bottom right
-		SetTriangleIndices(1, 2, 3); // Top left
+		SetQuadWithNormTexCoords(
+			position - halfRealSize, new(0, 0), color,
+			position + new Vector2(halfRealSize.x, -halfRealSize.y), new(1, 0), color,
+			position + new Vector2(-halfRealSize.x, halfRealSize.y), new(0, 1), color,
+			position + halfRealSize, new(1, 1), color
+		);
 	}
 
+	public static void DrawTextureRegionScaled(Texture texture, Vector2 position, Vector2 scale, Rect source, Color color)
+	{
+		SetBatch(texture);
+		SetBoxRegionScaled(position, scale, source, color);
+	}
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetTextureScaledAndRotated(Texture texture, Shader shader, Vector2 position, Vector2 scale, float rotationInRadians, Color color)
+	public static void SetBoxRegionScaled(Vector2 position, Vector2 scale, Rect source, Color color)
 	{
 		var halfRealSize = (Vector2)texture.size * scale / 2;
 
-		GFX.texture = texture;
-		GFX.shader = shader;
-		StartVertexBatch();
+		SetQuadWithNormTexCoords(
+			position - halfRealSize, source.topLeft, color,
+			position + new Vector2(halfRealSize.x, -halfRealSize.y), source.topRight, color,
+			position + new Vector2(-halfRealSize.x, halfRealSize.y), source.bottomLeft, color,
+			position + halfRealSize, source.bottomRight, color
+		);
+	}
 
-		SetVertex(position + Vector2.RotateAroundPoint(new Vector2(halfRealSize.x, -halfRealSize.y), rotationInRadians), new(1, 1), color); // Top right
-		SetVertex(position + Vector2.RotateAroundPoint(+halfRealSize, rotationInRadians), new(1, 0), color);                                // Bottom right
-		SetVertex(position + Vector2.RotateAroundPoint(new Vector2(-halfRealSize.x, halfRealSize.y), rotationInRadians), new(0, 0), color); // Bottom left
-		SetVertex(position + Vector2.RotateAroundPoint(-halfRealSize, rotationInRadians), new(0, 1), color);                                // Top left
+	public static void DrawTextureScaledAndRotated(Texture texture, Vector2 position, Vector2 scale, float rotationRad, Color color)
+	{
+		SetBatch(texture);
+		SetBoxScaledAndRotated(position, scale, rotationRad, color);
+	}
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void SetBoxScaledAndRotated(Vector2 position, Vector2 scale, float rotationRad, Color color)
+	{
+		var halfRealSize = (Vector2)texture.size * scale / 2;
 
-		SetTriangleIndices(0, 1, 3); // Bottom right
-		SetTriangleIndices(1, 2, 3); // Top left
+		SetQuadWithNormTexCoords(
+			position + Vector2.RotateAroundPoint(-halfRealSize, rotationRad), new(0, 0), color,
+			position + Vector2.RotateAroundPoint(new Vector2(halfRealSize.x, -halfRealSize.y), rotationRad), new(1, 0), color,
+			position + Vector2.RotateAroundPoint(new Vector2(-halfRealSize.x, halfRealSize.y), rotationRad), new(0, 1), color,
+			position + Vector2.RotateAroundPoint(+halfRealSize, rotationRad), new(1, 1), color
+		);
+	}
+
+	public static void DrawTextureScaledAndRotated(Texture texture, Vector2 position, Vector2 scale, float rotationRad, Rect source, Color color)
+	{
+		SetBatch(texture);
+		SetBoxRegionScaledAndRotated(position, scale, rotationRad, source, color);
+	}
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void SetBoxRegionScaledAndRotated(Vector2 position, Vector2 scale, float rotationRad, RectInt source, Color color)
+	{
+		var halfRealSize = (Vector2)texture.size * scale / 2;
+
+		SetQuad(
+			position + Vector2.RotateAroundPoint(-halfRealSize, rotationRad), source.topLeft, color,
+			position + Vector2.RotateAroundPoint(new Vector2(halfRealSize.x, -halfRealSize.y), rotationRad), source.topRight, color,
+			position + Vector2.RotateAroundPoint(new Vector2(-halfRealSize.x, halfRealSize.y), rotationRad), source.bottomLeft, color,
+			position + Vector2.RotateAroundPoint(halfRealSize, rotationRad), source.bottomRight, color
+		);
+	}
+
+	public static void DrawTextureAtDest(Texture texture, Rect destination, Color color)
+	{
+		SetBatch(texture);
+		SetBoxAtDest(destination, color);
+	}
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void SetBoxAtDest(Rect destination, Color color)
+	{
+		SetQuadWithNormTexCoords(
+			destination.topLeft, new(0, 0), color,
+			destination.topRight, new(1, 0), color,
+			destination.bottomLeft, new(0, 1), color,
+			destination.bottomRight, new(1, 1), color
+		);
+	}
+
+	public static void DrawTextureRegionAtDest(Texture texture, Rect destination, RectInt source, Color color)
+	{
+		SetBatch(texture);
+		SetBoxRegionAtDest(destination, source, color);
+	}
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void SetBoxRegionAtDest(Rect destination, RectInt source, Color color)
+	{
+		SetBoxRegionAtVerts(destination.topRight, destination.topLeft, destination.bottomLeft, destination.bottomRight, source, color);
+	}
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void SetBoxRegionAtVerts(Vector2 destTL, Vector2 destTR, Vector2 destBL, Vector2 destBR, RectInt source, Color color)
+	{
+		SetQuad(
+			destTL, source.topLeft, color,
+			destTR, source.topRight, color,
+			destBL, source.bottomLeft, color,
+			destBR, source.bottomRight, color
+		);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetTextureUsingDest(Texture texture, Shader shader, Rect destination, Color color)
+	public static void SetQuad(
+		Vector2 destTL, Vector2 srcTL, Color colorTL,
+		Vector2 destTR, Vector2 srcTR, Color colorTR,
+		Vector2 destBL, Vector2 srcBL, Color colorBL,
+		Vector2 destBR, Vector2 srcBR, Color colorBR
+	)
 	{
-		GFX.texture = texture;
-		GFX.shader = shader;
-		StartVertexBatch();
-
-		SetVertex(destination.topRight, new(1, 1), color);    // Top right
-		SetVertex(destination.bottomRight, new(1, 0), color); // Bottom right
-		SetVertex(destination.bottomLeft, new(0, 0), color);  // Bottom left
-		SetVertex(destination.topLeft, new(0, 1), color);     // Top left
-
-		SetTriangleIndices(0, 1, 3); // Bottom right
-		SetTriangleIndices(1, 2, 3); // Top left
+		SetQuadWithNormTexCoords(
+		 destTL, texture.GetTextureCoord(srcTL), colorTL,
+		 destTR, texture.GetTextureCoord(srcTR), colorTR,
+		 destBL, texture.GetTextureCoord(srcBL), colorBL,
+		 destBR, texture.GetTextureCoord(srcBR), colorBR
+	 );
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetTextureRegionUsingDest(Texture texture, Shader shader, Rect destination, RectInt source, Color color)
+	public static void SetQuadWithNormTexCoords(
+		Vector2 destTL, Vector2 srcTL, Color colorTL,
+		Vector2 destTR, Vector2 srcTR, Color colorTR,
+		Vector2 destBL, Vector2 srcBL, Color colorBL,
+		Vector2 destBR, Vector2 srcBR, Color colorBR
+	)
 	{
-		GFX.texture = texture;
-		GFX.shader = shader;
-		StartVertexBatch();
+		SetSpaceForVertices(4);
+		SetVertex(destTR, srcBR, colorTR); // Top right
+		SetVertex(destBR, srcTR, colorBR); // Bottom right
+		SetVertex(destBL, srcTL, colorBL); // Bottom left
+		SetVertex(destTL, srcBL, colorTL); // Top left
 
-		SetVertex(destination.topRight, texture.GetTextureCoord(source.bottomRight), color); // Top right
-		SetVertex(destination.bottomRight, texture.GetTextureCoord(source.topRight), color); // Bottom right
-		SetVertex(destination.bottomLeft, texture.GetTextureCoord(source.topLeft), color);   // Bottom left
-		SetVertex(destination.topLeft, texture.GetTextureCoord(source.bottomLeft), color);   // Top left
-
-		SetTriangleIndices(0, 1, 3); // Bottom right
-		SetTriangleIndices(1, 2, 3); // Top left
+		SetSpaceForIndices(6);
+		SetIndices(0, 1, 3); // Bottom right
+		SetIndices(1, 2, 3); // Top left
 	}
 
+	#endregion Drawing
+
+	#region Item Setting
+
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetTextureRegionUsingVerts(Texture texture, Shader shader, Vector2 topLeft, Vector2 topRight, Vector2 bottomLeft, Vector2 bottomRight, RectInt source, Color color)
+	public static void SetSpaceForVertices(int amountOfVertices)
 	{
-		GFX.texture = texture;
-		GFX.shader = shader;
-		StartVertexBatch();
-
-		SetVertex(topRight, texture.GetTextureCoord(source.bottomRight), color); // Top right
-		SetVertex(bottomRight, texture.GetTextureCoord(source.topRight), color); // Bottom right
-		SetVertex(bottomLeft, texture.GetTextureCoord(source.topLeft), color);   // Bottom left
-		SetVertex(topLeft, texture.GetTextureCoord(source.bottomLeft), color);   // Top left
-
-		SetTriangleIndices(0, 1, 3); // Bottom right
-		SetTriangleIndices(1, 2, 3); // Top left
+		_batch.vertexCount += (VertexIndex)amountOfVertices;
+		_batch.vertexData.EnsureSpaceFor(amountOfVertices * Vertex.SIZE_IN_ELEMENTS);
+	}
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void SetSpaceForVertices(VertexIndex amountOfVertices)
+	{
+		_batch.vertexCount += amountOfVertices;
+		_batch.vertexData.EnsureSpaceFor(amountOfVertices * Vertex.SIZE_IN_ELEMENTS);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void SetVertex(Vector2 position, Color color)
 	{
-		_batch.vertexCount++;
-
-		_batch.vertexData.EnsureSpaceFor(Vertex.SIZE_IN_ELEMENTS);
-
 		_batch.vertexData.AddUnsafe(position.x);
 		_batch.vertexData.AddUnsafe(position.y);
 
@@ -363,10 +520,6 @@ public static class GFX
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void SetVertex(Vector2 position, Vector2 textureCoordinate, Color color)
 	{
-		_batch.vertexCount++;
-
-		_batch.vertexData.EnsureSpaceFor(Vertex.SIZE_IN_ELEMENTS);
-
 		_batch.vertexData.AddUnsafe(position.x);
 		_batch.vertexData.AddUnsafe(position.y);
 
@@ -383,65 +536,35 @@ public static class GFX
 	public static void SetVertex(Vertex vertex) => SetVertex(vertex.position, vertex.textureCoordinate, vertex.color);
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetVertices(params Vertex[] vertices)
+	public static void SetVertices(IEnumerable<Vertex> vertices)
 	{
-		_batch.vertexCount += (VertIndex)vertices.Length;
-
-		_batch.vertexData.EnsureSpaceFor(vertices.Length * Vertex.SIZE_IN_ELEMENTS);
-
 		foreach (var vertex in vertices)
-		{
-			_batch.vertexData.AddUnsafe(vertex.position.x);
-			_batch.vertexData.AddUnsafe(vertex.position.y);
-
-			_batch.vertexData.AddUnsafe(vertex.textureCoordinate.x);
-			_batch.vertexData.AddUnsafe(vertex.textureCoordinate.y);
-
-			_batch.vertexData.AddUnsafe(vertex.color.r);
-			_batch.vertexData.AddUnsafe(vertex.color.g);
-			_batch.vertexData.AddUnsafe(vertex.color.b);
-			_batch.vertexData.AddUnsafe(vertex.color.a);
-		}
+			SetVertex(vertex);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetVertexData(float[] vertexData, VertIndex vertexCount)
-	{
-		_batch.vertexCount += vertexCount;
+	public static void SetSpaceForIndices(int amountOfIndices) => _batch.indices.EnsureSpaceFor(amountOfIndices);
 
-		_batch.vertexData.Add(vertexData);
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void SetIndex(VertexIndex index) => _batch.indices.AddUnsafe((VertexIndex)(_batchIndexOffset + index));
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void SetIndices(VertexIndex index1, VertexIndex index2, VertexIndex index3)
+	{
+		SetIndex(index1);
+		SetIndex(index2);
+		SetIndex(index3);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetIndex(VertIndex index)
+	public static void SetIndices(params VertexIndex[] indices)
 	{
-		_batch.elements.Add((VertIndex)(_batchIndexOffset + index));
+		foreach (var index in indices) SetIndex(index);
 	}
 
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetTriangleIndices(VertIndex index1, VertIndex index2, VertIndex index3)
-	{
-		_batch.elements.EnsureSpaceFor(3);
+	#endregion Item Setting
 
-		_batch.elements.AddUnsafe((VertIndex)(_batchIndexOffset + index1));
-		_batch.elements.AddUnsafe((VertIndex)(_batchIndexOffset + index2));
-		_batch.elements.AddUnsafe((VertIndex)(_batchIndexOffset + index3));
-	}
-
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetIndices(params VertIndex[] indices)
-	{
-		_batch.elements.EnsureSpaceFor(indices.Length);
-
-		foreach (var index in indices)
-		{
-			_batch.elements.AddUnsafe((VertIndex)(_batchIndexOffset + index));
-		}
-	}
-
-	#endregion
-
-	#region Utilities
+	#region Internal Utilities
 
 	internal static void CheckGLError()
 	{
@@ -453,5 +576,5 @@ public static class GFX
 		}
 	}
 
-	#endregion
+	#endregion Internal Utilities
 }

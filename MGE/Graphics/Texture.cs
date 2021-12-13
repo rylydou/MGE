@@ -4,7 +4,7 @@ using StbImageSharp;
 
 namespace MGE.Graphics;
 
-public class Texture : GraphicsResource, IUseable
+public class Texture : GraphicsResource
 {
 	public static readonly Texture pixelTexture;
 
@@ -27,7 +27,7 @@ public class Texture : GraphicsResource, IUseable
 	{
 		this.size = size;
 
-		Use();
+		Bind();
 
 		GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.x, size.y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
 
@@ -42,7 +42,7 @@ public class Texture : GraphicsResource, IUseable
 	{
 		this.size = size;
 
-		Use();
+		Bind();
 
 		GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.x, size.y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
 
@@ -74,14 +74,13 @@ public class Texture : GraphicsResource, IUseable
 	[MethodImpl(MethodImplOptions.AggressiveInlining)] public Vector2 GetTextureCoord(Vector2 position) => GetTextureCoord(position.x, position.y);
 	[MethodImpl(MethodImplOptions.AggressiveInlining)] public Vector2 GetTextureCoord(float x, float y) => new Vector2(x / size.x, y / size.y);
 
-	public void Use() => Use(TextureUnit.Texture0);
-	public void Use(TextureUnit unit)
+	internal void Bind(TextureUnit unit = TextureUnit.Texture0)
 	{
 		GL.ActiveTexture(unit);
 		GL.BindTexture(TextureTarget.Texture2D, handle);
 	}
 
-	public void StopUse() => GL.BindTexture(TextureTarget.Texture2D, 0);
+	internal static void Unbind() => GL.BindTexture(TextureTarget.Texture2D, 0);
 
 	protected override void Delete()
 	{

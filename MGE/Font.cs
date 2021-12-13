@@ -64,7 +64,7 @@ public class Font
 			return false;
 		}
 
-		GFX.DrawTextureRegion(texture, new(position, charSize), rect, color);
+		GFX.DrawTextureRegionAtDest(texture, new(position, charSize), rect, color);
 		return true;
 	}
 }

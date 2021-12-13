@@ -6,7 +6,7 @@ using OpenTK.Mathematics;
 
 namespace MGE.Graphics;
 
-public class Shader : GraphicsResource, IUseable
+public class Shader : GraphicsResource
 {
 	readonly Dictionary<string, int> _uniformLocations;
 
@@ -62,9 +62,9 @@ public class Shader : GraphicsResource, IUseable
 		}
 	}
 
-	public void Use() => GL.UseProgram(handle);
+	internal void Use() => GL.UseProgram(handle);
 
-	public void StopUse() => GL.UseProgram(0);
+	internal static void StopUse() => GL.UseProgram(0);
 
 	static void CompileShader(int shader)
 	{

@@ -4,7 +4,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace MGE.Graphics;
 
-public class Buffer<T> : GraphicsResource where T : struct
+internal class Buffer<T> : GraphicsResource where T : struct
 {
 	public bool initialized { get; private set; }
 
@@ -39,9 +39,7 @@ public class Buffer<T> : GraphicsResource where T : struct
 	/// <summary>
 	/// Creates a new, uninitialized buffer object using the element size determined by Marshal.SizeOf().
 	/// </summary>
-	public Buffer() : this(Marshal.SizeOf(typeof(T)))
-	{
-	}
+	public Buffer() : this(Marshal.SizeOf(typeof(T))) { }
 
 	protected override void Delete() => GL.DeleteBuffer(handle);
 

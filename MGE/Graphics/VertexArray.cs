@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace MGE.Graphics;
 
-public class VertexArray : GraphicsResource
+internal class VertexArray : GraphicsResource
 {
 	public VertexArray() : base(GL.GenVertexArray())
 	{

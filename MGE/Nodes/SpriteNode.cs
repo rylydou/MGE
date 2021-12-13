@@ -18,7 +18,7 @@ public class SpriteNode : TransformNode
 	{
 		if (texture is not null)
 		{
-			GFX.DrawTexture(texture, worldPosition, worldScale, worldRotation, color);
+			GFX.DrawTextureScaledAndRotated(texture, worldPosition, worldScale, worldRotation, color);
 		}
 		else
 		{
