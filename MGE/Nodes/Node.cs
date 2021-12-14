@@ -142,7 +142,7 @@ public abstract class Node : Object
 		if (!_isActive) throw new MGEException("Initialize node", "Node is not active in scene");
 		if (_isDestroyed) throw new MGEException("Initialize node", "Node is destroyed");
 
-		Debug.Log($"{this} Inited");
+		// Debug.Log($"{this} Inited");
 
 		_isInitialized = true;
 

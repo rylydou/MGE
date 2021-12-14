@@ -437,7 +437,7 @@ public static class GFX
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void SetBoxRegionAtDest(Rect destination, RectInt source, Color color)
 	{
-		SetBoxRegionAtVerts(destination.topRight, destination.topLeft, destination.bottomLeft, destination.bottomRight, source, color);
+		SetBoxRegionAtVerts(destination.topLeft, destination.topRight, destination.bottomLeft, destination.bottomRight, source, color);
 	}
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void SetBoxRegionAtVerts(Vector2 destTL, Vector2 destTR, Vector2 destBL, Vector2 destBR, RectInt source, Color color)
