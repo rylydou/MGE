@@ -58,8 +58,8 @@ public static class GFX
 #nullable restore
 	public static float priority;
 
-	internal static Matrix windowScreenTransform;
-	static Matrix currentScreenTransform;
+	internal static Matrix windowViewportTransform;
+	static Matrix currentProjectionTransform;
 	static Shader _basicSpriteShader;
 
 	// Vertex layout: Position X, Position Y, Texture Coordinate X, Texture Coordinate Y, Color R, Color G, Color B, Color A
@@ -86,6 +86,8 @@ public static class GFX
 		_indexBuffer.Init(BufferTarget.ElementArrayBuffer, (int)Math.CeilToPowerOf2(indexCapacity), BufferUsageHint.StreamDraw);
 
 		_basicSpriteShader = new("Sprite.vert", "Sprite.frag");
+
+		PushTransform(Matrix.identity);
 	}
 
 	public static void Clear(Color color)
@@ -112,20 +114,20 @@ public static class GFX
 		if (renderTexture is null)
 		{
 			size = GameWindow.current.Size;
-			currentScreenTransform = windowScreenTransform;
+			currentProjectionTransform = windowViewportTransform;
 			RenderTexture.SetScreenAsTarget();
 		}
 		else
 		{
 			size = renderTexture.size;
-			currentScreenTransform = renderTexture.screenSpaceTransform;
+			currentProjectionTransform = renderTexture.viewportTransform;
 			renderTexture.SetAsTarget();
 		}
 
 		GL.Viewport(0, 0, size.x, size.y);
 	}
 
-	public static void Flush()
+	public static void DrawBatches()
 	{
 		// Debug.LogVariable(_batches.Count);
 
@@ -139,8 +141,7 @@ public static class GFX
 			// Debug.Log(string.Join(' ', batch.elements.array.Select(x => x.ToString()).ToArray(), 0, batch.elements.Count));
 
 			batch.key.texture.Bind();
-			batch.key.shader.SetMatrix("transform", transform);
-			batch.key.shader.SetMatrix("screenTransform", currentScreenTransform);
+			batch.key.shader.SetMatrix("transform", transform * currentProjectionTransform);
 
 			_vertexBuffer.SubData(BufferTarget.ArrayBuffer, batch.vertexData.array, 0, batch.vertexData.Count);
 			_indexBuffer.SubData(BufferTarget.ElementArrayBuffer, batch.indices.array, 0, batch.indices.Count);
@@ -269,29 +270,6 @@ public static class GFX
 
 	#endregion
 
-	#region Batching
-
-	public static void SetBatch() => StartBatch();
-	public static void SetBatch(Texture texture)
-	{
-		GFX.texture = texture;
-		StartBatch();
-	}
-
-	static void StartBatch()
-	{
-		var key = new BatchKey(texture ?? Texture.pixelTexture, shader ?? _basicSpriteShader) { priority = priority };
-		if (!_batches.TryGetValue(key, out var batch))
-		{
-			batch = new(key);
-			_batches.Add(batch);
-		}
-		_batch = batch;
-		_batchIndexOffset = batch.vertexCount;
-	}
-
-	#endregion
-
 	#region Drawing
 
 	#region Special
@@ -300,7 +278,9 @@ public static class GFX
 	{
 		var size = (Vector2Int)GameWindow.current.Size;
 		SetBatch(renderTexture.colorTexture);
-		SetBoxAtDest(new(-size.x / 2, size.y / 2, size.x, -size.y), Color.white);
+		var scaleFactor = (float)size.y / renderTexture.size.y;
+		var realXSize = renderTexture.size.x * scaleFactor;
+		SetBoxRegionAtDest(new(-realXSize / 2, -size.y / 2, realXSize, size.y), new(0, renderTexture.size.y, renderTexture.size.x, -renderTexture.size.y), Color.white);
 	}
 
 	#endregion
@@ -488,6 +468,30 @@ public static class GFX
 	#endregion Drawing
 
 	#region Item Setting
+
+	#region Batching
+
+	public static void SetBatch() => StartBatch();
+	public static void SetBatch(Texture texture)
+	{
+		GFX.texture = texture;
+		StartBatch();
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	static void StartBatch()
+	{
+		var key = new BatchKey(texture ?? Texture.pixelTexture, shader ?? _basicSpriteShader) { priority = priority };
+		if (!_batches.TryGetValue(key, out var batch))
+		{
+			batch = new(key);
+			_batches.Add(batch);
+		}
+		_batch = batch;
+		_batchIndexOffset = batch.vertexCount;
+	}
+
+	#endregion
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void SetSpaceForVertices(int amountOfVertices)

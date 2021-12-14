@@ -4,7 +4,7 @@ namespace MGE.Graphics;
 
 public abstract class GraphicsResource : IDisposable
 {
-	public readonly int handle;
+	internal readonly int handle;
 
 	public bool isDisposed { get; private set; }
 

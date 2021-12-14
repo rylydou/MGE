@@ -80,7 +80,7 @@ public struct Rect : IEquatable<Rect>
 		var x = xCenter - (width / 2);
 		var y = yCenter - (height / 2);
 
-		return new Rect(x, y, width, height);
+		return new(x, y, width, height);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -134,6 +134,22 @@ public struct Rect : IEquatable<Rect>
 	{
 		_xMin = position.x;
 		_yMin = position.y;
+		_width = size.x;
+		_height = size.y;
+	}
+
+	public Rect(float width, float height)
+	{
+		_xMin = 0;
+		_yMin = 0;
+		_width = width;
+		_height = height;
+	}
+
+	public Rect(Vector2 size)
+	{
+		_xMin = 0;
+		_yMin = 0;
 		_width = size.x;
 		_height = size.y;
 	}

@@ -1,7 +1,6 @@
 #version 330 core
 
 uniform mat4 transform;
-uniform mat4 screenTransform;
 
 layout (location = 0) in vec2 aPosition;
 layout (location = 1) in vec2 aTextureCoord;
@@ -15,5 +14,5 @@ void main()
 	vertColor = aColor;
 	textureCoord = aTextureCoord;
 
-	gl_Position = transform * vec4(aPosition, 0.0, 1.0) * screenTransform;
+	gl_Position = transform * vec4(aPosition, 0.0, 1.0);
 }

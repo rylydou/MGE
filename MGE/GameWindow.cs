@@ -3,6 +3,7 @@ using MGE.Graphics;
 using MGE.Nodes;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
+using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace MGE;
 
@@ -11,13 +12,15 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	static GameWindow? _current;
 	public static GameWindow current { get => _current ?? throw new NullReferenceException(); }
 
+	Color backgroundColor = new("#394778");
+
 	double updateTime;
 	double renderTime;
 
 	RenderTexture gameRender;
 	Texture sprite;
 
-	public GameWindow() : base(new() { RenderFrequency = 60, UpdateFrequency = 60, }, new() { Title = "Mangrove Game Engine", NumberOfSamples = 4, })
+	public GameWindow() : base(new() { RenderFrequency = 60, /* UpdateFrequency = 60, */ }, new() { Title = "Mangrove Game Engine", NumberOfSamples = 4, })
 	{
 		_current = this;
 
@@ -27,8 +30,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		CenterWindow(new(320 * 4, 180 * 4));
 		Focus();
-
-		GFX.PushTransform(Matrix.identity);
 
 		var world = new WorldNode();
 
@@ -67,9 +68,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnResize(args);
 
-		var size = new Vector2Int(Math.CeilToEvenInt(args.Size.X), Math.CeilToEvenInt(args.Size.Y));
-
-		GFX.windowScreenTransform = Matrix.CreateOrthographic(size.x, size.y, -1, 1);
+		GFX.windowViewportTransform = Matrix.CreateOrthographic(Math.CeilToEven(Size.X), Math.CeilToEven(Size.Y), 0, 1);
 	}
 
 	protected override void OnUpdateFrame(FrameEventArgs args)
@@ -79,6 +78,19 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		updateTime = args.Time;
 
 		var state = KeyboardState;
+
+		if (state.IsKeyPressed(Keys.F11))
+		{
+			Debug.Log(WindowState);
+			if (WindowState == WindowState.Fullscreen)
+			{
+				WindowState = WindowState.Normal;
+			}
+			else
+			{
+				WindowState = WindowState.Fullscreen;
+			}
+		}
 
 		Scene.Tick();
 
@@ -93,13 +105,11 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		GFX.SetRenderTexture(gameRender);
 
-		GFX.Clear(new("#394778"));
+		GFX.Clear(backgroundColor);
 
 		Scene.Draw();
 
-		GFX.Flush();
-
-		Font.current.DrawText($"Update: {1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
+		GFX.DrawBatches();
 
 		GFX.DrawTextureRegionAtDest(sprite, new(128, 128, 32, 32), new(0, 0, sprite.size), Color.white);
 
@@ -107,13 +117,17 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		GFX.DrawCircleOutline(Vector2.zero, 256, Color.red);
 
-		GFX.Flush();
+		GFX.DrawBatches();
 
 		GFX.SetRenderTexture(null);
 
+		GFX.Clear(Color.black);
+
 		GFX.DrawRenderTexture(gameRender);
 
-		GFX.Flush();
+		Font.current.DrawText($"Update: {1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
+
+		GFX.DrawBatches();
 
 		SwapBuffers();
 	}

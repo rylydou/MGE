@@ -5,7 +5,7 @@ namespace MGE.Graphics;
 public class RenderTexture : GraphicsResource
 {
 	public readonly Vector2Int size;
-	public readonly Matrix screenSpaceTransform;
+	public readonly Matrix viewportTransform;
 
 	public readonly Texture colorTexture;
 
@@ -14,7 +14,7 @@ public class RenderTexture : GraphicsResource
 	public RenderTexture(Vector2Int size) : base(GL.GenFramebuffer())
 	{
 		this.size = size;
-		screenSpaceTransform = Matrix.CreateOrthographic(size.x, size.y, -1, 1);
+		viewportTransform = Matrix.CreateOrthographic(size.x, size.y, 0, 1);
 
 		colorTexture = new(this.size);
 

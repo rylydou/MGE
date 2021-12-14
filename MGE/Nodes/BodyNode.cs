@@ -60,7 +60,7 @@ public abstract class BodyNode : TransformNode
 
 		world.world.Add(body);
 
-		Debug.Log($"Added {this} to {world}");
+		// Debug.Log($"Added {this} to {world}");
 
 		base.WhenAttached();
 	}
@@ -76,7 +76,7 @@ public abstract class BodyNode : TransformNode
 
 	protected virtual void ConnectCollider(ColliderNode collider)
 	{
-		Debug.Log($"Added {collider} to {this}");
+		// Debug.Log($"Added {collider} to {this}");
 	}
 
 	protected override bool WhenChildAttached(Node child)
