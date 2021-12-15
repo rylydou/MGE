@@ -107,7 +107,7 @@ public static class GFX
 		transform = transformStack.Pop();
 	}
 
-	public static void SetRenderTexture(RenderTexture? renderTexture)
+	public static void SetRenderTarget(RenderTexture? renderTexture)
 	{
 		var size = Vector2Int.zero;
 

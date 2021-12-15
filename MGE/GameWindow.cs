@@ -20,9 +20,11 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	RenderTexture gameRender;
 	Texture sprite;
 
-	public GameWindow() : base(new() { RenderFrequency = 60, /* UpdateFrequency = 60, */ }, new() { Title = "Mangrove Game Engine", NumberOfSamples = 4, })
+	public GameWindow() : base(new() { /* RenderFrequency = 60, UpdateFrequency = 60, */ }, new() { Title = "Mangrove Game Engine", NumberOfSamples = 4, })
 	{
 		_current = this;
+
+		VSync = VSyncMode.Adaptive;
 
 		gameRender = new(new(320 * 2, 180 * 2));
 		sprite = Texture.LoadTexture("Icon.png");
@@ -77,14 +79,16 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		updateTime = args.Time;
 
+		Input.UpdateInputs(KeyboardState, MouseState, JoystickStates);
+
 		var state = KeyboardState;
 
 		if (state.IsKeyPressed(Keys.F11))
 		{
-			Debug.Log(WindowState);
 			if (WindowState == WindowState.Fullscreen)
 			{
 				WindowState = WindowState.Normal;
+				CenterWindow(new(320 * 4, 180 * 4));
 			}
 			else
 			{
@@ -97,13 +101,27 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Scene.Update();
 	}
 
+	protected override void OnTextInput(TextInputEventArgs e)
+	{
+		base.OnTextInput(e);
+
+		Input.OnTextInput(e);
+	}
+
+	protected override void OnJoystickConnected(JoystickEventArgs e)
+	{
+		base.OnJoystickConnected(e);
+
+		Input.OnGamepadConnected(e);
+	}
+
 	protected override void OnRenderFrame(FrameEventArgs args)
 	{
 		base.OnRenderFrame(args);
 
 		renderTime = args.Time;
 
-		GFX.SetRenderTexture(gameRender);
+		GFX.SetRenderTarget(gameRender);
 
 		GFX.Clear(backgroundColor);
 
@@ -111,15 +129,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		GFX.DrawBatches();
 
-		GFX.DrawTextureRegionAtDest(sprite, new(128, 128, 32, 32), new(0, 0, sprite.size), Color.white);
-
-		GFX.DrawBoxOutline(new(64, 128, 256, 64), new Color(1, 0, 0, 0.5f));
-
-		GFX.DrawCircleOutline(Vector2.zero, 256, Color.red);
-
-		GFX.DrawBatches();
-
-		GFX.SetRenderTexture(null);
+		GFX.SetRenderTarget(null);
 
 		GFX.Clear(Color.black);
 

@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using tainicom.Aether.Physics2D.Collision.Shapes;
 using tainicom.Aether.Physics2D.Dynamics;
 
 #nullable disable
@@ -9,8 +7,8 @@ namespace MGE;
 
 public abstract class BodyNode : TransformNode
 {
-	[Prop] public bool autoSleep = true;
-	[Prop] public bool isAwake = false;
+	[Prop] public bool autoSleep = false;
+	[Prop] public bool isAwake = true;
 
 	[Prop] public bool enableSweeping = false;
 
@@ -32,26 +30,6 @@ public abstract class BodyNode : TransformNode
 		body.IsBullet = enableSweeping;
 
 		base.Init();
-	}
-
-	protected override void Draw()
-	{
-		foreach (var fixture in body.FixtureList)
-		{
-			var shape = fixture.Shape;
-			var color = fixture.Body.Awake ? new Color(0, 1, 0, 1f / 3) : new Color(0, 1, 0, 1f / 3);
-
-			if (shape is PolygonShape polygon)
-			{
-				GFX.DrawPolygonOutline(polygon.Vertices.Select(x => (Vector2)(body.Position + x)).ToArray(), color);
-			}
-			else if (shape is CircleShape circle)
-			{
-				GFX.DrawCircleOutline(body.Position + circle.Position, circle.Radius, color);
-			}
-		}
-
-		base.Draw();
 	}
 
 	protected override void WhenAttached()
