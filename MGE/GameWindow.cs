@@ -82,17 +82,30 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Input.UpdateInputs(KeyboardState, MouseState, JoystickStates);
 
 		var state = KeyboardState;
+		var alt = state.IsKeyDown(Keys.LeftAlt) || state.IsKeyDown(Keys.RightAlt);
 
-		if (state.IsKeyPressed(Keys.F11))
+		if (state.IsKeyPressed(Keys.F11) || (alt && state.IsKeyPressed(Keys.Enter)))
 		{
-			if (WindowState == WindowState.Fullscreen)
+			switch (WindowState)
 			{
-				WindowState = WindowState.Normal;
-				CenterWindow(new(320 * 4, 180 * 4));
-			}
-			else
-			{
-				WindowState = WindowState.Fullscreen;
+				case WindowState.Normal:
+					// Goto borderless windowed
+					WindowBorder = WindowBorder.Hidden;
+					WindowState = WindowState.Maximized;
+					break;
+
+				case WindowState.Maximized:
+					// Goto fullscreen
+					WindowBorder = WindowBorder.Resizable;
+					WindowState = WindowState.Fullscreen;
+					break;
+
+				case WindowState.Fullscreen:
+					// Goto windowed
+					WindowBorder = WindowBorder.Resizable;
+					WindowState = WindowState.Normal;
+					CenterWindow(new(320 * 4, 180 * 4));
+					break;
 			}
 		}
 

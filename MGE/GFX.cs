@@ -154,7 +154,7 @@ public static class GFX
 
 	#region Primitive Drawing
 
-	public static void DrawPoint(Vector2 position, Color color, float radius = 1) => DrawBoxFilled(new(position - radius, radius * 2), color);
+	public static void DrawPoint(Vector2 position, Color color, float radius = 1) => DrawBox(new(position - radius, radius * 2), color);
 
 	public static void DrawLine(Vector2 start, Vector2 end, Color color, float thickness = 1)
 	{
@@ -165,11 +165,11 @@ public static class GFX
 		DrawTextureScaledAndRotated(Texture.pixelTexture, center, new Vector2(length, thickness), angle, color);
 	}
 
-	public static void DrawBoxFilled(Vector2 position, Vector2 scale, Color color) => DrawTextureScaled(Texture.pixelTexture, position, scale, color);
-	public static void DrawBoxFilled(Vector2 position, Vector2 scale, float rotation, Color color) => DrawTextureScaledAndRotated(Texture.pixelTexture, position, scale, rotation, color);
-	public static void DrawBoxFilled(Rect rect, Color color) => DrawTextureAtDest(Texture.pixelTexture, rect, color);
+	public static void DrawBox(Vector2 position, Vector2 scale, Color color) => DrawTextureScaled(Texture.pixelTexture, position, scale, color);
+	public static void DrawBox(Vector2 position, Vector2 scale, float rotation, Color color) => DrawTextureScaledAndRotated(Texture.pixelTexture, position, scale, rotation, color);
+	public static void DrawBox(Rect rect, Color color) => DrawTextureAtDest(Texture.pixelTexture, rect, color);
 
-	public static void DrawBoxOutline(Rect rect, Color color, float thickness = 1)
+	public static void DrawRect(Rect rect, Color color, float thickness = 1)
 	{
 		var outerRect = rect;
 		outerRect.Expand(thickness * 2);
@@ -211,10 +211,25 @@ public static class GFX
 		SetIndices(0, 4, 6);
 	}
 
-	/// <param name="resolutionMultiplier">Higher values = lower resolution</param>
-	public static void DrawCircleFilled(Vector2 center, float radius, Color color, float resolutionMultiplier = 8f)
+	public static void DrawCircle(Vector2 center, float radius, Color color, float thickness = 1, float pixelsPerLine = 8f)
 	{
-		var vertexCount = (VertexIndex)Math.CeilToEven(radius * Math.tau / resolutionMultiplier);
+		var vertexCount = (int)Math.CeilToEven(radius * Math.tau / pixelsPerLine);
+
+		var points = new Vector2[vertexCount];
+		for (int i = 0; i < vertexCount; i++)
+		{
+			points[i] = new(
+				center.x + (radius * Math.Sin(i * Math.tau / vertexCount)),
+				center.y + (radius * Math.Cos(i * Math.tau / vertexCount))
+			);
+		}
+
+		DrawPolyline(points, color, thickness);
+	}
+
+	public static void DrawCircleFilled(Vector2 center, float radius, Color color, float pixelsPerLine = 8f)
+	{
+		var vertexCount = (VertexIndex)Math.CeilToEven(radius * Math.tau / pixelsPerLine);
 
 		SetBatch(Texture.pixelTexture);
 
@@ -244,23 +259,8 @@ public static class GFX
 		SetIndices(0, vertexCount, 1);
 	}
 
-	public static void DrawCircleOutline(Vector2 center, float radius, Color color, float thickness = 1, float resolutionMultiplier = 8f)
-	{
-		var vertexCount = (int)Math.CeilToEven(radius * Math.tau / resolutionMultiplier);
-
-		var points = new Vector2[vertexCount];
-		for (int i = 0; i < vertexCount; i++)
-		{
-			points[i] = new(
-				center.x + (radius * Math.Sin(i * Math.tau / vertexCount)),
-				center.y + (radius * Math.Cos(i * Math.tau / vertexCount))
-			);
-		}
-
-		DrawPolygonOutline(points, color, thickness);
-	}
-
-	public static void DrawPolygonOutline(Vector2[] points, Color color, float thickness = 1)
+	// TODO Optimise
+	public static void DrawPolyline(Vector2[] points, Color color, float thickness = 1)
 	{
 		if (points.Length < 2) return;
 		for (int i = 1; i < points.Length; i++)

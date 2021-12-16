@@ -13,19 +13,21 @@ public class ColliderNode : TransformNode
 
 	protected override void Draw()
 	{
+		var color = Color.yellow.WithAlpha(0.5f);
+
 		fixture.GetAABB(out var aabb, 0);
-		GFX.DrawBoxOutline(new(body.worldPosition.x + aabb.LowerBound.X, body.worldPosition.y + aabb.LowerBound.Y, aabb.Width, aabb.Height), Color.yellow);
+		GFX.DrawRect(new(fixture.Body.Position.X + aabb.LowerBound.X, fixture.Body.Position.Y + aabb.LowerBound.Y, aabb.Width, aabb.Height), color);
 
 		var shape = fixture.Shape;
-		var color = fixture.Body.Awake ? Color.green : Color.green.WithAlpha(1f / 2);
+		color = fixture.Body.Awake ? Color.green : Color.green.WithAlpha(0.5f);
 
 		if (shape is PolygonShape polygon)
 		{
-			GFX.DrawPolygonOutline(polygon.Vertices.Select(x => (Vector2)(body.body.Position + x)).ToArray(), color);
+			GFX.DrawPolyline(polygon.Vertices.Select(x => (Vector2)(fixture.Body.Position + x)).ToArray(), color);
 		}
 		else if (shape is CircleShape circle)
 		{
-			GFX.DrawCircleOutline(body.body.Position + circle.Position, circle.Radius, color);
+			GFX.DrawCircle(fixture.Body.Position + circle.Position, circle.Radius, color);
 		}
 
 		base.Draw();

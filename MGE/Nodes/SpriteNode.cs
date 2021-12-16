@@ -22,7 +22,7 @@ public class SpriteNode : TransformNode
 		}
 		else
 		{
-			GFX.DrawBoxFilled(worldPosition, worldScale, worldRotation, color);
+			GFX.DrawBox(worldPosition, worldScale, worldRotation, color);
 		}
 
 		base.Draw();
