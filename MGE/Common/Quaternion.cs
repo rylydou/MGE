@@ -178,7 +178,7 @@ public struct Quaternion : IEquatable<Quaternion>
 		float half;
 		var scale = matrix.m11 + matrix.m22 + matrix.m33;
 
-		if (scale > 0.0f)
+		if (scale > 0f)
 		{
 			sqrt = Math.Sqrt(scale + 1f);
 			quaternion.w = sqrt * 0.5f;
@@ -236,7 +236,7 @@ public struct Quaternion : IEquatable<Quaternion>
 		float half;
 		var scale = matrix.m11 + matrix.m22 + matrix.m33;
 
-		if (scale > 0.0f)
+		if (scale > 0f)
 		{
 			sqrt = Math.Sqrt(scale + 1f);
 			result.w = sqrt * 0.5f;

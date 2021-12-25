@@ -6,11 +6,29 @@ namespace MGE;
 
 public static class Debug
 {
-	public static void Log(string message) => Trace.WriteLine(message);
+	public static void Log(object? obj, [CallerArgumentExpression("obj")] string? message = null)
+	{
+		if (string.IsNullOrEmpty(message))
+		{
+			Trace.WriteLine(obj ?? "(null)");
+			return;
+		}
 
-	public static void Log(object? obj, [CallerArgumentExpression("obj")] string message = "") => Trace.WriteLine($"{message}: {obj?.ToString() ?? "(null)"}");
+		switch (message[0])
+		{
+			case '"':
+			case '$':
+			case '@':
+				Trace.WriteLine(obj ?? "(null)");
+				return;
+		}
 
-	public static void LogList(IEnumerable list, [CallerArgumentExpression("list")] string message = "")
+		Trace.Write(message);
+		Trace.Write(": ");
+		Trace.WriteLine(obj ?? "(null)");
+	}
+
+	public static void LogSP(IEnumerable list, [CallerArgumentExpression("list")] string message = "")
 	{
 		Trace.Write(message);
 		Trace.WriteLine(":");
@@ -21,13 +39,13 @@ public static class Debug
 			Trace.Write("  ");
 			Trace.Write(index);
 			Trace.Write(". ");
-			Trace.WriteLine(item?.ToString() ?? "(null)");
+			Trace.WriteLine(item ?? "(null)");
 
 			index++;
 		}
 	}
 
-	public static void LogDict(IDictionary dict, [CallerArgumentExpression("dict")] string message = "")
+	public static void LogSP(IDictionary dict, [CallerArgumentExpression("dict")] string message = "")
 	{
 		Trace.Write(message);
 		Trace.Write(" (");
@@ -37,9 +55,9 @@ public static class Debug
 		foreach (IDictionaryEnumerator pair in dict)
 		{
 			Trace.Write("  ");
-			Trace.Write(pair.Key?.ToString() ?? "(null)");
+			Trace.Write(pair.Key ?? "(null)");
 			Trace.Write(": ");
-			Trace.WriteLine(pair.Value?.ToString() ?? "(null)");
+			Trace.WriteLine(pair.Value ?? "(null)");
 		}
 	}
 }

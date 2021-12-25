@@ -142,7 +142,7 @@ public class Noise
 	/// <summary> Sets return type from cellular noise calculations </summary>
 	/// <remarks> Default: EuclideanSq </remarks>
 	public CellularReturnType cellularReturnType { get => _cellularReturnType; set => _cellularReturnType = value; }
-	float _cellularJitterModifier = 1.0f;
+	float _cellularJitterModifier = 1f;
 	/// <summary> Sets the maximum distance a cellular point can move from it's grid position </summary>
 	/// <remarks>
 	/// Default: 1.0
@@ -154,7 +154,7 @@ public class Noise
 	/// <remarks> Default: OpenSimplex2 </remarks>
 	public DomainWarpType domainWarpType { get => _domainWarpType; set { _domainWarpType = value; UpdateWarpTransformType3D(); } }
 	TransformType3D _warpTransformType3D = TransformType3D.DefaultOpenSimplex2;
-	float _domainWarpAmp = 1.0f;
+	float _domainWarpAmp = 1f;
 	/// <summary> Sets the maximum warp distance from original position when using DomainWarp(...) </summary>
 	/// <remarks> Default: 1.0 </remarks>
 	public float domainWarpAmp { get => _domainWarpAmp; set => _domainWarpAmp = value; }
@@ -406,7 +406,7 @@ public class Noise
 	{
 		float gain = FastAbs(_gain);
 		float amp = gain;
-		float ampFractal = 1.0f;
+		float ampFractal = 1f;
 		for (int i = 1; i < _octaves; i++)
 		{
 			ampFractal += amp;
@@ -733,7 +733,7 @@ public class Noise
 		{
 			float noise = GenNoiseSingle(seed++, x, y);
 			sum += noise * amp;
-			amp *= Lerp(1.0f, FastMin(noise + 1, 2) * 0.5f, _weightedStrength);
+			amp *= Lerp(1f, FastMin(noise + 1, 2) * 0.5f, _weightedStrength);
 			x *= _lacunarity;
 			y *= _lacunarity;
 			amp *= _gain;
@@ -749,7 +749,7 @@ public class Noise
 		{
 			float noise = GenNoiseSingle(seed++, x, y, z);
 			sum += noise * amp;
-			amp *= Lerp(1.0f, (noise + 1) * 0.5f, _weightedStrength);
+			amp *= Lerp(1f, (noise + 1) * 0.5f, _weightedStrength);
 			x *= _lacunarity;
 			y *= _lacunarity;
 			z *= _lacunarity;
@@ -767,7 +767,7 @@ public class Noise
 		{
 			float noise = FastAbs(GenNoiseSingle(seed++, x, y));
 			sum += (noise * -2 + 1) * amp;
-			amp *= Lerp(1.0f, 1 - noise, _weightedStrength);
+			amp *= Lerp(1f, 1 - noise, _weightedStrength);
 			x *= _lacunarity;
 			y *= _lacunarity;
 			amp *= _gain;
@@ -783,7 +783,7 @@ public class Noise
 		{
 			float noise = FastAbs(GenNoiseSingle(seed++, x, y, z));
 			sum += (noise * -2 + 1) * amp;
-			amp *= Lerp(1.0f, 1 - noise, _weightedStrength);
+			amp *= Lerp(1f, 1 - noise, _weightedStrength);
 			x *= _lacunarity;
 			y *= _lacunarity;
 			z *= _lacunarity;
@@ -801,7 +801,7 @@ public class Noise
 		{
 			float noise = PingPong((GenNoiseSingle(seed++, x, y) + 1) * _pingPongStrength);
 			sum += (noise - 0.5f) * 2 * amp;
-			amp *= Lerp(1.0f, noise, _weightedStrength);
+			amp *= Lerp(1f, noise, _weightedStrength);
 			x *= _lacunarity;
 			y *= _lacunarity;
 			amp *= _gain;
@@ -817,7 +817,7 @@ public class Noise
 		{
 			float noise = PingPong((GenNoiseSingle(seed++, x, y, z) + 1) * _pingPongStrength);
 			sum += (noise - 0.5f) * 2 * amp;
-			amp *= Lerp(1.0f, noise, _weightedStrength);
+			amp *= Lerp(1f, noise, _weightedStrength);
 			x *= _lacunarity;
 			y *= _lacunarity;
 			z *= _lacunarity;
@@ -900,9 +900,9 @@ public class Noise
 		float x0 = (float)(x - i);
 		float y0 = (float)(y - j);
 		float z0 = (float)(z - k);
-		int xNSign = (int)(-1.0f - x0) | 1;
-		int yNSign = (int)(-1.0f - y0) | 1;
-		int zNSign = (int)(-1.0f - z0) | 1;
+		int xNSign = (int)(-1f - x0) | 1;
+		int yNSign = (int)(-1f - y0) | 1;
+		int zNSign = (int)(-1f - z0) | 1;
 		float ax0 = xNSign * -x0;
 		float ay0 = yNSign * -y0;
 		float az0 = zNSign * -z0;
@@ -1118,9 +1118,9 @@ public class Noise
 		float xAFlipMask0 = ((xNMask | 1) << 1) * x1;
 		float yAFlipMask0 = ((yNMask | 1) << 1) * y1;
 		float zAFlipMask0 = ((zNMask | 1) << 1) * z1;
-		float xAFlipMask1 = (-2 - (xNMask << 2)) * x1 - 1.0f;
-		float yAFlipMask1 = (-2 - (yNMask << 2)) * y1 - 1.0f;
-		float zAFlipMask1 = (-2 - (zNMask << 2)) * z1 - 1.0f;
+		float xAFlipMask1 = (-2 - (xNMask << 2)) * x1 - 1f;
+		float yAFlipMask1 = (-2 - (yNMask << 2)) * y1 - 1f;
+		float zAFlipMask1 = (-2 - (zNMask << 2)) * z1 - 1f;
 		bool skip5 = false;
 		float a2 = xAFlipMask0 + a0;
 		if (a2 > 0)
@@ -1933,9 +1933,9 @@ public class Noise
 		float x0 = (float)x - i;
 		float y0 = (float)y - j;
 		float z0 = (float)z - k;
-		int xNSign = (int)(-x0 - 1.0f) | 1;
-		int yNSign = (int)(-y0 - 1.0f) | 1;
-		int zNSign = (int)(-z0 - 1.0f) | 1;
+		int xNSign = (int)(-x0 - 1f) | 1;
+		int yNSign = (int)(-y0 - 1f) | 1;
+		int zNSign = (int)(-z0 - 1f) | 1;
 		float ax0 = xNSign * -x0;
 		float ay0 = yNSign * -y0;
 		float az0 = zNSign * -z0;

@@ -22,8 +22,8 @@ namespace MGE
 		static List<Keys> _currentKeys = new();
 		static List<Keys> _oldKeys = new();
 
-		static List<JoyState> _currentGamepadStates = new();
-		static List<JoyState> _oldGamepadStates = new();
+		static List<JoyState> _currentJoystickStates = new();
+		static List<JoyState> _oldJoystickStates = new();
 
 		public static Vector2 mousePosition { get; private set; }
 		public static Vector2 mousePositionDelta { get; private set; }
@@ -44,7 +44,7 @@ namespace MGE
 			foreach (var key in Enum.GetValues<Keys>())
 			{
 				if (key < 0) continue;
-
+ 
 				if (keyboardState.IsKeyPressed(key))
 				{
 					_currentKeys.Add(key);
@@ -68,58 +68,52 @@ namespace MGE
 
 			#region Gamepads
 
-			var gamepads = joystickStates.Where(gp => gp is not null);
-			if (gamepads.Count() > 0)
+			_oldJoystickStates = _currentJoystickStates;
+			_currentJoystickStates.Clear();
+
+			foreach (var joystick in joystickStates)
 			{
-				Debug.LogList(gamepads);
-			}
+				var joystickState = new JoyState();
 
-			_oldGamepadStates = _currentGamepadStates;
-			_currentGamepadStates.Clear();
-
-			foreach (var gamepad in joystickStates)
-			{
-				var state = new JoyState();
-
-				if (gamepad is null)
+				if (joystick is null)
 				{
-					_currentGamepadStates.Add(state);
+					_currentJoystickStates.Add(joystickState);
 					continue;
 				}
 
-				state.name = gamepad.Name;
-				state.id = gamepad.Id;
+				joystickState.name = joystick.Name;
+				joystickState.id = joystick.Id;
 
 				// Axis
-				for (int i = 0; i < gamepad.AxisCount; i++)
+				for (int i = 0; i < joystick.AxisCount; i++)
 				{
-					state.axes.Add(gamepad.GetAxis(i));
+					joystickState.axes.Add(joystick.GetAxis(i));
 				}
 
 				// Buttons
-				for (int i = 0; i < gamepad.ButtonCount; i++)
+				for (int i = 0; i < joystick.ButtonCount; i++)
 				{
-					if (gamepad.IsButtonDown(i))
+					if (joystick.IsButtonDown(i))
 					{
-						state.buttons.Add(i);
+						joystickState.buttons.Add(i);
 					}
 				}
 
 				// Hats
-				for (int i = 0; i < gamepad.HatCount; i++)
+				for (int i = 0; i < joystick.HatCount; i++)
 				{
-					state.hats.Add(gamepad.GetHat(i));
+					joystickState.hats.Add(joystick.GetHat(i));
 				}
 
-				_currentGamepadStates.Add(state);
+				_currentJoystickStates.Add(joystickState);
 			}
 
 			#endregion
 		}
 
-		public static float GetGamepadAxis(int axis, int index = 0)
+		public static float GetJoystickAxis(int axis, int index = 0)
 		{
-			return _currentGamepadStates[index].axes[axis];
+			return _currentJoystickStates[index].axes[axis];
 		}
 
 		internal static void OnTextInput(TextInputEventArgs e)
@@ -127,7 +121,7 @@ namespace MGE
 			textInput = e.AsString;
 		}
 
-		internal static void OnGamepadConnected(JoystickEventArgs e)
+		internal static void OnJoystickConnected(JoystickEventArgs e)
 		{
 			if (e.IsConnected)
 			{
@@ -137,9 +131,8 @@ namespace MGE
 				return;
 			}
 
-			Debug.Log($"Gamepad #{e.JoystickId} disconnected");
-
 			// Disconnected
+			Debug.Log($"Gamepad #{e.JoystickId} disconnected");
 		}
 	}
 }

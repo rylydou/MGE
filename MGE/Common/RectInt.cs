@@ -219,9 +219,12 @@ public struct RectInt : IEquatable<RectInt>
 	public static implicit operator (int, int, int, int)(RectInt rect) => (rect.x, rect.y, rect.width, rect.height);
 	public static implicit operator RectInt((int, int, int, int) rect) => new(rect.Item1, rect.Item2, rect.Item3, rect.Item4);
 
+	public static implicit operator System.Drawing.Rectangle(RectInt rect) => new(rect.x, rect.y, rect.width, rect.height);
+	public static implicit operator RectInt(System.Drawing.Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
+
 	////////////////////////////////////////////////////////////
 
-	public override string ToString() => $"{{ {x} {y} {width} x {height} }}";
+	public override string ToString() => $"{{({x} {y}) ({width} x {height})}}";
 	public string ToString(string format) => string.Format(format, x, y, width, height);
 
 	public override int GetHashCode() => HashCode.Combine(x, y, width, height);

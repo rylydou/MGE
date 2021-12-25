@@ -10,19 +10,18 @@ public struct Folder : IEquatable<Folder>
 
 	static Folder()
 	{
-		dataFolder = Environment.GetEnvironmentVariable("data-dir") ?? appDataFolder;
-
+		dataFolder = Environment.GetEnvironmentVariable("data-dir") ?? appData;
 		dataFolder = dataFolder / "MGE Game";
 	}
 
-	public static Folder rootFolder = new("");
-	public static Folder userFolder = new(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+	public static Folder root = new("");
+	public static Folder user = new(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
 
-	public static Folder appDataFolder = new(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-	public static Folder localAppDataFolder = new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
-	public static Folder commonAppDataFolder = new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
+	public static Folder appData = new(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+	public static Folder localAppData = new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+	public static Folder commonAppData = new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
 
-	public static Folder assetsFolder = new Folder(Environment.CurrentDirectory) + "Assets";
+	public static Folder assets = new Folder(Environment.CurrentDirectory) + "Assets";
 	public static Folder resourcePacks = new Folder(Environment.CurrentDirectory) + "Resource Packs";
 
 	public static Folder dataFolder;
@@ -60,9 +59,9 @@ public struct Folder : IEquatable<Folder>
 
 	public File GetFile(string path) => new(GetAbsolutePath(path));
 
-	public FileStream FileOpenRead(string path) => new FileStream(GetAbsolutePath(path), FileMode.Open, FileAccess.Read, FileShare.Read);
+	public FileStream FileOpenRead(string path) => new(GetAbsolutePath(path), FileMode.Open, FileAccess.Read, FileShare.Read);
 
-	public FileStream FileOpenWrite(string path) => new FileStream(GetAbsolutePath(path), FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
+	public FileStream FileOpenWrite(string path) => new(GetAbsolutePath(path), FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
 
 	#endregion
 
@@ -92,7 +91,7 @@ public struct Folder : IEquatable<Folder>
 	public static implicit operator string(Folder folder) => folder.path;
 	public static implicit operator Folder(string str) => new Folder(str);
 
-	public override string ToString() => path.StartsWith(userFolder.path) ? "~" + path.Remove(0, userFolder.path.Length) : path;
+	public override string ToString() => path.StartsWith(user.path) ? "~" + path.Remove(0, user.path.Length) : path;
 
 	public override int GetHashCode() => path.GetHashCode();
 
