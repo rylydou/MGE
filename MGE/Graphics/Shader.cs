@@ -37,30 +37,30 @@ public class Shader : GraphicsResource
 		GL.ShaderSource(fragmentShader, shaderSource);
 		CompileShader(fragmentShader);
 
-		GL.AttachShader(_handle, vertexShader);
-		GL.AttachShader(_handle, fragmentShader);
+		GL.AttachShader(handle, vertexShader);
+		GL.AttachShader(handle, fragmentShader);
 
-		LinkProgram(_handle);
+		LinkProgram(handle);
 
-		GL.DetachShader(_handle, vertexShader);
-		GL.DetachShader(_handle, fragmentShader);
+		GL.DetachShader(handle, vertexShader);
+		GL.DetachShader(handle, fragmentShader);
 		GL.DeleteShader(fragmentShader);
 		GL.DeleteShader(vertexShader);
 
-		GL.GetProgram(_handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
+		GL.GetProgram(handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
 
 		_uniformLocations = new Dictionary<string, int>();
 
 		for (var i = 0; i < numberOfUniforms; i++)
 		{
-			var key = GL.GetActiveUniform(_handle, i, out _, out _);
-			var location = GL.GetUniformLocation(_handle, key);
+			var key = GL.GetActiveUniform(handle, i, out _, out _);
+			var location = GL.GetUniformLocation(handle, key);
 
 			_uniformLocations.Add(key, location);
 		}
 	}
 
-	internal void Use() => GL.UseProgram(_handle);
+	internal void Use() => GL.UseProgram(handle);
 
 	internal static void UseNone() => GL.UseProgram(0);
 
@@ -85,53 +85,53 @@ public class Shader : GraphicsResource
 		if (code != 1) throw new MGEException($"Error occurred when linking Program");
 	}
 
-	public int GetAttribLocation(string attrName) => GL.GetAttribLocation(_handle, attrName);
+	public int GetAttribLocation(string attrName) => GL.GetAttribLocation(handle, attrName);
 
 	public void SetInt(string name, int data)
 	{
-		GL.UseProgram(_handle);
+		GL.UseProgram(handle);
 		GL.Uniform1(_uniformLocations[name], data);
 	}
 
 	public void SetFloat(string name, float data)
 	{
-		GL.UseProgram(_handle);
+		GL.UseProgram(handle);
 		GL.Uniform1(_uniformLocations[name], data);
 	}
 
 	public void SetVector2(string name, Vector2 data)
 	{
-		GL.UseProgram(_handle);
+		GL.UseProgram(handle);
 		GL.Uniform2(_uniformLocations[name], data.x, data.y);
 	}
 
 	public void SetVector3(string name, Vector3 data)
 	{
-		GL.UseProgram(_handle);
+		GL.UseProgram(handle);
 		GL.Uniform3(_uniformLocations[name], data.x, data.y, data.z);
 	}
 
 	public void SetVector4(string name, Vector4 data)
 	{
-		GL.UseProgram(_handle);
+		GL.UseProgram(handle);
 		GL.Uniform4(_uniformLocations[name], data.x, data.y, data.z, data.w);
 	}
 
 	public void SetColor(string name, Color color)
 	{
-		GL.UseProgram(_handle);
+		GL.UseProgram(handle);
 		GL.Uniform4(_uniformLocations[name], color.r, color.g, color.b, color.a);
 	}
 
 	public void SetMatrix(string name, Matrix data)
 	{
-		GL.UseProgram(_handle);
+		GL.UseProgram(handle);
 		var mat = (Matrix4)data;
 		GL.UniformMatrix4(_uniformLocations[name], true, ref mat);
 	}
 
 	protected override void Delete()
 	{
-		GL.DeleteProgram(_handle);
+		GL.DeleteProgram(handle);
 	}
 }

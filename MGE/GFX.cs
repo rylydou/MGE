@@ -129,19 +129,17 @@ public static class GFX
 
 	public static void DrawBatches()
 	{
-		// Debug.LogVariable(_batches.Count);
+		// Debug.Log(_batches.Count);
 
 		foreach (var batch in _batches)
 		{
 			if (batch.vertexCount == 0) continue;
 
 			// Debug.Log($"\nVertices ({batch.vertexCount} / {batch.vertexData.Count}):");
-			// Debug.Log(string.Join(' ', batch.vertexData.array.Select(x => x.ToString()).ToArray(), 0, batch.vertexData.Count));
-			// Debug.Log($"Elements ({batch.elements.Count}):");
-			// Debug.Log(string.Join(' ', batch.elements.array.Select(x => x.ToString()).ToArray(), 0, batch.elements.Count));
+			// Debug.Log($"Elements ({batch.indices.Count}):");
 
 			batch.key.texture.Use();
-			batch.key.shader.Use();
+			// batch.key.shader.Use();
 			batch.key.shader.SetMatrix("transform", transform * currentProjectionTransform);
 
 			_vertexBuffer.SubData(BufferTarget.ArrayBuffer, batch.vertexData.array, 0, batch.vertexData.Count);
@@ -168,26 +166,26 @@ public static class GFX
 
 	public static void DrawBox(Vector2 position, Vector2 scale, Color color)
 	{
-		if (color.intA < 0) return;
+		if (color.intA == 0) return;
 
 		DrawTextureScaled(Texture.pixelTexture, position, scale, color);
 	}
 	public static void DrawBox(Vector2 position, Vector2 scale, float rotation, Color color)
 	{
-		if (color.intA < 0) return;
+		if (color.intA == 0) return;
 
 		DrawTextureScaledAndRotated(Texture.pixelTexture, position, scale, rotation, color);
 	}
 	public static void DrawBox(Rect rect, Color color)
 	{
-		if (color.intA < 0) return;
+		if (color.intA == 0) return;
 
 		DrawTextureAtDest(Texture.pixelTexture, rect, color);
 	}
 
 	public static void DrawRect(Rect rect, Color color, float thickness = 1)
 	{
-		if (thickness <= 0) return;
+		if (thickness == 0) return;
 		if (color.intA == 0) return;
 
 		var outerRect = rect;
@@ -232,7 +230,7 @@ public static class GFX
 
 	public static void DrawCircle(Vector2 center, float radius, Color color, float thickness = 1, float pixelsPerLine = 8f)
 	{
-		if (thickness <= 0) return;
+		if (thickness == 0) return;
 		if (color.intA == 0) return;
 
 		var vertexCount = (int)Math.CeilToEven(radius * Math.tau / pixelsPerLine);

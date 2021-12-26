@@ -6,53 +6,53 @@ namespace MGE;
 
 public class Font
 {
-	class Texture2DManager : ITexture2DManager
-	{
-		public object CreateTexture(int width, int height) => new Texture(new(width, height));
+	// class Texture2DManager : ITexture2DManager
+	// {
+	// 	public object CreateTexture(int width, int height) => new Texture(new Vector2Int(width, height));
 
-		public System.Drawing.Point GetTextureSize(object obj) => ((Texture)obj).size;
+	// 	public System.Drawing.Point GetTextureSize(object obj) => ((Texture)obj).size;
 
-		public void SetTextureData(object obj, System.Drawing.Rectangle bounds, byte[] data) => ((Texture)obj).SetData(bounds, data);
-	}
+	// 	public void SetTextureData(object obj, System.Drawing.Rectangle bounds, byte[] data) => ((Texture)obj).SetData(bounds, data);
+	// }
 
-	class FontStashRenderer : IFontStashRenderer
-	{
-		ITexture2DManager textureManager = new Texture2DManager();
-		public ITexture2DManager TextureManager => textureManager;
+	// class FontStashRenderer : IFontStashRenderer
+	// {
+	// 	ITexture2DManager textureManager = new Texture2DManager();
+	// 	public ITexture2DManager TextureManager => textureManager;
 
-		public void Draw(object texture, System.Numerics.Vector2 pos, System.Drawing.Rectangle? src, System.Drawing.Color color, float rotation, System.Numerics.Vector2 origin, System.Numerics.Vector2 scale, float depth)
-		{
-			if (rotation == 0)
-			{
-				Debug.Log($"pos:{pos} src:{src} origin:{origin} realPos:{pos - origin}");
-				GFX.DrawTextureRegionScaled((Texture)texture, src.HasValue ? src.Value : throw new MGEException(), pos - origin, scale, color);
-				GFX.DrawRect(new(pos - origin, src.Value.Size.Width * scale.X, src.Value.Size.Height * scale.Y), Color.white);
-			}
-			else
-			{
-				throw new MGEException();
-				// GFX.DrawTextureRegionScaledAndRotated((Texture)texture, src, pos, scale, rotation, color);
-			}
-		}
-	}
+	// 	public void Draw(object texture, System.Numerics.Vector2 pos, System.Drawing.Rectangle? src, System.Drawing.Color color, float rotation, System.Numerics.Vector2 origin, System.Numerics.Vector2 scale, float depth)
+	// 	{
+	// 		if (rotation == 0)
+	// 		{
+	// 			// Debug.Log($"pos:{pos} src:{src} origin:{origin} realPos:{pos - origin}");
+	// 			GFX.DrawTextureRegionScaled((Texture)texture, src.HasValue ? src.Value : throw new MGEException(), pos - origin, scale, color);
+	// 			GFX.DrawRect(new(pos - origin, src.Value.Size.Width * scale.X, src.Value.Size.Height * scale.Y), Color.white);
+	// 		}
+	// 		else
+	// 		{
+	// 			throw new MGEException();
+	// 			// GFX.DrawTextureRegionScaledAndRotated((Texture)texture, src, pos, scale, rotation, color);
+	// 		}
+	// 	}
+	// }
 
-	public readonly static Font defaultFont = new(Folder.assets.GetFile("Fonts/Inter/Inter Regular.ttf"));
+	// public readonly static Font defaultFont = new(Folder.assets.GetFile("Fonts/Inter/Inter Regular.ttf"));
 
-	FontSystem fontSystem;
-	FontStashRenderer renderer = new();
+	// FontSystem fontSystem;
+	// FontStashRenderer renderer = new();
 
-	public Font(File fontFile)
-	{
-		fontSystem = new();
-		fontSystem.AddFont(fontFile.ReadBytes());
-	}
+	// public Font(File fontFile)
+	// {
+	// 	fontSystem = new();
+	// 	fontSystem.AddFont(fontFile.ReadBytes());
+	// }
 
-	public void DrawString(string text, Vector2 position, int fontSize, Color color)
-	{
-		var font = fontSystem.GetFont(fontSize);
+	// public void DrawString(string text, Vector2 position, int fontSize, Color color)
+	// {
+	// 	var font = fontSystem.GetFont(fontSize);
 
-		font.DrawText(renderer, text, position, color);
-	}
+	// 	font.DrawText(renderer, text, position, color);
+	// }
 
 	/* public static Font current = new("Font.png", new(10, 24));
 

@@ -21,14 +21,6 @@ public class Texture : GraphicsResource
 	public Texture(Vector2Int size) : base(GL.GenTexture())
 	{
 		this.size = size;
-
-		Bind();
-
-		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-
-		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
-		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
 	}
 
 	#region Loading
@@ -50,6 +42,7 @@ public class Texture : GraphicsResource
 		using var stream = imageFile.OpenRead();
 
 		var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+
 		return new(image.Width, image.Height, image.Data);
 	}
 
@@ -60,7 +53,15 @@ public class Texture : GraphicsResource
 	public void SetData<T>(T[]? data) where T : struct
 	{
 		Bind();
-		GL.TexImage2D<T>(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.x, size.y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
+
+		GL.TexImage2D<T>(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.x, size.y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data); GFX.CheckError();
+
+		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+
+		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+
 		initialized = true;
 	}
 
@@ -68,22 +69,22 @@ public class Texture : GraphicsResource
 	{
 		InitIfNecessary();
 		Bind();
-		GL.TexSubImage2D<T>(TextureTarget.Texture2D, 0, region.x, region.y, region.width, region.height, PixelFormat.Rgba, PixelType.UnsignedByte, data);
+		GL.TexSubImage2D<T>(TextureTarget.Texture2D, 0, region.x, region.y, region.width, region.height, PixelFormat.Rgba, PixelType.UnsignedByte, data); GFX.CheckError();
 	}
 
 	public void GetData<T>(T[]? data) where T : struct
 	{
 		InitIfNecessary();
 		Bind();
-		GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
+		GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data); GFX.CheckError();
 	}
 
-	public void GetData<T>(T[,]? data) where T : struct
-	{
-		InitIfNecessary();
-		Bind();
-		GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
-	}
+	// public void GetData<T>(T[,]? data) where T : struct
+	// {
+	// 	InitIfNecessary();
+	// 	Bind();
+	// 	GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data); GFX.CheckError();
+	// }
 
 	#endregion
 
@@ -98,33 +99,28 @@ public class Texture : GraphicsResource
 	{
 		if (!initialized)
 		{
-			initialized = true;
 			SetData<byte>(null);
 		}
 	}
 
 	internal void Bind()
 	{
-		GL.BindTexture(TextureTarget.Texture2D, _handle);
-		GFX.CheckError();
+		GL.BindTexture(TextureTarget.Texture2D, handle); GFX.CheckError();
 	}
 
 	internal void Use(TextureUnit unit = TextureUnit.Texture0)
 	{
+		GL.ActiveTexture(unit); GFX.CheckError();
 		Bind();
-		GL.ActiveTexture(unit);
-		GFX.CheckError();
 	}
 
 	internal static void UseNone()
 	{
-		GL.BindTexture(TextureTarget.Texture2D, 0);
-		GFX.CheckError();
+		GL.BindTexture(TextureTarget.Texture2D, 0); GFX.CheckError();
 	}
 
 	protected override void Delete()
 	{
-		GL.DeleteTexture(_handle);
-		GFX.CheckError();
+		GL.DeleteTexture(handle); GFX.CheckError();
 	}
 }

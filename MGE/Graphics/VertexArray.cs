@@ -11,12 +11,12 @@ internal class VertexArray : GraphicsResource
 
 	protected override void Delete()
 	{
-		GL.DeleteVertexArray(_handle);
+		GL.DeleteVertexArray(handle);
 	}
 
 	public void Bind()
 	{
-		GL.BindVertexArray(_handle);
+		GL.BindVertexArray(handle);
 	}
 
 	/// <summary>
@@ -86,7 +86,7 @@ internal class VertexArray : GraphicsResource
 	public void BindElementBuffer<T>(Buffer<T> buffer) where T : struct
 	{
 		AssertActive();
-		GL.BindBuffer(BufferTarget.ElementArrayBuffer, buffer._handle);
+		GL.BindBuffer(BufferTarget.ElementArrayBuffer, buffer.handle);
 	}
 
 	/// <summary>
@@ -165,7 +165,7 @@ internal class VertexArray : GraphicsResource
 	{
 		AssertActive();
 		// bind given buffer
-		GL.BindBuffer(BufferTarget.ArrayBuffer, buffer._handle);
+		GL.BindBuffer(BufferTarget.ArrayBuffer, buffer.handle);
 		// make sure the vertex attribute is enabled
 		GL.EnableVertexAttribArray(index);
 		// set the vertex attribute pointer to the current buffer
@@ -197,7 +197,7 @@ internal class VertexArray : GraphicsResource
 #if DEBUG
 		int activehandle;
 		GL.GetInteger(GetPName.VertexArrayBinding, out activehandle);
-		if (activehandle != _handle) throw new MGEException("Vertex array object is not bound.");
+		if (activehandle != handle) throw new MGEException("Vertex array object is not bound.");
 #endif
 	}
 }
