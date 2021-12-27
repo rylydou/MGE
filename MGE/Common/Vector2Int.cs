@@ -146,9 +146,6 @@ public struct Vector2Int : IEquatable<Vector2Int>
 	public static implicit operator OpenTK.Mathematics.Vector2i(Vector2Int vector) => new(vector.x, vector.y);
 	public static implicit operator Vector2Int(OpenTK.Mathematics.Vector2i vector) => new(vector.X, vector.Y);
 
-	public static implicit operator System.Drawing.Point(Vector2Int vector) => new(vector.x, vector.y);
-	public static implicit operator Vector2Int(System.Drawing.Point vector) => new(vector.X, vector.Y);
-
 	////////////////////////////////////////////////////////////
 
 	public override string ToString() => $"({x}, {y})";

@@ -3,7 +3,6 @@ using MGE.Graphics;
 using MGE.Nodes;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace MGE;
@@ -28,8 +27,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		VSync = VSyncMode.Adaptive;
 
 		gameRender = new(new(320 * 2, 180 * 2));
-		sprite = Texture.LoadFromFile(Folder.assets.GetFile("Icon.png"));
-		Icon = new(Texture.LoadImageFromFile(Folder.assets.GetFile("Icon.png")));
+		sprite = Texture.LoadTexture("Icon.png");
+		Icon = new(Texture.LoadImageData("Icon.png"));
 
 		CenterWindow(new(320 * 4, 180 * 4));
 		Focus();
@@ -87,20 +86,46 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		if (state.IsKeyPressed(Keys.F11) || (alt && state.IsKeyPressed(Keys.Enter)))
 		{
-			if (WindowState == WindowState.Fullscreen)
+			switch (WindowState)
 			{
-				WindowState = WindowState.Normal;
-				CenterWindow(new(320 * 4, 180 * 4));
-			}
-			else
-			{
-				WindowState = WindowState.Fullscreen;
+				case WindowState.Normal:
+					// Goto borderless windowed
+					WindowBorder = WindowBorder.Hidden;
+					WindowState = WindowState.Maximized;
+					break;
+
+				case WindowState.Maximized:
+					// Goto fullscreen
+					WindowBorder = WindowBorder.Resizable;
+					WindowState = WindowState.Fullscreen;
+					break;
+
+				case WindowState.Fullscreen:
+					// Goto windowed
+					WindowBorder = WindowBorder.Resizable;
+					WindowState = WindowState.Normal;
+					CenterWindow(new(320 * 4, 180 * 4));
+					break;
 			}
 		}
 
 		Scene.Tick();
 
 		Scene.Update();
+	}
+
+	protected override void OnTextInput(TextInputEventArgs e)
+	{
+		base.OnTextInput(e);
+
+		Input.OnTextInput(e);
+	}
+
+	protected override void OnJoystickConnected(JoystickEventArgs e)
+	{
+		base.OnJoystickConnected(e);
+
+		Input.OnGamepadConnected(e);
 	}
 
 	protected override void OnRenderFrame(FrameEventArgs args)
@@ -123,40 +148,10 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		GFX.DrawRenderTexture(gameRender);
 
-		// Font.defaultFont.DrawString($"Update: {1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4), 12, Color.white);
-
-		// var offset = 0;
-		// foreach (var joystick in JoystickStates)
-		// {
-		// if (joystick is null) continue;
-
-		// var title = GLFW.JoystickIsGamepad(joystick.Id) ? "GP" : "JS";
-
-		// Font.defaultFont.DrawString($"{offset++} {title}. {joystick.ToString()}", new(-Size.X / 2 + 4, Size.Y / 2 - 4 - offset * 12), 12, Color.white);
-		// }
-
-		Font.defaultFont.DrawString("Hello World!", Vector2.zero, 64, Color.white);
-
-		GFX.DrawBox(new(64, 64, 64, 64), Color.red);
-
-		GFX.DrawTexture(sprite, Vector2.zero, Color.white);
+		Font.current.DrawText($"Update: {1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4));
 
 		GFX.DrawBatches();
 
 		SwapBuffers();
-	}
-
-	protected override void OnTextInput(TextInputEventArgs e)
-	{
-		base.OnTextInput(e);
-
-		Input.OnTextInput(e);
-	}
-
-	protected override void OnJoystickConnected(JoystickEventArgs e)
-	{
-		base.OnJoystickConnected(e);
-
-		Input.OnJoystickConnected(e);
 	}
 }

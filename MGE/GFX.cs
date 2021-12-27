@@ -85,7 +85,7 @@ public static class GFX
 		_indexBuffer = new();
 		_indexBuffer.Init(BufferTarget.ElementArrayBuffer, (int)Math.CeilToPowerOf2(indexCapacity), BufferUsageHint.StreamDraw);
 
-		_basicSpriteShader = new(Folder.assets.GetFile("Sprite.vert"), Folder.assets.GetFile("Sprite.frag"));
+		_basicSpriteShader = new("Sprite.vert", "Sprite.frag");
 
 		PushTransform(Matrix.identity);
 	}
@@ -140,8 +140,7 @@ public static class GFX
 			// Debug.Log($"Elements ({batch.elements.Count}):");
 			// Debug.Log(string.Join(' ', batch.elements.array.Select(x => x.ToString()).ToArray(), 0, batch.elements.Count));
 
-			batch.key.texture.Use();
-			batch.key.shader.Use();
+			batch.key.texture.Bind();
 			batch.key.shader.SetMatrix("transform", transform * currentProjectionTransform);
 
 			_vertexBuffer.SubData(BufferTarget.ArrayBuffer, batch.vertexData.array, 0, batch.vertexData.Count);
@@ -166,30 +165,12 @@ public static class GFX
 		DrawTextureScaledAndRotated(Texture.pixelTexture, center, new Vector2(length, thickness), angle, color);
 	}
 
-	public static void DrawBox(Vector2 position, Vector2 scale, Color color)
-	{
-		if (color.intA < 0) return;
-
-		DrawTextureScaled(Texture.pixelTexture, position, scale, color);
-	}
-	public static void DrawBox(Vector2 position, Vector2 scale, float rotation, Color color)
-	{
-		if (color.intA < 0) return;
-
-		DrawTextureScaledAndRotated(Texture.pixelTexture, position, scale, rotation, color);
-	}
-	public static void DrawBox(Rect rect, Color color)
-	{
-		if (color.intA < 0) return;
-
-		DrawTextureAtDest(Texture.pixelTexture, rect, color);
-	}
+	public static void DrawBox(Vector2 position, Vector2 scale, Color color) => DrawTextureScaled(Texture.pixelTexture, position, scale, color);
+	public static void DrawBox(Vector2 position, Vector2 scale, float rotation, Color color) => DrawTextureScaledAndRotated(Texture.pixelTexture, position, scale, rotation, color);
+	public static void DrawBox(Rect rect, Color color) => DrawTextureAtDest(Texture.pixelTexture, rect, color);
 
 	public static void DrawRect(Rect rect, Color color, float thickness = 1)
 	{
-		if (thickness <= 0) return;
-		if (color.intA == 0) return;
-
 		var outerRect = rect;
 		outerRect.Expand(thickness * 2);
 
@@ -232,9 +213,6 @@ public static class GFX
 
 	public static void DrawCircle(Vector2 center, float radius, Color color, float thickness = 1, float pixelsPerLine = 8f)
 	{
-		if (thickness <= 0) return;
-		if (color.intA == 0) return;
-
 		var vertexCount = (int)Math.CeilToEven(radius * Math.tau / pixelsPerLine);
 
 		var points = new Vector2[vertexCount];
@@ -251,8 +229,6 @@ public static class GFX
 
 	public static void DrawCircleFilled(Vector2 center, float radius, Color color, float pixelsPerLine = 8f)
 	{
-		if (color.intA == 0) return;
-
 		var vertexCount = (VertexIndex)Math.CeilToEven(radius * Math.tau / pixelsPerLine);
 
 		SetBatch(Texture.pixelTexture);
@@ -304,7 +280,7 @@ public static class GFX
 		SetBatch(renderTexture.colorTexture);
 		var scaleFactor = (float)size.y / renderTexture.size.y;
 		var realXSize = renderTexture.size.x * scaleFactor;
-		SetBoxRegionAtDest(new(0, renderTexture.size.y, renderTexture.size.x, -renderTexture.size.y), new(-realXSize / 2, -size.y / 2, realXSize, size.y), Color.white);
+		SetBoxRegionAtDest(new(-realXSize / 2, -size.y / 2, realXSize, size.y), new(0, renderTexture.size.y, renderTexture.size.x, -renderTexture.size.y), Color.white);
 	}
 
 	#endregion
@@ -327,13 +303,13 @@ public static class GFX
 		);
 	}
 
-	public static void DrawTextureRegion(Texture texture, RectInt source, Vector2 position, Color color)
+	public static void DrawTextureRegion(Texture texture, Vector2 position, RectInt source, Color color)
 	{
 		SetBatch(texture);
-		SetBoxRegion(source, position, color);
+		SetBoxRegion(position, source, color);
 	}
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetBoxRegion(RectInt source, Vector2 position, Color color)
+	public static void SetBoxRegion(Vector2 position, RectInt source, Color color)
 	{
 		var halfRealSize = (Vector2)texture.size / 2;
 
@@ -363,13 +339,13 @@ public static class GFX
 		);
 	}
 
-	public static void DrawTextureRegionScaled(Texture texture, RectInt source, Vector2 position, Vector2 scale, Color color)
+	public static void DrawTextureRegionScaled(Texture texture, Vector2 position, Vector2 scale, Rect source, Color color)
 	{
 		SetBatch(texture);
-		SetBoxRegionScaled(source, position, scale, color);
+		SetBoxRegionScaled(position, scale, source, color);
 	}
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetBoxRegionScaled(RectInt source, Vector2 position, Vector2 scale, Color color)
+	public static void SetBoxRegionScaled(Vector2 position, Vector2 scale, Rect source, Color color)
 	{
 		var halfRealSize = (Vector2)texture.size * scale / 2;
 
@@ -395,17 +371,17 @@ public static class GFX
 			position + Vector2.RotateAroundPoint(-halfRealSize, rotationRad), new(0, 0), color,
 			position + Vector2.RotateAroundPoint(new Vector2(halfRealSize.x, -halfRealSize.y), rotationRad), new(1, 0), color,
 			position + Vector2.RotateAroundPoint(new Vector2(-halfRealSize.x, halfRealSize.y), rotationRad), new(0, 1), color,
-			position + Vector2.RotateAroundPoint(halfRealSize, rotationRad), new(1, 1), color
+			position + Vector2.RotateAroundPoint(+halfRealSize, rotationRad), new(1, 1), color
 		);
 	}
 
-	public static void DrawTextureScaledAndRotated(Texture texture, RectInt source, Vector2 position, Vector2 scale, float rotationRad, Color color)
+	public static void DrawTextureScaledAndRotated(Texture texture, Vector2 position, Vector2 scale, float rotationRad, Rect source, Color color)
 	{
 		SetBatch(texture);
-		SetBoxRegionScaledAndRotated(source, position, scale, rotationRad, color);
+		SetBoxRegionScaledAndRotated(position, scale, rotationRad, source, color);
 	}
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetBoxRegionScaledAndRotated(RectInt source, Vector2 position, Vector2 scale, float rotationRad, Color color)
+	public static void SetBoxRegionScaledAndRotated(Vector2 position, Vector2 scale, float rotationRad, RectInt source, Color color)
 	{
 		var halfRealSize = (Vector2)texture.size * scale / 2;
 
@@ -433,18 +409,18 @@ public static class GFX
 		);
 	}
 
-	public static void DrawTextureRegionAtDest(Texture texture, RectInt source, Rect destination, Color color)
+	public static void DrawTextureRegionAtDest(Texture texture, Rect destination, RectInt source, Color color)
 	{
 		SetBatch(texture);
-		SetBoxRegionAtDest(source, destination, color);
+		SetBoxRegionAtDest(destination, source, color);
 	}
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetBoxRegionAtDest(RectInt source, Rect destination, Color color)
+	public static void SetBoxRegionAtDest(Rect destination, RectInt source, Color color)
 	{
-		SetBoxRegionAtVerts(source, destination.topLeft, destination.topRight, destination.bottomLeft, destination.bottomRight, color);
+		SetBoxRegionAtVerts(destination.topLeft, destination.topRight, destination.bottomLeft, destination.bottomRight, source, color);
 	}
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetBoxRegionAtVerts(RectInt source, Vector2 destTL, Vector2 destTR, Vector2 destBL, Vector2 destBR, Color color)
+	public static void SetBoxRegionAtVerts(Vector2 destTL, Vector2 destTR, Vector2 destBL, Vector2 destBR, RectInt source, Color color)
 	{
 		SetQuad(
 			destTL, source.topLeft, color,
@@ -463,10 +439,10 @@ public static class GFX
 	)
 	{
 		SetQuadWithNormTexCoords(
-		 destTL, texture.GetNormalizedPoint(srcTL), colorTL,
-		 destTR, texture.GetNormalizedPoint(srcTR), colorTR,
-		 destBL, texture.GetNormalizedPoint(srcBL), colorBL,
-		 destBR, texture.GetNormalizedPoint(srcBR), colorBR
+		 destTL, texture.GetTextureCoord(srcTL), colorTL,
+		 destTR, texture.GetTextureCoord(srcTR), colorTR,
+		 destBL, texture.GetTextureCoord(srcBL), colorBL,
+		 destBR, texture.GetTextureCoord(srcBR), colorBR
 	 );
 	}
 
@@ -594,16 +570,14 @@ public static class GFX
 
 	#region Internal Utilities
 
-	internal static void CheckError()
+	internal static void CheckGLError()
 	{
-#if DEBUG
 		var error = GL.GetError();
 
 		if (error != ErrorCode.NoError)
 		{
 			throw new MGEException($"Open GL Error: {((int)error)} - {error.ToString()}");
 		}
-#endif
 	}
 
 	#endregion Internal Utilities

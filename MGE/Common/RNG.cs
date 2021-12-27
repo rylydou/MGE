@@ -6,16 +6,20 @@ public class RNG
 {
 	public readonly static RNG shared = new();
 
-	Random rng;
+	int _state;
 
 	public RNG() : this(Math.Abs(Guid.NewGuid().GetHashCode())) { }
-	public RNG(int seed) => rng = new(seed);
+	public RNG(int seed)
+	{
+		if (seed < 1) throw new ArgumentOutOfRangeException(nameof(seed), "Seed must be greater than zero");
+		_state = seed;
+	}
 
-	public int RandomInt() => rng.Next();
-	public int RandomInt(int max) => rng.Next(max + 1);
-	public int RandomInt(int min, int max) => rng.Next(min, max + 1);
+	public int RandomInt() => ((214013 * _state + 2531011) >> 16) & 0x7FFF;
+	public int RandomInt(int max) => (int)(max * RandomFloat() + 0.5f);
+	public int RandomInt(int min, int max) => (int)((max - min) * RandomFloat() + 0.5f) + min;
 
-	public float RandomFloat() => rng.NextSingle();
+	public float RandomFloat() => RandomInt() / (float)short.MaxValue;
 	public float RandomFloat(float max) => max * RandomFloat();
 	public float RandomFloat(float min, float max) => (max - min) * RandomFloat() + min;
 
@@ -23,8 +27,7 @@ public class RNG
 	public bool RandomBool(float chance) => RandomFloat() <= chance;
 	public bool RandomBool(int chance) => RandomInt(100) <= chance;
 
-	public float RandomSign() => RandomBool() ? 1f : -1f;
-	public int RandomSignInt() => RandomBool() ? 1 : -1;
+	public int RandomSign() => RandomBool() ? 1 : -1;
 
 	public float RandomAngle() => RandomFloat(Math.tau);
 

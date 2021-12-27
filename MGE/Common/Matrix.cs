@@ -704,21 +704,21 @@ public struct Matrix : IEquatable<Matrix>
 	public static void CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNearPlane, float zFarPlane, out Matrix result)
 	{
 		result.m11 = (float)(2.0 / ((double)right - (double)left));
-		result.m12 = 0f;
-		result.m13 = 0f;
-		result.m14 = 0f;
-		result.m21 = 0f;
+		result.m12 = 0.0f;
+		result.m13 = 0.0f;
+		result.m14 = 0.0f;
+		result.m21 = 0.0f;
 		result.m22 = (float)(2.0 / ((double)top - (double)bottom));
-		result.m23 = 0f;
-		result.m24 = 0f;
-		result.m31 = 0f;
-		result.m32 = 0f;
+		result.m23 = 0.0f;
+		result.m24 = 0.0f;
+		result.m31 = 0.0f;
+		result.m32 = 0.0f;
 		result.m33 = (float)(1.0 / ((double)zNearPlane - (double)zFarPlane));
-		result.m34 = 0f;
+		result.m34 = 0.0f;
 		result.m41 = (float)(((double)left + (double)right) / ((double)left - (double)right));
 		result.m42 = (float)(((double)top + (double)bottom) / ((double)bottom - (double)top));
 		result.m43 = (float)((double)zNearPlane / ((double)zNearPlane - (double)zFarPlane));
-		result.m44 = 1f;
+		result.m44 = 1.0f;
 	}
 
 	/// <summary>
@@ -759,16 +759,16 @@ public struct Matrix : IEquatable<Matrix>
 			throw new ArgumentException("nearPlaneDistance >= farPlaneDistance");
 		}
 
-		var negFarRange = float.IsPositiveInfinity(farPlaneDistance) ? -1f : farPlaneDistance / (nearPlaneDistance - farPlaneDistance);
+		var negFarRange = float.IsPositiveInfinity(farPlaneDistance) ? -1.0f : farPlaneDistance / (nearPlaneDistance - farPlaneDistance);
 
 		result.m11 = (2.0f * nearPlaneDistance) / width;
-		result.m12 = result.m13 = result.m14 = 0f;
+		result.m12 = result.m13 = result.m14 = 0.0f;
 		result.m22 = (2.0f * nearPlaneDistance) / height;
-		result.m21 = result.m23 = result.m24 = 0f;
+		result.m21 = result.m23 = result.m24 = 0.0f;
 		result.m33 = negFarRange;
-		result.m31 = result.m32 = 0f;
-		result.m34 = -1f;
-		result.m41 = result.m42 = result.m44 = 0f;
+		result.m31 = result.m32 = 0.0f;
+		result.m34 = -1.0f;
+		result.m41 = result.m42 = result.m44 = 0.0f;
 		result.m43 = nearPlaneDistance * negFarRange;
 	}
 
@@ -814,18 +814,18 @@ public struct Matrix : IEquatable<Matrix>
 			throw new ArgumentException("nearPlaneDistance >= farPlaneDistance");
 		}
 
-		var yScale = 1f / (float)Math.Tan(fieldOfView * 0.5f);
+		var yScale = 1.0f / (float)Math.Tan(fieldOfView * 0.5f);
 		var xScale = yScale / aspectRatio;
-		var negFarRange = float.IsPositiveInfinity(farPlaneDistance) ? -1f : farPlaneDistance / (nearPlaneDistance - farPlaneDistance);
+		var negFarRange = float.IsPositiveInfinity(farPlaneDistance) ? -1.0f : farPlaneDistance / (nearPlaneDistance - farPlaneDistance);
 
 		result.m11 = xScale;
-		result.m12 = result.m13 = result.m14 = 0f;
+		result.m12 = result.m13 = result.m14 = 0.0f;
 		result.m22 = yScale;
-		result.m21 = result.m23 = result.m24 = 0f;
-		result.m31 = result.m32 = 0f;
+		result.m21 = result.m23 = result.m24 = 0.0f;
+		result.m31 = result.m32 = 0.0f;
 		result.m33 = negFarRange;
-		result.m34 = -1f;
-		result.m41 = result.m42 = result.m44 = 0f;
+		result.m34 = -1.0f;
+		result.m41 = result.m42 = result.m44 = 0.0f;
 		result.m43 = nearPlaneDistance * negFarRange;
 	}
 

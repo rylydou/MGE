@@ -1,63 +1,45 @@
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using Newtonsoft.Json;
 
 namespace MGE;
 
-public class ColorJsonConverter : JsonConverter<Color>
-{
-	public override Color ReadJson(JsonReader reader, Type objectType, Color existingValue, bool hasExistingValue, JsonSerializer serializer)
-	{
-		var value = (string?)reader.Value;
-		if (value is null) return Color.transparent;
-		return value.StartsWith("#") ? new Color(value) : (Color)System.Drawing.Color.FromName(value);
-	}
+// public class ColorJsonConverter : JsonConverter<Color>
+// {
+// 	public override Color ReadJson(JsonReader reader, Type objectType, Color existingValue, bool hasExistingValue, JsonSerializer serializer)
+// 	{
+// 		var value = (string?)reader.Value;
+// 		if (value is null) return Color.transparent;
+// 		return value.StartsWith("#") ? new Color(value) : (Color)System.Drawing.Color.FromName(value);
+// 	}
 
-	public override void WriteJson(JsonWriter writer, Color color, JsonSerializer serializer)
-	{
-		writer.WriteValue(color.ToHex());
-	}
-}
+// 	public override void WriteJson(JsonWriter writer, Color color, JsonSerializer serializer)
+// 	{
+// 		writer.WriteValue(color.ToHex());
+// 	}
+// }
 
 [Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct Color : IEquatable<Color>
 {
-	#region Static
-
-	#region Constants
-
 	public static readonly Color red = new Color(1f, 0f, 0f);
-	public static readonly Color green = new Color(0f, 1f, 0f);
-	public static readonly Color blue = new Color(0f, 0f, 1f);
-
 	public static readonly Color yellow = new Color(1f, 1f, 0f);
+	public static readonly Color green = new Color(0f, 1f, 0f);
 	public static readonly Color cyan = new Color(0f, 1f, 1f);
+	public static readonly Color blue = new Color(0f, 0f, 1f);
 	public static readonly Color magenta = new Color(1f, 0f, 1f);
 
-	public static readonly Color white = new Color(1f);
-	public static readonly Color lightGray = new Color(0.75f);
-	public static readonly Color gray = new Color(0.5f);
-	public static readonly Color darkGray = new Color(0.25f);
 	public static readonly Color black = new Color(0f);
+	public static readonly Color darkGray = new Color(0.25f);
+	public static readonly Color gray = new Color(0.5f);
+	public static readonly Color lightGray = new Color(0.75f);
+	public static readonly Color white = new Color(1f);
 
-	public static readonly Color transparent = new Color();
+	public static readonly Color transparent = new Color(0, 0, 0, 0);
 
-	#endregion Constants
-
-	#region Interpolation
+	////////////////////////////////////////////////////////////
 
 	public static Color Lerp(Color a, Color b, float t)
-	{
-		return new Color(
-			a.r + (b.r - a.r) * t,
-			a.g + (b.g - a.g) * t,
-			a.b + (b.b - a.b) * t,
-			a.a + (b.a - a.a) * t
-		);
-	}
-
-	public static Color LerpClamped(Color a, Color b, float t)
 	{
 		t = (float)Math.Clamp01(t);
 
@@ -69,11 +51,17 @@ public struct Color : IEquatable<Color>
 		);
 	}
 
-	#endregion Interpolation
+	public static Color LerpUnclamped(Color a, Color b, float t)
+	{
+		return new Color(
+			a.r + (b.r - a.r) * t,
+			a.g + (b.g - a.g) * t,
+			a.b + (b.b - a.b) * t,
+			a.a + (b.a - a.a) * t
+		);
+	}
 
-	#endregion Static
-
-	#region Instance
+	////////////////////////////////////////////////////////////
 
 	public byte intR;
 	public byte intG;
@@ -87,24 +75,29 @@ public struct Color : IEquatable<Color>
 
 	[Prop] public string hex { get => ToHex(); set => this = new Color(value); }
 
-	public Color(byte value) : this(value, value, value) { }
-	public Color(byte value, byte a) : this(value, value, value, a) { }
-	public Color(byte intR, byte intG, byte intB) : this(intR, intG, intB, 255) { }
-	public Color(byte intR, byte intG, byte intB, byte intA)
+	public Color(float r, float g, float b, float a = 1.0f) : this()
 	{
-		this.intR = intR;
-		this.intG = intG;
-		this.intB = intB;
-		this.intA = intA;
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.a = a;
 	}
 
-	public Color(float value) : this(value, value, value) { }
-	public Color(float value, float a) : this(value, value, value, a) { }
-	public Color(float r, float g, float b) : this((byte)(r / 255), (byte)(g / 255), (byte)(b / 255)) { }
-	public Color(float r, float g, float b, float a) : this((byte)(r / 255), (byte)(g / 255), (byte)(b / 255), (byte)(a / 255)) { }
+	public Color(float value, float a = 1.0f) : this()
+	{
+		this.r = value;
+		this.g = value;
+		this.b = value;
+		this.a = a;
+	}
 
 	public Color(string hex)
 	{
+		intR = 255;
+		intG = 0;
+		intB = 255;
+		intA = 255;
+
 		if (hex.StartsWith('#'))
 			hex = hex.Substring(1);
 
@@ -135,22 +128,50 @@ public struct Color : IEquatable<Color>
 				intA = byte.Parse(hex.Substring(6, 2), NumberStyles.AllowHexSpecifier);
 				return;
 		}
-
-		throw new Exception();
 	}
 
-	public static Color FromNonPremultiplied(byte r, byte g, byte b, byte a) => new(r * a, g * a, b * a, a);
+	public static Color FromBytes(byte intR, byte intG, byte intB, byte intA = 255)
+	{
+		var color = new Color();
+		color.intR = intR;
+		color.intG = intG;
+		color.intB = intB;
+		color.intA = intA;
+		return color;
+	}
 
-	public byte this[int index]
+	public static Color FromBytes(int intR, int intG, int intB, int intA = 255)
+	{
+		var color = new Color();
+		color.intR = (byte)intR;
+		color.intG = (byte)intG;
+		color.intB = (byte)intB;
+		color.intA = (byte)intA;
+		return color;
+	}
+
+	public static Color FromBytes(byte intValue, byte intA = 255) => FromBytes(intValue, intValue, intValue, intA);
+
+	public static Color FromNonPremultiplied(byte r, byte g, byte b, byte a)
+	{
+		return Color.FromBytes(
+			(r * a / 255),
+			(g * a / 255),
+			(b * a / 255),
+			a
+		);
+	}
+
+	public float this[int index]
 	{
 		get
 		{
 			switch (index)
 			{
-				case 0: return intR;
-				case 1: return intG;
-				case 2: return intB;
-				case 3: return intA;
+				case 0: return r;
+				case 1: return g;
+				case 2: return b;
+				case 3: return a;
 				default: throw new IndexOutOfRangeException($"Invalid Color index of {index}!");
 			}
 		}
@@ -159,39 +180,37 @@ public struct Color : IEquatable<Color>
 		{
 			switch (index)
 			{
-				case 0: intR = value; break;
-				case 1: intG = value; break;
-				case 2: intB = value; break;
-				case 3: intA = value; break;
+				case 0: r = value; break;
+				case 1: g = value; break;
+				case 2: b = value; break;
+				case 3: a = value; break;
 				default: throw new IndexOutOfRangeException($"Invalid Color index of {index}!");
 			}
 		}
 	}
 
-	#region Properties
+	////////////////////////////////////////////////////////////
 
 	public float average { get => (r + g + b) / 3; }
 	public float grayscale { get => 0.299f * r + 0.587f * g + 0.114f * b; }
-	public Color inverted { get => new Color(1f - r, 1f - g, 1f - b, a); }
+	public Color inverted { get => new Color(1.0f - r, 1.0f - g, 1.0f - b, a); }
 	public Color opaque { get => new Color(r, g, b); }
 
-	#endregion
-
-	#region Methods
+	////////////////////////////////////////////////////////////
 
 	public string ToHex(int length = 8)
 	{
 		switch (length)
 		{
-			case 3: return $"#{intR / 15:X1}{intG / 15:X1}{intB / 15:X1}";
-			case 4: return $"#{intR / 15:X1}{intG / 15:X1}{intB / 15:X1}{intA / 15:X1}";
-			case 6: return $"#{intR:X2}{intG:X2}{intB:X2}";
-			case 8: return $"#{intR:X2}{intG:X2}{intB:X2}{intA:X2}";
+			case 3: return string.Format("#{0:X1}{1:X1}{2:X1}", intR / 15, intG / 15, intB / 15);
+			case 4: return string.Format("#{0:X1}{1:X1}{2:X1}{3:X1}", intR / 15, intG / 15, intB / 15, intA / 15);
+			case 6: return string.Format("#{0:X2}{1:X2}{2:X2}", intR, intG, intB);
+			case 8: return string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", intR, intG, intB, intA);
 		}
 		throw new ArgumentException($"Color '{this.ToString()}' can not be converted to hex string a length of {length}!", nameof(length));
 	}
 
-	public Color WithAlpha(float a) => new(r, g, b, a);
+	public Color WithAlpha(float a) => new Color(r, g, b, a);
 
 	public void Deconstruct(out byte r, out byte g, out byte b, out byte a)
 	{
@@ -208,43 +227,28 @@ public struct Color : IEquatable<Color>
 		b = intB;
 	}
 
-	#endregion
+	////////////////////////////////////////////////////////////
 
-	#region Operators
+	public static Color operator +(Color left, Color right) => Color.FromBytes(left.intR + right.intR, left.intG + left.intG, left.intB + right.intB);
+	public static Color operator -(Color left, Color right) => Color.FromBytes(left.intR - right.intR, left.intG - left.intG, left.intB - right.intB);
+	public static Color operator *(Color left, Color right) => Color.FromBytes(left.intR * right.intR, left.intG * left.intG, left.intB * right.intB);
+	public static Color operator /(Color left, Color right) => Color.FromBytes(left.intR / right.intR, left.intG / left.intG, left.intB / right.intB);
 
-	public static Color operator +(Color left, Color right) => new(left.intR + right.intR, left.intG + left.intG, left.intB + right.intB);
-	public static Color operator -(Color left, Color right) => new(left.intR - right.intR, left.intG - left.intG, left.intB - right.intB);
-	public static Color operator *(Color left, Color right) => new(left.intR * right.intR, left.intG * left.intG, left.intB * right.intB);
-	public static Color operator /(Color left, Color right) => new(left.intR / right.intR, left.intG / left.intG, left.intB / right.intB);
-
-	// public static Color operator -(Color color) => new(-color.intR, -color.intG, -color.intB, color.intA);
+	public static Color operator -(Color color) => Color.FromBytes(-color.intR, -color.intG, -color.intB, color.intA);
 
 	public static Color operator *(Color left, float right) => new Color(left.r * right, left.g * right, left.b * right);
 	public static Color operator /(Color left, float right) => new Color(left.r / right, left.g / right, left.b / right);
 
 	public static bool operator ==(Color left, Color right) => left.intA == right.intA && left.intR == right.intR && left.intG == right.intG && left.intB == right.intB;
+
 	public static bool operator !=(Color left, Color right) => !(left == right);
 
-	#endregion Operators
-
-	#region Conversion
-
-	public static implicit operator (float, float, float, float)(Color color) => (color.r, color.g, color.b, color.a);
-	public static implicit operator Color((float, float, float, float) color) => new(color.Item1, color.Item2, color.Item3, color.Item4);
-
-	public static implicit operator (float, float, float)(Color color) => (color.r, color.g, color.b);
-	public static implicit operator Color((float, float, float) color) => new(color.Item1, color.Item2, color.Item3);
-
-	#region Thirdparty
+	////////////////////////////////////////////////////////////
 
 	public static implicit operator System.Drawing.Color(Color color) => System.Drawing.Color.FromArgb(color.intA, color.intR, color.intG, color.intB);
-	public static implicit operator Color(System.Drawing.Color color) => new(color.R, color.G, color.B, color.A);
+	public static implicit operator Color(System.Drawing.Color color) => Color.FromBytes(color.R, color.G, color.B, color.A);
 
-	#endregion Thirdparty
-
-	#endregion Conversion
-
-	#region Overrides
+	////////////////////////////////////////////////////////////
 
 	public override string ToString() => $"({intR} {intG} {intB} {intA})";
 	public string ToString(string format)
@@ -258,8 +262,4 @@ public struct Color : IEquatable<Color>
 
 	public bool Equals(Color color) => intA == color.intA && intR == color.intR && intG == color.intG && intB == color.intB;
 	public override bool Equals(object? other) => other is Color color && Equals(color);
-
-	#endregion Overrides
-
-	#endregion Instance
 }

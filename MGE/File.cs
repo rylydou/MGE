@@ -14,8 +14,6 @@ public struct File : IEquatable<File>
 		return new(path);
 	}
 
-	public static File Open(string path) => new(path);
-
 	public readonly string path;
 
 	public bool exists => FileIO.Exists(path);

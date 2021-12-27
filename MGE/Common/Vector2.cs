@@ -40,8 +40,6 @@ public struct Vector2 : IEquatable<Vector2>
 
 	#region Static
 
-	#region Interpolation
-
 	public static Vector2 Lerp(Vector2 current, Vector2 target, float time) => current + (target - current) * time;
 	public static Vector2 LerpClamped(Vector2 current, Vector2 target, float time) => current + (target - current) * Math.Clamp01(time);
 
@@ -54,8 +52,6 @@ public struct Vector2 : IEquatable<Vector2>
 
 		return point + direction / Math.Sqrt(sqDist) * maxDistance;
 	}
-
-	#endregion
 
 	public static float Dot(Vector2 a, Vector2 b) => a.x * b.x + a.y * b.y;
 	public static Vector2 PerpendicularDir(Vector2 inDir) => new(-inDir.y, inDir.x);
@@ -196,7 +192,7 @@ public struct Vector2 : IEquatable<Vector2>
 	public void Normalize()
 	{
 		var len = length;
-		// if (len <= 1f) return;
+		// if (len <= 1.0f) return;
 		if (len > Math.epsilon)
 			this = this / len;
 		else
@@ -227,8 +223,8 @@ public struct Vector2 : IEquatable<Vector2>
 	public static Vector2 operator -(Vector2 left, Vector2 right) => new Vector2(left.x - right.x, left.y - right.y);
 	public static Vector2 operator *(Vector2 left, Vector2 right) => new Vector2(left.x * right.x, left.y * right.y);
 	public static Vector2 operator /(Vector2 left, Vector2 right) => new Vector2(left.x / right.x, left.y / right.y);
-
 	public static Vector2 operator -(Vector2 vector) => new Vector2(-vector.x, -vector.y);
+	public static Vector2 operator +(Vector2 vector) => vector;
 
 	public static Vector2 operator +(Vector2 left, float right) => new Vector2(left.x + right, left.y + right);
 	public static Vector2 operator -(Vector2 left, float right) => new Vector2(left.x - right, left.y - right);
@@ -253,11 +249,6 @@ public struct Vector2 : IEquatable<Vector2>
 	public static implicit operator (float, float)(Vector2 vector) => (vector.x, vector.y);
 	public static implicit operator Vector2((float, float) vector) => new(vector.Item1, vector.Item2);
 
-	#region Thirdparty
-
-	public static implicit operator System.Numerics.Vector2(Vector2 vector) => new(vector.x, vector.y);
-	public static implicit operator Vector2(System.Numerics.Vector2 vector) => new(vector.X, vector.Y);
-
 	public static implicit operator OpenTK.Mathematics.Vector2(Vector2 vector) => new(vector.x, vector.y);
 	public static implicit operator Vector2(OpenTK.Mathematics.Vector2 vector) => new(vector.X, vector.Y);
 
@@ -269,8 +260,6 @@ public struct Vector2 : IEquatable<Vector2>
 
 	public static implicit operator tainicom.Aether.Physics2D.Common.Vector3(Vector2 vector) => new(vector.x, vector.y, 0);
 	public static implicit operator Vector2(tainicom.Aether.Physics2D.Common.Vector3 vector) => new(vector.X, vector.Y);
-
-	#endregion Thirdparty
 
 	#endregion Conversion
 
