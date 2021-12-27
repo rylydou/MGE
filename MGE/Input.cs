@@ -25,15 +25,6 @@ namespace MGE
 		static List<JoyState> _currentJoystickStates = new();
 		static List<JoyState> _oldJoystickStates = new();
 
-		public static Vector2 mousePosition { get; private set; }
-		public static Vector2 mousePositionDelta { get; private set; }
-
-		public static Vector2 mouseScroll { get; set; }
-		public static Vector2 mouseScrollClamped { get; set; }
-		public static Vector2 mouseScrollPosition { get; set; }
-
-		public static string textInput { get; private set; } = "";
-
 		internal static void UpdateInputs(KeyboardState keyboardState, MouseState mouseState, IReadOnlyList<JoystickState> joystickStates)
 		{
 			#region Keyboard
@@ -44,25 +35,12 @@ namespace MGE
 			foreach (var key in Enum.GetValues<Keys>())
 			{
 				if (key < 0) continue;
- 
+
 				if (keyboardState.IsKeyPressed(key))
 				{
 					_currentKeys.Add(key);
 				}
 			}
-
-			#endregion
-
-			#region Mouse
-
-			mouseState.IsButtonDown(MouseButton.Left);
-
-			mousePosition = mouseState.Position;
-			mousePositionDelta = mouseState.Delta;
-
-			mouseScroll = mouseState.ScrollDelta;
-			mouseScrollClamped = new(Math.Clamp01(mouseState.ScrollDelta.X), Math.Clamp01(mouseState.ScrollDelta.Y));
-			mouseScrollPosition = mouseState.Scroll;
 
 			#endregion
 
@@ -111,14 +89,9 @@ namespace MGE
 			#endregion
 		}
 
-		public static float GetJoystickAxis(int axis, int index = 0)
-		{
-			return _currentJoystickStates[index].axes[axis];
-		}
-
 		internal static void OnTextInput(TextInputEventArgs e)
 		{
-			textInput = e.AsString;
+			// TODO
 		}
 
 		internal static void OnJoystickConnected(JoystickEventArgs e)

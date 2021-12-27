@@ -39,7 +39,7 @@ namespace MGE.Editor.GUI.Windows
 
 			public FilePreviewCache(string path)
 			{
-				if (!File.Exists(path)) throw new System.Exception("File does not exist");
+				if (!Folder.rootFolder.GetFile(path).exists) throw new System.Exception("File does not exist");
 
 				file = new(path);
 
@@ -130,7 +130,7 @@ namespace MGE.Editor.GUI.Windows
 					EditorGUI.MenuButton("Delete").onPressed += () =>
 					{
 						if (isFolder) Directory.Delete(path, true);
-						else File.Delete(path);
+						else Folder.rootFolder.GetFile(path).Delete();
 						Reload();
 					};
 					EditorGUI.MenuPopup(args.Event);
