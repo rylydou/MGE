@@ -139,9 +139,9 @@ namespace MGE.Editor.GUI
 
 		public static ExpressionDictionaryContext _dictionaryContext = new(new()
 		{
-			{ "pi", () => Math.PI },
-			{ "tau", () => Math.Tau },
-			{ "e", () => Math.E },
+			{ "pi", () => Math.pi },
+			{ "tau", () => Math.tau },
+			{ "e", () => Math.e },
 			{ "inf", () => double.PositiveInfinity },
 			{ "ninf", () => double.NegativeInfinity },
 			{ "nan", () => double.NaN },
