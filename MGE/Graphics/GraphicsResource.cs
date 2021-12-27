@@ -4,13 +4,13 @@ namespace MGE.Graphics;
 
 public abstract class GraphicsResource : IDisposable
 {
-	internal readonly int handle;
+	internal readonly int _handle;
 
 	public bool isDisposed { get; private set; }
 
 	protected GraphicsResource(int handle)
 	{
-		this.handle = handle;
+		this._handle = handle;
 
 		GC.SuppressFinalize(this);
 	}
@@ -20,7 +20,7 @@ public abstract class GraphicsResource : IDisposable
 		throw new MGEException($"Graphics resource leaked: {this}");
 	}
 
-	public static explicit operator int(GraphicsResource res) => res.handle;
+	public static explicit operator int(GraphicsResource res) => res._handle;
 
 	public void Dispose()
 	{

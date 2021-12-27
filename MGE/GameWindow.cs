@@ -3,6 +3,7 @@ using MGE.Graphics;
 using MGE.Nodes;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace MGE;
@@ -17,7 +18,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	double updateTime;
 	double renderTime;
 
-	// RenderTexture gameRender = new(new(320 * 2, 180 * 2));
+	RenderTexture gameRender;
 	Texture sprite;
 
 	public GameWindow() : base(new() { /* RenderFrequency = 60, UpdateFrequency = 60, */ }, new() { Title = "Mangrove Game Engine", NumberOfSamples = 4, })
@@ -26,6 +27,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		VSync = VSyncMode.Adaptive;
 
+		gameRender = new(new(320 * 2, 180 * 2));
 		sprite = Texture.LoadFromFile(Folder.assets.GetFile("Icon.png"));
 		Icon = new(Texture.LoadImageFromFile(Folder.assets.GetFile("Icon.png")));
 
@@ -107,19 +109,19 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		renderTime = args.Time;
 
-		// GFX.SetRenderTarget(gameRender);
+		GFX.SetRenderTarget(gameRender);
 
 		GFX.Clear(backgroundColor);
 
-		// Scene.Draw();
+		Scene.Draw();
 
-		// GFX.DrawBatches();
+		GFX.DrawBatches();
 
-		// GFX.SetRenderTarget(null);
+		GFX.SetRenderTarget(null);
 
-		// GFX.Clear(Color.black);
+		GFX.Clear(Color.black);
 
-		// GFX.DrawRenderTexture(gameRender);
+		GFX.DrawRenderTexture(gameRender);
 
 		// Font.defaultFont.DrawString($"Update: {1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render: {1f / renderTime:F0}fps ({renderTime * 1000:F2}ms)", new(-Size.X / 2 + 4, -Size.Y / 2 + 4), 12, Color.white);
 
@@ -133,7 +135,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		// Font.defaultFont.DrawString($"{offset++} {title}. {joystick.ToString()}", new(-Size.X / 2 + 4, Size.Y / 2 - 4 - offset * 12), 12, Color.white);
 		// }
 
-		// Font.defaultFont.DrawString("Hello World!", Vector2.zero, 64, Color.white);
+		Font.defaultFont.DrawString("Hello World!", Vector2.zero, 64, Color.white);
 
 		GFX.DrawBox(new(64, 64, 64, 64), Color.red);
 

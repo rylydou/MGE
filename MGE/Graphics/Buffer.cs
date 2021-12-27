@@ -21,7 +21,7 @@ internal class Buffer<T> : GraphicsResource where T : struct
 		get
 		{
 			var items = new T[elementCount];
-			GL.BindBuffer(BufferTarget.ArrayBuffer, handle);
+			GL.BindBuffer(BufferTarget.ArrayBuffer, _handle);
 			GL.GetBufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, (IntPtr)(elementSize * elementCount), items);
 			return items;
 		}
@@ -41,7 +41,7 @@ internal class Buffer<T> : GraphicsResource where T : struct
 	/// </summary>
 	public Buffer() : this(Marshal.SizeOf(typeof(T))) { }
 
-	protected override void Delete() => GL.DeleteBuffer(handle);
+	protected override void Delete() => GL.DeleteBuffer(_handle);
 
 	/// <summary>
 	/// Allocates buffer memory and uploads given data to it.
@@ -81,7 +81,7 @@ internal class Buffer<T> : GraphicsResource where T : struct
 		initialized = true;
 		this.elementCount = elementCount;
 		var fullSize = elementCount * elementSize;
-		GL.BindBuffer(bufferTarget, handle);
+		GL.BindBuffer(bufferTarget, _handle);
 		GL.BufferData(bufferTarget, (IntPtr)fullSize, data, usageHint);
 		CheckBufferSize(bufferTarget, fullSize);
 	}
@@ -146,7 +146,7 @@ internal class Buffer<T> : GraphicsResource where T : struct
 	{
 		if (count > elementCount - offset) throw new ArgumentException($"Buffer not large enough to hold data. Buffer size: {elementCount}. Offset: {offset}. Elements to write: {count}.");
 		if (count > data.Length) throw new ArgumentException($"Not enough data to write to buffer. Data length: {data.Length}. Elements to write: {count}.");
-		GL.BindBuffer(bufferTarget, handle);
+		GL.BindBuffer(bufferTarget, _handle);
 		GL.BufferSubData(bufferTarget, (IntPtr)(elementSize * offset), (IntPtr)(elementSize * count), data);
 	}
 
@@ -182,8 +182,8 @@ internal class Buffer<T> : GraphicsResource where T : struct
 	/// <param name="count">The Number of elements to copy.</param>
 	public void CopyFrom(Buffer<T> source, int readOffset, int writeOffset, int count)
 	{
-		GL.BindBuffer(BufferTarget.CopyReadBuffer, source.handle);
-		GL.BindBuffer(BufferTarget.CopyWriteBuffer, handle);
+		GL.BindBuffer(BufferTarget.CopyReadBuffer, source._handle);
+		GL.BindBuffer(BufferTarget.CopyWriteBuffer, _handle);
 		GL.CopyBufferSubData(BufferTarget.CopyReadBuffer, BufferTarget.CopyWriteBuffer, (IntPtr)(elementSize * readOffset), (IntPtr)(elementSize * writeOffset), (IntPtr)(elementSize * count));
 	}
 

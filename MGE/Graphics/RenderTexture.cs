@@ -21,7 +21,7 @@ public class RenderTexture : GraphicsResource
 
 		SetAsTarget();
 
-		GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, colorTexture.handle, 0);
+		GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, colorTexture._handle, 0);
 
 		_rbo = GL.GenRenderbuffer();
 		GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _rbo);
@@ -34,13 +34,13 @@ public class RenderTexture : GraphicsResource
 		SetScreenAsTarget();
 	}
 
-	internal void SetAsTarget() => GL.BindFramebuffer(FramebufferTarget.Framebuffer, handle);
+	internal void SetAsTarget() => GL.BindFramebuffer(FramebufferTarget.Framebuffer, _handle);
 
 	internal static void SetScreenAsTarget() => GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
 	protected override void Delete()
 	{
-		GL.DeleteFramebuffer(handle);
+		GL.DeleteFramebuffer(_handle);
 		GL.DeleteRenderbuffer(_rbo);
 	}
 }
