@@ -23,16 +23,16 @@ public class Shader : GraphicsResource
 		}
 	}
 
-	public Shader(string vertPath, string fragPath) : base(GL.CreateProgram())
+	public Shader(File vertexShaderFile, File fragmentShaderFile) : base(GL.CreateProgram())
 	{
-		var shaderSource = Folder.assetsFolder.GetFile(vertPath).ReadText();
+		var shaderSource = vertexShaderFile.ReadText();
 		var vertexShader = GL.CreateShader(ShaderType.VertexShader);
 
 		GL.ShaderSource(vertexShader, shaderSource);
 
 		CompileShader(vertexShader);
 
-		shaderSource = Folder.assetsFolder.GetFile(fragPath).ReadText();
+		shaderSource = fragmentShaderFile.ReadText();
 		var fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
 		GL.ShaderSource(fragmentShader, shaderSource);
 		CompileShader(fragmentShader);

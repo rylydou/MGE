@@ -27,8 +27,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		VSync = VSyncMode.Adaptive;
 
 		gameRender = new(new(320 * 2, 180 * 2));
-		sprite = Texture.LoadTexture("Icon.png");
-		Icon = new(Texture.LoadImageData("Icon.png"));
+		sprite = Texture.LoadFromFile(Folder.assets.GetFile("Icon.png"));
+		Icon = new(Texture.LoadImageFromFile(Folder.assets.GetFile("Icon.png")));
 
 		CenterWindow(new(320 * 4, 180 * 4));
 		Focus();
@@ -125,7 +125,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnJoystickConnected(e);
 
-		Input.OnGamepadConnected(e);
+		Input.OnJoystickConnected(e);
 	}
 
 	protected override void OnRenderFrame(FrameEventArgs args)

@@ -6,7 +6,7 @@ namespace MGE;
 
 public class Font
 {
-	public static Font current = new("Font.png", new(10, 24));
+	public static Font current = new(Folder.assets.GetFile("Fonts/Mono.png"), new(10, 24));
 
 	public readonly Texture texture;
 	public readonly Vector2Int charSize;
@@ -17,7 +17,7 @@ public class Font
 
 	public Font(string path, Vector2Int charSize, ushort offset = 32)
 	{
-		this.texture = Texture.LoadTexture(path);
+		this.texture = Texture.LoadFromFile(path);
 		this.charSize = charSize;
 
 		charsCount = texture.size / charSize;
@@ -58,13 +58,13 @@ public class Font
 	public bool DrawChar(char ch, Vector2 position, Color color)
 	{
 		if (ch == ' ') return true;
-		if (!chars.TryGetValue(ch, out var rect))
+		if (!chars.TryGetValue(ch, out var charRegion))
 		{
 			Debug.Log($"Unknown Char: '{ch}' #{(ushort)ch}");
 			return false;
 		}
 
-		GFX.DrawTextureRegionAtDest(texture, new(position, charSize), rect, color);
+		GFX.DrawTextureRegionAtDest(texture, charRegion, new(position, charSize), color);
 		return true;
 	}
 }

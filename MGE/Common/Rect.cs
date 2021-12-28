@@ -258,12 +258,15 @@ public struct Rect : IEquatable<Rect>
 	public static implicit operator (float, float, float, float)(Rect rect) => (rect.x, rect.y, rect.width, rect.height);
 	public static implicit operator Rect((float, float, float, float) rect) => new(rect.Item1, rect.Item2, rect.Item3, rect.Item4);
 
+	public static implicit operator System.Drawing.RectangleF(Rect rect) => new(rect.x, rect.y, rect.width, rect.height);
+	public static implicit operator Rect(System.Drawing.RectangleF rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
+
 	public static implicit operator tainicom.Aether.Physics2D.Collision.AABB(Rect rect) => new(rect.center, rect.width, rect.height);
 	public static implicit operator Rect(tainicom.Aether.Physics2D.Collision.AABB aabb) => new(aabb.LowerBound, aabb.Width, aabb.Height);
 
 	////////////////////////////////////////////////////////////
 
-	public override string ToString() => $"{{ {x:F2} {y:F2} {width:F2} x {height:F2} }}";
+	public override string ToString() => $"{{({x:F2} {y:F2}) ({width:F2} x {height:F2})}}";
 	public string ToString(string format) => string.Format(format, x, y, width, height);
 
 	public override int GetHashCode() => HashCode.Combine(x, y, width, height);

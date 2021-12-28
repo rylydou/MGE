@@ -35,10 +35,10 @@ internal sealed class SpriteBatchItem : IComparable<SpriteBatchItem>
 
 		vertices = new Vertex[]
 		{
-			new(destination.topRight,    texture.GetTextureCoord(source.bottomRight), color),	// Top right
-			new(destination.bottomRight, texture.GetTextureCoord(source.topRight),    color),	// Bottom right
-			new(destination.bottomLeft,  texture.GetTextureCoord(source.topLeft),     color),	// Bottom left
-			new(destination.topLeft,     texture.GetTextureCoord(source.bottomLeft),  color),	// Top left
+			new(destination.topRight,    texture.GetNormalizedPoint(source.bottomRight), color),	// Top right
+			new(destination.bottomRight, texture.GetNormalizedPoint(source.topRight),    color),	// Bottom right
+			new(destination.bottomLeft,  texture.GetNormalizedPoint(source.topLeft),     color),	// Bottom left
+			new(destination.topLeft,     texture.GetNormalizedPoint(source.bottomLeft),  color),	// Top left
 		};
 
 		indices = new ushort[]

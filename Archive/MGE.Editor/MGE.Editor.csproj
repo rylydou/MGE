@@ -20,9 +20,9 @@
 		<EmbeddedResource Include="icon.ico" />
 	</ItemGroup>
 
-	<ItemGroup>
+	<!-- <ItemGroup>
 		<ProjectReference Include="..\MGE\MGE.csproj" />
-	</ItemGroup>
+	</ItemGroup> -->
 
 	<ItemGroup>
 		<PackageReference Include="GtkSharp" Version="3.24.24.34" />

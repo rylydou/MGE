@@ -8,82 +8,123 @@ public class Texture : GraphicsResource
 {
 	public static readonly Texture pixelTexture;
 
-	static Texture()
-	{
-		pixelTexture = new Texture(new(1, 1), new[] { Color.white });
-	}
-
 	public readonly Vector2Int size;
 
-	public Texture(int handle) : base(handle)
+	bool initialized;
+
+	static Texture()
 	{
-		GL.GetTexParameter(TextureTarget.Texture2D, GetTextureParameter.TextureWidth, out int width);
-		size.x = width;
-		GL.GetTexParameter(TextureTarget.Texture2D, GetTextureParameter.TextureHeight, out int height);
-		size.y = height;
+		pixelTexture = new Texture(new(1, 1));
+		pixelTexture.SetData(new[] { Color.white });
 	}
 
-	public Texture(Vector2Int size, Color[]? pixels) : base(GL.GenTexture())
+	public Texture(Vector2Int size) : base(GL.GenTexture())
 	{
 		this.size = size;
+	}
+
+	#region Loading
+
+	public static Texture LoadFromFile(File imageFile)
+	{
+		using var stream = imageFile.OpenRead();
+		var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+
+		var texture = new Texture(new(image.Width, image.Height));
+		texture.SetData(image.Data);
+
+		return texture;
+	}
+
+	public static OpenTK.Windowing.Common.Input.Image LoadImageFromFile(File imageFile)
+	{
+		using var stream = imageFile.OpenRead();
+		var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+
+		return new(image.Width, image.Height, image.Data);
+	}
+
+	#endregion
+
+	#region Reading and Writing
+
+	public void SetData<T>(T[]? data) where T : struct
+	{
+		Bind();
+
+		GL.TexImage2D<T>(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.x, size.y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data); GFX.CheckError();
+
+		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest); GFX.CheckError();
+		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest); GFX.CheckError();
+
+		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder); GFX.CheckError();
+		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder); GFX.CheckError();
+
+		initialized = true;
+	}
+
+	public void SetData<T>(RectInt region, T[]? data) where T : struct
+	{
+		InitIfNecessary();
 
 		Bind();
 
-		GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.x, size.y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
-
-		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-
-		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
-		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+		GL.TexSubImage2D<T>(TextureTarget.Texture2D, 0, region.x, region.y, region.width, region.height, PixelFormat.Rgba, PixelType.UnsignedByte, data); GFX.CheckError();
 	}
 
-	public Texture(Vector2Int size, byte[]? pixels = null) : base(GL.GenTexture())
+	public void GetData<T>(T[]? data) where T : struct
 	{
-		this.size = size;
+		InitIfNecessary();
 
 		Bind();
 
-		GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.x, size.y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
-
-		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-
-		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
-		GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+		GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data); GFX.CheckError();
 	}
 
-	public static Texture LoadTexture(string path)
+	public void GetData<T>(T[,]? data) where T : struct
 	{
-		using (var stream = Folder.assetsFolder.GetFile(path).OpenRead())
+		InitIfNecessary();
+
+		Bind();
+
+		GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data); GFX.CheckError();
+	}
+
+	#endregion
+
+	#region Utils
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)] public Vector2 GetNormalizedPoint(Vector2 position) => GetNormalizedPoint(position.x, position.y);
+	[MethodImpl(MethodImplOptions.AggressiveInlining)] public Vector2 GetNormalizedPoint(float x, float y) => new(x / size.x, y / size.y);
+
+	#endregion
+
+	internal void InitIfNecessary()
+	{
+		if (!initialized)
 		{
-			var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
-			return new(new(image.Width, image.Height), image.Data);
+			SetData<byte>(null);
 		}
 	}
 
-	public static OpenTK.Windowing.Common.Input.Image LoadImageData(string path)
+	internal void Bind()
 	{
-		using (var stream = Folder.assetsFolder.GetFile(path).OpenRead())
-		{
-			var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
-			return new(image.Width, image.Height, image.Data);
-		}
+		GL.BindTexture(TextureTarget.Texture2D, handle); GFX.CheckError();
 	}
 
-	[MethodImpl(MethodImplOptions.AggressiveInlining)] public Vector2 GetTextureCoord(Vector2 position) => GetTextureCoord(position.x, position.y);
-	[MethodImpl(MethodImplOptions.AggressiveInlining)] public Vector2 GetTextureCoord(float x, float y) => new Vector2(x / size.x, y / size.y);
-
-	internal void Bind(TextureUnit unit = TextureUnit.Texture0)
+	internal void Use(TextureUnit unit = TextureUnit.Texture0)
 	{
-		GL.ActiveTexture(unit);
-		GL.BindTexture(TextureTarget.Texture2D, handle);
+		GL.ActiveTexture(unit); GFX.CheckError();
+		Bind();
 	}
 
-	internal static void Unbind() => GL.BindTexture(TextureTarget.Texture2D, 0);
+	internal static void UseNone()
+	{
+		GL.BindTexture(TextureTarget.Texture2D, 0); GFX.CheckError();
+	}
 
 	protected override void Delete()
 	{
-		GL.DeleteTexture(handle);
+		GL.DeleteTexture(handle); GFX.CheckError();
 	}
 }

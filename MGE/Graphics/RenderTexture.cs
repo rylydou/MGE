@@ -17,6 +17,7 @@ public class RenderTexture : GraphicsResource
 		viewportTransform = Matrix.CreateOrthographic(size.x, size.y, 0, 1);
 
 		colorTexture = new(this.size);
+		colorTexture.InitIfNecessary();
 
 		SetAsTarget();
 
