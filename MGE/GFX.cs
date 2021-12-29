@@ -295,7 +295,7 @@ public static class GFX
 	{
 		var halfRealSize = (Vector2)texture.size / 2;
 
-		SetQuadWithNormTexCoords(
+		SetQuadNorm(
 			position - halfRealSize, new(0, 0), color,
 			position + new Vector2(halfRealSize.x, -halfRealSize.y), new(1, 0), color,
 			position + new Vector2(-halfRealSize.x, halfRealSize.y), new(0, 1), color,
@@ -303,17 +303,17 @@ public static class GFX
 		);
 	}
 
-	public static void DrawTextureRegion(Texture texture, Vector2 position, RectInt source, Color color)
+	public static void DrawTextureRegion(Texture texture, RectInt source, Vector2 position, Color color)
 	{
 		SetBatch(texture);
-		SetBoxRegion(position, source, color);
+		SetBoxRegion(source, position, color);
 	}
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetBoxRegion(Vector2 position, RectInt source, Color color)
+	public static void SetBoxRegion(RectInt source, Vector2 position, Color color)
 	{
-		var halfRealSize = (Vector2)texture.size / 2;
+		var halfRealSize = (Vector2)source.size / 2;
 
-		SetQuadWithNormTexCoords(
+		SetQuad(
 			position - halfRealSize, source.topLeft, color,
 			position + new Vector2(halfRealSize.x, -halfRealSize.y), source.topRight, color,
 			position + new Vector2(-halfRealSize.x, halfRealSize.y), source.bottomLeft, color,
@@ -331,7 +331,7 @@ public static class GFX
 	{
 		var halfRealSize = (Vector2)texture.size * scale / 2;
 
-		SetQuadWithNormTexCoords(
+		SetQuadNorm(
 			position - halfRealSize, new(0, 0), color,
 			position + new Vector2(halfRealSize.x, -halfRealSize.y), new(1, 0), color,
 			position + new Vector2(-halfRealSize.x, halfRealSize.y), new(0, 1), color,
@@ -339,17 +339,17 @@ public static class GFX
 		);
 	}
 
-	public static void DrawTextureRegionScaled(Rect source, Texture texture, Vector2 position, Vector2 scale, Color color)
+	public static void DrawTextureRegionScaled(Texture texture, RectInt source, Vector2 position, Vector2 scale, Color color)
 	{
 		SetBatch(texture);
 		SetBoxRegionScaled(source, position, scale, color);
 	}
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetBoxRegionScaled(Rect source, Vector2 position, Vector2 scale, Color color)
+	public static void SetBoxRegionScaled(RectInt source, Vector2 position, Vector2 scale, Color color)
 	{
-		var halfRealSize = (Vector2)texture.size * scale / 2;
+		var halfRealSize = (Vector2)source.size * scale / 2;
 
-		SetQuadWithNormTexCoords(
+		SetQuad(
 			position - halfRealSize, source.topLeft, color,
 			position + new Vector2(halfRealSize.x, -halfRealSize.y), source.topRight, color,
 			position + new Vector2(-halfRealSize.x, halfRealSize.y), source.bottomLeft, color,
@@ -367,7 +367,7 @@ public static class GFX
 	{
 		var halfRealSize = (Vector2)texture.size * scale / 2;
 
-		SetQuadWithNormTexCoords(
+		SetQuadNorm(
 			position + Vector2.RotateAroundPoint(-halfRealSize, rotationRad), new(0, 0), color,
 			position + Vector2.RotateAroundPoint(new Vector2(halfRealSize.x, -halfRealSize.y), rotationRad), new(1, 0), color,
 			position + Vector2.RotateAroundPoint(new Vector2(-halfRealSize.x, halfRealSize.y), rotationRad), new(0, 1), color,
@@ -375,15 +375,15 @@ public static class GFX
 		);
 	}
 
-	public static void DrawTextureScaledAndRotated(Texture texture, Vector2 position, Vector2 scale, float rotationRad, Rect source, Color color)
+	public static void DrawTextureScaledAndRotated(Texture texture, RectInt source, Vector2 position, Vector2 scale, float rotationRad, Color color)
 	{
 		SetBatch(texture);
-		SetBoxRegionScaledAndRotated(position, scale, rotationRad, source, color);
+		SetBoxRegionScaledAndRotated(source, position, scale, rotationRad, color);
 	}
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetBoxRegionScaledAndRotated(Vector2 position, Vector2 scale, float rotationRad, RectInt source, Color color)
+	public static void SetBoxRegionScaledAndRotated(RectInt source, Vector2 position, Vector2 scale, float rotationRad, Color color)
 	{
-		var halfRealSize = (Vector2)texture.size * scale / 2;
+		var halfRealSize = (Vector2)source.size * scale / 2;
 
 		SetQuad(
 			position + Vector2.RotateAroundPoint(-halfRealSize, rotationRad), source.topLeft, color,
@@ -401,7 +401,7 @@ public static class GFX
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void SetBoxAtDest(Rect destination, Color color)
 	{
-		SetQuadWithNormTexCoords(
+		SetQuadNorm(
 			destination.topLeft, new(0, 0), color,
 			destination.topRight, new(1, 0), color,
 			destination.bottomLeft, new(0, 1), color,
@@ -438,7 +438,7 @@ public static class GFX
 		Vector2 destBR, Vector2 srcBR, Color colorBR
 	)
 	{
-		SetQuadWithNormTexCoords(
+		SetQuadNorm(
 		 destTL, texture.GetNormalizedPoint(srcTL), colorTL,
 		 destTR, texture.GetNormalizedPoint(srcTR), colorTR,
 		 destBL, texture.GetNormalizedPoint(srcBL), colorBL,
@@ -447,7 +447,7 @@ public static class GFX
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void SetQuadWithNormTexCoords(
+	public static void SetQuadNorm(
 		Vector2 destTL, Vector2 srcTL, Color colorTL,
 		Vector2 destTR, Vector2 srcTR, Color colorTR,
 		Vector2 destBL, Vector2 srcBL, Color colorBL,

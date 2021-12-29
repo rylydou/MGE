@@ -1,70 +1,85 @@
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using FontStashSharp;
+using FontStashSharp.Interfaces;
 using MGE.Graphics;
 
 namespace MGE;
 
 public class Font
 {
-	public static Font current = new(Folder.assets.GetFile("Fonts/Mono.png"), new(10, 24));
-
-	public readonly Texture texture;
-	public readonly Vector2Int charSize;
-	public int spaceBtwChars = 2;
-
-	Vector2Int charsCount;
-	Dictionary<char, RectInt> chars;
-
-	public Font(string path, Vector2Int charSize, ushort offset = 32)
+	class Texture2DManager : ITexture2DManager
 	{
-		this.texture = Texture.LoadFromFile(path);
-		this.charSize = charSize;
+		public Texture? texture;
 
-		charsCount = texture.size / charSize;
-		chars = new(charsCount.x * charsCount.y);
-
-		var ch = offset;
-		for (int y = 0; y < charsCount.y; y++)
+		public object CreateTexture(int width, int height)
 		{
-			for (int x = 0; x < charsCount.x; x++)
+			texture = new Texture(new(width, height));
+			return texture;
+		}
+
+		public System.Drawing.Point GetTextureSize(object obj)
+		{
+			var texture = (Texture)obj;
+			return texture.size;
+		}
+
+		public void SetTextureData(object obj, System.Drawing.Rectangle bounds, byte[] data)
+		{
+			var texture = (Texture)obj;
+			texture.SetData(new(bounds.X, bounds.Y, bounds.Width, bounds.Height), data);
+		}
+	}
+
+	class FontStashRenderer : IFontStashRenderer
+	{
+		ITexture2DManager textureManager = new Texture2DManager();
+		public ITexture2DManager TextureManager => textureManager;
+
+		public void Draw(object obj, System.Numerics.Vector2 pos, System.Drawing.Rectangle? src, System.Drawing.Color color, float rotation, System.Numerics.Vector2 origin, System.Numerics.Vector2 scale, float depth)
+		{
+			var texture = (Texture)obj;
+
+			if (rotation == 0)
 			{
-				var rect = new Rect(x * charSize.x, y * charSize.y, charSize);
-				var chr = (char)++ch;
-				chars.Add(chr, rect);
+				if (!src.HasValue) throw new MGEException();
+
+				var realPos = new Vector2(pos.X - origin.X * scale.X, pos.Y - (src.Value.Height - origin.Y) * scale.Y);
+				var destRect = new Rect(realPos, src.Value.Width * scale.X, src.Value.Height * scale.Y);
+				// Debug.Log($"dest:{destRect}\tsrc:{(RectInt)src.Value}");
+				// GFX.DrawRect(destRect, ((Color)color).inverted.WithAlpha(1f / 3));
+				GFX.DrawTextureRegionAtDest(texture, src.Value, destRect, color);
+			}
+			else
+			{
+				throw new MGEException();
+				// GFX.DrawTextureRegionScaledAndRotated((Texture)texture, src, pos, scale, rotation, color);
 			}
 		}
 	}
 
-	public void DrawText(IEnumerable<char> text, Vector2 position) => DrawText(text, position, Color.white);
-	public void DrawText(IEnumerable<char> text, Vector2 position, Color color)
-	{
-		var offset = 0;
+	public readonly static Font defaultFont = new(Folder.assets.GetFile("Fonts/Inter/Regular.ttf"));
+	public readonly static Font monospaceFont = new(Folder.assets.GetFile("Fonts/Iosevka/Regular.ttf"));
 
-		foreach (var ch in text)
-		{
-			if (!DrawChar(ch, new((charSize.x + spaceBtwChars) * offset + position.x, position.y), color)) continue;
-			offset++;
-		}
+	FontSystem fontSystem;
+	FontStashRenderer renderer = new();
+
+	public Font(File fontFile)
+	{
+		fontSystem = new(new() { PremultiplyAlpha = false, /* FontResolutionFactor = 2, KernelWidth = 2, KernelHeight = 2, */ });
+		fontSystem.AddFont(fontFile.ReadBytes());
+		fontSystem.CurrentAtlasFull += (sender, args) => throw new MGEException("Ran out of space in the font texture atlas");
 	}
 
-	/// <summary>
-	///
-	/// </summary>
-	/// <param name="ch"></param>
-	/// <param name="position"></param>
-	/// <param name="color"></param>
-	/// <returns>true if the char has width</returns>
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public bool DrawChar(char ch, Vector2 position, Color color)
+	public void DrawString(string text, Vector2 position, int fontSize, Color color)
 	{
-		if (ch == ' ') return true;
-		if (!chars.TryGetValue(ch, out var charRegion))
-		{
-			Debug.Log($"Unknown Char: '{ch}' #{(ushort)ch}");
-			return false;
-		}
+		var font = fontSystem.GetFont(fontSize);
+		font.DrawText(renderer, text, position, color);
 
-		GFX.DrawTextureRegionAtDest(texture, charRegion, new(position, charSize), color);
-		return true;
+		// GFX.DrawTexture(((Texture2DManager)renderer.TextureManager).texture!, Vector2.zero, Color.white);
+	}
+
+	public Vector2 MeasureString(string text, int fontSize)
+	{
+		var font = fontSystem.GetFont(fontSize);
+		return font.MeasureString(text);
 	}
 }

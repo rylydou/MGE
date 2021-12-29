@@ -224,7 +224,7 @@ public struct RectInt : IEquatable<RectInt>
 
 	////////////////////////////////////////////////////////////
 
-	public override string ToString() => $"{{({x} {y}) ({width} x {height})}}";
+	public override string ToString() => $"{{ {x}, {y}; {width} x {height} }}";
 	public string ToString(string format) => string.Format(format, x, y, width, height);
 
 	public override int GetHashCode() => HashCode.Combine(x, y, width, height);
