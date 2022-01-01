@@ -85,7 +85,7 @@ public struct Color : IEquatable<Color>
 	public float b { get => (float)intB / 255; set => intB = (byte)(value * 255); }
 	public float a { get => (float)intA / 255; set => intA = (byte)(value * 255); }
 
-	[Prop] public string hex { get => ToHex(); set => this = new Color(value); }
+	[Prop] public string hex { get => ToHex(); set => this = new(value); }
 
 	public Color(byte value) : this(value, value, value) { }
 	public Color(byte intR, byte intG, byte intB) : this(intR, intG, intB, 255) { }
@@ -103,7 +103,7 @@ public struct Color : IEquatable<Color>
 	public Color(float r, float g, float b) : this((byte)(r * 255), (byte)(g * 255), (byte)(b * 255)) { }
 
 	public Color(float value, float a) : this(value, value, value, a) { }
-	public Color(float r, float g, float b, float a) : this((byte)(r * 255), (byte)(g / 255), (byte)(b * 255), (byte)(a * 255)) { }
+	public Color(float r, float g, float b, float a) : this((byte)(r * 255), (byte)(g * 255), (byte)(b * 255), (byte)(a * 255)) { }
 
 	public Color(string hex)
 	{
@@ -174,8 +174,9 @@ public struct Color : IEquatable<Color>
 
 	public float average { get => (r + g + b) / 3; }
 	public float grayscale { get => r * 0.299f + g * 0.587f + b * 0.114f; }
-	public Color inverted { get => new Color(1f - r, 1f - g, 1f - b, a); }
-	public Color opaque { get => new Color(r, g, b); }
+	public Color inverted { get => new(1f - r, 1f - g, 1f - b, a); }
+	public Color opaque { get => new(r, g, b); }
+	public Color translucent { get => new(r, g, b, 0.5f); }
 
 	#endregion
 

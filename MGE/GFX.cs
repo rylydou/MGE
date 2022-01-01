@@ -96,6 +96,17 @@ public static class GFX
 		GL.Clear(ClearBufferMask.ColorBufferBit);
 	}
 
+	public static void SetScissor(RectInt? bounds)
+	{
+		if (bounds.HasValue)
+		{
+			GL.Scissor(bounds.Value.x, bounds.Value.y, bounds.Value.width, bounds.Value.height);
+			GL.Enable(EnableCap.ScissorTest);
+			return;
+		}
+		GL.Disable(EnableCap.ScissorTest);
+	}
+
 	public static void PushTransform(Matrix transform)
 	{
 		transformStack.Push(GFX.transform);

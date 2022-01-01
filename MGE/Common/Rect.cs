@@ -23,10 +23,37 @@ namespace MGE;
 [System.Serializable]
 public struct Rect : IEquatable<Rect>
 {
-	static Rect _zero = new Rect(0, 0, 0, 0);
-	public static Rect zero { get => _zero; }
+	#region Static
 
-	////////////////////////////////////////////////////////////
+	#region Constants
+
+	public static readonly Rect zero = new(0, 0, 0, 0);
+
+	#endregion Constants
+
+	#region Methods
+
+	public static Rect Intersect(Rect a, Rect b)
+	{
+		Intersect(ref a, ref b, out var result);
+		return result;
+	}
+
+	public static void Intersect(ref Rect a, ref Rect b, out Rect result)
+	{
+		if (a.Overlaps(b))
+		{
+			var right = Math.Min(a.x + a.width, b.x + b.width);
+			var left = Math.Max(a.x, b.x);
+			var top = Math.Max(a.y, b.y);
+			var bottom = Math.Min(a.y + a.height, b.y + b.height);
+			result = new(left, top, right - left, bottom - top);
+		}
+		else
+		{
+			result = Rect.zero;
+		}
+	}
 
 	public static Rect OrderMinMax(Rect rect)
 	{
@@ -47,29 +74,17 @@ public struct Rect : IEquatable<Rect>
 		return rect;
 	}
 
-	public static Vector2 NormalizedToPoint(Rect rectangle, Vector2 normalized)
-	{
-		return new Vector2(
-			Math.Lerp(rectangle.x, rectangle.xMax, normalized.x),
-			Math.Lerp(rectangle.y, rectangle.yMax, normalized.y)
-		);
-	}
-
-	public static Vector2 PointToNormalized(Rect rectangle, Vector2 point)
-	{
-		return new Vector2(
-			Math.InverseLerp(rectangle.x, rectangle.xMax, point.x),
-			Math.InverseLerp(rectangle.y, rectangle.yMax, point.y)
-		);
-	}
-
-	public static Rect FitRect(Rect inner, Rect outer)
+	public static Rect Fit(Rect inner, Rect outer)
 	{
 		float scaleRatio;
 		if (outer.width / outer.height >= inner.width / inner.height)
+		{
 			scaleRatio = inner.width / outer.width;
+		}
 		else
+		{
 			scaleRatio = inner.height / outer.height;
+		}
 
 		var width = outer.width * scaleRatio;
 		var height = outer.height * scaleRatio;
@@ -80,81 +95,21 @@ public struct Rect : IEquatable<Rect>
 		var x = xCenter - (width / 2);
 		var y = yCenter - (height / 2);
 
-		return new(x, y, width, height);
+		return new((float)x, (float)y, (float)width, (float)height);
 	}
 
-	////////////////////////////////////////////////////////////
+	#endregion Methods
+
+	#endregion Static
+
+	#region Instance
 
 	float _xMin;
 	float _yMin;
 	float _width;
 	float _height;
 
-	public Rect(float x, float y, float width, float height)
-	{
-		_xMin = x;
-		_yMin = y;
-		_width = width;
-		_height = height;
-	}
-
-	public Rect(float x, float y, float size)
-	{
-		_xMin = x;
-		_yMin = y;
-		_width = size;
-		_height = size;
-	}
-
-	public Rect(Vector2 position, float size)
-	{
-		_xMin = position.x;
-		_yMin = position.y;
-		_width = size;
-		_height = size;
-	}
-
-	public Rect(Vector2 position, float width, float height)
-	{
-		_xMin = position.x;
-		_yMin = position.y;
-		_width = width;
-		_height = height;
-	}
-
-	public Rect(float x, float y, Vector2 size)
-	{
-		_xMin = x;
-		_yMin = y;
-		_width = size.x;
-		_height = size.y;
-	}
-
-	public Rect(Vector2 position, Vector2 size)
-	{
-		_xMin = position.x;
-		_yMin = position.y;
-		_width = size.x;
-		_height = size.y;
-	}
-
-	public Rect(float width, float height)
-	{
-		_xMin = 0;
-		_yMin = 0;
-		_width = width;
-		_height = height;
-	}
-
-	public Rect(Vector2 size)
-	{
-		_xMin = 0;
-		_yMin = 0;
-		_width = size.x;
-		_height = size.y;
-	}
-
-	public float this[int index]
+	public float this[float index]
 	{
 		get
 		{
@@ -181,7 +136,62 @@ public struct Rect : IEquatable<Rect>
 		}
 	}
 
-	////////////////////////////////////////////////////////////
+	#region Size & Position
+
+	public Rect(float x, float y, float width, float height)
+	{
+		_xMin = x;
+		_yMin = y;
+		_width = width;
+		_height = height;
+	}
+
+	public Rect(Vector2 position, Vector2 size)
+	{
+		_xMin = position.x;
+		_yMin = position.y;
+		_width = size.x;
+		_height = size.y;
+	}
+
+	public Rect(Vector2 position, float width, float height)
+	{
+		_xMin = position.x;
+		_yMin = position.y;
+		_width = width;
+		_height = height;
+	}
+
+	public Rect(Vector2 position, float size)
+	{
+		_xMin = position.x;
+		_yMin = position.y;
+		_width = size;
+		_height = size;
+	}
+
+	#endregion Size & Position
+
+	#region Size Only
+
+	public Rect(float width, float height)
+	{
+		_xMin = 0;
+		_yMin = 0;
+		_width = width;
+		_height = height;
+	}
+	public Rect(Vector2 size)
+	{
+		_xMin = 0;
+		_yMin = 0;
+		_width = size.x;
+		_height = size.y;
+	}
+
+	#endregion Size Only
+
+	#region Properties
 
 	public float xMin { get => _xMin; set { var oldxmax = xMax; _yMin = value; _width = oldxmax - _xMin; } }
 	public float yMin { get => _yMin; set { var oldymax = yMax; _yMin = value; _height = oldymax - _yMin; } }
@@ -193,34 +203,47 @@ public struct Rect : IEquatable<Rect>
 	[Prop] public float width { get => _width; set => _width = value; }
 	[Prop] public float height { get => _height; set => _height = value; }
 
-	public Vector2 min { get => new Vector2(xMin, yMin); set { xMin = value.x; yMin = value.y; } }
-	public Vector2 max { get => new Vector2(xMax, yMax); set { xMax = value.x; yMax = value.y; } }
+	public Vector2 min { get => new(xMin, yMin); set { xMin = value.x; yMin = value.y; } }
+	public Vector2 max { get => new(xMax, yMax); set { xMax = value.x; yMax = value.y; } }
 
 	public float top { get => yMin; set => yMin = top; }
 	public float bottom { get => yMax; set => yMax = bottom; }
 	public float left { get => xMin; set => xMin = left; }
 	public float right { get => xMax; set => xMax = right; }
 
-	public Vector2 topLeft { get => new Vector2(xMin, yMin); set { xMin = value.x; yMin = value.y; } }
-	public Vector2 topRight { get => new Vector2(xMax, yMin); set { xMax = value.x; yMin = value.y; } }
-	public Vector2 bottomLeft { get => new Vector2(xMin, yMax); set { xMin = value.x; yMax = value.y; } }
-	public Vector2 bottomRight { get => new Vector2(xMax, yMax); set { xMax = value.x; yMax = value.y; } }
+	public Vector2 topLeft { get => new(xMin, yMin); set { xMin = value.x; yMin = value.y; } }
+	public Vector2 topRight { get => new(xMax, yMin); set { xMax = value.x; yMin = value.y; } }
+	public Vector2 bottomLeft { get => new(xMin, yMax); set { xMin = value.x; yMax = value.y; } }
+	public Vector2 bottomRight { get => new(xMax, yMax); set { xMax = value.x; yMax = value.y; } }
 
-	public Vector2 position
+	public Vector2 position { get => new(_xMin, _yMin); set { _xMin = value.x; _yMin = value.y; } }
+
+	public Vector2 size { get => new(_width, _height); set { _width = value.x; _height = value.y; } }
+
+	public Vector2 center { get => new(x + _width / 2, y + _height / 2); }
+
+	public bool isEmpty { get => width == 0 && height == 0; }
+
+	#endregion Properties
+
+	#region Methods
+
+	public void Set(float x, float y, float width, float height)
 	{
-		get => new Vector2(_xMin, _yMin);
-		set { _xMin = value.x; _yMin = value.y; }
+		_xMin = x;
+		_yMin = y;
+		_width = width;
+		_height = height;
 	}
 
-	public Vector2 size { get => new Vector2(_width, _height); set { _width = value.x; _height = value.y; } }
-
-	public Vector2 center
+	public void Expand(float amount)
 	{
-		get => new Vector2(x + _width / 2f, y + _height / 2f);
-		set { _xMin = value.x - _width / 2f; _yMin = value.y - _height / 2f; }
+		amount = amount / 2;
+		_xMin -= amount;
+		_yMin -= amount;
+		_width += amount;
+		_height += amount;
 	}
-
-	////////////////////////////////////////////////////////////
 
 	public bool Contains(Vector2 point) => (point.x >= xMin) && (point.x < xMax) && (point.y >= yMin) && (point.y < yMax);
 	public bool Contains(Rect rect) => (rect.xMin >= xMin) && (rect.xMax < xMax) && (rect.yMin >= yMin) && (rect.yMax < yMax);
@@ -237,34 +260,33 @@ public struct Rect : IEquatable<Rect>
 		return self.Overlaps(other);
 	}
 
-	public void Expand(float amount)
-	{
-		_xMin -= amount / 2;
-		_yMin -= amount / 2;
-		_width += amount;
-		_height += amount;
-	}
+	#endregion Methods
 
-	////////////////////////////////////////////////////////////
+	#region Operators
 
 	public static bool operator !=(Rect lhs, Rect rhs) => !(lhs == rhs);
 	public static bool operator ==(Rect lhs, Rect rhs) => lhs.x == rhs.x && lhs.y == rhs.y && lhs.width == rhs.width && lhs.height == rhs.height;
 
-	////////////////////////////////////////////////////////////
+	#endregion Operators
 
-	public static implicit operator Rect(RectInt rect) => new Rect(rect.x, rect.y, rect.width, rect.height);
-	public static implicit operator RectInt(Rect rect) => new RectInt((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	#region Conversion
+
+	public static implicit operator RectInt(Rect rect) => new((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	public static implicit operator Rect(RectInt rect) => new(rect.x, rect.y, rect.width, rect.height);
 
 	public static implicit operator (float, float, float, float)(Rect rect) => (rect.x, rect.y, rect.width, rect.height);
 	public static implicit operator Rect((float, float, float, float) rect) => new(rect.Item1, rect.Item2, rect.Item3, rect.Item4);
 
-	public static implicit operator System.Drawing.RectangleF(Rect rect) => new(rect.x, rect.y, rect.width, rect.height);
-	public static implicit operator Rect(System.Drawing.RectangleF rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
+	#region Thirdparty
 
-	public static implicit operator tainicom.Aether.Physics2D.Collision.AABB(Rect rect) => new(rect.center, rect.width, rect.height);
-	public static implicit operator Rect(tainicom.Aether.Physics2D.Collision.AABB aabb) => new(aabb.LowerBound, aabb.Width, aabb.Height);
+	public static implicit operator System.Drawing.Rectangle(Rect rect) => new((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	public static implicit operator Rect(System.Drawing.Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 
-	////////////////////////////////////////////////////////////
+	#endregion Thirdparty
+
+	#endregion Conversion
+
+	#region Overrides
 
 	public override string ToString() => $"{{ {x:F2}, {y:F2}; {width:F2} x {height:F2} }}";
 	public string ToString(string format) => string.Format(format, x, y, width, height);
@@ -273,4 +295,8 @@ public struct Rect : IEquatable<Rect>
 
 	public bool Equals(Rect other) => x.Equals(other.x) && y.Equals(other.y) && width.Equals(other.width) && height.Equals(other.height);
 	public override bool Equals(object? other) => other is Rect rect && Equals(rect);
+
+	#endregion Overrides
+
+	#endregion Instance
 }

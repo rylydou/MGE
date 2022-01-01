@@ -3,5 +3,12 @@
   "foldHeading": true,
   "spellcheck": true,
   "tabSize": 4,
-  "readableLineLength": true
+  "readableLineLength": true,
+  "promptDelete": false,
+  "spellcheckDictionary": [
+    "Whitespace"
+  ],
+  "legacyEditor": false,
+  "livePreview": true,
+  "showLineNumber": false
 }

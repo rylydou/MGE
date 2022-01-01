@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using MGE.Graphics;
 using MGE.Nodes;
 using OpenTK.Graphics.OpenGL;
@@ -20,7 +21,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	RenderTexture gameRender;
 	Texture sprite;
 
-	public GameWindow() : base(new() { /* RenderFrequency = 60, UpdateFrequency = 60, */ }, new() { Title = "Mangrove Game Engine", NumberOfSamples = 0, })
+	public GameWindow() : base(new() { /* RenderFrequency = 60, UpdateFrequency = 60, */ }, new() { Title = "Mangrove Game Engine", NumberOfSamples = 4, })
 	{
 		_current = this;
 
@@ -51,7 +52,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		GL.Enable(EnableCap.Blend);
 		GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-		// GL.Enable(EnableCap.Multisample);
+		GL.Enable(EnableCap.Multisample);
 	}
 
 	protected override void OnUnload()
@@ -138,10 +139,10 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		GFX.DrawBatches();
 
-		Font.defaultFont.DrawString(
-			$"Update:{1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render:{1f / renderTime:F0}fps ({renderTime * 1000:F2}ms) Size:{Size}",
-			new(MousePosition.X - Size.X / 2, Size.Y / 2 - MousePosition.Y),
-			16, Color.white
+		Font.normal.DrawString(
+			$"Update:{1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render:{1f / renderTime:F0}fps ({renderTime * 1000:F2}ms) Client Size:{Size}",
+			new(-Size.X / 2 + 8, Size.Y / 2 - 8),
+			Color.white.translucent
 		);
 
 		GFX.DrawBatches();

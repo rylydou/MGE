@@ -60,4 +60,70 @@ static class Extensions
 		result = (TType)item;
 		return true;
 	}
+
+	public static void Invoke(this EventHandler ev)
+	{
+		ev?.Invoke(null, EventArgs.Empty);
+	}
+
+	public static void Invoke(this EventHandler ev, object sender)
+	{
+		ev?.Invoke(sender, EventArgs.Empty);
+	}
+
+	public static void Invoke<T>(this EventHandler<GenericEventArgs<T>> ev, T data)
+	{
+		ev?.Invoke(null, new GenericEventArgs<T>(data));
+	}
+
+	public static void Invoke<T>(this EventHandler<GenericEventArgs<T>> ev, object sender, T data)
+	{
+		ev?.Invoke(sender, new GenericEventArgs<T>(data));
+	}
+
+	public static bool ProcessWidgets(this UI.UIWidget root, Func<UI.UIWidget, bool> operation)
+	{
+		if (!root.Visible) return true;
+
+		var result = operation(root);
+		if (!result) return false;
+
+		var asContainer = root as UI.UIContainer;
+		if (asContainer != null)
+		{
+			foreach (var w in asContainer.ChildrenCopy)
+			{
+				if (!ProcessWidgets(w, operation)) return false;
+			}
+		}
+
+		return true;
+	}
+
+	/// <summary>
+	/// Sorts widgets by ZIndex using bubble sort
+	/// </summary>
+	/// <param name="list"></param>
+	public static void SortWidgetsByZIndex(this List<UI.UIWidget> list)
+	{
+		var n = list.Count;
+		do
+		{
+			var newN = 0;
+			for (var i = 1; i < n; ++i)
+			{
+				if (list[i - 1].ZIndex > list[i].ZIndex)
+				{
+					// Swap
+					var temp = list[i - 1];
+					list[i - 1] = list[i];
+					list[i] = temp;
+
+					newN = i;
+				}
+			}
+
+			n = newN;
+		} while (n > 1);
+	}
 }

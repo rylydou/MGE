@@ -1,3 +1,4 @@
+using System.Text;
 using FontStashSharp;
 using FontStashSharp.Interfaces;
 using MGE.Graphics;
@@ -36,28 +37,25 @@ public class Font
 
 		public void Draw(object obj, System.Numerics.Vector2 pos, System.Drawing.Rectangle? src, System.Drawing.Color color, float rotation, System.Numerics.Vector2 origin, System.Numerics.Vector2 scale, float depth)
 		{
+			if (rotation != 0) throw new MGEException();
+			if (!src.HasValue) throw new MGEException();
+
 			var texture = (Texture)obj;
 
-			if (rotation == 0)
-			{
-				if (!src.HasValue) throw new MGEException();
+			var realPos = new Vector2(pos.X - origin.X * scale.X, pos.Y - (src.Value.Height - origin.Y) * scale.Y);
+			var destRect = new Rect(realPos, src.Value.Width * scale.X, src.Value.Height * scale.Y);
 
-				var realPos = new Vector2(pos.X - origin.X * scale.X, pos.Y - (src.Value.Height - origin.Y) * scale.Y);
-				var destRect = new Rect(realPos, src.Value.Width * scale.X, src.Value.Height * scale.Y);
-				// Debug.Log($"dest:{destRect}\tsrc:{(RectInt)src.Value}");
-				// GFX.DrawRect(destRect, ((Color)color).inverted.WithAlpha(1f / 3));
-				GFX.DrawTextureRegionAtDest(texture, src.Value, destRect, color);
-			}
-			else
-			{
-				throw new MGEException();
-				// GFX.DrawTextureRegionScaledAndRotated((Texture)texture, src, pos, scale, rotation, color);
-			}
+			// Debug.Log($"dest:{destRect}\tsrc:{(RectInt)src.Value}");
+			// GFX.DrawRect(destRect, ((Color)color).inverted.WithAlpha(1f / 3));
+
+			GFX.DrawTextureRegionAtDest(texture, src.Value, destRect, color);
 		}
 	}
 
-	public readonly static Font defaultFont = new(Folder.assets.GetFile("Fonts/Inter/Regular.ttf"));
-	public readonly static Font monospaceFont = new(Folder.assets.GetFile("Fonts/Iosevka/Regular.ttf"));
+	public static Font normal = new(Folder.assets.GetFile("Fonts/Inter/Regular.ttf"));
+	public static Font monospace = new(Folder.assets.GetFile("Fonts/Iosevka/Regular.ttf"));
+
+	internal Texture? atlas => ((Texture2DManager)renderer.TextureManager).texture;
 
 	FontSystem fontSystem;
 	FontStashRenderer renderer = new();
@@ -69,13 +67,8 @@ public class Font
 		fontSystem.CurrentAtlasFull += (sender, args) => throw new MGEException("Ran out of space in the font texture atlas");
 	}
 
-	public void DrawString(string text, Vector2 position, int fontSize, Color color)
-	{
-		var font = fontSystem.GetFont(fontSize);
-		font.DrawText(renderer, text, position, color);
-
-		// GFX.DrawTexture(((Texture2DManager)renderer.TextureManager).texture!, Vector2.zero, Color.white);
-	}
+	public void DrawString(string text, Vector2 position, Color color, int fontSize = 18) => fontSystem.GetFont(fontSize).DrawText(renderer, text, position, color);
+	public void DrawString(StringBuilder sb, Vector2 position, Color color, int fontSize = 18) => fontSystem.GetFont(fontSize).DrawText(renderer, sb, position, color);
 
 	public Vector2 MeasureString(string text, int fontSize)
 	{
