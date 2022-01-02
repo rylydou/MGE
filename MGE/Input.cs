@@ -25,6 +25,8 @@ public static class Input
 	static List<JoyState> _currentGamepadStates = new();
 	static List<JoyState> _oldGamepadStates = new();
 
+	public static string textInput = "";
+
 	internal static void UpdateInputs(KeyboardState keyboardState, MouseState mouseState, IReadOnlyList<JoystickState> joystickStates)
 	{
 		#region Keyboard
@@ -97,7 +99,7 @@ public static class Input
 
 	internal static void OnTextInput(TextInputEventArgs e)
 	{
-		// TODO
+		textInput = e.AsString ?? "";
 	}
 
 	internal static void OnJoystickConnected(JoystickEventArgs e)

@@ -331,7 +331,7 @@ public class UIWidget
 		{
 			if (_enabled == value) return;
 			_enabled = value;
-			EnabledChanged?.Invoke(this);
+			EnabledChanged();
 		}
 	}
 
@@ -581,42 +581,46 @@ public class UIWidget
 		{
 			if (_isKeyboardFocused == value) return;
 			_isKeyboardFocused = value;
-			KeyboardFocusChanged?.Invoke(this, EventArgs.Empty);
+			KeyboardFocusChanged();
 		}
 	}
 
 	protected virtual bool UseHoverRenderable { get => IsMouseInside && Active; }
 
-	public event EventHandler? PlacedChanged;
-	public event EventHandler? VisibleChanged;
-	public event EventHandler? EnabledChanged;
+	public Action PlacedChanged = () => { };
+	public Action VisibleChanged = () => { };
+	public Action EnabledChanged = () => { };
 
-	public event EventHandler? LocationChanged;
-	public event EventHandler? SizeChanged;
-	public event EventHandler? LayoutUpdated;
+	public Action LocationChanged = () => { };
+	public Action SizeChanged = () => { };
+	public Action LayoutUpdated = () => { };
 
-	public event EventHandler? MouseLeft;
-	public event EventHandler? MouseEntered;
-	public event EventHandler? MouseMoved;
+	public Action MouseLeft = () => { };
+	public Action MouseEntered = () => { };
+	public Action MouseMoved = () => { };
 
-	public event EventHandler? TouchLeft;
-	public event EventHandler? TouchEntered;
-	public event EventHandler? TouchMoved;
-	public event EventHandler? TouchDown;
-	public event EventHandler? TouchUp;
-	public event EventHandler? TouchDoubleClick;
+	public Action TouchLeft = () => { };
+	public Action TouchEntered = () => { };
+	public Action TouchMoved = () => { };
+	public Action TouchDown = () => { };
+	public Action TouchUp = () => { };
+	public Action TouchDoubleClick = () => { };
 
-	public event EventHandler? KeyboardFocusChanged;
+	public Action KeyboardFocusChanged = () => { };
 
-	public event EventHandler<GenericEventArgs<float>>? MouseWheelChanged;
+	public Action<float> MouseWheelChanged = (delta) => { };
 
-	public event EventHandler<GenericEventArgs<Keys>>? KeyUp;
-	public event EventHandler<GenericEventArgs<Keys>>? KeyDown;
-	public event EventHandler<GenericEventArgs<char>>? Char;
+	public Action<Keys> KeyUp = (keys) => { };
+	public Action<Keys> KeyDown = (keys) => { };
+	public Action<Keys> Char = (keys) => { };
 
 	[Browsable(false)]
 	[XmlIgnore]
-	public Action<UIRenderContext>? BeforeRender, AfterRender;
+	public Action<UIRenderContext> BeforeRender = (context) => { };
+
+	[Browsable(false)]
+	[XmlIgnore]
+	public Action<UIRenderContext> AfterRender = (context) => { };
 
 	public UIWidget()
 	{
@@ -706,7 +710,7 @@ public class UIWidget
 		var oldOpacity = context.opacity;
 		context.opacity *= Opacity;
 
-		BeforeRender?.Invoke(context);
+		BeforeRender(context);
 
 		// Background
 		var background = GetCurrentBackground();
@@ -743,7 +747,7 @@ public class UIWidget
 
 		InternalRender(context);
 
-		AfterRender?.Invoke(context);
+		AfterRender(context);
 
 		// Restore context settings
 		context.opacity = oldOpacity;
@@ -1080,43 +1084,43 @@ public class UIWidget
 	public virtual void OnMouseLeft()
 	{
 		IsMouseInside = false;
-		MouseLeft?.Invoke(this);
+		MouseLeft();
 	}
 
 	public virtual void OnMouseEntered()
 	{
 		IsMouseInside = true;
 		Desktop!.MouseInsideWidget = this;
-		MouseEntered?.Invoke(this);
+		MouseEntered();
 	}
 
 	public virtual void OnMouseMoved()
 	{
 		IsMouseInside = true;
 		Desktop!.MouseInsideWidget = this;
-		MouseMoved?.Invoke(this);
+		MouseMoved();
 	}
 
-	public virtual void OnTouchDoubleClick() => TouchDoubleClick?.Invoke(this);
+	public virtual void OnTouchDoubleClick() => TouchDoubleClick();
 
-	public virtual void OnMouseWheel(float delta) => MouseWheelChanged?.Invoke(this, delta);
+	public virtual void OnMouseWheel(float delta) => MouseWheelChanged(delta);
 
 	public virtual void OnTouchLeft()
 	{
 		IsTouchInside = false;
-		TouchLeft?.Invoke(this);
+		TouchLeft();
 	}
 
 	public virtual void OnTouchEntered()
 	{
 		IsTouchInside = true;
-		TouchEntered?.Invoke(this);
+		TouchEntered();
 	}
 
 	public virtual void OnTouchMoved()
 	{
 		IsTouchInside = true;
-		TouchMoved?.Invoke(this);
+		TouchMoved();
 	}
 
 	public virtual void OnTouchDown()
@@ -1140,30 +1144,30 @@ public class UIWidget
 			_startPos = new(touchPos.x - Left, touchPos.y - Top);
 		}
 
-		TouchDown?.Invoke(this);
+		TouchDown();
 	}
 
 	public virtual void OnTouchUp()
 	{
 		_startPos = null;
 		IsTouchInside = false;
-		TouchUp?.Invoke(this);
+		TouchUp();
 	}
 
-	protected void FireKeyDown(Keys k) => KeyDown?.Invoke(this, k);
+	protected void FireKeyDown(Keys k) => KeyDown(k);
 
 	public virtual void OnKeyDown(Keys k) => FireKeyDown(k);
 
-	public virtual void OnKeyUp(Keys k) => KeyUp?.Invoke(this, k);
+	public virtual void OnKeyUp(Keys k) => KeyUp(k);
 
-	public virtual void OnChar(char c) => Char?.Invoke(this, c);
+	public virtual void OnChar(char c) => Char(c);
 
-	protected virtual void OnPlacedChanged() => PlacedChanged?.Invoke(this);
+	protected virtual void OnPlacedChanged() => PlacedChanged();
 
 	public virtual void OnVisibleChanged()
 	{
 		InvalidateMeasure();
-		VisibleChanged?.Invoke(this);
+		VisibleChanged();
 	}
 
 	public virtual void OnLostKeyboardFocus() => IsKeyboardFocused = false;
@@ -1180,11 +1184,11 @@ public class UIWidget
 		Parent.RemoveChild(this);
 	}
 
-	public void RemoveFromDesktop() => Desktop?.Widgets.Remove(this);
+	public void RemoveFromDesktop() => Desktop!.Widgets.Remove(this);
 
-	private void FireLocationChanged() => LocationChanged?.Invoke(this);
+	private void FireLocationChanged() => LocationChanged();
 
-	private void FireSizeChanged() => SizeChanged?.Invoke(this);
+	private void FireSizeChanged() => SizeChanged();
 
 	public void SetKeyboardFocus() => Desktop!.FocusedKeyboardWidget = this;
 
@@ -1216,7 +1220,7 @@ public class UIWidget
 		}
 	}
 
-	private void DesktopOnTouchMoved(object? sender, EventArgs args)
+	private void DesktopOnTouchMoved()
 	{
 		if (_startPos is null || !IsDraggable) return;
 
@@ -1244,5 +1248,5 @@ public class UIWidget
 		if (newLeft + Bounds.width > RelativeRight) newLeft = RelativeRight - Bounds.width;
 	}
 
-	private void DesktopTouchUp(object? sender, EventArgs args) => _startPos = null;
+	private void DesktopTouchUp() => _startPos = null;
 }

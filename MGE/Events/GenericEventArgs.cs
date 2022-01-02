@@ -1,5 +1,3 @@
-using System;
-
 namespace MGE;
 
 public sealed class GenericEventArgs<T> : EventArgs

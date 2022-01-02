@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -61,25 +60,11 @@ static class Extensions
 		return true;
 	}
 
-	public static void Invoke(this EventHandler ev)
-	{
-		ev?.Invoke(null, EventArgs.Empty);
-	}
+	public static void Invoke(this EventHandler ev) => ev(null, EventArgs.empty);
+	public static void Invoke(this EventHandler ev, object sender) => ev(sender, EventArgs.empty);
 
-	public static void Invoke(this EventHandler ev, object sender)
-	{
-		ev?.Invoke(sender, EventArgs.Empty);
-	}
-
-	public static void Invoke<T>(this EventHandler<GenericEventArgs<T>> ev, T data)
-	{
-		ev?.Invoke(null, new GenericEventArgs<T>(data));
-	}
-
-	public static void Invoke<T>(this EventHandler<GenericEventArgs<T>> ev, object sender, T data)
-	{
-		ev?.Invoke(sender, new GenericEventArgs<T>(data));
-	}
+	public static void Invoke<T>(this EventHandler<GenericEventArgs<T>> ev, T data) => ev(null, new GenericEventArgs<T>(data));
+	public static void Invoke<T>(this EventHandler<GenericEventArgs<T>> ev, object sender, T data) => ev(sender, new GenericEventArgs<T>(data));
 
 	public static bool ProcessWidgets(this UI.UIWidget root, Func<UI.UIWidget, bool> operation)
 	{

@@ -32,7 +32,6 @@ public class UIDesktop
 	private MouseInfo _lastMouseInfo;
 	private readonly bool[] _downKeys = new bool[0xff], _lastDownKeys = new bool[0xff];
 	private UIWidget? _previousKeyboardFocus;
-	private TouchCollection _oldTouchState;
 	private bool _isTouchDown;
 	private Vector2Int _previousMousePosition, _mousePosition, _previousTouchPosition, _touchPosition;
 	private bool _contextMenuShown = false;
@@ -77,7 +76,7 @@ public class UIDesktop
 
 			_previousMousePosition = _mousePosition;
 			_mousePosition = value;
-			MouseMoved?.Invoke();
+			MouseMoved.Invoke();
 
 			ChildrenCopy.ProcessMouseMovement();
 
@@ -99,7 +98,7 @@ public class UIDesktop
 			if (value == _touchPosition) return;
 
 			_touchPosition = value;
-			TouchMoved?.Invoke();
+			TouchMoved.Invoke();
 
 			ChildrenCopy.ProcessTouchMovement();
 		}
@@ -145,11 +144,8 @@ public class UIDesktop
 			{
 				if (WidgetLosingKeyboardFocus is not null)
 				{
-					var args = new CancellableEventArgs<UIWidget>(oldValue);
-
-					WidgetLosingKeyboardFocus(null, args);
-
-					if (oldValue.IsPlaced && args.Cancel) return;
+					var cancel = WidgetLosingKeyboardFocus(oldValue);
+					if (oldValue.IsPlaced && cancel) return;
 				}
 			}
 
@@ -162,7 +158,7 @@ public class UIDesktop
 			if (_focusedKeyboardWidget is not null)
 			{
 				_focusedKeyboardWidget.OnGotKeyboardFocus();
-				WidgetGotKeyboardFocus?.Invoke(_focusedKeyboardWidget);
+				WidgetGotKeyboardFocus.Invoke(_focusedKeyboardWidget);
 			}
 		}
 	}
@@ -178,7 +174,7 @@ public class UIDesktop
 			}
 
 			_mouseInsideWidget = value;
-			MouseInsideWidgetChanged?.Invoke(this);
+			MouseInsideWidgetChanged(MouseInsideWidget);
 		}
 	}
 
@@ -213,17 +209,17 @@ public class UIDesktop
 			if (_isTouchDown)
 			{
 				InputOnTouchDown();
-				TouchDown?.Invoke();
+				TouchDown.Invoke();
 			}
 			else
 			{
 				InputOnTouchUp();
-				TouchUp?.Invoke();
+				TouchUp.Invoke();
 			}
 		}
 	}
 
-	public int RepeatKeyDownStartInMs { get; set; } = 500;
+	public int RepeatKeyDownStartInMs { get; set; } = 200;
 
 	public int RepeatKeyDownInternalInMs { get; set; } = 50;
 
@@ -243,28 +239,28 @@ public class UIDesktop
 
 	private bool IsMenuBarActive { get => MenuBar is not null && (MenuBar.OpenMenuItem is not null || IsAltDown); }
 
-	public Action<Keys>? KeyDownHandler;
+	public Action<Keys> KeyDownHandler = (keys) => { };
 
-	public event EventHandler? MouseMoved;
+	public Action MouseMoved = () => { };
 
-	public event EventHandler? TouchMoved;
-	public event EventHandler? TouchDown;
-	public event EventHandler? TouchUp;
-	public event EventHandler? TouchDoubleClick;
+	public Action TouchMoved = () => { };
+	public Action TouchDown = () => { };
+	public Action TouchUp = () => { };
+	public Action TouchDoubleClick = () => { };
 
-	public event EventHandler<GenericEventArgs<float>>? MouseWheelChanged;
+	public Action<float> MouseWheelChanged = (delta) => { };
 
-	public event EventHandler<GenericEventArgs<Keys>>? KeyUp;
-	public event EventHandler<GenericEventArgs<Keys>>? KeyDown;
-	public event EventHandler<GenericEventArgs<char>>? Char;
+	public Action<Keys> KeyUp = (keys) => { };
+	public Action<Keys> KeyDown = (keys) => { };
+	public Action<Keys> Char = (keys) => { };
 
-	public event EventHandler<CancellableEventArgs<UIWidget>>? ContextMenuClosing;
-	public event EventHandler<GenericEventArgs<UIWidget>>? ContextMenuClosed;
+	public Func<UIWidget, bool> ContextMenuClosing = (widget) => false /* Do not cancel */;
+	public Action<UIWidget> ContextMenuClosed = (widget) => { };
 
-	public event EventHandler<CancellableEventArgs<UIWidget>>? WidgetLosingKeyboardFocus;
-	public event EventHandler<GenericEventArgs<UIWidget>>? WidgetGotKeyboardFocus;
+	public Func<UIWidget, bool> WidgetLosingKeyboardFocus = (widget) => false /* Do not cancel */;
+	public Action<UIWidget> WidgetGotKeyboardFocus = (widget) => { };
 
-	public event EventHandler? MouseInsideWidgetChanged;
+	public Action<UIWidget?> MouseInsideWidgetChanged = (widget) => { };
 
 	public UIDesktop()
 	{
@@ -345,7 +341,7 @@ public class UIDesktop
 	{
 		if ((DateTime.Now - _lastTouchDown).TotalMilliseconds < DoubleClickIntervalInMs && Math.Abs(_touchPosition.x - _previousTouchPosition.x) <= DoubleClickRadius && Math.Abs(_touchPosition.y - _previousTouchPosition.y) <= DoubleClickRadius)
 		{
-			TouchDoubleClick?.Invoke();
+			TouchDoubleClick();
 
 			ChildrenCopy.ProcessTouchDoubleClick();
 
@@ -362,13 +358,9 @@ public class UIDesktop
 		if (ContextMenu is null || ContextMenu.Bounds.Contains(TouchPosition)) return;
 
 		var ev = ContextMenuClosing;
-		if (ev is not null)
-		{
-			var args = new CancellableEventArgs<UIWidget>(ContextMenu);
-			ev(null, args);
+		var cancel = ev(ContextMenu);
 
-			if (args.Cancel) return;
-		}
+		if (cancel) return;
 
 		HideContextMenu();
 	}
@@ -442,7 +434,7 @@ public class UIDesktop
 		Widgets.Remove(ContextMenu);
 		ContextMenu.Visible = false;
 
-		ContextMenuClosed?.Invoke(ContextMenu);
+		ContextMenuClosed(ContextMenu);
 		ContextMenu = null;
 
 		if (_previousKeyboardFocus is not null)
@@ -740,7 +732,7 @@ public class UIDesktop
 #if !STRIDE
 			delta -= _lastMouseInfo.Wheel;
 #endif
-			MouseWheelChanged?.Invoke(delta);
+			MouseWheelChanged(delta);
 
 			UIWidget? mouseWheelFocusedWidget = null;
 			if (FocusedKeyboardWidget is not null && FocusedKeyboardWidget.MouseWheelFocusType == UIMouseWheelFocusType.Focus)
@@ -789,7 +781,7 @@ public class UIDesktop
 					FocusNextWidget();
 				}
 
-				KeyDownHandler?.Invoke(key);
+				KeyDownHandler(key);
 
 				_lastKeyDown = now;
 				_keyDownCount = 0;
@@ -797,7 +789,7 @@ public class UIDesktop
 			else if (!_downKeys[i] && _lastDownKeys[i])
 			{
 				// Key had been released
-				KeyUp?.Invoke(key);
+				KeyUp(key);
 				if (_focusedKeyboardWidget is not null && _focusedKeyboardWidget.Active)
 				{
 					_focusedKeyboardWidget.OnKeyUp(key);
@@ -814,7 +806,7 @@ public class UIDesktop
 					(_keyDownCount > 0 && (now - _lastKeyDown.Value).TotalMilliseconds > RepeatKeyDownInternalInMs))
 				)
 				{
-					KeyDownHandler?.Invoke(key);
+					KeyDownHandler(key);
 
 					_lastKeyDown = now;
 					++_keyDownCount;
@@ -882,7 +874,7 @@ public class UIDesktop
 
 	public void OnKeyDown(Keys key)
 	{
-		KeyDown?.Invoke(key);
+		KeyDown(key);
 
 		if (IsMenuBarActive)
 		{
@@ -921,7 +913,7 @@ public class UIDesktop
 			_focusedKeyboardWidget.OnChar(c);
 		}
 
-		Char?.Invoke(c);
+		Char(c);
 	}
 
 	private void UpdateWidgetsCopy()
