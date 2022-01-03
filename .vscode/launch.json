@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "MGE",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build engine",
+      "program": "${workspaceFolder}/MGE/bin/Debug/MGE.dll",
+      "args": [],
+      "env": {
+        "data-dir": "${workspaceFolder}/Data"
+      },
+      "cwd": "${workspaceFolder}/MGE",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "logging": {
+        "browserStdOut": false,
+        "elapsedTiming": false,
+        "engineLogging": false,
+        "exceptions": false,
+        "moduleLoad": false,
+        "processExit": false,
+        "programOutput": true,
+        "threadExit": false
+      }
+    }
+  ]
+}

@@ -103,6 +103,34 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Scene.Update();
 	}
 
+	protected override void OnKeyDown(KeyboardKeyEventArgs e)
+	{
+		base.OnKeyDown(e);
+
+		Input.OnKeyDown(e);
+	}
+
+	protected override void OnKeyUp(KeyboardKeyEventArgs e)
+	{
+		base.OnKeyUp(e);
+
+		Input.OnKeyUp(e);
+	}
+
+	protected override void OnMove(WindowPositionEventArgs e)
+	{
+		base.OnMove(e);
+
+		Debug.Log(e);
+	}
+
+	protected override void OnRefresh()
+	{
+		base.OnRefresh();
+
+		Debug.Log("Refresed");
+	}
+
 	protected override void OnTextInput(TextInputEventArgs e)
 	{
 		base.OnTextInput(e);
