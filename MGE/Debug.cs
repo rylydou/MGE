@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
@@ -52,7 +53,7 @@ public static class Debug
 		Trace.Write(dict.Count);
 		Trace.WriteLine("):");
 
-		foreach (IDictionaryEnumerator pair in dict)
+		foreach (DictionaryEntry pair in dict)
 		{
 			Trace.Write("  ");
 			Trace.Write(pair.Key ?? "(null)");
@@ -60,4 +61,31 @@ public static class Debug
 			Trace.WriteLine(pair.Value ?? "(null)");
 		}
 	}
+
+	#region Timer
+
+	static Stack<(string name, Stopwatch stopwatch)> _timerStack = new();
+
+	public static void StartTimer(string name)
+	{
+		var stopwatch = new Stopwatch();
+		stopwatch.Start();
+		_timerStack.Push((name, stopwatch));
+	}
+
+	public static void EndTimer()
+	{
+		var (name, stopwatch) = _timerStack.Pop();
+		stopwatch.Stop();
+
+		Trace.Write("⏱ ");
+		Trace.Write(name);
+		Trace.Write(": ");
+		Trace.Write(stopwatch.Elapsed.ToString(@"s\.ffff"));
+		Trace.Write(" (");
+		Trace.Write(stopwatch.ElapsedMilliseconds);
+		Trace.WriteLine("ms)");
+	}
+
+	#endregion Timer
 }

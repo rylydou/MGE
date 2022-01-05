@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -9,6 +11,45 @@ namespace MGE;
 
 public static class Input
 {
+	class ControllerMapping
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryLoad(string data, [MaybeNullWhen(false)] out ControllerMapping mapping)
+		{
+			if (data.EndsWith("iOS,") || data.EndsWith("Android,"))
+			{
+				mapping = null;
+				return false;
+			}
+
+			var segments = data.Split(',', System.StringSplitOptions.RemoveEmptyEntries);
+
+			mapping = new(new(segments[0]), segments[1], segments.Last().Remove(0, 9));
+
+			for (int i = 0; i < segments.Length - 2; i++)
+			{
+				var pair = segments[i + 2].Split(':');
+				mapping.mappings.Add(pair[0], pair[1]);
+			}
+
+			return true;
+		}
+
+		public Guid uuid;
+		public string name;
+		public string platform;
+
+		public Dictionary<string, string> mappings = new();
+
+		public ControllerMapping(Guid uuid, string name, string platform)
+		{
+			this.uuid = uuid;
+			this.name = name;
+			this.platform = platform;
+		}
+	}
+
+
 	public static string textInput = "";
 
 	static List<Button> _currentButtonsDown = new();
@@ -48,7 +89,7 @@ public static class Input
 
 			if (state.IsKeyDown(key))
 			{
-				_currentButtonsDown.Add((Button)key);
+				_currentButtonsDown.Add((Button)(int)key);
 			}
 		}
 	}
@@ -84,7 +125,38 @@ public static class Input
 
 	#endregion Mouse
 
-	#region Joystick & Gamepad
+	#region Controllers
+
+	static Dictionary<string, Dictionary<Guid, ControllerMapping>> _controllerMappingDatabase = new();
+
+	public static void InitControllers()
+	{
+		Debug.StartTimer("Load Mappings");
+
+		using var mappingData = Folder.assets.GetFile("Mappings.csv").OpenReadText();
+
+		_controllerMappingDatabase.Clear();
+		_controllerMappingDatabase.Add("Windows", new());
+		_controllerMappingDatabase.Add("Mac OS X", new());
+		_controllerMappingDatabase.Add("Linux", new());
+
+		while (true)
+		{
+			if (mappingData.EndOfStream) break;
+
+			var line = mappingData.ReadLine();
+
+			if (string.IsNullOrWhiteSpace(line)) continue; // Ignore empty lines
+			if (line.StartsWith("#")) continue; // Ignore comments
+
+			if (ControllerMapping.TryLoad(line, out var mapping))
+			{
+				_controllerMappingDatabase[mapping.platform].Add(mapping.uuid, mapping);
+			}
+		}
+
+		Debug.EndTimer();
+	}
 
 	class JoyState
 	{
@@ -163,5 +235,5 @@ public static class Input
 		// Disconnected
 	}
 
-	#endregion Joystick & Gamepad
+	#endregion Controller
 }

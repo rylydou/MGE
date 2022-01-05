@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using MGE.Graphics;
 using MGE.Nodes;
 using OpenTK.Graphics.OpenGL;
@@ -44,6 +43,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		world.AttachNode(ball);
 
 		Scene.root.AttachNode(world);
+
+		Input.InitControllers();
 	}
 
 	protected override void OnLoad()
@@ -83,12 +84,11 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Input.ClearInputs();
 		Input.UpdateKeyboard(KeyboardState);
 		Input.UpdateMouse(MouseState);
-		Input.UpdateJoysticks(JoystickStates);
+		// Input.UpdateJoysticks(JoystickStates);
 
-		var state = KeyboardState;
-		var alt = state.IsKeyDown(Keys.LeftAlt) || state.IsKeyDown(Keys.RightAlt);
+		var alt = Input.IsButtonDown(Button.KB_RightAlt) || Input.IsButtonDown(Button.KB_RightAlt);
 
-		if (state.IsKeyPressed(Keys.F11) || (alt && state.IsKeyPressed(Keys.Enter)))
+		if (Input.IsButtonPressed(Button.KB_Space) || (alt && Input.IsButtonPressed(Button.KB_Enter)))
 		{
 			if (WindowState == WindowState.Fullscreen)
 			{
