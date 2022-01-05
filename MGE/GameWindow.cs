@@ -80,7 +80,10 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		updateTime = args.Time;
 
-		Input.UpdateInputs(KeyboardState, MouseState, JoystickStates);
+		Input.ClearInputs();
+		Input.UpdateKeyboard(KeyboardState);
+		Input.UpdateMouse(MouseState);
+		Input.UpdateJoysticks(JoystickStates);
 
 		var state = KeyboardState;
 		var alt = state.IsKeyDown(Keys.LeftAlt) || state.IsKeyDown(Keys.RightAlt);
@@ -115,20 +118,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		base.OnKeyUp(e);
 
 		Input.OnKeyUp(e);
-	}
-
-	protected override void OnMove(WindowPositionEventArgs e)
-	{
-		base.OnMove(e);
-
-		Debug.Log(e);
-	}
-
-	protected override void OnRefresh()
-	{
-		base.OnRefresh();
-
-		Debug.Log("Refresed");
 	}
 
 	protected override void OnTextInput(TextInputEventArgs e)

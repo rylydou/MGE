@@ -9,6 +9,83 @@ namespace MGE;
 
 public static class Input
 {
+	public static string textInput = "";
+
+	static List<Button> _currentButtonsDown = new();
+	static List<Button> _oldButtonsDown = new();
+
+	static List<Button> _keysPressed = new();
+
+	public static bool IsButtonDown(Button button, int controllerIndex = 0)
+	{
+		return _currentButtonsDown.Contains(button);
+	}
+
+	public static bool IsButtonPressed(Button button, int controllerIndex = 0)
+	{
+		return _currentButtonsDown.Contains(button) && !_currentButtonsDown.Contains(button);
+	}
+
+	public static bool IsButtonReleased(Button button, int controllerIndex = 0)
+	{
+		return !_currentButtonsDown.Contains(button) && _currentButtonsDown.Contains(button);
+	}
+
+	#region Keyboard
+
+	internal static void ClearInputs()
+	{
+		_oldButtonsDown = _currentButtonsDown;
+		_oldButtonsDown = new();
+		_keysPressed.Clear();
+	}
+
+	internal static void UpdateKeyboard(KeyboardState state)
+	{
+		foreach (var key in Enum.GetValues<Keys>())
+		{
+			if (key < 0) continue;
+
+			if (state.IsKeyDown(key))
+			{
+				_currentButtonsDown.Add((Button)key);
+			}
+		}
+	}
+
+	internal static void OnKeyDown(KeyboardKeyEventArgs e)
+	{
+		_keysPressed.Add((Button)e.Key);
+	}
+
+	internal static void OnKeyUp(KeyboardKeyEventArgs e) { }
+
+	internal static void OnTextInput(TextInputEventArgs e)
+	{
+		textInput = e.AsString ?? "";
+	}
+
+	#endregion Keyboard
+
+	#region Mouse
+
+	internal static void UpdateMouse(MouseState state)
+	{
+		foreach (var button in Enum.GetValues<MouseButton>())
+		{
+			if (button < 0) continue;
+
+			if (state.IsButtonDown(button))
+			{
+				_currentButtonsDown.Add((Button)button);
+			}
+		}
+	}
+
+	#endregion Mouse
+
+	#region Joystick & Gamepad
+
 	class JoyState
 	{
 		public string name = "Unknown";
@@ -19,87 +96,56 @@ public static class Input
 		public List<Hat> hats = new();
 	}
 
-	static List<Keys> _currentKeys = new();
-	static List<Keys> _oldKeys = new();
-
-	static List<JoyState> _currentGamepadStates = new();
+	static List<JoyState> _currentJoystickStates = new();
 	static List<JoyState> _oldGamepadStates = new();
 
-	public static string textInput = "";
-
-	internal static void UpdateInputs(KeyboardState keyboardState, MouseState mouseState, IReadOnlyList<JoystickState> joystickStates)
+	internal static void UpdateJoysticks(IReadOnlyList<JoystickState> states)
 	{
-		#region Keyboard
-
-		_oldKeys = _currentKeys;
-		_currentKeys.Clear();
-
-		foreach (var key in Enum.GetValues<Keys>())
-		{
-			if (key < 0) continue;
-
-			if (keyboardState.IsKeyPressed(key))
-			{
-				_currentKeys.Add(key);
-			}
-		}
-
-		#endregion
-
-		#region Gamepads
-
-		var gamepads = joystickStates.Where(gp => gp is not null);
+		var gamepads = states.Where(gp => gp is not null);
 		if (gamepads.Count() > 0)
 		{
 			Debug.LogList(gamepads);
 		}
 
-		_oldGamepadStates = _currentGamepadStates;
-		_currentGamepadStates.Clear();
+		_oldGamepadStates = _currentJoystickStates;
+		_currentJoystickStates.Clear();
 
-		foreach (var gamepad in joystickStates)
+		foreach (var joystick in states)
 		{
 			var state = new JoyState();
 
-			if (gamepad is null)
+			if (joystick is null)
 			{
-				_currentGamepadStates.Add(state);
+				_currentJoystickStates.Add(state);
 				continue;
 			}
 
-			state.name = gamepad.Name;
-			state.id = gamepad.Id;
+			state.name = joystick.Name;
+			state.id = joystick.Id;
 
 			// Axis
-			for (int i = 0; i < gamepad.AxisCount; i++)
+			for (int i = 0; i < joystick.AxisCount; i++)
 			{
-				state.axes.Add(gamepad.GetAxis(i));
+				state.axes.Add(joystick.GetAxis(i));
 			}
 
 			// Buttons
-			for (int i = 0; i < gamepad.ButtonCount; i++)
+			for (int i = 0; i < joystick.ButtonCount; i++)
 			{
-				if (gamepad.IsButtonDown(i))
+				if (joystick.IsButtonDown(i))
 				{
 					state.buttons.Add(i);
 				}
 			}
 
 			// Hats
-			for (int i = 0; i < gamepad.HatCount; i++)
+			for (int i = 0; i < joystick.HatCount; i++)
 			{
-				state.hats.Add(gamepad.GetHat(i));
+				state.hats.Add(joystick.GetHat(i));
 			}
 
-			_currentGamepadStates.Add(state);
+			_currentJoystickStates.Add(state);
 		}
-
-		#endregion
-	}
-
-	internal static void OnTextInput(TextInputEventArgs e)
-	{
-		textInput = e.AsString ?? "";
 	}
 
 	internal static void OnJoystickConnected(JoystickEventArgs e)
@@ -107,13 +153,15 @@ public static class Input
 		if (e.IsConnected)
 		{
 			// Connected
-			Debug.Log($"Gamepad #{e.JoystickId} connected");
+			Debug.Log($"Joystick #{e.JoystickId} connected");
 
 			return;
 		}
 
-		Debug.Log($"Gamepad #{e.JoystickId} disconnected");
+		Debug.Log($"Joystick #{e.JoystickId} disconnected");
 
 		// Disconnected
 	}
+
+	#endregion Joystick & Gamepad
 }
