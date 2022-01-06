@@ -64,12 +64,17 @@ public static class Input
 
 	public static bool IsButtonPressed(Button button, int controllerIndex = 0)
 	{
-		return _currentButtonsDown.Contains(button) && !_currentButtonsDown.Contains(button);
+		return _currentButtonsDown.Contains(button) && !_oldButtonsDown.Contains(button);
 	}
 
 	public static bool IsButtonReleased(Button button, int controllerIndex = 0)
 	{
-		return !_currentButtonsDown.Contains(button) && _currentButtonsDown.Contains(button);
+		return !_currentButtonsDown.Contains(button) && _oldButtonsDown.Contains(button);
+	}
+
+	internal static void LoadInput()
+	{
+		Debug.LogList(_currentButtonsDown);
 	}
 
 	#region Keyboard
@@ -77,7 +82,7 @@ public static class Input
 	internal static void ClearInputs()
 	{
 		_oldButtonsDown = _currentButtonsDown;
-		_oldButtonsDown = new();
+		_currentButtonsDown = new();
 		_keysPressed.Clear();
 	}
 
@@ -224,8 +229,10 @@ public static class Input
 	{
 		if (e.IsConnected)
 		{
+			var uuid = GLFW.GetJoystickGUID(e.JoystickId);
+			var mapping = _controllerMappingDatabase[Engine.operatingSystemName][uuid];
 			// Connected
-			Debug.Log($"Joystick #{e.JoystickId} connected");
+			Debug.Log($"Joystick #{e.JoystickId} connected {mapping.name}#{uuid}");
 
 			return;
 		}

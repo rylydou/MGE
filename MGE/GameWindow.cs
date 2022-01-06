@@ -84,11 +84,12 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Input.ClearInputs();
 		Input.UpdateKeyboard(KeyboardState);
 		Input.UpdateMouse(MouseState);
+		// Input.LoadInput();
 		// Input.UpdateJoysticks(JoystickStates);
 
 		var alt = Input.IsButtonDown(Button.KB_RightAlt) || Input.IsButtonDown(Button.KB_RightAlt);
 
-		if (Input.IsButtonPressed(Button.KB_Space) || (alt && Input.IsButtonPressed(Button.KB_Enter)))
+		if (Input.IsButtonPressed(Button.KB_F11) || (alt && Input.IsButtonPressed(Button.KB_Enter)))
 		{
 			if (WindowState == WindowState.Fullscreen)
 			{
