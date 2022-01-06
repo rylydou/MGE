@@ -115,8 +115,20 @@ public static class Input
 
 	#region Mouse
 
+	public static Vector2 mousePosition;
+	public static Vector2 mousePositionDelta;
+
+	public static Vector2 mouseScroll;
+	public static Vector2 mouseScrollRaw;
+
 	internal static void UpdateMouse(MouseState state)
 	{
+		mousePosition = state.Position;
+		mousePositionDelta = state.Position - state.PreviousPosition;
+
+		mouseScroll = state.ScrollDelta;
+		mouseScrollRaw = state.Scroll;
+
 		foreach (var button in Enum.GetValues<MouseButton>())
 		{
 			if (button < 0) continue;
@@ -227,19 +239,19 @@ public static class Input
 
 	internal static void OnJoystickConnected(JoystickEventArgs e)
 	{
+		var name = GLFW.GetJoystickName(e.JoystickId);
+		var uuid = GLFW.GetJoystickGUID(e.JoystickId);
+
 		if (e.IsConnected)
 		{
-			var uuid = GLFW.GetJoystickGUID(e.JoystickId);
-			var mapping = _controllerMappingDatabase[Engine.operatingSystemName][uuid];
-			// Connected
-			Debug.Log($"Joystick #{e.JoystickId} connected {mapping.name}#{uuid}");
+			var hasMapping = _controllerMappingDatabase[Engine.operatingSystemName].TryGetValue(uuid, out var mapping);
+
+			Debug.Log($"{name}({uuid}) connected at {e.JoystickId} with{(hasMapping ? "" : "out")} a mapping");
 
 			return;
 		}
 
-		Debug.Log($"Joystick #{e.JoystickId} disconnected");
-
-		// Disconnected
+		Debug.Log($"{name}({uuid}) disconnected at {e.JoystickId}");
 	}
 
 	#endregion Controller
