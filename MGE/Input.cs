@@ -24,7 +24,7 @@ public static class Input
 
 			var segments = data.Split(',', System.StringSplitOptions.RemoveEmptyEntries);
 
-			mapping = new(new(segments[0]), segments[1], segments.Last().Remove(0, 9));
+			mapping = new(segments[0], segments[1], segments.Last().Remove(0, 9));
 
 			for (int i = 0; i < segments.Length - 2; i++)
 			{
@@ -35,13 +35,13 @@ public static class Input
 			return true;
 		}
 
-		public Guid uuid;
+		public string uuid;
 		public string name;
 		public string platform;
 
 		public Dictionary<string, string> mappings = new();
 
-		public ControllerMapping(Guid uuid, string name, string platform)
+		public ControllerMapping(string uuid, string name, string platform)
 		{
 			this.uuid = uuid;
 			this.name = name;
@@ -127,11 +127,11 @@ public static class Input
 
 	#region Controllers
 
-	static Dictionary<string, Dictionary<Guid, ControllerMapping>> _controllerMappingDatabase = new();
+	static Dictionary<string, Dictionary<string, ControllerMapping>> _controllerMappingDatabase = new();
 
 	public static void InitControllers()
 	{
-		Debug.StartTimer("Load Mappings");
+		Debug.StartStopwatch("Load controller mappings");
 
 		using var mappingData = Folder.assets.GetFile("Mappings.csv").OpenReadText();
 
@@ -155,7 +155,7 @@ public static class Input
 			}
 		}
 
-		Debug.EndTimer();
+		Debug.EndStopwatch();
 	}
 
 	class JoyState

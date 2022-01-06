@@ -66,14 +66,14 @@ public static class Debug
 
 	static Stack<(string name, Stopwatch stopwatch)> _timerStack = new();
 
-	public static void StartTimer(string name)
+	public static void StartStopwatch(string name)
 	{
 		var stopwatch = new Stopwatch();
 		stopwatch.Start();
 		_timerStack.Push((name, stopwatch));
 	}
 
-	public static void EndTimer()
+	public static void EndStopwatch()
 	{
 		var (name, stopwatch) = _timerStack.Pop();
 		stopwatch.Stop();
@@ -81,10 +81,15 @@ public static class Debug
 		Trace.Write("⏱ ");
 		Trace.Write(name);
 		Trace.Write(": ");
-		Trace.Write(stopwatch.Elapsed.ToString(@"s\.ffff"));
-		Trace.Write(" (");
-		Trace.Write(stopwatch.ElapsedMilliseconds);
-		Trace.WriteLine("ms)");
+		if (stopwatch.ElapsedMilliseconds >= 10000) // After 10 seconds write the time in seconds
+		{
+			Trace.WriteLine(stopwatch.Elapsed.ToString(@"s\.ffff"));
+		}
+		else
+		{
+			Trace.Write(stopwatch.ElapsedMilliseconds);
+			Trace.WriteLine("ms");
+		}
 	}
 
 	#endregion Timer

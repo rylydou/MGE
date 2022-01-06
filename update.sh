@@ -7,4 +7,4 @@
 # 	wget $2 -O - >>$1
 # }
 
-wget https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb.txt -O MGE/Assets/Mappings.csv
+wget https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb.txt -qO MGE/Assets/Mappings.csv
