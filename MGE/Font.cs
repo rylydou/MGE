@@ -45,7 +45,6 @@ public class Font
 			var realPos = new Vector2(pos.X - origin.X * scale.X, pos.Y - (src.Value.Height - origin.Y) * scale.Y);
 			var destRect = new Rect(realPos, src.Value.Width * scale.X, src.Value.Height * scale.Y);
 
-			// Debug.Log($"dest:{destRect}\tsrc:{(RectInt)src.Value}");
 			// GFX.DrawRect(destRect, ((Color)color).inverted.WithAlpha(1f / 3));
 
 			GFX.DrawTextureRegionAtDest(texture, src.Value, destRect, color);

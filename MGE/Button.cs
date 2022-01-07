@@ -180,6 +180,9 @@ public enum Button
 	GP_LT = 374,
 	GP_RT = 375,
 
+	GP_LSB = 376,
+	GP_RSB = 377,
+
 	GP_Any = 400,
 
 	#endregion Gamepad

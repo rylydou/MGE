@@ -3,7 +3,6 @@ using MGE.Graphics;
 using MGE.Nodes;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
-using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace MGE;
 
@@ -84,7 +83,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Input.ClearInputs();
 		Input.UpdateKeyboard(KeyboardState);
 		Input.UpdateMouse(MouseState);
-		// Input.LoadInput();
 		// Input.UpdateJoysticks(JoystickStates);
 
 		var alt = Input.IsButtonDown(Button.KB_RightAlt) || Input.IsButtonDown(Button.KB_RightAlt);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -49,13 +50,8 @@ public static class Input
 		}
 	}
 
-
-	public static string textInput = "";
-
 	static List<Button> _currentButtonsDown = new();
 	static List<Button> _oldButtonsDown = new();
-
-	static List<Button> _keysPressed = new();
 
 	public static bool IsButtonDown(Button button, int controllerIndex = 0)
 	{
@@ -72,18 +68,22 @@ public static class Input
 		return !_currentButtonsDown.Contains(button) && _oldButtonsDown.Contains(button);
 	}
 
-	internal static void LoadInput()
+	static List<Button> _buttonsEntered = new();
+
+	public static bool IsButtonEntered(Button button, int controllerIndex = 0)
 	{
-		Debug.LogList(_currentButtonsDown);
+		return _buttonsEntered.Contains(button);
 	}
 
 	#region Keyboard
+
+	public static string textInput = "";
 
 	internal static void ClearInputs()
 	{
 		_oldButtonsDown = _currentButtonsDown;
 		_currentButtonsDown = new();
-		_keysPressed.Clear();
+		_buttonsEntered.Clear();
 	}
 
 	internal static void UpdateKeyboard(KeyboardState state)
@@ -101,7 +101,7 @@ public static class Input
 
 	internal static void OnKeyDown(KeyboardKeyEventArgs e)
 	{
-		_keysPressed.Add((Button)e.Key);
+		_buttonsEntered.Add((Button)e.Key);
 	}
 
 	internal static void OnKeyUp(KeyboardKeyEventArgs e) { }
@@ -144,96 +144,34 @@ public static class Input
 
 	#region Controllers
 
-	static Dictionary<string, Dictionary<string, ControllerMapping>> _controllerMappingDatabase = new();
-
-	public static void InitControllers()
-	{
-		Debug.StartStopwatch("Load controller mappings");
-
-		using var mappingData = Folder.assets.GetFile("Mappings.csv").OpenReadText();
-
-		_controllerMappingDatabase.Clear();
-		_controllerMappingDatabase.Add("Windows", new());
-		_controllerMappingDatabase.Add("Mac OS X", new());
-		_controllerMappingDatabase.Add("Linux", new());
-
-		while (true)
-		{
-			if (mappingData.EndOfStream) break;
-
-			var line = mappingData.ReadLine();
-
-			if (string.IsNullOrWhiteSpace(line)) continue; // Ignore empty lines
-			if (line.StartsWith("#")) continue; // Ignore comments
-
-			if (ControllerMapping.TryLoad(line, out var mapping))
-			{
-				_controllerMappingDatabase[mapping.platform].Add(mapping.uuid, mapping);
-			}
-		}
-
-		Debug.EndStopwatch();
-	}
-
 	class JoyState
 	{
-		public string name = "Unknown";
-		public int id;
+		public List<Button> buttons = new();
 
-		public List<float> axes = new();
-		public List<int> buttons = new();
-		public List<Hat> hats = new();
+		public Vector2 leftStick;
+		public Vector2 rightStick;
 	}
 
-	static List<JoyState> _currentJoystickStates = new();
-	static List<JoyState> _oldGamepadStates = new();
+	static JoyState[] _joyStates = new JoyState[16];
 
 	internal static void UpdateJoysticks(IReadOnlyList<JoystickState> states)
 	{
-		var gamepads = states.Where(gp => gp is not null);
-		if (gamepads.Count() > 0)
+		foreach (var joyState in states)
 		{
-			Debug.LogList(gamepads);
-		}
+			if (joyState is null) continue;
 
-		_oldGamepadStates = _currentJoystickStates;
-		_currentJoystickStates.Clear();
-
-		foreach (var joystick in states)
-		{
-			var state = new JoyState();
-
-			if (joystick is null)
+			if (!GLFW.GetGamepadState(joyState.Id, out var gamepadState))
 			{
-				_currentJoystickStates.Add(state);
-				continue;
+				Debug.Log($"{joyState.Name} at {joyState.Id} does not have a mapping");
+				return;
 			}
 
-			state.name = joystick.Name;
-			state.id = joystick.Id;
-
-			// Axis
-			for (int i = 0; i < joystick.AxisCount; i++)
+			unsafe
 			{
-				state.axes.Add(joystick.GetAxis(i));
-			}
+				var axes = Create<float>(gamepadState.Axes, 6);
 
-			// Buttons
-			for (int i = 0; i < joystick.ButtonCount; i++)
-			{
-				if (joystick.IsButtonDown(i))
-				{
-					state.buttons.Add(i);
-				}
+				Debug.Log(axes);
 			}
-
-			// Hats
-			for (int i = 0; i < joystick.HatCount; i++)
-			{
-				state.hats.Add(joystick.GetHat(i));
-			}
-
-			_currentJoystickStates.Add(state);
 		}
 	}
 
@@ -246,12 +184,28 @@ public static class Input
 		{
 			var hasMapping = _controllerMappingDatabase[Engine.operatingSystemName].TryGetValue(uuid, out var mapping);
 
-			Debug.Log($"{name}({uuid}) connected at {e.JoystickId} with{(hasMapping ? "" : "out")} a mapping");
+			Debug.Log($"\"{name}\"(#{uuid}) connected at {e.JoystickId} with{(hasMapping ? "" : "out")} a mapping");
 
 			return;
 		}
 
-		Debug.Log($"{name}({uuid}) disconnected at {e.JoystickId}");
+		Debug.Log($"\"{name}\"(#{uuid}) disconnected at {e.JoystickId}");
+	}
+
+	internal static void RegisterJoystick(int jid)
+	{
+	}
+
+	public unsafe static T[] Create<T>(void* ptr, int length) where T : struct
+	{
+		T[] array = new T[length];
+
+		for (int i = 0; i < length; i++)
+		{
+			array[i] = (T)Marshal.PtrToStructure(new IntPtr(ptr), typeof(T))!;
+		}
+
+		return array;
 	}
 
 	#endregion Controller
