@@ -9,22 +9,19 @@ namespace MGE;
 
 public static class Input
 {
-	static List<Button> _currentButtonsDown = new();
-	static List<Button> _oldButtonsDown = new();
-
 	public static bool IsButtonDown(Button button, int controllerIndex = 0)
 	{
-		return _currentButtonsDown.Contains(button);
+		return _currentKeysDown.Contains(button);
 	}
 
 	public static bool IsButtonPressed(Button button, int controllerIndex = 0)
 	{
-		return _currentButtonsDown.Contains(button) && !_oldButtonsDown.Contains(button);
+		return _currentKeysDown.Contains(button) && !_lastKeysDown.Contains(button);
 	}
 
 	public static bool IsButtonReleased(Button button, int controllerIndex = 0)
 	{
-		return !_currentButtonsDown.Contains(button) && _oldButtonsDown.Contains(button);
+		return !_currentKeysDown.Contains(button) && _lastKeysDown.Contains(button);
 	}
 
 	static List<Button> _buttonsEntered = new();
@@ -43,22 +40,22 @@ public static class Input
 
 	public static string textInput = "";
 
-	internal static void ClearInputs()
-	{
-		_oldButtonsDown = _currentButtonsDown;
-		_currentButtonsDown = new();
-		_buttonsEntered.Clear();
-	}
+	static List<Button> _currentKeysDown = new();
+	static List<Button> _lastKeysDown = new();
 
 	internal static void UpdateKeyboard(KeyboardState state)
 	{
+		_lastKeysDown = _currentKeysDown;
+		_currentKeysDown = new();
+		_buttonsEntered.Clear();
+
 		foreach (var key in Enum.GetValues<Keys>())
 		{
 			if (key < 0) continue;
 
 			if (state.IsKeyDown(key))
 			{
-				_currentButtonsDown.Add((Button)(int)key);
+				_currentKeysDown.Add((Button)(int)key);
 			}
 		}
 	}
@@ -75,6 +72,12 @@ public static class Input
 		textInput = e.AsString ?? "";
 	}
 
+	public static void GetKeysDown() => _currentKeysDown.ToArray();
+	public static void GetKeysPressed()
+	{
+
+	}
+
 	#endregion Keyboard
 
 	#region Mouse
@@ -85,6 +88,9 @@ public static class Input
 	public static Vector2 mouseScroll;
 	public static Vector2 mouseScrollRaw;
 
+	static List<MouseButton> _currentMouseButtonsDown = new();
+	static List<MouseButton> _lastMouseButtonsDown = new();
+
 	internal static void UpdateMouse(MouseState state)
 	{
 		mousePosition = state.Position;
@@ -93,13 +99,16 @@ public static class Input
 		mouseScroll = state.ScrollDelta;
 		mouseScrollRaw = state.Scroll;
 
+		_lastMouseButtonsDown = _currentMouseButtonsDown;
+		_currentMouseButtonsDown = new();
+
 		foreach (var button in Enum.GetValues<MouseButton>())
 		{
 			if (button < 0) continue;
 
 			if (state.IsButtonDown(button))
 			{
-				_currentButtonsDown.Add((Button)button);
+				_currentMouseButtonsDown.Add(button);
 			}
 		}
 	}

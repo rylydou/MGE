@@ -1,11 +1,11 @@
 namespace MGE;
 
-public enum Button
+public enum Button : ushort
 {
 	/// <summary> No Key pressed </summary>
 	None = 0,
 
-	// Offset: 0 ~ 32, Any: 250
+	// Offset: 0 ~ 32, Any: 999
 
 	#region Keyboard
 
@@ -138,52 +138,57 @@ public enum Button
 	KB_RightSuper = 347,
 	KB_Menu = 348,
 
-	KB_Any = 350,
+	KB_Any = 999,
 
 	#endregion Keyboard
 
-	// Offset: 351, Any: 360
+	// Offset: 1000, Any: 1999
 	#region Mouse
 
-	Mouse_Left = 351,
-	Mouse_Right = 352,
-	Mouse_Middle = 353,
-	Mouse_Button4 = 354,
-	Mouse_Button5 = 355,
-	Mouse_Button6 = 356,
-	Mouse_Button7 = 357,
-	Mouse_Button8 = 358,
+	Mouse_Left = 1000,
+	Mouse_Right = 1001,
+	Mouse_Middle = 1002,
+	Mouse_Button4 = 1003,
+	Mouse_Button5 = 1004,
+	Mouse_Button6 = 1005,
+	Mouse_Button7 = 1006,
+	Mouse_Button8 = 1007,
 
-	Mouse_Any = 360,
+	Mouse_Any = 1999,
 
 	#endregion Mouse
 
-	// Offset: 361, Any: 400
+	// Offset: 2000, Any: 2999
 	#region Gamepad
 
-	GP_Home = 361,
-	GP_Start = 362,
-	GP_Select = 363,
+	GP_A = 2000,
+	GP_B = 2001,
+	GP_X = 2002,
+	GP_Y = 2003,
 
-	GP_North = 364,
-	GP_South = 365,
-	GP_East = 366,
-	GP_West = 367,
+	GP_LB = 2004,
+	GP_RB = 2005,
 
-	GP_DPad_Up = 368,
-	GP_DPad_Down = 369,
-	GP_DPad_Left = 370,
-	GP_DPad_Right = 371,
+	GP_Select = 2006,
+	GP_Start = 2007,
+	GP_Home = 2008,
 
-	GP_LB = 372,
-	GP_RB = 373,
-	GP_LT = 374,
-	GP_RT = 375,
+	GP_LSB = 2009,
+	GP_RSB = 2010,
 
-	GP_LSB = 376,
-	GP_RSB = 377,
+	GP_Up = 2011,
+	GP_Right = 2012,
+	GP_Down = 2013,
+	GP_Left = 2014,
 
-	GP_Any = 400,
+	#region Fake Buttons
+
+	GP_LT = 2015,
+	GP_RT = 2016,
+
+	#endregion Fake Buttons
+
+	GP_Any = 2999,
 
 	#endregion Gamepad
 }

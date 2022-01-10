@@ -411,14 +411,14 @@ public class UIWidget
 		{
 			if (_desktop is not null && value is null)
 			{
-				if (_desktop.FocusedKeyboardWidget == this)
+				if (_desktop.focusedWidget == this)
 				{
-					_desktop.FocusedKeyboardWidget = null;
+					_desktop.focusedWidget = null;
 				}
 
-				if (_desktop.MouseInsideWidget == this)
+				if (_desktop.mouseInsideWidget == this)
 				{
-					_desktop.MouseInsideWidget = null;
+					_desktop.mouseInsideWidget = null;
 				}
 			}
 
@@ -515,9 +515,9 @@ public class UIWidget
 		set
 		{
 			_isMouseInside = value;
-			if (Desktop is not null && Desktop.MouseInsideWidget == this)
+			if (Desktop is not null && Desktop.mouseInsideWidget == this)
 			{
-				Desktop.MouseInsideWidget = null;
+				Desktop.mouseInsideWidget = null;
 			}
 		}
 	}
@@ -540,9 +540,9 @@ public class UIWidget
 
 	internal RectInt BorderBounds { get => _bounds - _margin; }
 
-	internal bool ContainsMouse { get => Desktop is not null && BorderBounds.Contains(Desktop.MousePosition); }
+	internal bool ContainsMouse { get => Desktop is not null && BorderBounds.Contains(Desktop.mousePosition); }
 
-	internal bool ContainsTouch { get => Desktop is not null && BorderBounds.Contains(Desktop.TouchPosition); }
+	internal bool ContainsTouch { get => Desktop is not null && BorderBounds.Contains(Desktop.touchPosition); }
 
 	protected RectInt BackgroundBounds { get => BorderBounds - _borderThickness; }
 
@@ -567,7 +567,7 @@ public class UIWidget
 	/// </summary>
 	[Browsable(false)]
 	[XmlIgnore]
-	public bool AcceptsKeyboardFocus { get; set; }
+	public bool AcceptsKeyboardFocus { get; set; } = true;
 
 	[Browsable(false)]
 	[XmlIgnore]
@@ -588,32 +588,32 @@ public class UIWidget
 
 	protected virtual bool UseHoverRenderable { get => IsMouseInside && Active; }
 
-	public Action PlacedChanged = () => { };
-	public Action VisibleChanged = () => { };
-	public Action EnabledChanged = () => { };
+	// public Action PlacedChanged = () => { };
+	// public Action VisibleChanged = () => { };
+	// public Action EnabledChanged = () => { };
 
-	public Action LocationChanged = () => { };
-	public Action SizeChanged = () => { };
-	public Action LayoutUpdated = () => { };
+	// public Action LocationChanged = () => { };
+	// public Action SizeChanged = () => { };
+	// public Action LayoutUpdated = () => { };
 
-	public Action MouseLeft = () => { };
-	public Action MouseEntered = () => { };
-	public Action MouseMoved = () => { };
+	// public Action MouseLeft = () => { };
+	// public Action MouseEntered = () => { };
+	// public Action MouseMoved = () => { };
 
-	public Action TouchLeft = () => { };
-	public Action TouchEntered = () => { };
-	public Action TouchMoved = () => { };
-	public Action TouchDown = () => { };
-	public Action TouchUp = () => { };
-	public Action TouchDoubleClick = () => { };
+	// public Action TouchLeft = () => { };
+	// public Action TouchEntered = () => { };
+	// public Action TouchMoved = () => { };
+	// public Action TouchDown = () => { };
+	// public Action TouchUp = () => { };
+	// public Action TouchDoubleClick = () => { };
 
-	public Action KeyboardFocusChanged = () => { };
+	// public Action KeyboardFocusChanged = () => { };
 
-	public Action<float> MouseWheelChanged = (delta) => { };
+	// public Action<float> MouseWheelChanged = (delta) => { };
 
-	public Action<Button> KeyUp = (keys) => { };
-	public Action<Button> KeyDown = (keys) => { };
-	public Action<Button> Char = (keys) => { };
+	// public Action<Button> KeyUp = (keys) => { };
+	// public Action<Button> KeyDown = (keys) => { };
+	// public Action<Button> Char = (keys) => { };
 
 	[Browsable(false)]
 	[XmlIgnore]
@@ -673,7 +673,7 @@ public class UIWidget
 	{
 		if (Parent is not null && !(Parent is UIIMultipleItemsContainer)) return;
 
-		var widgets = (Parent as UIIMultipleItemsContainer)?.Widgets ?? Desktop!.Widgets;
+		var widgets = (Parent as UIIMultipleItemsContainer)?.Widgets ?? Desktop!.widgets;
 
 		if (widgets[widgets.Count - 1] == this) return;
 
@@ -685,7 +685,7 @@ public class UIWidget
 	{
 		if (Parent is not null && !(Parent is UIIMultipleItemsContainer)) return;
 
-		var widgets = (Parent as UIIMultipleItemsContainer)?.Widgets ?? Desktop!.Widgets;
+		var widgets = (Parent as UIIMultipleItemsContainer)?.Widgets ?? Desktop!.widgets;
 
 		if (widgets[widgets.Count - 1] == this) return;
 
@@ -776,9 +776,9 @@ public class UIWidget
 		}
 	}
 
-	public virtual void InternalRender(UIRenderContext context)
-	{
-	}
+	public virtual void InternalRender(UIRenderContext context) { }
+
+	#region Layout
 
 	public Vector2Int Measure(Vector2Int availableSize)
 	{
@@ -1001,10 +1001,41 @@ public class UIWidget
 		}
 		else
 		{
-			RelativeRight = Left + Desktop!.InternalBounds.width - Bounds.x;
-			RelativeBottom = Top + Desktop!.InternalBounds.height - Bounds.y;
+			RelativeRight = Left + Desktop!.internalBounds.width - Bounds.x;
+			RelativeBottom = Top + Desktop!.internalBounds.height - Bounds.y;
 		}
 	}
+
+	public virtual void InvalidateMeasure()
+	{
+		_measureDirty = true;
+
+		InvalidateLayout();
+
+		if (Parent is not null)
+		{
+			Parent.InvalidateMeasure();
+		}
+		else if (Desktop is not null)
+		{
+			Desktop.InvalidateLayout();
+		}
+	}
+
+	internal RectInt CalculateClientBounds(RectInt clientBounds) => clientBounds - Margin - BorderThickness - Padding;
+
+	void ConstrainToBounds(ref int newLeft, ref int newTop)
+	{
+		if (newLeft < RelativeLeft) newLeft = RelativeLeft;
+		if (newTop < RelativeTop) newTop = RelativeTop;
+
+		if (newTop + Bounds.height > RelativeBottom) newTop = RelativeBottom - Bounds.height;
+		if (newLeft + Bounds.width > RelativeRight) newLeft = RelativeRight - Bounds.width;
+	}
+
+	#endregion Layout
+
+	#region Hierarchy Management
 
 	UIWidget? FindWidgetBy(Func<UIWidget, bool> finder)
 	{
@@ -1057,21 +1088,17 @@ public class UIWidget
 		return result;
 	}
 
-	public virtual void InvalidateMeasure()
+	public void RemoveFromParent()
 	{
-		_measureDirty = true;
-
-		InvalidateLayout();
-
-		if (Parent is not null)
-		{
-			Parent.InvalidateMeasure();
-		}
-		else if (Desktop is not null)
-		{
-			Desktop.InvalidateLayout();
-		}
+		if (Parent is null) return;
+		Parent.RemoveChild(this);
 	}
+
+	public void RemoveFromDesktop() => Desktop!.widgets.Remove(this);
+
+	#endregion Hierarchy Management
+
+	#region Styling
 
 	public void ApplyWidgetStyle(WidgetStyle style)
 	{
@@ -1111,24 +1138,28 @@ public class UIWidget
 
 	protected virtual void InternalSetStyle(Stylesheet stylesheet, string name) { }
 
+	#endregion Styling
+
+	#region Mouse Input
+
 	public virtual void OnMouseLeft()
 	{
 		IsMouseInside = false;
-		MouseLeft();
+		// MouseLeft();
 	}
 
 	public virtual void OnMouseEntered()
 	{
 		IsMouseInside = true;
-		Desktop!.MouseInsideWidget = this;
-		MouseEntered();
+		Desktop!.mouseInsideWidget = this;
+		// MouseEntered();
 	}
 
 	public virtual void OnMouseMoved()
 	{
 		IsMouseInside = true;
-		Desktop!.MouseInsideWidget = this;
-		MouseMoved();
+		Desktop!.mouseInsideWidget = this;
+		// MouseMoved();
 	}
 
 	public virtual void OnTouchDoubleClick() => TouchDoubleClick();
@@ -1138,28 +1169,28 @@ public class UIWidget
 	public virtual void OnTouchLeft()
 	{
 		IsTouchInside = false;
-		TouchLeft();
+		// TouchLeft();
 	}
 
 	public virtual void OnTouchEntered()
 	{
 		IsTouchInside = true;
-		TouchEntered();
+		// TouchEntered();
 	}
 
 	public virtual void OnTouchMoved()
 	{
 		IsTouchInside = true;
-		TouchMoved();
+		// TouchMoved();
 	}
 
 	public virtual void OnTouchDown()
 	{
 		IsTouchInside = true;
 
-		if (Enabled && AcceptsKeyboardFocus)
+		if (Enabled)
 		{
-			Desktop!.FocusedKeyboardWidget = this;
+			Desktop!.focusedWidget = this;
 		}
 
 		var x = Bounds.x;
@@ -1167,60 +1198,22 @@ public class UIWidget
 
 		var bounds = DragHandle is not null ? new RectInt(x, y, DragHandle.Bounds.right - x, DragHandle.Bounds.bottom - y) : RectInt.zero;
 
-		var touchPos = Desktop!.TouchPosition;
+		var touchPos = Desktop!.touchPosition;
 
 		if (bounds == RectInt.zero || bounds.Contains(touchPos))
 		{
 			_startPos = new(touchPos.x - Left, touchPos.y - Top);
 		}
 
-		TouchDown();
+		// TouchDown();
 	}
 
 	public virtual void OnTouchUp()
 	{
 		_startPos = null;
 		IsTouchInside = false;
-		TouchUp();
+		// TouchUp();
 	}
-
-	protected void FireKeyDown(Button k) => KeyDown(k);
-
-	public virtual void OnKeyDown(Button k) => FireKeyDown(k);
-
-	public virtual void OnKeyUp(Button k) => KeyUp(k);
-
-	public virtual void OnChar(char c) => Char(c);
-
-	protected virtual void OnPlacedChanged() => PlacedChanged();
-
-	public virtual void OnVisibleChanged()
-	{
-		InvalidateMeasure();
-		VisibleChanged();
-	}
-
-	public virtual void OnLostKeyboardFocus() => IsKeyboardFocused = false;
-
-	public virtual void OnGotKeyboardFocus() => IsKeyboardFocused = true;
-
-	protected internal virtual void OnActiveChanged() { }
-
-	internal RectInt CalculateClientBounds(RectInt clientBounds) => clientBounds - Margin - BorderThickness - Padding;
-
-	public void RemoveFromParent()
-	{
-		if (Parent is null) return;
-		Parent.RemoveChild(this);
-	}
-
-	public void RemoveFromDesktop() => Desktop!.Widgets.Remove(this);
-
-	void FireLocationChanged() => LocationChanged();
-
-	void FireSizeChanged() => SizeChanged();
-
-	public void SetKeyboardFocus() => Desktop!.FocusedKeyboardWidget = this;
 
 	void SubscribeOnTouchMoved(bool subscribe)
 	{
@@ -1254,7 +1247,7 @@ public class UIWidget
 	{
 		if (_startPos is null || !IsDraggable) return;
 
-		var position = new Vector2Int(Desktop!.TouchPosition.x - _startPos.Value.x, Desktop!.TouchPosition.y - _startPos.Value.y);
+		var position = new Vector2Int(Desktop!.touchPosition.x - _startPos.Value.x, Desktop!.touchPosition.y - _startPos.Value.y);
 
 		var newLeft = Left;
 		var newTop = Top;
@@ -1269,14 +1262,93 @@ public class UIWidget
 		Top = newTop;
 	}
 
-	void ConstrainToBounds(ref int newLeft, ref int newTop)
-	{
-		if (newLeft < RelativeLeft) newLeft = RelativeLeft;
-		if (newTop < RelativeTop) newTop = RelativeTop;
+	void DesktopTouchUp() => _startPos = null;
 
-		if (newTop + Bounds.height > RelativeBottom) newTop = RelativeBottom - Bounds.height;
-		if (newLeft + Bounds.width > RelativeRight) newLeft = RelativeRight - Bounds.width;
+	public virtual bool TestPoint(Vector2Int point) => Bounds.Contains(point);
+
+	#endregion Mouse Input
+
+	#region Keyboard Input
+
+	internal void ButtonPressed(Button button)
+	{
+		if (!OnButtonPressed(button))
+		{
+			if (Parent is null) return;
+
+			Parent.ButtonDown(button);
+		}
 	}
 
-	void DesktopTouchUp() => _startPos = null;
+	protected virtual bool OnButtonPressed(Button button) => false;
+
+	internal void ButtonDown(Button button)
+	{
+		if (!OnButtonDown(button))
+		{
+			if (Parent is null) return;
+
+			Parent.ButtonDown(button);
+		}
+	}
+
+	protected virtual bool OnButtonDown(Button button) => false;
+
+	internal void ButtonReleased(Button button)
+	{
+		if (!OnButtonReleased(button))
+		{
+			if (Parent is null) return;
+
+			Parent.ButtonDown(button);
+		}
+	}
+
+	protected virtual bool OnButtonReleased(Button button) => false;
+
+	internal void ButtonEntered(Button button)
+	{
+		if (!OnButtonEntered(button))
+		{
+			if (Parent is null) return;
+
+			Parent.ButtonDown(button);
+		}
+	}
+
+	protected virtual bool OnButtonEntered(Button button) => false;
+
+	internal void TextInput(string textInput)
+	{
+		if (!OnTextInput(textInput))
+		{
+			if (Parent is null) return;
+
+			Parent.TextInput(textInput);
+		}
+	}
+
+	protected virtual bool OnTextInput(string textInput) => false;
+
+	public virtual void OnLostKeyboardFocus() => IsKeyboardFocused = false;
+
+	public virtual void OnGotKeyboardFocus() => IsKeyboardFocused = true;
+
+	public void SetKeyboardFocus() => Desktop!.focusedWidget = this;
+
+	#endregion Keyboard Input
+
+	protected virtual void OnPlacedChanged() => PlacedChanged();
+
+	public virtual void OnVisibleChanged()
+	{
+		InvalidateMeasure();
+		VisibleChanged();
+	}
+
+	protected internal virtual void OnActiveChanged() { }
+
+	void FireLocationChanged() => LocationChanged();
+
+	void FireSizeChanged() => SizeChanged();
 }

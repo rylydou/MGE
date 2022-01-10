@@ -41,7 +41,7 @@ internal static class UIInputHelpers
 			if (w.CommonTouchCheck())
 			{
 				// Since OnTouchDown may reset Desktop, we need to save break condition before calling it
-				var doBreak = w.Desktop is not null && !w.FallsThrough(w.Desktop.TouchPosition);
+				var doBreak = w.Desktop is not null && !w.FallsThrough(w.Desktop.touchPosition);
 				w.OnTouchDown();
 				if (doBreak) break;
 			}
@@ -72,7 +72,7 @@ internal static class UIInputHelpers
 			if (w.CommonTouchCheck())
 			{
 				w.OnTouchDoubleClick();
-				if (w.Desktop != null && !w.FallsThrough(w.Desktop.TouchPosition)) break;
+				if (w.Desktop != null && !w.FallsThrough(w.Desktop.touchPosition)) break;
 			}
 
 			if (w.IsModal) break;
@@ -111,7 +111,7 @@ internal static class UIInputHelpers
 					w.OnMouseMoved();
 				}
 
-				if (w.Desktop != null && !w.FallsThrough(w.Desktop.MousePosition)) break;
+				if (w.Desktop != null && !w.FallsThrough(w.Desktop.mousePosition)) break;
 			}
 
 			if (w.IsModal) break;
@@ -150,7 +150,7 @@ internal static class UIInputHelpers
 					w.OnTouchMoved();
 				}
 
-				if (w.Desktop != null && !w.FallsThrough(w.Desktop.TouchPosition)) break;
+				if (w.Desktop != null && !w.FallsThrough(w.Desktop.touchPosition)) break;
 			}
 
 			if (w.IsModal) break;
