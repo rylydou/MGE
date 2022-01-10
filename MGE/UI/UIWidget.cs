@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Reflection;
 using System.Xml.Serialization;
 
 namespace MGE.UI;
@@ -22,7 +23,7 @@ public enum UIDragDirection
 
 public class UIWidget
 {
-	private enum LayoutState
+	enum LayoutState
 	{
 		Normal,
 		LocationInvalid,
@@ -31,33 +32,33 @@ public class UIWidget
 
 	public string? Id;
 
-	private Vector2Int? _startPos;
-	private Thickness _margin, _borderThickness, _padding;
-	private int _left, _top;
-	private int? _minWidth, _minHeight, _maxWidth, _maxHeight, _width, _height;
-	private int _gridColumn, _gridRow, _gridColumnSpan = 1, _gridRowSpan = 1;
-	private int _zIndex;
-	private UIAlignment _horizontalAlignment = UIAlignment.Start;
-	private UIAlignment _verticalAlignment = UIAlignment.Start;
-	private LayoutState _layoutState = LayoutState.Invalid;
-	private bool _isModal = false;
-	private bool _measureDirty = true;
-	private bool _active = false;
-	private UIDesktop? _desktop;
+	Vector2Int? _startPos;
+	Thickness _margin, _borderThickness, _padding;
+	int _left, _top;
+	int? _minWidth, _minHeight, _maxWidth, _maxHeight, _width, _height;
+	int _gridColumn, _gridRow, _gridColumnSpan = 1, _gridRowSpan = 1;
+	int _zIndex;
+	UIAlignment _horizontalAlignment = UIAlignment.Start;
+	UIAlignment _verticalAlignment = UIAlignment.Start;
+	LayoutState _layoutState = LayoutState.Invalid;
+	bool _isModal = false;
+	bool _measureDirty = true;
+	bool _active = false;
+	UIDesktop? _desktop;
 
-	private Vector2Int _lastMeasureSize;
-	private Vector2Int _lastMeasureAvailableSize;
-	private Vector2Int _lastLocationHint;
+	Vector2Int _lastMeasureSize;
+	Vector2Int _lastMeasureAvailableSize;
+	Vector2Int _lastLocationHint;
 
-	private RectInt _containerBounds;
-	private RectInt _bounds;
-	private RectInt _actualBounds;
-	private bool _visible;
+	RectInt _containerBounds;
+	RectInt _bounds;
+	RectInt _actualBounds;
+	bool _visible;
 
-	private float _opacity = 1.0f;
+	float _opacity = 1.0f;
 
-	private bool _isMouseInside, _enabled;
-	private bool _isKeyboardFocused = false;
+	bool _isMouseInside, _enabled;
+	bool _isKeyboardFocused = false;
 
 	/// <summary>
 	/// Internal use only. (MyraPad)
@@ -377,19 +378,19 @@ public class UIWidget
 
 	[XmlIgnore]
 	[Browsable(false)]
-	private int RelativeLeft { get; set; }
+	int RelativeLeft { get; set; }
 
 	[XmlIgnore]
 	[Browsable(false)]
-	private int RelativeTop { get; set; }
+	int RelativeTop { get; set; }
 
 	[XmlIgnore]
 	[Browsable(false)]
-	private int RelativeRight { get; set; }
+	int RelativeRight { get; set; }
 
 	[XmlIgnore]
 	[Browsable(false)]
-	private int RelativeBottom { get; set; }
+	int RelativeBottom { get; set; }
 
 	/// <summary>
 	/// Determines whether the widget had been placed on UIDesktop
@@ -523,7 +524,7 @@ public class UIWidget
 
 	[Browsable(false)]
 	[XmlIgnore]
-	public bool IsTouchInside { get; private set; }
+	public bool IsTouchInside { get; set; }
 
 	[Browsable(false)]
 	[XmlIgnore]
@@ -610,9 +611,9 @@ public class UIWidget
 
 	public Action<float> MouseWheelChanged = (delta) => { };
 
-	public Action<Keys> KeyUp = (keys) => { };
-	public Action<Keys> KeyDown = (keys) => { };
-	public Action<Keys> Char = (keys) => { };
+	public Action<Button> KeyUp = (keys) => { };
+	public Action<Button> KeyDown = (keys) => { };
+	public Action<Button> Char = (keys) => { };
 
 	[Browsable(false)]
 	[XmlIgnore]
@@ -892,17 +893,13 @@ public class UIWidget
 
 	public virtual void UpdateLayout()
 	{
-		if (_layoutState == LayoutState.Normal)
-		{
-			return;
-		}
+		if (_layoutState == LayoutState.Normal) return;
 
 		if (_layoutState == LayoutState.Invalid)
 		{
 			// Full rearrange
 			Vector2Int size;
-			if (HorizontalAlignment != UIAlignment.Fill ||
-					VerticalAlignment != UIAlignment.Fill)
+			if (HorizontalAlignment != UIAlignment.Fill || VerticalAlignment != UIAlignment.Fill)
 			{
 				size = Measure(_containerBounds.size);
 			}
@@ -935,7 +932,7 @@ public class UIWidget
 			}
 
 			// Align
-			var controlBounds = LayoutUtils.Align(containerSize, size, VerticalAlignment, VerticalAlignment, Parent is null);
+			var controlBounds = AlignLayout(containerSize, size, VerticalAlignment, VerticalAlignment, Parent is null);
 			controlBounds.Offset(_containerBounds.position);
 
 			controlBounds.Offset(Left, Top);
@@ -956,10 +953,43 @@ public class UIWidget
 		_lastLocationHint = new(Left, Top);
 		_layoutState = LayoutState.Normal;
 
-		LayoutUpdated?.Invoke(this);
+		LayoutUpdated?.Invoke();
 	}
 
-	private void CalculateRelativePositions()
+	public static RectInt AlignLayout(Vector2Int containerSize, Vector2Int controlSize, UIAlignment horizontalAlignment, UIAlignment verticalAlignment, bool isTopLevel = false)
+	{
+		var result = new RectInt(controlSize);
+
+		switch (horizontalAlignment)
+		{
+			case UIAlignment.Center:
+				result.x = (containerSize.x - controlSize.x) / 2;
+				break;
+			case UIAlignment.End:
+				result.x = containerSize.x - controlSize.x;
+				break;
+			case UIAlignment.Fill:
+				result.width = containerSize.x;
+				break;
+		}
+
+		switch (verticalAlignment)
+		{
+			case UIAlignment.Center:
+				result.y = (containerSize.y - controlSize.y) / 2;
+				break;
+			case UIAlignment.End:
+				result.y = containerSize.y - controlSize.y;
+				break;
+			case UIAlignment.Fill:
+				result.height = containerSize.y;
+				break;
+		}
+
+		return result;
+	}
+
+	void CalculateRelativePositions()
 	{
 		RelativeLeft = Left - Bounds.x;
 		RelativeTop = Top - Bounds.y;
@@ -976,7 +1006,7 @@ public class UIWidget
 		}
 	}
 
-	private UIWidget? FindWidgetBy(Func<UIWidget, bool> finder)
+	UIWidget? FindWidgetBy(Func<UIWidget, bool> finder)
 	{
 		if (finder(this))
 		{
@@ -1154,11 +1184,11 @@ public class UIWidget
 		TouchUp();
 	}
 
-	protected void FireKeyDown(Keys k) => KeyDown(k);
+	protected void FireKeyDown(Button k) => KeyDown(k);
 
-	public virtual void OnKeyDown(Keys k) => FireKeyDown(k);
+	public virtual void OnKeyDown(Button k) => FireKeyDown(k);
 
-	public virtual void OnKeyUp(Keys k) => KeyUp(k);
+	public virtual void OnKeyUp(Button k) => KeyUp(k);
 
 	public virtual void OnChar(char c) => Char(c);
 
@@ -1186,13 +1216,13 @@ public class UIWidget
 
 	public void RemoveFromDesktop() => Desktop!.Widgets.Remove(this);
 
-	private void FireLocationChanged() => LocationChanged();
+	void FireLocationChanged() => LocationChanged();
 
-	private void FireSizeChanged() => SizeChanged();
+	void FireSizeChanged() => SizeChanged();
 
 	public void SetKeyboardFocus() => Desktop!.FocusedKeyboardWidget = this;
 
-	private void SubscribeOnTouchMoved(bool subscribe)
+	void SubscribeOnTouchMoved(bool subscribe)
 	{
 		if (Parent is not null)
 		{
@@ -1220,7 +1250,7 @@ public class UIWidget
 		}
 	}
 
-	private void DesktopOnTouchMoved()
+	void DesktopOnTouchMoved()
 	{
 		if (_startPos is null || !IsDraggable) return;
 
@@ -1239,7 +1269,7 @@ public class UIWidget
 		Top = newTop;
 	}
 
-	private void ConstrainToBounds(ref int newLeft, ref int newTop)
+	void ConstrainToBounds(ref int newLeft, ref int newTop)
 	{
 		if (newLeft < RelativeLeft) newLeft = RelativeLeft;
 		if (newTop < RelativeTop) newTop = RelativeTop;
@@ -1248,5 +1278,5 @@ public class UIWidget
 		if (newLeft + Bounds.width > RelativeRight) newLeft = RelativeRight - Bounds.width;
 	}
 
-	private void DesktopTouchUp() => _startPos = null;
+	void DesktopTouchUp() => _startPos = null;
 }

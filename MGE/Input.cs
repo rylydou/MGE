@@ -1,55 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using OpenTK.Windowing.Common;
-using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace MGE;
 
 public static class Input
 {
-	class ControllerMapping
-	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryLoad(string data, [MaybeNullWhen(false)] out ControllerMapping mapping)
-		{
-			if (data.EndsWith("iOS,") || data.EndsWith("Android,"))
-			{
-				mapping = null;
-				return false;
-			}
-
-			var segments = data.Split(',', System.StringSplitOptions.RemoveEmptyEntries);
-
-			mapping = new(segments[0], segments[1], segments.Last().Remove(0, 9));
-
-			for (int i = 0; i < segments.Length - 2; i++)
-			{
-				var pair = segments[i + 2].Split(':');
-				mapping.mappings.Add(pair[0], pair[1]);
-			}
-
-			return true;
-		}
-
-		public string uuid;
-		public string name;
-		public string platform;
-
-		public Dictionary<string, string> mappings = new();
-
-		public ControllerMapping(string uuid, string name, string platform)
-		{
-			this.uuid = uuid;
-			this.name = name;
-			this.platform = platform;
-		}
-	}
-
 	static List<Button> _currentButtonsDown = new();
 	static List<Button> _oldButtonsDown = new();
 
@@ -73,6 +32,11 @@ public static class Input
 	public static bool IsButtonEntered(Button button, int controllerIndex = 0)
 	{
 		return _buttonsEntered.Contains(button);
+	}
+
+	internal static void Init()
+	{
+		GLFW.UpdateGamepadMappings(Folder.assets.GetFile("Mappings.csv").ReadText());
 	}
 
 	#region Keyboard
@@ -144,34 +108,73 @@ public static class Input
 
 	#region Controllers
 
-	class JoyState
+	class ControllerState
 	{
-		public List<Button> buttons = new();
+		public int id;
+		public string name;
 
-		public Vector2 leftStick;
-		public Vector2 rightStick;
+		// public List<Button> buttons = new();
+
+		// public Vector2 leftStick;
+		// public Vector2 rightStick;
+
+		public bool[] buttons = new bool[15];
+		public float[] axes = new float[6];
+
+		public ControllerState(int id, string name)
+		{
+			this.id = id;
+			this.name = name;
+		}
 	}
 
-	static JoyState[] _joyStates = new JoyState[16];
+	static ControllerState[] _joyStates = new ControllerState[16];
 
-	internal static void UpdateJoysticks(IReadOnlyList<JoystickState> states)
+	internal static void UpdateJoysticks(IReadOnlyList<JoystickState> joyStates)
 	{
-		foreach (var joyState in states)
+		foreach (var joyState in joyStates)
 		{
 			if (joyState is null) continue;
+			if (!GLFW.GetGamepadState(joyState.Id, out var gamepadState)) return;
 
-			if (!GLFW.GetGamepadState(joyState.Id, out var gamepadState))
-			{
-				Debug.Log($"{joyState.Name} at {joyState.Id} does not have a mapping");
-				return;
-			}
+			var conState = new ControllerState(joyState.Id, joyState.Name);
 
 			unsafe
 			{
+				var buttons = Create<byte>(gamepadState.Buttons, 15);
 				var axes = Create<float>(gamepadState.Axes, 6);
 
-				Debug.Log(axes);
+				conState.buttons = buttons.Select(b => b == 1).ToArray();
+				conState.axes = axes;
 			}
+
+			_joyStates[joyState.Id] = conState;
+		}
+	}
+
+	internal static void DrawGamepadInput()
+	{
+		var offset = 2;
+		foreach (var joyState in _joyStates)
+		{
+			if (joyState is null) continue;
+
+			Font.monospace.DrawString(
+				joyState.id + ". " + joyState.name,
+				new(-GameWindow.current.Size.X / 2 + 8, GameWindow.current.Size.Y / 2 - 8 - offset++ * 18),
+				Color.white.translucent
+			);
+
+			Font.monospace.DrawString(
+				$"Buttons: {string.Join(' ', joyState.buttons.Select(x => x ? '1' : '0'))}",
+				new(-GameWindow.current.Size.X / 2 + 8, GameWindow.current.Size.Y / 2 - 8 - offset++ * 18),
+				Color.white.translucent
+			);
+			Font.monospace.DrawString(
+				$"   Axes: {string.Join(' ', joyState.axes.Select(x => x.ToString("F2")))}",
+				new(-GameWindow.current.Size.X / 2 + 8, GameWindow.current.Size.Y / 2 - 8 - offset++ * 18),
+				Color.white.translucent
+			);
 		}
 	}
 
@@ -182,14 +185,14 @@ public static class Input
 
 		if (e.IsConnected)
 		{
-			var hasMapping = _controllerMappingDatabase[Engine.operatingSystemName].TryGetValue(uuid, out var mapping);
+			var hasMapping = GLFW.JoystickIsGamepad(e.JoystickId);
 
 			Debug.Log($"\"{name}\"(#{uuid}) connected at {e.JoystickId} with{(hasMapping ? "" : "out")} a mapping");
 
 			return;
 		}
 
-		Debug.Log($"\"{name}\"(#{uuid}) disconnected at {e.JoystickId}");
+		Debug.Log($" \"{name}\"(#{uuid}) disconnected at {e.JoystickId}");
 	}
 
 	internal static void RegisterJoystick(int jid)
@@ -198,14 +201,48 @@ public static class Input
 
 	public unsafe static T[] Create<T>(void* ptr, int length) where T : struct
 	{
-		T[] array = new T[length];
+		var type = typeof(T);
+		var sizeInBytes = Marshal.SizeOf(typeof(T));
 
-		for (int i = 0; i < length; i++)
+		var output = new T[length];
+
+		if (type.IsPrimitive)
 		{
-			array[i] = (T)Marshal.PtrToStructure(new IntPtr(ptr), typeof(T))!;
+			// Make sure the array won't be moved around by the GC
+			var handle = GCHandle.Alloc(output, GCHandleType.Pinned);
+
+			var destination = (byte*)handle.AddrOfPinnedObject().ToPointer();
+			var byteLength = length * sizeInBytes;
+
+			// There are faster ways to do this, particularly by using wider types or by
+			// handling special lengths.
+			for (int i = 0; i < byteLength; i++)
+				destination[i] = ((byte*)ptr)[i];
+
+			handle.Free();
+		}
+		else if (type.IsValueType)
+		{
+			if (!type.IsLayoutSequential && !type.IsExplicitLayout)
+			{
+				throw new InvalidOperationException(string.Format("{0} does not define a StructLayout attribute", type));
+			}
+
+			IntPtr sourcePtr = new IntPtr(ptr);
+
+			for (int i = 0; i < length; i++)
+			{
+				IntPtr p = new IntPtr((byte*)ptr + i * sizeInBytes);
+
+				output[i] = (T)System.Runtime.InteropServices.Marshal.PtrToStructure(p, typeof(T))!;
+			}
+		}
+		else
+		{
+			throw new InvalidOperationException(string.Format("{0} is not supported", type));
 		}
 
-		return array;
+		return output;
 	}
 
 	#endregion Controller

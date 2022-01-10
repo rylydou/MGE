@@ -236,6 +236,18 @@ public struct Rect : IEquatable<Rect>
 		_height = height;
 	}
 
+	public void Offset(float offsetX, float offsetY)
+	{
+		x += offsetX;
+		y += offsetY;
+	}
+
+	public void Offset(Vector2 offset)
+	{
+		x += offset.x;
+		y += offset.y;
+	}
+
 	public void Expand(float amount)
 	{
 		amount = amount / 2;

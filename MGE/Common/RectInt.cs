@@ -236,6 +236,18 @@ public struct RectInt : IEquatable<RectInt>
 		_height = height;
 	}
 
+	public void Offset(int offsetX, int offsetY)
+	{
+		x += offsetX;
+		y += offsetY;
+	}
+
+	public void Offset(Vector2Int offset)
+	{
+		x += offset.x;
+		y += offset.y;
+	}
+
 	public bool Contains(Vector2Int point) => (point.x >= xMin) && (point.x < xMax) && (point.y >= yMin) && (point.y < yMax);
 	public bool Contains(RectInt rect) => (rect.xMin >= xMin) && (rect.xMax < xMax) && (rect.yMin >= yMin) && (rect.yMax < yMax);
 

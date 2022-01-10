@@ -221,6 +221,18 @@ public struct Vector2 : IEquatable<Vector2>
 		y = Math.Clamp(y, minY, maxY);
 	}
 
+	public void Offset(float offsetX, float offsetY)
+	{
+		x += offsetX;
+		y += offsetY;
+	}
+
+	public void Offset(Vector2 offset)
+	{
+		x += offset.x;
+		y += offset.y;
+	}
+
 	#region Operators
 
 	public static Vector2 operator +(Vector2 left, Vector2 right) => new Vector2(left.x + right.x, left.y + right.y);

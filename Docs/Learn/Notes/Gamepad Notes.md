@@ -1,3 +1,30 @@
+# Mappings
+
+## Buttons (15)
+0. A
+1. B
+2. X
+3. Y
+4. LB
+5. RB
+6. Select
+7. Start
+8. Home
+9. LSB
+10. RSB
+11. Up
+12. Right
+13. Down
+14. Left
+
+## Axes (6)
+0. Left stick +X
+1. Left stick +Y
+2. Right stick +X
+3. Right stick +Y
+4. LT -1 - 1
+5. RT -1 - 1
+
 # Nintendo Switch Pro Controller
 D-Pad appears as a hat and as buttons. No axes for motion controls.
 

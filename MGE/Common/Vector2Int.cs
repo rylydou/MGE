@@ -118,6 +118,18 @@ public struct Vector2Int : IEquatable<Vector2Int>
 		y = Math.Clamp(y, minY, maxY);
 	}
 
+	public void Offset(int offsetX, int offsetY)
+	{
+		x += offsetX;
+		y += offsetY;
+	}
+
+	public void Offset(Vector2Int offset)
+	{
+		x += offset.x;
+		y += offset.y;
+	}
+
 	////////////////////////////////////////////////////////////
 
 	public static Vector2Int operator +(Vector2Int left, Vector2Int right) => new Vector2Int(left.x + right.x, left.y + right.y);

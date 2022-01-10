@@ -19,7 +19,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	RenderTexture gameRender;
 	Texture sprite;
 
-	public GameWindow() : base(new() { /* RenderFrequency = 60, UpdateFrequency = 60, */ }, new() { Title = "Mangrove Game Engine", NumberOfSamples = 4, })
+	public GameWindow() : base(new() { /* RenderFrequency = 60, UpdateFrequency = 60, */ }, new() { Title = "Mangrove Game Engine", })
 	{
 		_current = this;
 
@@ -43,7 +43,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		Scene.root.AttachNode(world);
 
-		Input.InitControllers();
+		Input.Init();
 	}
 
 	protected override void OnLoad()
@@ -52,7 +52,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		GL.Enable(EnableCap.Blend);
 		GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-		GL.Enable(EnableCap.Multisample);
 	}
 
 	protected override void OnUnload()
@@ -83,7 +82,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Input.ClearInputs();
 		Input.UpdateKeyboard(KeyboardState);
 		Input.UpdateMouse(MouseState);
-		// Input.UpdateJoysticks(JoystickStates);
+		Input.UpdateJoysticks(JoystickStates);
 
 		var alt = Input.IsButtonDown(Button.KB_RightAlt) || Input.IsButtonDown(Button.KB_RightAlt);
 
@@ -103,6 +102,41 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Scene.Tick();
 
 		Scene.Update();
+	}
+
+	protected override void OnRenderFrame(FrameEventArgs args)
+	{
+		base.OnRenderFrame(args);
+
+		renderTime = args.Time;
+
+		GFX.SetRenderTarget(gameRender);
+
+		GFX.Clear(backgroundColor);
+
+		Scene.Draw();
+
+		GFX.DrawBatches();
+
+		GFX.SetRenderTarget(null);
+
+		GFX.Clear(Color.black);
+
+		GFX.DrawRenderTexture(gameRender);
+
+		GFX.DrawBatches();
+
+		Font.monospace.DrawString(
+			$"Update:{1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render:{1f / renderTime:F0}fps ({renderTime * 1000:F2}ms) Client Size:{Size}",
+			new(-Size.X / 2 + 8, Size.Y / 2 - 8),
+			Color.white.translucent
+		);
+
+		Input.DrawGamepadInput();
+
+		GFX.DrawBatches();
+
+		SwapBuffers();
 	}
 
 	protected override void OnKeyDown(KeyboardKeyEventArgs e)
@@ -131,38 +165,5 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		base.OnJoystickConnected(e);
 
 		Input.OnJoystickConnected(e);
-	}
-
-	protected override void OnRenderFrame(FrameEventArgs args)
-	{
-		base.OnRenderFrame(args);
-
-		renderTime = args.Time;
-
-		GFX.SetRenderTarget(gameRender);
-
-		GFX.Clear(backgroundColor);
-
-		Scene.Draw();
-
-		GFX.DrawBatches();
-
-		GFX.SetRenderTarget(null);
-
-		GFX.Clear(Color.black);
-
-		GFX.DrawRenderTexture(gameRender);
-
-		GFX.DrawBatches();
-
-		Font.normal.DrawString(
-			$"Update:{1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render:{1f / renderTime:F0}fps ({renderTime * 1000:F2}ms) Client Size:{Size}",
-			new(-Size.X / 2 + 8, Size.Y / 2 - 8),
-			Color.white.translucent
-		);
-
-		GFX.DrawBatches();
-
-		SwapBuffers();
 	}
 }
