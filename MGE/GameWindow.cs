@@ -79,7 +79,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		updateTime = args.Time;
 
-		Input.ClearInputs();
 		Input.UpdateKeyboard(KeyboardState);
 		Input.UpdateMouse(MouseState);
 		Input.UpdateJoysticks(JoystickStates);

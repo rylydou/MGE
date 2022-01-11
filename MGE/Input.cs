@@ -11,17 +11,39 @@ public static class Input
 {
 	public static bool IsButtonDown(Button button, int controllerIndex = 0)
 	{
-		return _currentKeysDown.Contains(button);
+		if ((ushort)button < 1000) return _currentKeysDown.Contains((Keys)(button));
+		if ((ushort)button < 2000) return _currentMouseButtonsDown.Contains((MouseButton)(button - 1000));
+		return false;
 	}
 
 	public static bool IsButtonPressed(Button button, int controllerIndex = 0)
 	{
-		return _currentKeysDown.Contains(button) && !_lastKeysDown.Contains(button);
+		if ((ushort)button < 1000)
+		{
+			var key = (Keys)(button);
+			return _currentKeysDown.Contains(key) && !_lastKeysDown.Contains(key);
+		}
+		if ((ushort)button < 2000)
+		{
+			var mouseButton = (MouseButton)(button - 1000);
+			return _currentMouseButtonsDown.Contains(mouseButton) && !_lastMouseButtonsDown.Contains(mouseButton);
+		}
+		return false;
 	}
 
 	public static bool IsButtonReleased(Button button, int controllerIndex = 0)
 	{
-		return !_currentKeysDown.Contains(button) && _lastKeysDown.Contains(button);
+		if ((ushort)button < 1000)
+		{
+			var key = (Keys)(button);
+			return !_currentKeysDown.Contains(key) && _lastKeysDown.Contains(key);
+		}
+		if ((ushort)button < 2000)
+		{
+			var mouseButton = (MouseButton)(button - 1000);
+			return !_currentMouseButtonsDown.Contains(mouseButton) && _lastMouseButtonsDown.Contains(mouseButton);
+		}
+		return false;
 	}
 
 	static List<Button> _buttonsEntered = new();
@@ -40,8 +62,8 @@ public static class Input
 
 	public static string textInput = "";
 
-	static List<Button> _currentKeysDown = new();
-	static List<Button> _lastKeysDown = new();
+	static List<Keys> _currentKeysDown = new();
+	static List<Keys> _lastKeysDown = new();
 
 	internal static void UpdateKeyboard(KeyboardState state)
 	{
@@ -55,7 +77,7 @@ public static class Input
 
 			if (state.IsKeyDown(key))
 			{
-				_currentKeysDown.Add((Button)(int)key);
+				_currentKeysDown.Add(key);
 			}
 		}
 	}
@@ -72,11 +94,9 @@ public static class Input
 		textInput = e.AsString ?? "";
 	}
 
-	public static void GetKeysDown() => _currentKeysDown.ToArray();
-	public static void GetKeysPressed()
-	{
-
-	}
+	public static Button[] GetKeysDown() => _currentKeysDown.Select(key => (Button)key).ToArray();
+	public static Button[] GetKeysPressed() => _currentKeysDown.Except(_lastKeysDown).Select(key => (Button)key).ToArray();
+	public static Button[] GetKeysReleased() => _lastKeysDown.Except(_currentKeysDown).Select(key => (Button)key).ToArray();
 
 	#endregion Keyboard
 
@@ -104,8 +124,6 @@ public static class Input
 
 		foreach (var button in Enum.GetValues<MouseButton>())
 		{
-			if (button < 0) continue;
-
 			if (state.IsButtonDown(button))
 			{
 				_currentMouseButtonsDown.Add(button);
