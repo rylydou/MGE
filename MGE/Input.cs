@@ -46,21 +46,12 @@ public static class Input
 		return false;
 	}
 
-	static List<Button> _buttonsEntered = new();
-
-	public static bool IsButtonEntered(Button button, int controllerIndex = 0)
-	{
-		return _buttonsEntered.Contains(button);
-	}
-
 	internal static void Init()
 	{
 		GLFW.UpdateGamepadMappings(Folder.assets.GetFile("Mappings.csv").ReadText());
 	}
 
 	#region Keyboard
-
-	public static string textInput = "";
 
 	static List<Keys> _currentKeysDown = new();
 	static List<Keys> _lastKeysDown = new();
@@ -69,7 +60,7 @@ public static class Input
 	{
 		_lastKeysDown = _currentKeysDown;
 		_currentKeysDown = new();
-		_buttonsEntered.Clear();
+		_keysEntered.Clear();
 
 		foreach (var key in Enum.GetValues<Keys>())
 		{
@@ -82,21 +73,25 @@ public static class Input
 		}
 	}
 
-	internal static void OnKeyDown(KeyboardKeyEventArgs e)
-	{
-		_buttonsEntered.Add((Button)e.Key);
-	}
-
-	internal static void OnKeyUp(KeyboardKeyEventArgs e) { }
-
+	public static string textInput = "";
 	internal static void OnTextInput(TextInputEventArgs e)
 	{
 		textInput = e.AsString ?? "";
 	}
 
-	public static Button[] GetKeysDown() => _currentKeysDown.Select(key => (Button)key).ToArray();
-	public static Button[] GetKeysPressed() => _currentKeysDown.Except(_lastKeysDown).Select(key => (Button)key).ToArray();
-	public static Button[] GetKeysReleased() => _lastKeysDown.Except(_currentKeysDown).Select(key => (Button)key).ToArray();
+	public static IEnumerable<Button> GetKeysDown() => _currentKeysDown.Select(key => (Button)key);
+	public static IEnumerable<Button> GetKeysPressed() => _currentKeysDown.Except(_lastKeysDown).Select(key => (Button)key);
+	public static IEnumerable<Button> GetKeysReleased() => _lastKeysDown.Except(_currentKeysDown).Select(key => (Button)key);
+
+	internal static void OnKeyDown(KeyboardKeyEventArgs e)
+	{
+		_keysEntered.Add(e.Key);
+	}
+
+	static List<Keys> _keysEntered = new();
+
+	public static bool IsKeyEntered(Button button, int controllerIndex = 0) => _keysEntered.Contains((Keys)button);
+	public static IEnumerable<Button> GetKeysEntered() => _keysEntered.Select(key => (Button)key);
 
 	#endregion Keyboard
 

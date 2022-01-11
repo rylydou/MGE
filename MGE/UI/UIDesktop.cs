@@ -5,28 +5,25 @@ using System.Collections.Specialized;
 
 namespace MGE.UI;
 
-public class UIDesktop
+public static class UICanvas
 {
-	public const int DoubleClickIntervalInMs = 500;
-	public const int DoubleClickRadius = 2;
+	const int _doubleClickIntervalInMs = 500;
+	const int _doubleClickRadius = 2;
 
-	public UIRenderContext renderContext = new();
+	public static UIRenderContext renderContext = new();
 
-	bool _layoutDirty = true;
-	bool _widgetsDirty = true;
-	UIWidget? _focusedWidget, _mouseInsideWidget;
-	DateTime _lastTouchDown;
-	UIWidget? _previousFocus;
-	bool _isTouchDown;
-	Vector2Int _previousMousePosition, _mousePosition, _previousTouchPosition, _touchPosition;
-	bool _contextMenuShown = false;
-	bool _focusSet = false;
-	public bool hasExternalTextInput = false;
+	static bool _layoutDirty = true;
+	static bool _widgetsDirty = true;
+	static UIWidget? _focusedWidget, _mouseInsideWidget;
+	static DateTime _lastClickDown;
+	static UIWidget? _previousFocus;
+	static bool _isClickDown;
+	static Vector2Int _previousMousePosition, _mousePosition, _previousClickPosition, _clickPosition;
+	static bool _contextMenuShown = false;
+	static bool _focusSet = false;
+	public static bool hasExternalTextInput = false;
 
-	/// <summary>
-	/// Root UIWidget
-	/// </summary>
-	public UIWidget? root
+	public static UIWidget? root
 	{
 		get
 		{
@@ -48,9 +45,9 @@ public class UIDesktop
 		}
 	}
 
-	public Vector2Int previousMousePosition { get => _previousMousePosition; }
+	public static Vector2Int previousMousePosition { get => _previousMousePosition; }
 
-	public Vector2Int mousePosition
+	public static Vector2Int mousePosition
 	{
 		get => _mousePosition;
 		set
@@ -63,32 +60,31 @@ public class UIDesktop
 
 			childrenCopy.ProcessMouseMovement();
 
-			if (isTouchDown)
+			if (isClickDown)
 			{
-				touchPosition = mousePosition;
+				clickPosition = mousePosition;
 			}
 		}
 	}
 
-	public Vector2Int touchPosition
+	public static Vector2Int clickPosition
 	{
-		get => _touchPosition;
-
+		get => _clickPosition;
 		set
 		{
-			_previousTouchPosition = _touchPosition;
+			_previousClickPosition = _clickPosition;
 
-			if (value == _touchPosition) return;
+			if (value == _clickPosition) return;
 
-			_touchPosition = value;
+			_clickPosition = value;
 			// TouchMoved.Invoke();
 
-			childrenCopy.ProcessTouchMovement();
+			childrenCopy.ProcessDragMovement();
 		}
 	}
 
-	readonly List<UIWidget> _widgetsCopy = new();
-	internal List<UIWidget> childrenCopy
+	static readonly List<UIWidget> _widgetsCopy = new();
+	internal static List<UIWidget> childrenCopy
 	{
 		get
 		{
@@ -97,16 +93,16 @@ public class UIDesktop
 		}
 	}
 
-	public ObservableCollection<UIWidget> widgets { get; } = new ObservableCollection<UIWidget>();
+	public static ObservableCollection<UIWidget> widgets { get; } = new ObservableCollection<UIWidget>();
 
-	internal RectInt internalBounds { get; set; }
+	internal static RectInt internalBounds { get; set; }
 
-	public UIWidget? contextMenu { get; set; }
+	public static UIWidget? contextMenu { get; set; }
 
 	/// <summary>
 	/// UIWidget having keyboard focus
 	/// </summary>
-	public UIWidget? focusedWidget
+	public static UIWidget? focusedWidget
 	{
 		get => _focusedWidget;
 		set
@@ -139,7 +135,7 @@ public class UIDesktop
 		}
 	}
 
-	public UIWidget? mouseInsideWidget
+	public static UIWidget? mouseInsideWidget
 	{
 		get => _mouseInsideWidget;
 		set
@@ -154,46 +150,41 @@ public class UIDesktop
 		}
 	}
 
-	public float opacity { get; set; }
+	public static bool isMouseOverGUI { get => IsPointOverGUI(mousePosition); }
+	public static bool isClickOverGUI { get => IsPointOverGUI(clickPosition); }
 
-	public bool isMouseOverGUI { get => IsPointOverGUI(mousePosition); }
+	internal static bool isShiftDown { get => Input.IsButtonPressed(Button.KB_LeftShift) || Input.IsButtonPressed(Button.KB_RightShift); }
+	internal static bool isControlDown { get => Input.IsButtonPressed(Button.KB_LeftControl) || Input.IsButtonPressed(Button.KB_RightControl); }
+	internal static bool isAltDown { get => Input.IsButtonPressed(Button.KB_LeftAlt) || Input.IsButtonPressed(Button.KB_RightAlt); }
 
-	public bool isTouchOverGUI { get => IsPointOverGUI(touchPosition); }
-
-	internal bool isShiftDown { get => IsKeyDown(Button.KB_LeftShift) || IsKeyDown(Button.KB_RightShift); }
-
-	internal bool isControlDown { get => IsKeyDown(Button.KB_LeftControl) || IsKeyDown(Button.KB_RightControl); }
-
-	internal bool isAltDown { get => IsKeyDown(Button.KB_LeftAlt) || IsKeyDown(Button.KB_RightAlt); }
-
-	public bool isTouchDown
+	public static bool isClickDown
 	{
-		get => _isTouchDown;
+		get => _isClickDown;
 		set
 		{
-			if (_isTouchDown == value) return;
-			_isTouchDown = value;
-			if (_isTouchDown)
+			if (_isClickDown == value) return;
+			_isClickDown = value;
+			if (_isClickDown)
 			{
-				InputOnTouchDown();
+				OnClickDown();
 				// TouchDown.Invoke();
 			}
 			else
 			{
-				InputOnTouchUp();
+				OnClickReleased();
 				// TouchUp.Invoke();
 			}
 		}
 	}
 
-	public bool hasModalWidget
+	public static bool hasModalWidget
 	{
 		get
 		{
 			for (var i = childrenCopy.Count - 1; i >= 0; --i)
 			{
 				var w = childrenCopy[i];
-				if (w.Visible && w.Enabled && w.IsModal) return true;
+				if (w.visible && w.enabled && w.isModal) return true;
 			}
 
 			return false;
@@ -223,38 +214,37 @@ public class UIDesktop
 
 	// public Action<UIWidget?> MouseInsideWidgetChanged = (widget) => { };
 
-	public UIDesktop()
+	// static UICanvas()
+	// {
+	// 	widgets.CollectionChanged += WidgetsOnCollectionChanged;
+	// }
+
+	public static UIWidget? GetWidgetAtPoint(Vector2Int point)
 	{
-		opacity = 1.0f;
-		widgets.CollectionChanged += WidgetsOnCollectionChanged;
+		return root!.GetWidgetAtPoint(point);
 	}
 
-	public bool IsKeyDown(Button keys)
-	{
-		return _downKeys[(int)keys];
-	}
+	public static UIWidget GetChild(int index) => childrenCopy[index];
 
-	public UIWidget GetChild(int index) => childrenCopy[index];
-
-	void HandleDoubleClick()
+	static void HandleDoubleClick()
 	{
-		if ((DateTime.Now - _lastTouchDown).TotalMilliseconds < DoubleClickIntervalInMs && Vector2.DistanceLessThan(_touchPosition, _previousTouchPosition, DoubleClickRadius))
+		if ((DateTime.Now - _lastClickDown).TotalMilliseconds < _doubleClickIntervalInMs && Vector2.DistanceLessThan(_clickPosition, _previousClickPosition, _doubleClickRadius))
 		{
 			// TouchDoubleClick();
 
 			childrenCopy.ProcessTouchDoubleClick();
 
-			_lastTouchDown = DateTime.MinValue;
+			_lastClickDown = DateTime.MinValue;
 		}
 		else
 		{
-			_lastTouchDown = DateTime.Now;
+			_lastClickDown = DateTime.Now;
 		}
 	}
 
-	void ContextMenuOnTouchDown()
+	static void ContextMenuOnTouchDown()
 	{
-		if (contextMenu is null || contextMenu.Bounds.Contains(touchPosition)) return;
+		if (contextMenu is null || contextMenu.bounds.Contains(clickPosition)) return;
 
 		var ev = ContextMenuClosing;
 		var cancel = ev(contextMenu);
@@ -264,12 +254,17 @@ public class UIDesktop
 		HideContextMenu();
 	}
 
-	void InputOnTouchDown()
+	static void OnClickDown()
 	{
 		_contextMenuShown = false;
 		_focusSet = false;
 
-		childrenCopy.ProcessTouchDown();
+		var widget = GetWidgetAtPoint(Input.mousePosition);
+
+		if (widget is not null)
+		{
+			widget.OnClick();
+		}
 
 		if (!_focusSet && focusedWidget is not null)
 		{
@@ -283,20 +278,20 @@ public class UIDesktop
 		}
 	}
 
-	void InputOnTouchUp()
+	static void OnClickReleased()
 	{
-		childrenCopy.ProcessTouchUp();
+
 	}
 
-	public void ShowContextMenu(UIWidget menu, Vector2Int position)
+	public static void ShowContextMenu(UIWidget menu, Vector2Int position)
 	{
 		HideContextMenu();
 
 		contextMenu = menu;
 		if (contextMenu is null) return;
 
-		contextMenu.HorizontalAlignment = UIAlignment.Start;
-		contextMenu.VerticalAlignment = UIAlignment.Start;
+		contextMenu.horizontalAlignment = UIAlignment.Start;
+		contextMenu.verticalAlignment = UIAlignment.Start;
 
 		var measure = contextMenu.Measure(internalBounds.size);
 
@@ -310,14 +305,14 @@ public class UIDesktop
 			position.y = internalBounds.bottom - measure.y;
 		}
 
-		contextMenu.Left = position.x;
-		contextMenu.Top = position.y;
+		contextMenu.left = position.x;
+		contextMenu.top = position.y;
 
-		contextMenu.Visible = true;
+		contextMenu.visible = true;
 
 		widgets.Add(contextMenu);
 
-		if (contextMenu.AcceptsKeyboardFocus)
+		if (contextMenu.acceptsKeyboardFocus)
 		{
 			_previousFocus = focusedWidget;
 			focusedWidget = contextMenu;
@@ -326,12 +321,12 @@ public class UIDesktop
 		_contextMenuShown = true;
 	}
 
-	public void HideContextMenu()
+	public static void HideContextMenu()
 	{
 		if (contextMenu is null) return;
 
 		widgets.Remove(contextMenu);
-		contextMenu.Visible = false;
+		contextMenu.visible = false;
 
 		// ContextMenuClosed(contextMenu);
 		contextMenu = null;
@@ -343,27 +338,27 @@ public class UIDesktop
 		}
 	}
 
-	void WidgetsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs args)
+	static void WidgetsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs args)
 	{
 		if (args.Action == NotifyCollectionChangedAction.Add)
 		{
 			foreach (UIWidget w in args.NewItems!)
 			{
-				w.Desktop = this;
+				w.isPlaced = true;
 			}
 		}
 		else if (args.Action == NotifyCollectionChangedAction.Remove)
 		{
 			foreach (UIWidget w in args.OldItems!)
 			{
-				w.Desktop = null;
+				w.isPlaced = false;
 			}
 		}
 		else if (args.Action == NotifyCollectionChangedAction.Reset)
 		{
 			foreach (UIWidget w in childrenCopy)
 			{
-				w.Desktop = null;
+				w.isPlaced = false;
 			}
 		}
 
@@ -371,7 +366,7 @@ public class UIDesktop
 		_widgetsDirty = true;
 	}
 
-	public void RenderVisual()
+	public static void RenderVisual()
 	{
 		var oldScissorRectangle = renderContext.scissor;
 
@@ -384,7 +379,6 @@ public class UIDesktop
 		// _renderContext.Transform = transform;
 
 		// _renderContext.View = InternalBounds;
-		renderContext.opacity = opacity;
 
 		// if (Stylesheet.Current.DesktopStyle is not null && Stylesheet.Current.DesktopStyle.Background is not null)
 		// {
@@ -393,7 +387,7 @@ public class UIDesktop
 
 		foreach (var widget in childrenCopy)
 		{
-			if (widget.Visible)
+			if (widget.visible)
 			{
 				widget.Render(renderContext);
 			}
@@ -404,19 +398,19 @@ public class UIDesktop
 		renderContext.scissor = oldScissorRectangle;
 	}
 
-	public void Render()
+	public static void Render()
 	{
 		UpdateInput();
 		UpdateLayout();
 		RenderVisual();
 	}
 
-	public void InvalidateLayout()
+	public static void InvalidateLayout()
 	{
 		_layoutDirty = true;
 	}
 
-	public void UpdateLayout()
+	public static void UpdateLayout()
 	{
 		var newBounds = new(GameWindow.current.Size);
 		if (internalBounds != newBounds)
@@ -431,7 +425,7 @@ public class UIDesktop
 
 		foreach (var i in childrenCopy)
 		{
-			if (i.Visible)
+			if (i.visible)
 			{
 				i.Layout(internalBounds);
 			}
@@ -442,18 +436,18 @@ public class UIDesktop
 		for (var i = childrenCopy.Count - 1; i >= 0; --i)
 		{
 			var w = childrenCopy[i];
-			if (!w.Visible) continue;
+			if (!w.visible) continue;
 
 			w.ProcessWidgets(widget =>
 			{
-				widget.Active = active;
+				widget.active = active;
 
 				// Continue
 				return true;
 			});
 
 			// Everything after first modal widget is not active
-			if (w.IsModal)
+			if (w.isModal)
 			{
 				active = false;
 			}
@@ -468,7 +462,7 @@ public class UIDesktop
 		_layoutDirty = false;
 	}
 
-	internal void ProcessWidgets(Func<UIWidget, bool> operation)
+	internal static void ProcessWidgets(Func<UIWidget, bool> operation)
 	{
 		for (var i = childrenCopy.Count - 1; i >= 0; --i)
 		{
@@ -478,7 +472,7 @@ public class UIDesktop
 		}
 	}
 
-	void UpdateRecursiveLayout(IEnumerable<UIWidget> widgets)
+	static void UpdateRecursiveLayout(IEnumerable<UIWidget> widgets)
 	{
 		foreach (var i in widgets)
 		{
@@ -495,7 +489,7 @@ public class UIDesktop
 		}
 	}
 
-	UIWidget? GetWidgetBy(UIWidget root, Func<UIWidget, bool> filter)
+	static UIWidget? GetWidgetBy(UIWidget root, Func<UIWidget, bool> filter)
 	{
 		if (filter(root)) return root;
 
@@ -512,7 +506,7 @@ public class UIDesktop
 		return null;
 	}
 
-	public UIWidget? GetWidgetBy(Func<UIWidget, bool> filter)
+	public static UIWidget? GetWidgetBy(Func<UIWidget, bool> filter)
 	{
 		foreach (var w in childrenCopy)
 		{
@@ -523,14 +517,14 @@ public class UIDesktop
 		return null;
 	}
 
-	public UIWidget? GetWidgetByID(string ID) => GetWidgetBy(w => w.Id == ID);
+	public static UIWidget? GetWidgetByID(string ID) => GetWidgetBy(w => w.Id == ID);
 
-	public int CalculateTotalWidgets(bool visibleOnly)
+	public static int CalculateTotalWidgets(bool visibleOnly)
 	{
 		var result = 0;
 		foreach (var w in widgets)
 		{
-			if (visibleOnly && !w.Visible) continue;
+			if (visibleOnly && !w.visible) continue;
 
 			++result;
 
@@ -544,46 +538,39 @@ public class UIDesktop
 		return result;
 	}
 
-	UIWidget? GetTopWidget()
+	static UIWidget? GetTopWidget()
 	{
 		for (var i = childrenCopy.Count - 1; i >= 0; --i)
 		{
 			var w = childrenCopy[i];
-			if (w.Visible && w.Enabled && w.Active) return w;
+			if (w.visible && w.enabled && w.active) return w;
 		}
 
 		return null;
 	}
 
-	public void HandleButton(bool isDown, bool wasDown, Button buttons)
+	public static void HandleButton(bool isDown, bool wasDown, Button buttons)
 	{
 		if (isDown && !wasDown)
 		{
-			touchPosition = mousePosition;
-			isTouchDown = true;
+			clickPosition = mousePosition;
+			isClickDown = true;
 			HandleDoubleClick();
 		}
 		else if (!isDown && wasDown)
 		{
-			isTouchDown = false;
+			isClickDown = false;
 		}
 	}
 
-	public void UpdateMouseInput()
+	public static void UpdateMouseInput()
 	{
-		mousePosition = mouseInfo.Position;
-
-		// if (_renderContext.Transform is not null)
-		// {
-		// 	// Apply transform
-		// 	var t = Vector2.Transform(new Vector2(mousePosition.x, mousePosition.y), _renderContext.InverseTransform);
-
-		// 	mousePosition = new Vector2Int((int)t.x, (int)t.y);
-		// }
+		mousePosition = Input.mousePosition;
 
 		HandleButton(mouseInfo.IsLeftButtonDown, _lastMouseInfo.IsLeftButtonDown, Button.Mouse_Left);
 		HandleButton(mouseInfo.IsMiddleButtonDown, _lastMouseInfo.IsMiddleButtonDown, Button.Mouse_Middle);
 		HandleButton(mouseInfo.IsRightButtonDown, _lastMouseInfo.IsRightButtonDown, Button.Mouse_Right);
+
 #if STRIDE
 				var handleWheel = mouseInfo.Wheel != 0;
 #else
@@ -599,7 +586,7 @@ public class UIDesktop
 			// MouseWheelChanged(delta);
 
 			UIWidget? mouseWheelFocusedWidget = null;
-			if (focusedWidget is not null && focusedWidget.MouseWheelFocusType == UIMouseWheelFocusType.Focus)
+			if (focusedWidget is not null && focusedWidget.mouseWheelFocusType == UIMouseWheelFocusType.Focus)
 			{
 				mouseWheelFocusedWidget = focusedWidget;
 			}
@@ -609,13 +596,13 @@ public class UIDesktop
 				var widget = mouseInsideWidget;
 				while (widget is not null)
 				{
-					if (widget.MouseWheelFocusType == UIMouseWheelFocusType.Hover)
+					if (widget.mouseWheelFocusType == UIMouseWheelFocusType.Hover)
 					{
 						mouseWheelFocusedWidget = widget;
 						break;
 					}
 
-					widget = widget.Parent;
+					widget = widget.parent;
 				}
 			}
 
@@ -626,56 +613,33 @@ public class UIDesktop
 		}
 	}
 
-	public void UpdateKeyboardInput()
+	public static void UpdateKeyboardInput()
 	{
-		var now = DateTime.Now;
-		for (var i = 0; i < _downKeys.Length; ++i)
+		// TODO
+		if (Input.IsKeyEntered(Button.KB_Tab))
 		{
-			var key = (Button)i;
-			if (_downKeys[i] && !_lastDownKeys[i])
-			{
-				if (key == Button.KB_Tab)
-				{
-					FocusNextWidget();
-				}
-
-				KeyDownHandler(key);
-
-				_lastKeyDown = now;
-				_keyDownCount = 0;
-			}
-			else if (!_downKeys[i] && _lastDownKeys[i])
-			{
-				// Key had been released
-				KeyUp(key);
-				if (_focusedWidget is not null && _focusedWidget.Active)
-				{
-					_focusedWidget.OnKeyUp(key);
-				}
-
-				_lastKeyDown = null;
-				_keyDownCount = 0;
-			}
-			else if (_downKeys[i] && _lastDownKeys[i])
-			{
-				if (
-					_lastKeyDown is not null &&
-					((_keyDownCount == 0 && (now - _lastKeyDown.Value).TotalMilliseconds > RepeatKeyDownStartInMs) ||
-					(_keyDownCount > 0 && (now - _lastKeyDown.Value).TotalMilliseconds > RepeatKeyDownInternalInMs))
-				)
-				{
-					KeyDownHandler(key);
-
-					_lastKeyDown = now;
-					++_keyDownCount;
-				}
-			}
+			FocusNextWidget();
+			return;
 		}
 
-		Array.Copy(_downKeys, _lastDownKeys, _downKeys.Length);
+		if (_focusedWidget is null || !_focusedWidget.active) return;
+
+		_focusedWidget.TextInput(Input.textInput);
+
+		foreach (var button in Input.GetKeysEntered())
+			_focusedWidget.ButtonEntered(button);
+
+		foreach (var button in Input.GetKeysPressed())
+			_focusedWidget.ButtonPressed(button);
+
+		foreach (var button in Input.GetKeysDown())
+			_focusedWidget.ButtonDown(button);
+
+		foreach (var button in Input.GetKeysReleased())
+			_focusedWidget.ButtonReleased(button);
 	}
 
-	void FocusNextWidget()
+	static void FocusNextWidget()
 	{
 		if (widgets.Count == 0) return;
 
@@ -720,17 +684,15 @@ public class UIDesktop
 		});
 	}
 
-	static bool CanFocusWidget(UIWidget widget) =>
-		widget is not null && widget.Visible && widget.Active &&
-		widget.Enabled && widget.AcceptsKeyboardFocus;
+	static bool CanFocusWidget(UIWidget? widget) => widget is not null && widget.visible && widget.active && widget.enabled && widget.acceptsKeyboardFocus;
 
-	public void UpdateInput()
+	public static void UpdateInput()
 	{
 		UpdateMouseInput();
 		UpdateKeyboardInput();
 	}
 
-	public void OnButtonDown(Button key)
+	public static void OnButtonDown(Button key)
 	{
 		KeyDown(key);
 
@@ -740,7 +702,7 @@ public class UIDesktop
 		}
 		else
 		{
-			if (_focusedWidget is not null && _focusedWidget.Active)
+			if (_focusedWidget is not null && _focusedWidget.active)
 			{
 				_focusedWidget.OnKeyDown(key);
 
@@ -761,12 +723,12 @@ public class UIDesktop
 		}
 	}
 
-	public void OnChar(char c)
+	public static void OnChar(char c)
 	{
 		// Don't accept chars if menubar is open
 		if (isMenuBarActive) return;
 
-		if (_focusedWidget is not null && _focusedWidget.Active)
+		if (_focusedWidget is not null && _focusedWidget.active)
 		{
 			_focusedWidget.OnChar(c);
 		}
@@ -774,7 +736,7 @@ public class UIDesktop
 		Char(c);
 	}
 
-	void UpdateWidgetsCopy()
+	static void UpdateWidgetsCopy()
 	{
 		if (!_widgetsDirty) return;
 
@@ -786,9 +748,9 @@ public class UIDesktop
 		_widgetsDirty = false;
 	}
 
-	bool InternalIsPointOverGUI(Vector2Int p, UIWidget w)
+	static bool InternalIsPointOverGUI(Vector2Int p, UIWidget w)
 	{
-		if (!w.Visible || !w.BorderBounds.Contains(p)) return false;
+		if (!w.visible || !w.borderBounds.Contains(p)) return false;
 		if (!w.FallsThrough(p)) return true;
 
 		// If widget fell through, then it is UIContainer for sure
@@ -802,7 +764,7 @@ public class UIDesktop
 		return false;
 	}
 
-	public bool IsPointOverGUI(Vector2Int p)
+	public static bool IsPointOverGUI(Vector2Int p)
 	{
 		foreach (var widget in childrenCopy)
 		{

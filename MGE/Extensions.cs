@@ -68,7 +68,7 @@ static class Extensions
 
 	public static bool ProcessWidgets(this UI.UIWidget root, Func<UI.UIWidget, bool> operation)
 	{
-		if (!root.Visible) return true;
+		if (!root.visible) return true;
 
 		var result = operation(root);
 		if (!result) return false;
@@ -97,7 +97,7 @@ static class Extensions
 			var newN = 0;
 			for (var i = 1; i < n; ++i)
 			{
-				if (list[i - 1].ZIndex > list[i].ZIndex)
+				if (list[i - 1].zIndex > list[i].zIndex)
 				{
 					// Swap
 					var temp = list[i - 1];

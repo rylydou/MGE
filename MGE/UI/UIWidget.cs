@@ -44,18 +44,12 @@ public class UIWidget
 	bool _isModal = false;
 	bool _measureDirty = true;
 	bool _active = false;
-	UIDesktop? _desktop;
 
 	Vector2Int _lastMeasureSize;
 	Vector2Int _lastMeasureAvailableSize;
 	Vector2Int _lastLocationHint;
 
-	RectInt _containerBounds;
-	RectInt _bounds;
-	RectInt _actualBounds;
 	bool _visible;
-
-	float _opacity = 1.0f;
 
 	bool _isMouseInside, _enabled;
 	bool _isKeyboardFocused = false;
@@ -64,11 +58,11 @@ public class UIWidget
 	/// Internal use only. (MyraPad)
 	/// </summary>
 	[DefaultValue(Stylesheet.DefaultStyleName)]
-	public string? StyleName { get; set; }
+	public string? styleName { get; set; }
 
 	[Category("Layout")]
 	[DefaultValue(0)]
-	public int Left
+	public int left
 	{
 		get => _left;
 		set
@@ -87,7 +81,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DefaultValue(0)]
-	public int Top
+	public int top
 	{
 		get => _top;
 		set
@@ -106,7 +100,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DefaultValue(null)]
-	public int? MinWidth
+	public int? minWidth
 	{
 		get => _minWidth;
 		set
@@ -120,7 +114,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DefaultValue(null)]
-	public int? MaxWidth
+	public int? maxWidth
 	{
 		get => _maxWidth;
 		set
@@ -134,7 +128,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DefaultValue(null)]
-	public int? Width
+	public int? width
 	{
 		get => _width;
 		set
@@ -148,7 +142,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DefaultValue(null)]
-	public int? MinHeight
+	public int? minHeight
 	{
 		get => _minHeight;
 		set
@@ -162,7 +156,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DefaultValue(null)]
-	public int? MaxHeight
+	public int? maxHeight
 	{
 		get => _maxHeight;
 		set
@@ -176,7 +170,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DefaultValue(null)]
-	public int? Height
+	public int? height
 	{
 		get => _height;
 		set
@@ -189,21 +183,20 @@ public class UIWidget
 	}
 
 	[Obsolete("Use Padding")]
-	[Browsable(false)]
-	public int PaddingLeft
+	public int paddingLeft
 	{
-		get => Padding.Left;
+		get => padding.Left;
 		set
 		{
-			var p = Padding;
+			var p = padding;
 			p.Left = value;
-			Padding = p;
+			padding = p;
 		}
 	}
 
 	[Category("Layout")]
 	[DesignerFolded]
-	public Thickness Margin
+	public Thickness margin
 	{
 		get => _margin;
 		set
@@ -216,7 +209,7 @@ public class UIWidget
 
 	[Category("Appearance")]
 	[DesignerFolded]
-	public Thickness BorderThickness
+	public Thickness borderThickness
 	{
 		get => _borderThickness;
 
@@ -230,7 +223,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DesignerFolded]
-	public Thickness Padding
+	public Thickness padding
 	{
 		get => _padding;
 		set
@@ -243,7 +236,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DefaultValue(UIAlignment.Start)]
-	public virtual UIAlignment HorizontalAlignment
+	public virtual UIAlignment horizontalAlignment
 	{
 		get => _horizontalAlignment;
 		set
@@ -256,7 +249,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DefaultValue(UIAlignment.Start)]
-	public virtual UIAlignment VerticalAlignment
+	public virtual UIAlignment verticalAlignment
 	{
 		get => _verticalAlignment;
 		set
@@ -269,7 +262,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DefaultValue(0)]
-	public int GridColumn
+	public int gridColumn
 	{
 		get => _gridColumn;
 		set
@@ -283,7 +276,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DefaultValue(0)]
-	public int GridRow
+	public int gridRow
 	{
 		get => _gridRow;
 		set
@@ -297,7 +290,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DefaultValue(1)]
-	public int GridColumnSpan
+	public int gridColumnSpan
 	{
 		get => _gridColumnSpan;
 		set
@@ -311,7 +304,7 @@ public class UIWidget
 
 	[Category("Layout")]
 	[DefaultValue(1)]
-	public int GridRowSpan
+	public int gridRowSpan
 	{
 		get => _gridRowSpan;
 		set
@@ -325,28 +318,28 @@ public class UIWidget
 
 	[Category("Behavior")]
 	[DefaultValue(true)]
-	public virtual bool Enabled
+	public virtual bool enabled
 	{
 		get => _enabled;
 		set
 		{
 			if (_enabled == value) return;
 			_enabled = value;
-			EnabledChanged();
+			enabledChanged();
 		}
 	}
 
 	[Category("Behavior")]
 	[DefaultValue(true)]
-	public virtual bool Visible
+	public virtual bool visible
 	{
 		get => _visible;
 		set
 		{
 			if (_visible == value) return;
 			_visible = value;
-			IsMouseInside = false;
-			IsTouchInside = false;
+			isMouseInside = false;
+			isTouchInside = false;
 			OnVisibleChanged();
 		}
 	}
@@ -355,13 +348,11 @@ public class UIWidget
 	[DefaultValue(UIDragDirection.None)]
 	public virtual UIDragDirection dragDirection { get; set; } = UIDragDirection.None;
 
-	[XmlIgnore]
-	[Browsable(false)]
-	internal bool IsDraggable { get => dragDirection != UIDragDirection.None; }
+	internal bool isDraggable { get => dragDirection != UIDragDirection.None; }
 
 	[Category("Behavior")]
 	[DefaultValue(0)]
-	public int ZIndex
+	public int zIndex
 	{
 		get => _zIndex;
 		set
@@ -372,73 +363,17 @@ public class UIWidget
 		}
 	}
 
-	[XmlIgnore]
-	[Browsable(false)]
-	public UIWidget? DragHandle { get; set; }
+	public UIWidget? dragHandle { get; set; }
 
-	[XmlIgnore]
-	[Browsable(false)]
-	int RelativeLeft { get; set; }
+	int _relativeLeft;
+	int _relativeTop;
+	int _relativeRight;
+	int _relativeBottom;
 
-	[XmlIgnore]
-	[Browsable(false)]
-	int RelativeTop { get; set; }
+	// TODO
+	public bool isPlaced { get; internal set; }
 
-	[XmlIgnore]
-	[Browsable(false)]
-	int RelativeRight { get; set; }
-
-	[XmlIgnore]
-	[Browsable(false)]
-	int RelativeBottom { get; set; }
-
-	/// <summary>
-	/// Determines whether the widget had been placed on UIDesktop
-	/// </summary>
-	[XmlIgnore]
-	[Browsable(false)]
-	public bool IsPlaced
-	{
-		get => Desktop is not null;
-	}
-
-	[XmlIgnore]
-	[Browsable(false)]
-	public virtual UIDesktop? Desktop
-	{
-		get => _desktop;
-		internal set
-		{
-			if (_desktop is not null && value is null)
-			{
-				if (_desktop.focusedWidget == this)
-				{
-					_desktop.focusedWidget = null;
-				}
-
-				if (_desktop.mouseInsideWidget == this)
-				{
-					_desktop.mouseInsideWidget = null;
-				}
-			}
-
-			_desktop = value;
-			IsMouseInside = false;
-			IsTouchInside = false;
-
-			if (_desktop is not null)
-			{
-				InvalidateLayout();
-			}
-
-			SubscribeOnTouchMoved(IsPlaced && IsDraggable);
-			OnPlacedChanged();
-		}
-	}
-
-	[XmlIgnore]
-	[Browsable(false)]
-	public bool IsModal
+	public bool isModal
 	{
 		get => _isModal;
 		set
@@ -449,7 +384,7 @@ public class UIWidget
 		}
 	}
 
-	protected internal bool Active
+	protected internal bool active
 	{
 		get => _active;
 		set
@@ -460,141 +395,101 @@ public class UIWidget
 		}
 	}
 
-	[Category("Appearance")]
-	[DefaultValue(1f)]
-	public float Opacity
-	{
-		get => _opacity;
-		set
-		{
-			if (value < 0f || value > 1f) throw new ArgumentOutOfRangeException("value");
-			_opacity = value;
-		}
-	}
+	public Layout2D layout2d { get; set; } = Layout2D.NullLayout;
 
-	/// <summary>
-	/// Dynamic layout expression
-	/// </summary>
-	[XmlIgnore]
-	[Browsable(false)]
-	public Layout2D Layout2d { get; set; } = Layout2D.NullLayout;
+	// [Category("Appearance")]
+	// public IBrush background { get; set; }
 
-	[Category("Appearance")]
-	public IBrush Background { get; set; }
+	// [Category("Appearance")]
+	// public IBrush overBackground { get; set; }
 
-	[Category("Appearance")]
-	public IBrush OverBackground { get; set; }
+	// [Category("Appearance")]
+	// public IBrush disabledBackground { get; set; }
 
-	[Category("Appearance")]
-	public IBrush DisabledBackground { get; set; }
+	// [Category("Appearance")]
+	// public IBrush focusedBackground { get; set; }
 
-	[Category("Appearance")]
-	public IBrush FocusedBackground { get; set; }
+	// [Category("Appearance")]
+	// public IBrush border { get; set; }
 
-	[Category("Appearance")]
-	public IBrush Border { get; set; }
+	// [Category("Appearance")]
+	// public IBrush overBorder { get; set; }
 
-	[Category("Appearance")]
-	public IBrush OverBorder { get; set; }
+	// [Category("Appearance")]
+	// public IBrush disabledBorder { get; set; }
 
-	[Category("Appearance")]
-	public IBrush DisabledBorder { get; set; }
-
-	[Category("Appearance")]
-	public IBrush FocusedBorder { get; set; }
+	// [Category("Appearance")]
+	// public IBrush focusedBorder { get; set; }
 
 	[Category("Appearance")]
 	[DefaultValue(false)]
-	public virtual bool ClipToBounds { get; set; }
+	public virtual bool clipToBounds { get; set; }
 
-	[Browsable(false)]
-	[XmlIgnore]
-	public bool IsMouseInside
+	public bool isMouseInside
 	{
 		get => _isMouseInside;
 		set
 		{
 			_isMouseInside = value;
-			if (Desktop is not null && Desktop.mouseInsideWidget == this)
+			if (UICanvas.mouseInsideWidget == this)
 			{
-				Desktop.mouseInsideWidget = null;
+				UICanvas.mouseInsideWidget = null;
 			}
 		}
 	}
 
-	[Browsable(false)]
-	[XmlIgnore]
-	public bool IsTouchInside { get; set; }
+	public bool isTouchInside { get; set; }
 
-	[Browsable(false)]
-	[XmlIgnore]
-	public UIContainer? Parent { get; internal set; }
+	public UIContainer? parent { get; internal set; }
 
-	[Browsable(false)]
-	[XmlIgnore]
-	public object? Tag { get; set; }
+	public object? tag { get; set; }
 
-	[Browsable(false)]
-	[XmlIgnore]
-	public RectInt Bounds { get => _bounds; }
+	RectInt _bounds;
+	public RectInt bounds { get => _bounds; }
 
-	internal RectInt BorderBounds { get => _bounds - _margin; }
+	internal RectInt borderBounds { get => _bounds - _margin; }
+	internal bool containsMouse { get => borderBounds.Contains(UICanvas.mousePosition); }
+	internal bool containsTouch { get => borderBounds.Contains(UICanvas.clickPosition); }
 
-	internal bool ContainsMouse { get => Desktop is not null && BorderBounds.Contains(Desktop.mousePosition); }
+	protected RectInt backgroundBounds { get => borderBounds - _borderThickness; }
 
-	internal bool ContainsTouch { get => Desktop is not null && BorderBounds.Contains(Desktop.touchPosition); }
+	RectInt _actualBounds;
+	public RectInt actualBounds { get => _actualBounds; }
 
-	protected RectInt BackgroundBounds { get => BorderBounds - _borderThickness; }
+	RectInt _containerBounds;
+	public RectInt containerBounds { get => _containerBounds; }
 
-	[Browsable(false)]
-	[XmlIgnore]
-	public RectInt ActualBounds { get => _actualBounds; }
+	public int mbpWidth { get => margin.Left + margin.Right + borderThickness.Left + borderThickness.Right + padding.Left + padding.Right; }
 
-	[Browsable(false)]
-	[XmlIgnore]
-	public RectInt ContainerBounds { get => _containerBounds; }
-
-	[Browsable(false)]
-	[XmlIgnore]
-	public int MBPWidth { get => Margin.Left + Margin.Right + BorderThickness.Left + BorderThickness.Right + Padding.Left + Padding.Right; }
-
-	[Browsable(false)]
-	[XmlIgnore]
-	public int MBPHeight { get => Margin.Top + Margin.Bottom + BorderThickness.Top + BorderThickness.Bottom + Padding.Top + Padding.Bottom; }
+	public int mbpHeight { get => margin.Top + margin.Bottom + borderThickness.Top + borderThickness.Bottom + padding.Top + padding.Bottom; }
 
 	/// <summary>
 	/// Determines whether a widget accepts keyboard focus
 	/// </summary>
-	[Browsable(false)]
-	[XmlIgnore]
-	public bool AcceptsKeyboardFocus { get; set; } = true;
+	public bool acceptsKeyboardFocus { get; set; } = true;
 
-	[Browsable(false)]
-	[XmlIgnore]
-	internal protected virtual UIMouseWheelFocusType MouseWheelFocusType { get => UIMouseWheelFocusType.None; }
+	internal protected virtual UIMouseWheelFocusType mouseWheelFocusType { get => UIMouseWheelFocusType.None; }
 
-	[Browsable(false)]
-	[XmlIgnore]
-	public bool IsKeyboardFocused
+	public bool isKeyboardFocused
 	{
 		get => _isKeyboardFocused;
 		internal set
 		{
 			if (_isKeyboardFocused == value) return;
 			_isKeyboardFocused = value;
-			KeyboardFocusChanged();
+			// KeyboardFocusChanged();
 		}
 	}
 
-	protected virtual bool UseHoverRenderable { get => IsMouseInside && Active; }
+	protected virtual bool useHoverRenderable { get => isMouseInside && active; }
 
-	// public Action PlacedChanged = () => { };
-	// public Action VisibleChanged = () => { };
-	// public Action EnabledChanged = () => { };
+	public Action placedChanged = () => { };
+	public Action visibleChanged = () => { };
+	public Action enabledChanged = () => { };
 
-	// public Action LocationChanged = () => { };
-	// public Action SizeChanged = () => { };
-	// public Action LayoutUpdated = () => { };
+	public Action locationChanged = () => { };
+	public Action sizeChanged = () => { };
+	public Action layoutUpdated = () => { };
 
 	// public Action MouseLeft = () => { };
 	// public Action MouseEntered = () => { };
@@ -615,143 +510,110 @@ public class UIWidget
 	// public Action<Button> KeyDown = (keys) => { };
 	// public Action<Button> Char = (keys) => { };
 
-	[Browsable(false)]
-	[XmlIgnore]
-	public Action<UIRenderContext> BeforeRender = (context) => { };
-
-	[Browsable(false)]
-	[XmlIgnore]
-	public Action<UIRenderContext> AfterRender = (context) => { };
+	public Action<UIRenderContext> beforeRender = (context) => { };
+	public Action<UIRenderContext> afterRender = (context) => { };
 
 	public UIWidget()
 	{
-		Visible = true;
-		Enabled = true;
+		visible = true;
+		enabled = true;
 	}
 
-	public virtual IBrush GetCurrentBackground()
-	{
-		var result = Background;
+	// public virtual IBrush GetCurrentBackground()
+	// {
+	// 	var result = background;
 
-		if (!Enabled && DisabledBackground is not null)
-		{
-			result = DisabledBackground;
-		}
-		else if (Enabled && IsKeyboardFocused && FocusedBackground is not null)
-		{
-			result = FocusedBackground;
-		}
-		else if (UseHoverRenderable && OverBackground is not null)
-		{
-			result = OverBackground;
-		}
+	// 	if (!enabled && disabledBackground is not null)
+	// 	{
+	// 		result = disabledBackground;
+	// 	}
+	// 	else if (enabled && isKeyboardFocused && focusedBackground is not null)
+	// 	{
+	// 		result = focusedBackground;
+	// 	}
+	// 	else if (useHoverRenderable && overBackground is not null)
+	// 	{
+	// 		result = overBackground;
+	// 	}
 
-		return result;
-	}
+	// 	return result;
+	// }
 
-	public virtual IBrush GetCurrentBorder()
-	{
-		var result = Border;
+	// public virtual IBrush GetCurrentBorder()
+	// {
+	// 	var result = border;
 
-		if (!Enabled && DisabledBorder is not null)
-		{
-			result = DisabledBorder;
-		}
-		else if (Enabled && IsKeyboardFocused && FocusedBorder is not null)
-		{
-			result = FocusedBorder;
-		}
-		else if (UseHoverRenderable && OverBorder is not null)
-		{
-			result = OverBorder;
-		}
+	// 	if (!enabled && disabledBorder is not null)
+	// 	{
+	// 		result = disabledBorder;
+	// 	}
+	// 	else if (enabled && isKeyboardFocused && focusedBorder is not null)
+	// 	{
+	// 		result = focusedBorder;
+	// 	}
+	// 	else if (useHoverRenderable && overBorder is not null)
+	// 	{
+	// 		result = overBorder;
+	// 	}
 
-		return result;
-	}
-
-	public void BringToFront()
-	{
-		if (Parent is not null && !(Parent is UIIMultipleItemsContainer)) return;
-
-		var widgets = (Parent as UIIMultipleItemsContainer)?.Widgets ?? Desktop!.widgets;
-
-		if (widgets[widgets.Count - 1] == this) return;
-
-		widgets.Remove(this);
-		widgets.Add(this);
-	}
-
-	public void BringToBack()
-	{
-		if (Parent is not null && !(Parent is UIIMultipleItemsContainer)) return;
-
-		var widgets = (Parent as UIIMultipleItemsContainer)?.Widgets ?? Desktop!.widgets;
-
-		if (widgets[widgets.Count - 1] == this) return;
-
-		widgets.Remove(this);
-		widgets.Insert(0, this);
-	}
+	// 	return result;
+	// }
 
 	public void Render(UIRenderContext context)
 	{
-		if (!Visible) return;
+		if (!visible) return;
 
 		UpdateLayout();
 
 		var oldScissorRectangle = context.scissor;
-		if (ClipToBounds)
+		if (clipToBounds)
 		{
-			var newScissorRectangle = RectInt.Intersect(oldScissorRectangle, Bounds);
+			var newScissorRectangle = RectInt.Intersect(oldScissorRectangle, bounds);
 			if (newScissorRectangle.isEmpty) return;
 
 			context.scissor = newScissorRectangle;
 		}
 
-		var oldOpacity = context.opacity;
-		context.opacity *= Opacity;
-
-		BeforeRender(context);
+		beforeRender(context);
 
 		// Background
 		var background = GetCurrentBackground();
 		if (background is not null)
 		{
-			background.Draw(context, BackgroundBounds);
+			background.Draw(context, backgroundBounds);
 		}
 
 		// Borders
 		var border = GetCurrentBorder();
 		if (border is not null)
 		{
-			var borderBounds = BorderBounds;
-			if (BorderThickness.Left > 0)
+			var borderBounds = this.borderBounds;
+			if (borderThickness.Left > 0)
 			{
-				border.Draw(context, new(borderBounds.x, borderBounds.y, BorderThickness.Left, borderBounds.height));
+				border.Draw(context, new(borderBounds.x, borderBounds.y, borderThickness.Left, borderBounds.height));
 			}
 
-			if (BorderThickness.Top > 0)
+			if (borderThickness.Top > 0)
 			{
-				border.Draw(context, new(borderBounds.x, borderBounds.y, borderBounds.width, BorderThickness.Top));
+				border.Draw(context, new(borderBounds.x, borderBounds.y, borderBounds.width, borderThickness.Top));
 			}
 
-			if (BorderThickness.Right > 0)
+			if (borderThickness.Right > 0)
 			{
-				border.Draw(context, new(borderBounds.right - BorderThickness.Right, borderBounds.y, BorderThickness.Right, borderBounds.height));
+				border.Draw(context, new(borderBounds.right - borderThickness.Right, borderBounds.y, borderThickness.Right, borderBounds.height));
 			}
 
-			if (BorderThickness.Bottom > 0)
+			if (borderThickness.Bottom > 0)
 			{
-				border.Draw(context, new(borderBounds.x, borderBounds.bottom - BorderThickness.Bottom, borderBounds.width, BorderThickness.Bottom));
+				border.Draw(context, new(borderBounds.x, borderBounds.bottom - borderThickness.Bottom, borderBounds.width, borderThickness.Bottom));
 			}
 		}
 
 		InternalRender(context);
 
-		AfterRender(context);
+		afterRender(context);
 
 		// Restore context settings
-		context.opacity = oldOpacity;
 
 		// Optional debug rendering
 		// if (MyraEnvironment.DrawWidgetsFrames)
@@ -769,7 +631,7 @@ public class UIWidget
 		// 	context.DrawRectangle(Bounds, Color.yellow);
 		// }
 
-		if (ClipToBounds)
+		if (clipToBounds)
 		{
 			// Restore scissor
 			context.scissor = oldScissorRectangle;
@@ -779,6 +641,30 @@ public class UIWidget
 	public virtual void InternalRender(UIRenderContext context) { }
 
 	#region Layout
+
+	public void BringToFront()
+	{
+		if (parent is not null && !(parent is UIIMultipleItemsContainer)) return;
+
+		var widgets = (parent as UIIMultipleItemsContainer)?.Widgets ?? UICanvas.widgets;
+
+		if (widgets[widgets.Count - 1] == this) return;
+
+		widgets.Remove(this);
+		widgets.Add(this);
+	}
+
+	public void BringToBack()
+	{
+		if (parent is not null && !(parent is UIIMultipleItemsContainer)) return;
+
+		var widgets = (parent as UIIMultipleItemsContainer)?.Widgets ?? UICanvas.widgets;
+
+		if (widgets[widgets.Count - 1] == this) return;
+
+		widgets.Remove(this);
+		widgets.Insert(0, this);
+	}
 
 	public Vector2Int Measure(Vector2Int availableSize)
 	{
@@ -790,26 +676,26 @@ public class UIWidget
 		Vector2Int result;
 
 		// Lerp available size by Width/Height or MaxWidth/MaxHeight
-		if (Width is not null && availableSize.x > Width.Value)
+		if (width is not null && availableSize.x > width.Value)
 		{
-			availableSize.x = Width.Value;
+			availableSize.x = width.Value;
 		}
-		else if (MaxWidth is not null && availableSize.x > MaxWidth.Value)
+		else if (maxWidth is not null && availableSize.x > maxWidth.Value)
 		{
-			availableSize.x = MaxWidth.Value;
-		}
-
-		if (Height is not null && availableSize.y > Height.Value)
-		{
-			availableSize.y = Height.Value;
-		}
-		else if (MaxHeight is not null && availableSize.y > MaxHeight.Value)
-		{
-			availableSize.y = MaxHeight.Value;
+			availableSize.x = maxWidth.Value;
 		}
 
-		availableSize.x -= MBPWidth;
-		availableSize.y -= MBPHeight;
+		if (height is not null && availableSize.y > height.Value)
+		{
+			availableSize.y = height.Value;
+		}
+		else if (maxHeight is not null && availableSize.y > maxHeight.Value)
+		{
+			availableSize.y = maxHeight.Value;
+		}
+
+		availableSize.x -= mbpWidth;
+		availableSize.y -= mbpHeight;
 
 		// Do the actual measure
 		// Previously I skipped this step if both Width & Height were set
@@ -818,42 +704,42 @@ public class UIWidget
 		result = InternalMeasure(availableSize);
 
 		// Result lerp
-		if (Width.HasValue)
+		if (width.HasValue)
 		{
-			result.x = Width.Value;
+			result.x = width.Value;
 		}
 		else
 		{
-			if (MinWidth.HasValue && result.x < MinWidth.Value)
+			if (minWidth.HasValue && result.x < minWidth.Value)
 			{
-				result.x = MinWidth.Value;
+				result.x = minWidth.Value;
 			}
 
-			if (MaxWidth.HasValue && result.x > MaxWidth.Value)
+			if (maxWidth.HasValue && result.x > maxWidth.Value)
 			{
-				result.x = MaxWidth.Value;
+				result.x = maxWidth.Value;
 			}
 		}
 
-		if (Height.HasValue)
+		if (height.HasValue)
 		{
-			result.y = Height.Value;
+			result.y = height.Value;
 		}
 		else
 		{
-			if (MinHeight.HasValue && result.y < MinHeight.Value)
+			if (minHeight.HasValue && result.y < minHeight.Value)
 			{
-				result.y = MinHeight.Value;
+				result.y = minHeight.Value;
 			}
 
-			if (MaxHeight.HasValue && result.y > MaxHeight.Value)
+			if (maxHeight.HasValue && result.y > maxHeight.Value)
 			{
-				result.y = MaxHeight.Value;
+				result.y = maxHeight.Value;
 			}
 		}
 
-		result.x += MBPWidth;
-		result.y += MBPHeight;
+		result.x += mbpWidth;
+		result.y += mbpHeight;
 
 		_lastMeasureSize = result;
 		_lastMeasureAvailableSize = availableSize;
@@ -899,7 +785,7 @@ public class UIWidget
 		{
 			// Full rearrange
 			Vector2Int size;
-			if (HorizontalAlignment != UIAlignment.Fill || VerticalAlignment != UIAlignment.Fill)
+			if (horizontalAlignment != UIAlignment.Fill || verticalAlignment != UIAlignment.Fill)
 			{
 				size = Measure(_containerBounds.size);
 			}
@@ -921,21 +807,21 @@ public class UIWidget
 			// Resolve possible conflict beetween Alignment set to Streth and Size explicitly set
 			var containerSize = _containerBounds.size;
 
-			if (HorizontalAlignment == UIAlignment.Fill && Width is not null && Width.Value < containerSize.x)
+			if (horizontalAlignment == UIAlignment.Fill && width is not null && width.Value < containerSize.x)
 			{
-				containerSize.x = Width.Value;
+				containerSize.x = width.Value;
 			}
 
-			if (VerticalAlignment == UIAlignment.Fill && Height is not null && Height.Value < containerSize.y)
+			if (verticalAlignment == UIAlignment.Fill && height is not null && height.Value < containerSize.y)
 			{
-				containerSize.y = Height.Value;
+				containerSize.y = height.Value;
 			}
 
 			// Align
-			var controlBounds = AlignLayout(containerSize, size, VerticalAlignment, VerticalAlignment, Parent is null);
+			var controlBounds = AlignLayout(containerSize, size, verticalAlignment, verticalAlignment, parent is null);
 			controlBounds.Offset(_containerBounds.position);
 
-			controlBounds.Offset(Left, Top);
+			controlBounds.Offset(left, top);
 
 			_bounds = controlBounds;
 			_actualBounds = CalculateClientBounds(controlBounds);
@@ -947,13 +833,13 @@ public class UIWidget
 		else
 		{
 			// Only location
-			MoveChildren(new(Left - _lastLocationHint.x, Top - _lastLocationHint.y));
+			MoveChildren(new(left - _lastLocationHint.x, top - _lastLocationHint.y));
 		}
 
-		_lastLocationHint = new(Left, Top);
+		_lastLocationHint = new(left, top);
 		_layoutState = LayoutState.Normal;
 
-		LayoutUpdated?.Invoke();
+		layoutUpdated?.Invoke();
 	}
 
 	public static RectInt AlignLayout(Vector2Int containerSize, Vector2Int controlSize, UIAlignment horizontalAlignment, UIAlignment verticalAlignment, bool isTopLevel = false)
@@ -991,18 +877,18 @@ public class UIWidget
 
 	void CalculateRelativePositions()
 	{
-		RelativeLeft = Left - Bounds.x;
-		RelativeTop = Top - Bounds.y;
+		_relativeLeft = left - bounds.x;
+		_relativeTop = top - bounds.y;
 
-		if (Parent is not null)
+		if (parent is not null)
 		{
-			RelativeRight = Left + Parent.Bounds.width - Bounds.x;
-			RelativeBottom = Top + Parent.Bounds.height - Bounds.y;
+			_relativeRight = left + parent.bounds.width - bounds.x;
+			_relativeBottom = top + parent.bounds.height - bounds.y;
 		}
 		else
 		{
-			RelativeRight = Left + Desktop!.internalBounds.width - Bounds.x;
-			RelativeBottom = Top + Desktop!.internalBounds.height - Bounds.y;
+			_relativeRight = left + UICanvas.internalBounds.width - bounds.x;
+			_relativeBottom = top + UICanvas.internalBounds.height - bounds.y;
 		}
 	}
 
@@ -1012,25 +898,25 @@ public class UIWidget
 
 		InvalidateLayout();
 
-		if (Parent is not null)
+		if (parent is not null)
 		{
-			Parent.InvalidateMeasure();
+			parent.InvalidateMeasure();
 		}
-		else if (Desktop is not null)
+		else if (UICanvas is not null)
 		{
-			Desktop.InvalidateLayout();
+			UICanvas.InvalidateLayout();
 		}
 	}
 
-	internal RectInt CalculateClientBounds(RectInt clientBounds) => clientBounds - Margin - BorderThickness - Padding;
+	internal RectInt CalculateClientBounds(RectInt clientBounds) => clientBounds - margin - borderThickness - padding;
 
 	void ConstrainToBounds(ref int newLeft, ref int newTop)
 	{
-		if (newLeft < RelativeLeft) newLeft = RelativeLeft;
-		if (newTop < RelativeTop) newTop = RelativeTop;
+		if (newLeft < _relativeLeft) newLeft = _relativeLeft;
+		if (newTop < _relativeTop) newTop = _relativeTop;
 
-		if (newTop + Bounds.height > RelativeBottom) newTop = RelativeBottom - Bounds.height;
-		if (newLeft + Bounds.width > RelativeRight) newLeft = RelativeRight - Bounds.width;
+		if (newTop + bounds.height > _relativeBottom) newTop = _relativeBottom - bounds.height;
+		if (newLeft + bounds.width > _relativeRight) newLeft = _relativeRight - bounds.width;
 	}
 
 	#endregion Layout
@@ -1090,11 +976,11 @@ public class UIWidget
 
 	public void RemoveFromParent()
 	{
-		if (Parent is null) return;
-		Parent.RemoveChild(this);
+		if (parent is null) return;
+		parent.RemoveChild(this);
 	}
 
-	public void RemoveFromDesktop() => Desktop!.widgets.Remove(this);
+	public void RemoveFromDesktop() => UICanvas.widgets.Remove(this);
 
 	#endregion Hierarchy Management
 
@@ -1102,35 +988,35 @@ public class UIWidget
 
 	public void ApplyWidgetStyle(WidgetStyle style)
 	{
-		Width = style.width;
-		Height = style.height;
-		MinWidth = style.MinWidth;
-		MinHeight = style.MinHeight;
-		MaxWidth = style.MaxWidth;
-		MaxHeight = style.MaxHeight;
+		width = style.width;
+		height = style.height;
+		minWidth = style.MinWidth;
+		minHeight = style.MinHeight;
+		maxWidth = style.MaxWidth;
+		maxHeight = style.MaxHeight;
 
-		Background = style.Background;
-		OverBackground = style.OverBackground;
-		DisabledBackground = style.DisabledBackground;
-		FocusedBackground = style.FocusedBackground;
+		background = style.Background;
+		overBackground = style.OverBackground;
+		disabledBackground = style.DisabledBackground;
+		focusedBackground = style.FocusedBackground;
 
-		Border = style.Border;
-		OverBorder = style.OverBorder;
-		DisabledBorder = style.DisabledBorder;
-		FocusedBorder = style.FocusedBorder;
+		border = style.Border;
+		overBorder = style.OverBorder;
+		disabledBorder = style.DisabledBorder;
+		focusedBorder = style.FocusedBorder;
 
-		Margin = style.Margin;
-		BorderThickness = style.BorderThickness;
-		Padding = style.Padding;
+		margin = style.Margin;
+		borderThickness = style.BorderThickness;
+		padding = style.Padding;
 	}
 
 	public void SetStyle(Stylesheet stylesheet, string name)
 	{
-		StyleName = name;
+		styleName = name;
 
-		if (StyleName is not null)
+		if (styleName is not null)
 		{
-			InternalSetStyle(stylesheet, StyleName);
+			InternalSetStyle(stylesheet, styleName);
 		}
 	}
 
@@ -1144,21 +1030,21 @@ public class UIWidget
 
 	public virtual void OnMouseLeft()
 	{
-		IsMouseInside = false;
+		isMouseInside = false;
 		// MouseLeft();
 	}
 
 	public virtual void OnMouseEntered()
 	{
-		IsMouseInside = true;
-		Desktop!.mouseInsideWidget = this;
+		isMouseInside = true;
+		UICanvas.mouseInsideWidget = this;
 		// MouseEntered();
 	}
 
 	public virtual void OnMouseMoved()
 	{
-		IsMouseInside = true;
-		Desktop!.mouseInsideWidget = this;
+		isMouseInside = true;
+		UICanvas.mouseInsideWidget = this;
 		// MouseMoved();
 	}
 
@@ -1166,43 +1052,43 @@ public class UIWidget
 
 	public virtual void OnMouseWheel(float delta) => MouseWheelChanged(delta);
 
-	public virtual void OnTouchLeft()
+	public virtual void OnClickLeft()
 	{
-		IsTouchInside = false;
+		isTouchInside = false;
 		// TouchLeft();
 	}
 
-	public virtual void OnTouchEntered()
+	public virtual void OnClickEntered()
 	{
-		IsTouchInside = true;
+		isTouchInside = true;
 		// TouchEntered();
 	}
 
-	public virtual void OnTouchMoved()
+	public virtual void OnDragMoved()
 	{
-		IsTouchInside = true;
+		isTouchInside = true;
 		// TouchMoved();
 	}
 
-	public virtual void OnTouchDown()
+	public virtual void OnClick()
 	{
-		IsTouchInside = true;
+		isTouchInside = true;
 
-		if (Enabled)
+		if (enabled)
 		{
-			Desktop!.focusedWidget = this;
+			UICanvas.focusedWidget = this;
 		}
 
-		var x = Bounds.x;
-		var y = Bounds.y;
+		var x = this.bounds.x;
+		var y = this.bounds.y;
 
-		var bounds = DragHandle is not null ? new RectInt(x, y, DragHandle.Bounds.right - x, DragHandle.Bounds.bottom - y) : RectInt.zero;
+		var bounds = dragHandle is not null ? new RectInt(x, y, dragHandle.bounds.right - x, dragHandle.bounds.bottom - y) : RectInt.zero;
 
-		var touchPos = Desktop!.touchPosition;
+		var touchPos = UICanvas.clickPosition;
 
 		if (bounds == RectInt.zero || bounds.Contains(touchPos))
 		{
-			_startPos = new(touchPos.x - Left, touchPos.y - Top);
+			_startPos = new(touchPos.x - left, touchPos.y - top);
 		}
 
 		// TouchDown();
@@ -1211,46 +1097,46 @@ public class UIWidget
 	public virtual void OnTouchUp()
 	{
 		_startPos = null;
-		IsTouchInside = false;
+		isTouchInside = false;
 		// TouchUp();
 	}
 
 	void SubscribeOnTouchMoved(bool subscribe)
 	{
-		if (Parent is not null)
+		if (parent is not null)
 		{
-			Parent.TouchMoved -= DesktopOnTouchMoved;
-			Parent.TouchUp -= DesktopTouchUp;
+			parent.TouchMoved -= DesktopOnTouchMoved;
+			parent.TouchUp -= DesktopTouchUp;
 		}
-		else if (Desktop is not null)
+		else if (UICanvas is not null)
 		{
-			Desktop.TouchMoved -= DesktopOnTouchMoved;
-			Desktop.TouchUp -= DesktopTouchUp;
+			UICanvas.TouchMoved -= DesktopOnTouchMoved;
+			UICanvas.TouchUp -= DesktopTouchUp;
 		}
 
 		if (subscribe)
 		{
-			if (Parent is not null)
+			if (parent is not null)
 			{
-				Parent.TouchMoved += DesktopOnTouchMoved;
-				Parent.TouchUp += DesktopTouchUp;
+				parent.TouchMoved += DesktopOnTouchMoved;
+				parent.TouchUp += DesktopTouchUp;
 			}
-			else if (Desktop is not null)
+			else if (UICanvas is not null)
 			{
-				Desktop.TouchMoved += DesktopOnTouchMoved;
-				Desktop.TouchUp += DesktopTouchUp;
+				UICanvas.TouchMoved += DesktopOnTouchMoved;
+				UICanvas.TouchUp += DesktopTouchUp;
 			}
 		}
 	}
 
 	void DesktopOnTouchMoved()
 	{
-		if (_startPos is null || !IsDraggable) return;
+		if (_startPos is null || !isDraggable) return;
 
-		var position = new Vector2Int(Desktop!.touchPosition.x - _startPos.Value.x, Desktop!.touchPosition.y - _startPos.Value.y);
+		var position = new Vector2Int(UICanvas.clickPosition.x - _startPos.Value.x, UICanvas.clickPosition.y - _startPos.Value.y);
 
-		var newLeft = Left;
-		var newTop = Top;
+		var newLeft = left;
+		var newTop = top;
 
 		if (dragDirection.HasFlag(UIDragDirection.Horizontal)) newLeft = position.x;
 
@@ -1258,13 +1144,23 @@ public class UIWidget
 
 		ConstrainToBounds(ref newLeft, ref newTop);
 
-		Left = newLeft;
-		Top = newTop;
+		left = newLeft;
+		top = newTop;
 	}
 
 	void DesktopTouchUp() => _startPos = null;
 
-	public virtual bool TestPoint(Vector2Int point) => Bounds.Contains(point);
+	public virtual UIWidget? GetWidgetAtPoint(Vector2Int point)
+	{
+		if (!active || !visible || !enabled) return null;
+
+		if (bounds.Contains(point))
+		{
+			return this;
+		}
+
+		return null;
+	}
 
 	#endregion Mouse Input
 
@@ -1274,9 +1170,9 @@ public class UIWidget
 	{
 		if (!OnButtonPressed(button))
 		{
-			if (Parent is null) return;
+			if (parent is null) return;
 
-			Parent.ButtonDown(button);
+			parent.ButtonDown(button);
 		}
 	}
 
@@ -1286,9 +1182,9 @@ public class UIWidget
 	{
 		if (!OnButtonDown(button))
 		{
-			if (Parent is null) return;
+			if (parent is null) return;
 
-			Parent.ButtonDown(button);
+			parent.ButtonDown(button);
 		}
 	}
 
@@ -1298,9 +1194,9 @@ public class UIWidget
 	{
 		if (!OnButtonReleased(button))
 		{
-			if (Parent is null) return;
+			if (parent is null) return;
 
-			Parent.ButtonDown(button);
+			parent.ButtonDown(button);
 		}
 	}
 
@@ -1310,9 +1206,9 @@ public class UIWidget
 	{
 		if (!OnButtonEntered(button))
 		{
-			if (Parent is null) return;
+			if (parent is null) return;
 
-			Parent.ButtonDown(button);
+			parent.ButtonDown(button);
 		}
 	}
 
@@ -1322,33 +1218,33 @@ public class UIWidget
 	{
 		if (!OnTextInput(textInput))
 		{
-			if (Parent is null) return;
+			if (parent is null) return;
 
-			Parent.TextInput(textInput);
+			parent.TextInput(textInput);
 		}
 	}
 
 	protected virtual bool OnTextInput(string textInput) => false;
 
-	public virtual void OnLostKeyboardFocus() => IsKeyboardFocused = false;
+	public virtual void OnLostKeyboardFocus() => isKeyboardFocused = false;
 
-	public virtual void OnGotKeyboardFocus() => IsKeyboardFocused = true;
+	public virtual void OnGotKeyboardFocus() => isKeyboardFocused = true;
 
-	public void SetKeyboardFocus() => Desktop!.focusedWidget = this;
+	public void SetKeyboardFocus() => UICanvas.focusedWidget = this;
 
 	#endregion Keyboard Input
 
-	protected virtual void OnPlacedChanged() => PlacedChanged();
+	protected virtual void OnPlacedChanged() => placedChanged();
 
 	public virtual void OnVisibleChanged()
 	{
 		InvalidateMeasure();
-		VisibleChanged();
+		visibleChanged();
 	}
 
 	protected internal virtual void OnActiveChanged() { }
 
-	void FireLocationChanged() => LocationChanged();
+	void FireLocationChanged() => locationChanged();
 
-	void FireSizeChanged() => SizeChanged();
+	void FireSizeChanged() => sizeChanged();
 }

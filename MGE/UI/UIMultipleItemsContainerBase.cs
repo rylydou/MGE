@@ -21,17 +21,17 @@ public class UIMultipleItemsContainerBase : UIContainer, UIIMultipleItemsContain
 	public virtual ObservableCollection<UIWidget> Widgets { get => _widgets; }
 
 	[DefaultValue(UIAlignment.Fill)]
-	public override UIAlignment HorizontalAlignment { get => base.HorizontalAlignment; set => base.HorizontalAlignment = value; }
+	public override UIAlignment horizontalAlignment { get => base.horizontalAlignment; set => base.horizontalAlignment = value; }
 
 	[DefaultValue(UIAlignment.Fill)]
-	public override UIAlignment VerticalAlignment { get => base.VerticalAlignment; set => base.VerticalAlignment = value; }
+	public override UIAlignment verticalAlignment { get => base.verticalAlignment; set => base.verticalAlignment = value; }
 
 	public UIMultipleItemsContainerBase()
 	{
 		_widgets.CollectionChanged += WidgetsOnCollectionChanged;
 
-		HorizontalAlignment = UIAlignment.Fill;
-		VerticalAlignment = UIAlignment.Fill;
+		horizontalAlignment = UIAlignment.Fill;
+		verticalAlignment = UIAlignment.Fill;
 	}
 
 	public override UIWidget GetChild(int index) => _widgets[index];
@@ -42,24 +42,24 @@ public class UIMultipleItemsContainerBase : UIContainer, UIIMultipleItemsContain
 		{
 			foreach (UIWidget w in args.NewItems!)
 			{
-				w.Desktop = Desktop;
-				w.Parent = this;
+				w.desktop = desktop;
+				w.parent = this;
 			}
 		}
 		else if (args.Action == NotifyCollectionChangedAction.Remove)
 		{
 			foreach (UIWidget w in args.OldItems!)
 			{
-				w.Desktop = null;
-				w.Parent = null;
+				w.desktop = null;
+				w.parent = null;
 			}
 		}
 		else if (args.Action == NotifyCollectionChangedAction.Reset)
 		{
 			foreach (UIWidget w in ChildrenCopy)
 			{
-				w.Desktop = null;
-				w.Parent = null;
+				w.desktop = null;
+				w.parent = null;
 			}
 		}
 

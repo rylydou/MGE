@@ -145,13 +145,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Input.OnKeyDown(e);
 	}
 
-	protected override void OnKeyUp(KeyboardKeyEventArgs e)
-	{
-		base.OnKeyUp(e);
-
-		Input.OnKeyUp(e);
-	}
-
 	protected override void OnTextInput(TextInputEventArgs e)
 	{
 		base.OnTextInput(e);

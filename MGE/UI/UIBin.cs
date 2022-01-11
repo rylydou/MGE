@@ -17,8 +17,8 @@ public abstract class UISingleItemContainer<T> : UIContainer where T : UIWidget
 		{
 			if (_internalChild is not null)
 			{
-				_internalChild.Parent = null;
-				_internalChild.Desktop = null;
+				_internalChild.parent = null;
+				_internalChild.desktop = null;
 
 				_internalChild = null;
 			}
@@ -27,8 +27,8 @@ public abstract class UISingleItemContainer<T> : UIContainer where T : UIWidget
 
 			if (_internalChild is not null)
 			{
-				_internalChild.Parent = this;
-				_internalChild.Desktop = Desktop;
+				_internalChild.parent = this;
+				_internalChild.desktop = desktop;
 			}
 
 			InvalidateChildren();
@@ -50,7 +50,7 @@ public abstract class UISingleItemContainer<T> : UIContainer where T : UIWidget
 
 		if (InternalChild is null) return;
 
-		InternalChild.Layout(ActualBounds);
+		InternalChild.Layout(actualBounds);
 	}
 
 	protected override Vector2Int InternalMeasure(Vector2Int availableSize)

@@ -26,32 +26,32 @@ public abstract class UIContainer : UIWidget
 		}
 	}
 
-	public override bool Enabled
+	public override bool enabled
 	{
-		get => base.Enabled;
+		get => base.enabled;
 		set
 		{
-			if (base.Enabled == value) return;
+			if (base.enabled == value) return;
 
-			base.Enabled = value;
+			base.enabled = value;
 
 			foreach (var item in ChildrenCopy)
 			{
-				item.Enabled = value;
+				item.enabled = value;
 			}
 		}
 	}
 
-	public override UIDesktop? Desktop
+	public override UICanvas? desktop
 	{
-		get => base.Desktop;
+		get => base.desktop;
 		internal set
 		{
-			base.Desktop = value;
+			base.desktop = value;
 
 			foreach (var child in ChildrenCopy)
 			{
-				child.Desktop = value;
+				child.desktop = value;
 			}
 		}
 	}
@@ -101,30 +101,30 @@ public abstract class UIContainer : UIWidget
 		ChildrenCopy.ProcessMouseMovement();
 	}
 
-	public override void OnTouchEntered()
+	public override void OnClickEntered()
 	{
-		base.OnTouchEntered();
+		base.OnClickEntered();
 
-		ChildrenCopy.ProcessTouchMovement();
+		ChildrenCopy.ProcessDragMovement();
 	}
 
-	public override void OnTouchLeft()
+	public override void OnClickLeft()
 	{
-		base.OnTouchLeft();
+		base.OnClickLeft();
 
-		ChildrenCopy.ProcessTouchMovement();
+		ChildrenCopy.ProcessDragMovement();
 	}
 
-	public override void OnTouchMoved()
+	public override void OnDragMoved()
 	{
-		base.OnTouchMoved();
+		base.OnDragMoved();
 
-		ChildrenCopy.ProcessTouchMovement();
+		ChildrenCopy.ProcessDragMovement();
 	}
 
-	public override void OnTouchDown()
+	public override void OnClick()
 	{
-		base.OnTouchDown();
+		base.OnClick();
 
 		ChildrenCopy.ProcessTouchDown();
 	}
@@ -149,7 +149,7 @@ public abstract class UIContainer : UIWidget
 
 		foreach (var child in ChildrenCopy)
 		{
-			if (!child.Visible) continue;
+			if (!child.visible) continue;
 
 			child.MoveChildren(delta);
 		}
@@ -159,7 +159,7 @@ public abstract class UIContainer : UIWidget
 	{
 		foreach (var child in ChildrenCopy)
 		{
-			if (!child.Visible) continue;
+			if (!child.visible) continue;
 
 			child.Render(context);
 		}
@@ -171,7 +171,7 @@ public abstract class UIContainer : UIWidget
 
 		foreach (var child in ChildrenCopy)
 		{
-			if (visibleOnly && !child.Visible) continue;
+			if (visibleOnly && !child.visible) continue;
 
 			var asCont = child as UIContainer;
 			if (asCont is not null)
@@ -309,5 +309,19 @@ public abstract class UIContainer : UIWidget
 		}
 
 		return null;
+	}
+
+	public override UIWidget? GetWidgetAtPoint(Vector2Int point)
+	{
+		if (base.GetWidgetAtPoint(point) is null) return null;
+
+		foreach (var child in _childrenCopy)
+		{
+			var hit = child.GetWidgetAtPoint(point);
+
+			if (hit is not null) return hit;
+		}
+
+		return this;
 	}
 }

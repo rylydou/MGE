@@ -19,7 +19,7 @@ public static class GFX
 	const DrawElementsType ELEMENTS_TYPE = DrawElementsType.UnsignedShort;
 #endif
 
-	class BatchItem
+	class SpriteBatchItem
 	{
 		public readonly BatchKey key;
 
@@ -28,7 +28,7 @@ public static class GFX
 
 		public VertexIndex vertexCount;
 
-		public BatchItem(BatchKey key)
+		public SpriteBatchItem(BatchKey key)
 		{
 			this.key = key;
 		}
@@ -43,9 +43,9 @@ public static class GFX
 		}
 	}
 
-	static AutoDictionary<BatchKey, BatchItem> _batches = new(v => v.key);
+	static AutoDictionary<BatchKey, SpriteBatchItem> _batches = new(v => v.key);
 #nullable disable
-	static BatchItem _batch;
+	static SpriteBatchItem _batch;
 #nullable restore
 	static VertexIndex _batchIndexOffset;
 

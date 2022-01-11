@@ -1,17 +1,19 @@
+using System;
 using System.Collections.Generic;
 
 namespace MGE.UI;
 
+[Obsolete(null, true)]
 internal static class UIInputHelpers
 {
 	private static bool CommonTouchCheck(this UIWidget w)
 	{
-		return w.Visible && w.Active && w.Enabled && w.ContainsTouch;
+		return w.visible && w.active && w.enabled && w.containsTouch;
 	}
 
 	private static bool CommonMouseCheck(this UIWidget w)
 	{
-		return w.Visible && w.Active && w.Enabled && w.ContainsMouse;
+		return w.visible && w.active && w.enabled && w.containsMouse;
 	}
 
 	public static bool FallsThrough(this UIWidget w, Vector2Int p)
@@ -20,7 +22,7 @@ internal static class UIInputHelpers
 		if (!(w is UIGrid || w is UIStackPanel || w is UIPanel || w is UISplitPane || w is UIScrollViewer)) return false;
 
 		// Real containers are solid only if backround is set
-		if (w.Background is not null) return false;
+		if (w.background is not null) return false;
 
 		var asScrollViewer = w as UIScrollViewer;
 		if (asScrollViewer is not null)
@@ -41,12 +43,12 @@ internal static class UIInputHelpers
 			if (w.CommonTouchCheck())
 			{
 				// Since OnTouchDown may reset Desktop, we need to save break condition before calling it
-				var doBreak = w.Desktop is not null && !w.FallsThrough(w.Desktop.touchPosition);
-				w.OnTouchDown();
+				var doBreak = w.desktop is not null && !w.FallsThrough(w.desktop.clickPosition);
+				w.OnClick();
 				if (doBreak) break;
 			}
 
-			if (w.IsModal) break;
+			if (w.isModal) break;
 		}
 	}
 
@@ -56,7 +58,7 @@ internal static class UIInputHelpers
 		{
 			var w = widgets[i];
 
-			if (w.IsTouchInside)
+			if (w.isTouchInside)
 			{
 				w.OnTouchUp();
 			}
@@ -72,10 +74,10 @@ internal static class UIInputHelpers
 			if (w.CommonTouchCheck())
 			{
 				w.OnTouchDoubleClick();
-				if (w.Desktop != null && !w.FallsThrough(w.Desktop.touchPosition)) break;
+				if (w.desktop != null && !w.FallsThrough(w.desktop.clickPosition)) break;
 			}
 
-			if (w.IsModal) break;
+			if (w.isModal) break;
 		}
 	}
 
@@ -85,7 +87,7 @@ internal static class UIInputHelpers
 		for (var i = widgets.Count - 1; i >= 0; --i)
 		{
 			var w = widgets[i];
-			if (!w.ContainsMouse && w.IsMouseInside)
+			if (!w.containsMouse && w.isMouseInside)
 			{
 				w.OnMouseLeft();
 			}
@@ -98,8 +100,8 @@ internal static class UIInputHelpers
 
 			if (w.CommonMouseCheck())
 			{
-				var isMouseOver = w.ContainsMouse;
-				var wasMouseOver = w.IsMouseInside;
+				var isMouseOver = w.containsMouse;
+				var wasMouseOver = w.isMouseInside;
 
 				if (isMouseOver && !wasMouseOver)
 				{
@@ -111,22 +113,22 @@ internal static class UIInputHelpers
 					w.OnMouseMoved();
 				}
 
-				if (w.Desktop != null && !w.FallsThrough(w.Desktop.mousePosition)) break;
+				if (w.desktop != null && !w.FallsThrough(w.desktop.mousePosition)) break;
 			}
 
-			if (w.IsModal) break;
+			if (w.isModal) break;
 		}
 	}
 
-	public static void ProcessTouchMovement(this List<UIWidget> widgets)
+	public static void ProcessDragMovement(this List<UIWidget> widgets)
 	{
 		// First run: call on OnTouchLeft on all widgets if it is required
 		for (var i = widgets.Count - 1; i >= 0; --i)
 		{
 			var w = widgets[i];
-			if (!w.ContainsTouch && w.IsTouchInside)
+			if (!w.containsTouch && w.isTouchInside)
 			{
-				w.OnTouchLeft();
+				w.OnClickLeft();
 			}
 		}
 
@@ -137,23 +139,23 @@ internal static class UIInputHelpers
 
 			if (w.CommonTouchCheck())
 			{
-				var isTouchOver = w.ContainsTouch;
-				var wasTouchOver = w.IsTouchInside;
+				var isTouchOver = w.containsTouch;
+				var wasTouchOver = w.isTouchInside;
 
 				if (isTouchOver && !wasTouchOver)
 				{
-					w.OnTouchEntered();
+					w.OnClickEntered();
 				}
 
 				if (isTouchOver && wasTouchOver)
 				{
-					w.OnTouchMoved();
+					w.OnDragMoved();
 				}
 
-				if (w.Desktop != null && !w.FallsThrough(w.Desktop.touchPosition)) break;
+				if (w.desktop != null && !w.FallsThrough(w.desktop.clickPosition)) break;
 			}
 
-			if (w.IsModal) break;
+			if (w.isModal) break;
 		}
 	}
 }
