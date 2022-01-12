@@ -183,7 +183,7 @@ public static class GFX
 	public static void DrawRect(Rect rect, Color color, float thickness = 1)
 	{
 		var outerRect = rect;
-		outerRect.Expand(thickness * 2);
+		outerRect.Expand(thickness);
 
 		SetBatch(Texture.pixelTexture);
 

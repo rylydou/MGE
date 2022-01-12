@@ -250,7 +250,6 @@ public struct Rect : IEquatable<Rect>
 
 	public void Expand(float amount)
 	{
-		amount = amount / 2;
 		_xMin -= amount;
 		_yMin -= amount;
 		_width += amount;

@@ -6,16 +6,19 @@ namespace MGE.UI;
 [Obsolete(null, true)]
 internal static class UIInputHelpers
 {
+	[Obsolete]
 	private static bool CommonTouchCheck(this UIWidget w)
 	{
-		return w.visible && w.active && w.enabled && w.containsTouch;
+		return w.visible && w.active && w.enabled && w.containsClick;
 	}
 
+	[Obsolete]
 	private static bool CommonMouseCheck(this UIWidget w)
 	{
 		return w.visible && w.active && w.enabled && w.containsMouse;
 	}
 
+	[Obsolete]
 	public static bool FallsThrough(this UIWidget w, Vector2Int p)
 	{
 		// Only containers can fall through
@@ -34,6 +37,7 @@ internal static class UIInputHelpers
 		return true;
 	}
 
+	[Obsolete]
 	public static void ProcessTouchDown(this List<UIWidget> widgets)
 	{
 		for (var i = widgets.Count - 1; i >= 0; --i)
@@ -43,7 +47,7 @@ internal static class UIInputHelpers
 			if (w.CommonTouchCheck())
 			{
 				// Since OnTouchDown may reset Desktop, we need to save break condition before calling it
-				var doBreak = w.desktop is not null && !w.FallsThrough(w.desktop.clickPosition);
+				var doBreak = !w.FallsThrough(UICanvas.clickPosition);
 				w.OnClick();
 				if (doBreak) break;
 			}
@@ -52,19 +56,21 @@ internal static class UIInputHelpers
 		}
 	}
 
+	[Obsolete]
 	public static void ProcessTouchUp(this List<UIWidget> widgets)
 	{
 		for (var i = widgets.Count - 1; i >= 0; --i)
 		{
 			var w = widgets[i];
 
-			if (w.isTouchInside)
+			if (w.isClicked)
 			{
 				w.OnTouchUp();
 			}
 		}
 	}
 
+	[Obsolete]
 	public static void ProcessTouchDoubleClick(this List<UIWidget> widgets)
 	{
 		for (var i = widgets.Count - 1; i >= 0; --i)
@@ -73,7 +79,7 @@ internal static class UIInputHelpers
 
 			if (w.CommonTouchCheck())
 			{
-				w.OnTouchDoubleClick();
+				w.OnDoubleClick();
 				if (w.desktop != null && !w.FallsThrough(w.desktop.clickPosition)) break;
 			}
 
@@ -81,13 +87,14 @@ internal static class UIInputHelpers
 		}
 	}
 
+	[Obsolete]
 	public static void ProcessMouseMovement(this List<UIWidget> widgets)
 	{
 		// First run: call on OnMouseLeft on all widgets if it is required
 		for (var i = widgets.Count - 1; i >= 0; --i)
 		{
 			var w = widgets[i];
-			if (!w.containsMouse && w.isMouseInside)
+			if (!w.containsMouse && w.isHoveredWithin)
 			{
 				w.OnMouseLeft();
 			}
@@ -101,7 +108,7 @@ internal static class UIInputHelpers
 			if (w.CommonMouseCheck())
 			{
 				var isMouseOver = w.containsMouse;
-				var wasMouseOver = w.isMouseInside;
+				var wasMouseOver = w.isHoveredWithin;
 
 				if (isMouseOver && !wasMouseOver)
 				{
@@ -113,20 +120,21 @@ internal static class UIInputHelpers
 					w.OnMouseMoved();
 				}
 
-				if (w.desktop != null && !w.FallsThrough(w.desktop.mousePosition)) break;
+				if (!w.FallsThrough(UICanvas.mousePosition)) break;
 			}
 
 			if (w.isModal) break;
 		}
 	}
 
+	[Obsolete]
 	public static void ProcessDragMovement(this List<UIWidget> widgets)
 	{
 		// First run: call on OnTouchLeft on all widgets if it is required
 		for (var i = widgets.Count - 1; i >= 0; --i)
 		{
 			var w = widgets[i];
-			if (!w.containsTouch && w.isTouchInside)
+			if (!w.containsClick && w.isClicked)
 			{
 				w.OnClickLeft();
 			}
@@ -139,12 +147,12 @@ internal static class UIInputHelpers
 
 			if (w.CommonTouchCheck())
 			{
-				var isTouchOver = w.containsTouch;
-				var wasTouchOver = w.isTouchInside;
+				var isTouchOver = w.containsClick;
+				var wasTouchOver = w.isClicked;
 
 				if (isTouchOver && !wasTouchOver)
 				{
-					w.OnClickEntered();
+					w.OnDragStart();
 				}
 
 				if (isTouchOver && wasTouchOver)
@@ -152,7 +160,7 @@ internal static class UIInputHelpers
 					w.OnDragMoved();
 				}
 
-				if (w.desktop != null && !w.FallsThrough(w.desktop.clickPosition)) break;
+				if (!w.FallsThrough(UICanvas.clickPosition)) break;
 			}
 
 			if (w.isModal) break;

@@ -1,16 +1,6 @@
 using System;
-using System.ComponentModel;
-using System.Reflection;
-using System.Xml.Serialization;
 
 namespace MGE.UI;
-
-public enum UIMouseWheelFocusType
-{
-	None,
-	Hover,
-	Focus
-}
 
 [System.Flags]
 public enum UIDragDirection
@@ -19,6 +9,58 @@ public enum UIDragDirection
 	Vertical = 1,
 	Horizontal = 2,
 	Both = Vertical | Horizontal
+}
+
+public struct Thickness : IEquatable<Thickness>
+{
+	public int left;
+	public int top;
+	public int right;
+	public int bottom;
+
+	public Thickness(int left, int top, int right, int bottom)
+	{
+		this.left = left;
+		this.top = top;
+		this.right = right;
+		this.bottom = bottom;
+	}
+
+	public int width { get => left + right; }
+	public int height { get => top + bottom; }
+
+	public override bool Equals(object? obj) => obj is Thickness thickness && Equals(thickness);
+	public bool Equals(Thickness other)
+	{
+		return
+			left == other.left &&
+			top == other.top &&
+			right == other.right &&
+			bottom == other.bottom;
+	}
+
+	public override int GetHashCode() => HashCode.Combine(left, top, right, bottom);
+
+	public static RectInt operator -(RectInt a, Thickness b)
+	{
+		var result = a;
+		result.x += b.left;
+		result.y += b.top;
+
+		result.width -= b.width;
+		if (result.width < 0)
+		{
+			result.width = 0;
+		}
+
+		result.height -= b.height;
+		if (result.height < 0)
+		{
+			result.height = 0;
+		}
+
+		return result;
+	}
 }
 
 public class UIWidget
@@ -30,38 +72,22 @@ public class UIWidget
 		Invalid
 	}
 
-	public string? Id;
+	public UICanvas canvas;
 
-	Vector2Int? _startPos;
-	Thickness _margin, _borderThickness, _padding;
-	int _left, _top;
-	int? _minWidth, _minHeight, _maxWidth, _maxHeight, _width, _height;
-	int _gridColumn, _gridRow, _gridColumnSpan = 1, _gridRowSpan = 1;
-	int _zIndex;
-	UIAlignment _horizontalAlignment = UIAlignment.Start;
-	UIAlignment _verticalAlignment = UIAlignment.Start;
+	public string? id;
+
+	Vector2Int? _dragStartPos;
+
 	LayoutState _layoutState = LayoutState.Invalid;
-	bool _isModal = false;
 	bool _measureDirty = true;
-	bool _active = false;
+	bool _isModal;
+	bool _active;
 
 	Vector2Int _lastMeasureSize;
 	Vector2Int _lastMeasureAvailableSize;
 	Vector2Int _lastLocationHint;
 
-	bool _visible;
-
-	bool _isMouseInside, _enabled;
-	bool _isKeyboardFocused = false;
-
-	/// <summary>
-	/// Internal use only. (MyraPad)
-	/// </summary>
-	[DefaultValue(Stylesheet.DefaultStyleName)]
-	public string? styleName { get; set; }
-
-	[Category("Layout")]
-	[DefaultValue(0)]
+	int _left;
 	public int left
 	{
 		get => _left;
@@ -79,8 +105,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DefaultValue(0)]
+	int _top;
 	public int top
 	{
 		get => _top;
@@ -98,8 +123,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DefaultValue(null)]
+	int? _minWidth;
 	public int? minWidth
 	{
 		get => _minWidth;
@@ -112,8 +136,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DefaultValue(null)]
+	int? _maxWidth;
 	public int? maxWidth
 	{
 		get => _maxWidth;
@@ -126,8 +149,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DefaultValue(null)]
+	int? _width;
 	public int? width
 	{
 		get => _width;
@@ -140,8 +162,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DefaultValue(null)]
+	int? _minHeight;
 	public int? minHeight
 	{
 		get => _minHeight;
@@ -154,8 +175,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DefaultValue(null)]
+	int? _maxHeight;
 	public int? maxHeight
 	{
 		get => _maxHeight;
@@ -168,8 +188,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DefaultValue(null)]
+	int? _height;
 	public int? height
 	{
 		get => _height;
@@ -182,20 +201,7 @@ public class UIWidget
 		}
 	}
 
-	[Obsolete("Use Padding")]
-	public int paddingLeft
-	{
-		get => padding.Left;
-		set
-		{
-			var p = padding;
-			p.Left = value;
-			padding = p;
-		}
-	}
-
-	[Category("Layout")]
-	[DesignerFolded]
+	Thickness _margin;
 	public Thickness margin
 	{
 		get => _margin;
@@ -207,8 +213,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Appearance")]
-	[DesignerFolded]
+	Thickness _borderThickness;
 	public Thickness borderThickness
 	{
 		get => _borderThickness;
@@ -221,8 +226,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DesignerFolded]
+	Thickness _padding;
 	public Thickness padding
 	{
 		get => _padding;
@@ -234,8 +238,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DefaultValue(UIAlignment.Start)]
+	UIAlignment _horizontalAlignment = UIAlignment.Start;
 	public virtual UIAlignment horizontalAlignment
 	{
 		get => _horizontalAlignment;
@@ -247,8 +250,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DefaultValue(UIAlignment.Start)]
+	UIAlignment _verticalAlignment = UIAlignment.Start;
 	public virtual UIAlignment verticalAlignment
 	{
 		get => _verticalAlignment;
@@ -260,8 +262,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DefaultValue(0)]
+	int _gridColumn;
 	public int gridColumn
 	{
 		get => _gridColumn;
@@ -274,8 +275,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DefaultValue(0)]
+	int _gridRow;
 	public int gridRow
 	{
 		get => _gridRow;
@@ -288,8 +288,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DefaultValue(1)]
+	int _gridColumnSpan = 1;
 	public int gridColumnSpan
 	{
 		get => _gridColumnSpan;
@@ -302,8 +301,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Layout")]
-	[DefaultValue(1)]
+	int _gridRowSpan = 1;
 	public int gridRowSpan
 	{
 		get => _gridRowSpan;
@@ -316,8 +314,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Behavior")]
-	[DefaultValue(true)]
+	bool _enabled;
 	public virtual bool enabled
 	{
 		get => _enabled;
@@ -329,8 +326,7 @@ public class UIWidget
 		}
 	}
 
-	[Category("Behavior")]
-	[DefaultValue(true)]
+	bool _visible;
 	public virtual bool visible
 	{
 		get => _visible;
@@ -338,20 +334,17 @@ public class UIWidget
 		{
 			if (_visible == value) return;
 			_visible = value;
-			isMouseInside = false;
-			isTouchInside = false;
+			isHoveredWithin = false;
+			isClicked = false;
 			OnVisibleChanged();
 		}
 	}
 
-	[Category("Behavior")]
-	[DefaultValue(UIDragDirection.None)]
 	public virtual UIDragDirection dragDirection { get; set; } = UIDragDirection.None;
 
 	internal bool isDraggable { get => dragDirection != UIDragDirection.None; }
 
-	[Category("Behavior")]
-	[DefaultValue(0)]
+	int _zIndex;
 	public int zIndex
 	{
 		get => _zIndex;
@@ -397,61 +390,39 @@ public class UIWidget
 
 	public Layout2D layout2d { get; set; } = Layout2D.NullLayout;
 
-	// [Category("Appearance")]
-	// public IBrush background { get; set; }
+	// 	// public IBrush background { get; set; }
 
-	// [Category("Appearance")]
-	// public IBrush overBackground { get; set; }
+	// 	// public IBrush overBackground { get; set; }
 
-	// [Category("Appearance")]
-	// public IBrush disabledBackground { get; set; }
+	// 	// public IBrush disabledBackground { get; set; }
 
-	// [Category("Appearance")]
-	// public IBrush focusedBackground { get; set; }
+	// 	// public IBrush focusedBackground { get; set; }
 
-	// [Category("Appearance")]
-	// public IBrush border { get; set; }
+	// 	// public IBrush border { get; set; }
 
-	// [Category("Appearance")]
-	// public IBrush overBorder { get; set; }
+	// 	// public IBrush overBorder { get; set; }
 
-	// [Category("Appearance")]
-	// public IBrush disabledBorder { get; set; }
+	// 	// public IBrush disabledBorder { get; set; }
 
-	// [Category("Appearance")]
-	// public IBrush focusedBorder { get; set; }
+	// 	// public IBrush focusedBorder { get; set; }
 
-	[Category("Appearance")]
-	[DefaultValue(false)]
 	public virtual bool clipToBounds { get; set; }
 
-	public bool isMouseInside
-	{
-		get => _isMouseInside;
-		set
-		{
-			_isMouseInside = value;
-			if (UICanvas.mouseInsideWidget == this)
-			{
-				UICanvas.mouseInsideWidget = null;
-			}
-		}
-	}
+	public bool hovered { get; internal set; }
+	public bool isHoveredWithin { get; internal set; }
 
-	public bool isTouchInside { get; set; }
+	public bool acceptsKeyboardFocus = true;
+	public bool isFocused { get; private set; }
+
+	public bool isClicked { get; private set; }
 
 	public UIContainer? parent { get; internal set; }
 
-	public object? tag { get; set; }
+	internal bool containsMouse { get => borderBounds.Contains(canvas.mousePosition); }
+	internal bool containsClick { get => borderBounds.Contains(canvas.clickPosition); }
 
 	RectInt _bounds;
 	public RectInt bounds { get => _bounds; }
-
-	internal RectInt borderBounds { get => _bounds - _margin; }
-	internal bool containsMouse { get => borderBounds.Contains(UICanvas.mousePosition); }
-	internal bool containsTouch { get => borderBounds.Contains(UICanvas.clickPosition); }
-
-	protected RectInt backgroundBounds { get => borderBounds - _borderThickness; }
 
 	RectInt _actualBounds;
 	public RectInt actualBounds { get => _actualBounds; }
@@ -459,29 +430,11 @@ public class UIWidget
 	RectInt _containerBounds;
 	public RectInt containerBounds { get => _containerBounds; }
 
-	public int mbpWidth { get => margin.Left + margin.Right + borderThickness.Left + borderThickness.Right + padding.Left + padding.Right; }
+	internal RectInt borderBounds { get => _bounds - _margin; }
+	protected RectInt backgroundBounds { get => borderBounds - _borderThickness; }
 
-	public int mbpHeight { get => margin.Top + margin.Bottom + borderThickness.Top + borderThickness.Bottom + padding.Top + padding.Bottom; }
-
-	/// <summary>
-	/// Determines whether a widget accepts keyboard focus
-	/// </summary>
-	public bool acceptsKeyboardFocus { get; set; } = true;
-
-	internal protected virtual UIMouseWheelFocusType mouseWheelFocusType { get => UIMouseWheelFocusType.None; }
-
-	public bool isKeyboardFocused
-	{
-		get => _isKeyboardFocused;
-		internal set
-		{
-			if (_isKeyboardFocused == value) return;
-			_isKeyboardFocused = value;
-			// KeyboardFocusChanged();
-		}
-	}
-
-	protected virtual bool useHoverRenderable { get => isMouseInside && active; }
+	public int mbpWidth { get => margin.left + margin.right + borderThickness.left + borderThickness.right + padding.left + padding.right; }
+	public int mbpHeight { get => margin.top + margin.bottom + borderThickness.top + borderThickness.bottom + padding.top + padding.bottom; }
 
 	public Action placedChanged = () => { };
 	public Action visibleChanged = () => { };
@@ -576,38 +529,41 @@ public class UIWidget
 
 		beforeRender(context);
 
+		GFX.DrawBox(backgroundBounds, Color.white.WithAlpha(0.05f));
+
 		// Background
-		var background = GetCurrentBackground();
-		if (background is not null)
-		{
-			background.Draw(context, backgroundBounds);
-		}
+		// var background = GetCurrentBackground();
+		// if (background is not null)
+		// {
+		// 	background.Draw(context, backgroundBounds);
+		// }
 
+		GFX.DrawRect(borderBounds, Color.green.translucent, borderThickness.left);
 		// Borders
-		var border = GetCurrentBorder();
-		if (border is not null)
-		{
-			var borderBounds = this.borderBounds;
-			if (borderThickness.Left > 0)
-			{
-				border.Draw(context, new(borderBounds.x, borderBounds.y, borderThickness.Left, borderBounds.height));
-			}
+		// var border = GetCurrentBorder();
+		// if (border is not null)
+		// {
+		// 	var borderBounds = this.borderBounds;
+		// 	if (borderThickness.left > 0)
+		// 	{
+		// 		border.Draw(context, new(borderBounds.x, borderBounds.y, borderThickness.left, borderBounds.height));
+		// 	}
 
-			if (borderThickness.Top > 0)
-			{
-				border.Draw(context, new(borderBounds.x, borderBounds.y, borderBounds.width, borderThickness.Top));
-			}
+		// 	if (borderThickness.top > 0)
+		// 	{
+		// 		border.Draw(context, new(borderBounds.x, borderBounds.y, borderBounds.width, borderThickness.top));
+		// 	}
 
-			if (borderThickness.Right > 0)
-			{
-				border.Draw(context, new(borderBounds.right - borderThickness.Right, borderBounds.y, borderThickness.Right, borderBounds.height));
-			}
+		// 	if (borderThickness.right > 0)
+		// 	{
+		// 		border.Draw(context, new(borderBounds.right - borderThickness.right, borderBounds.y, borderThickness.right, borderBounds.height));
+		// 	}
 
-			if (borderThickness.Bottom > 0)
-			{
-				border.Draw(context, new(borderBounds.x, borderBounds.bottom - borderThickness.Bottom, borderBounds.width, borderThickness.Bottom));
-			}
-		}
+		// 	if (borderThickness.bottom > 0)
+		// 	{
+		// 		border.Draw(context, new(borderBounds.x, borderBounds.bottom - borderThickness.bottom, borderBounds.width, borderThickness.bottom));
+		// 	}
+		// }
 
 		InternalRender(context);
 
@@ -641,30 +597,6 @@ public class UIWidget
 	public virtual void InternalRender(UIRenderContext context) { }
 
 	#region Layout
-
-	public void BringToFront()
-	{
-		if (parent is not null && !(parent is UIIMultipleItemsContainer)) return;
-
-		var widgets = (parent as UIIMultipleItemsContainer)?.Widgets ?? UICanvas.widgets;
-
-		if (widgets[widgets.Count - 1] == this) return;
-
-		widgets.Remove(this);
-		widgets.Add(this);
-	}
-
-	public void BringToBack()
-	{
-		if (parent is not null && !(parent is UIIMultipleItemsContainer)) return;
-
-		var widgets = (parent as UIIMultipleItemsContainer)?.Widgets ?? UICanvas.widgets;
-
-		if (widgets[widgets.Count - 1] == this) return;
-
-		widgets.Remove(this);
-		widgets.Insert(0, this);
-	}
 
 	public Vector2Int Measure(Vector2Int availableSize)
 	{
@@ -887,8 +819,8 @@ public class UIWidget
 		}
 		else
 		{
-			_relativeRight = left + UICanvas.internalBounds.width - bounds.x;
-			_relativeBottom = top + UICanvas.internalBounds.height - bounds.y;
+			_relativeRight = left + canvas.internalBounds.width - bounds.x;
+			_relativeBottom = top + canvas.internalBounds.height - bounds.y;
 		}
 	}
 
@@ -902,9 +834,9 @@ public class UIWidget
 		{
 			parent.InvalidateMeasure();
 		}
-		else if (UICanvas is not null)
+		else if (canvas is not null)
 		{
-			UICanvas.InvalidateLayout();
+			canvas.InvalidateLayout();
 		}
 	}
 
@@ -923,12 +855,33 @@ public class UIWidget
 
 	#region Hierarchy Management
 
+	public void BringToFront()
+	{
+		if (parent is not null && !(parent is UIIMultipleItemsContainer)) return;
+
+		var widgets = (parent as UIIMultipleItemsContainer)?.Widgets ?? canvas.widgets;
+
+		if (widgets[widgets.Count - 1] == this) return;
+
+		widgets.Remove(this);
+		widgets.Add(this);
+	}
+
+	public void BringToBack()
+	{
+		if (parent is not null && !(parent is UIIMultipleItemsContainer)) return;
+
+		var widgets = (parent as UIIMultipleItemsContainer)?.Widgets ?? canvas.widgets;
+
+		if (widgets[widgets.Count - 1] == this) return;
+
+		widgets.Remove(this);
+		widgets.Insert(0, this);
+	}
+
 	UIWidget? FindWidgetBy(Func<UIWidget, bool> finder)
 	{
-		if (finder(this))
-		{
-			return this;
-		}
+		if (finder(this)) return this;
 
 		var asContainer = this as UIContainer;
 		if (asContainer is not null)
@@ -946,23 +899,11 @@ public class UIWidget
 		return null;
 	}
 
-	/// <summary>
-	/// Finds a widget by id
-	/// Returns null if not found
-	/// </summary>
-	/// <param name="id"></param>
-	/// <returns></returns>
 	public UIWidget? FindWidgetById(string id)
 	{
-		return FindWidgetBy(w => w.Id == id);
+		return FindWidgetBy(w => w.id == id);
 	}
 
-	/// <summary>
-	/// Find a widget by id
-	/// Throws exception if not found
-	/// </summary>
-	/// <param name="id"></param>
-	/// <returns></returns>
 	public UIWidget EnsureWidgetById(string id)
 	{
 		var result = FindWidgetById(id);
@@ -980,160 +921,75 @@ public class UIWidget
 		parent.RemoveChild(this);
 	}
 
-	public void RemoveFromDesktop() => UICanvas.widgets.Remove(this);
+	public void RemoveFromDesktop() => canvas.widgets.Remove(this);
 
 	#endregion Hierarchy Management
-
-	#region Styling
-
-	public void ApplyWidgetStyle(WidgetStyle style)
-	{
-		width = style.width;
-		height = style.height;
-		minWidth = style.MinWidth;
-		minHeight = style.MinHeight;
-		maxWidth = style.MaxWidth;
-		maxHeight = style.MaxHeight;
-
-		background = style.Background;
-		overBackground = style.OverBackground;
-		disabledBackground = style.DisabledBackground;
-		focusedBackground = style.FocusedBackground;
-
-		border = style.Border;
-		overBorder = style.OverBorder;
-		disabledBorder = style.DisabledBorder;
-		focusedBorder = style.FocusedBorder;
-
-		margin = style.Margin;
-		borderThickness = style.BorderThickness;
-		padding = style.Padding;
-	}
-
-	public void SetStyle(Stylesheet stylesheet, string name)
-	{
-		styleName = name;
-
-		if (styleName is not null)
-		{
-			InternalSetStyle(stylesheet, styleName);
-		}
-	}
-
-	public void SetStyle(string name) => SetStyle(Stylesheet.Current, name);
-
-	protected virtual void InternalSetStyle(Stylesheet stylesheet, string name) { }
-
-	#endregion Styling
 
 	#region Mouse Input
 
 	public virtual void OnMouseLeft()
 	{
-		isMouseInside = false;
+		isHoveredWithin = false;
 		// MouseLeft();
 	}
 
 	public virtual void OnMouseEntered()
 	{
-		isMouseInside = true;
-		UICanvas.mouseInsideWidget = this;
+		isHoveredWithin = true;
+		canvas.mouseInsideWidget = this;
 		// MouseEntered();
 	}
 
 	public virtual void OnMouseMoved()
 	{
-		isMouseInside = true;
-		UICanvas.mouseInsideWidget = this;
+		isHoveredWithin = true;
+		canvas.mouseInsideWidget = this;
 		// MouseMoved();
 	}
 
-	public virtual void OnTouchDoubleClick() => TouchDoubleClick();
+	public virtual void OnDoubleClick() => DoubleClick();
 
-	public virtual void OnMouseWheel(float delta) => MouseWheelChanged(delta);
-
-	public virtual void OnClickLeft()
-	{
-		isTouchInside = false;
-		// TouchLeft();
-	}
-
-	public virtual void OnClickEntered()
-	{
-		isTouchInside = true;
-		// TouchEntered();
-	}
-
-	public virtual void OnDragMoved()
-	{
-		isTouchInside = true;
-		// TouchMoved();
-	}
+	public virtual void OnScroll(float delta) => MouseWheelChanged(delta);
 
 	public virtual void OnClick()
 	{
-		isTouchInside = true;
+		isClicked = true;
 
-		if (enabled)
-		{
-			UICanvas.focusedWidget = this;
-		}
+		if (enabled) canvas.focusedWidget = this;
 
 		var x = this.bounds.x;
 		var y = this.bounds.y;
 
-		var bounds = dragHandle is not null ? new RectInt(x, y, dragHandle.bounds.right - x, dragHandle.bounds.bottom - y) : RectInt.zero;
+		var bounds = dragHandle is null ? RectInt.zero : new(x, y, dragHandle.bounds.right - x, dragHandle.bounds.bottom - y);
 
-		var touchPos = UICanvas.clickPosition;
+		var touchPos = canvas.clickPosition;
 
 		if (bounds == RectInt.zero || bounds.Contains(touchPos))
 		{
-			_startPos = new(touchPos.x - left, touchPos.y - top);
+			_dragStartPos = new(touchPos.x - left, touchPos.y - top);
 		}
 
 		// TouchDown();
 	}
 
-	public virtual void OnTouchUp()
+	public virtual void OnClickLeft()
 	{
-		_startPos = null;
-		isTouchInside = false;
-		// TouchUp();
+		isClicked = false;
+		// TouchLeft();
 	}
 
-	void SubscribeOnTouchMoved(bool subscribe)
+	public virtual void OnTouchUp()
 	{
-		if (parent is not null)
-		{
-			parent.TouchMoved -= DesktopOnTouchMoved;
-			parent.TouchUp -= DesktopTouchUp;
-		}
-		else if (UICanvas is not null)
-		{
-			UICanvas.TouchMoved -= DesktopOnTouchMoved;
-			UICanvas.TouchUp -= DesktopTouchUp;
-		}
-
-		if (subscribe)
-		{
-			if (parent is not null)
-			{
-				parent.TouchMoved += DesktopOnTouchMoved;
-				parent.TouchUp += DesktopTouchUp;
-			}
-			else if (UICanvas is not null)
-			{
-				UICanvas.TouchMoved += DesktopOnTouchMoved;
-				UICanvas.TouchUp += DesktopTouchUp;
-			}
-		}
+		_dragStartPos = null;
+		isClicked = false;
+		// TouchUp();
 	}
 
 	void DesktopOnTouchMoved()
 	{
-		if (_startPos is null || !isDraggable) return;
+		if (_dragStartPos is null || !isDraggable) return;
 
-		var position = new Vector2Int(UICanvas.clickPosition.x - _startPos.Value.x, UICanvas.clickPosition.y - _startPos.Value.y);
+		var position = new Vector2Int(canvas.clickPosition.x - _dragStartPos.Value.x, canvas.clickPosition.y - _dragStartPos.Value.y);
 
 		var newLeft = left;
 		var newTop = top;
@@ -1148,7 +1004,7 @@ public class UIWidget
 		top = newTop;
 	}
 
-	void DesktopTouchUp() => _startPos = null;
+	void DesktopTouchUp() => _dragStartPos = null;
 
 	public virtual UIWidget? GetWidgetAtPoint(Vector2Int point)
 	{
@@ -1226,11 +1082,11 @@ public class UIWidget
 
 	protected virtual bool OnTextInput(string textInput) => false;
 
-	public virtual void OnLostKeyboardFocus() => isKeyboardFocused = false;
+	public virtual void OnLostFocus() => isFocused = false;
 
-	public virtual void OnGotKeyboardFocus() => isKeyboardFocused = true;
+	public virtual void OnGotFocus() => isFocused = true;
 
-	public void SetKeyboardFocus() => UICanvas.focusedWidget = this;
+	public void SetKeyboardFocus() => canvas.focusedWidget = this;
 
 	#endregion Keyboard Input
 

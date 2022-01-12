@@ -5,25 +5,21 @@ using System.Collections.Specialized;
 
 namespace MGE.UI;
 
-public static class UICanvas
+public class UICanvas
 {
 	const int _doubleClickIntervalInMs = 500;
 	const int _doubleClickRadius = 2;
+	const int _dragStartDist = 2;
 
-	public static UIRenderContext renderContext = new();
+	public UIRenderContext renderContext = new();
 
-	static bool _layoutDirty = true;
-	static bool _widgetsDirty = true;
-	static UIWidget? _focusedWidget, _mouseInsideWidget;
-	static DateTime _lastClickDown;
-	static UIWidget? _previousFocus;
-	static bool _isClickDown;
-	static Vector2Int _previousMousePosition, _mousePosition, _previousClickPosition, _clickPosition;
-	static bool _contextMenuShown = false;
-	static bool _focusSet = false;
-	public static bool hasExternalTextInput = false;
+	bool _layoutDirty = true;
+	bool _widgetsDirty = true;
+	DateTime _lastClickDown;
+	UIWidget? _previousFocus;
+	bool _isClickDown;
 
-	public static UIWidget? root
+	public UIWidget? root
 	{
 		get
 		{
@@ -45,9 +41,9 @@ public static class UICanvas
 		}
 	}
 
-	public static Vector2Int previousMousePosition { get => _previousMousePosition; }
-
-	public static Vector2Int mousePosition
+	Vector2Int _mousePosition;
+	Vector2Int _previousMousePosition;
+	public Vector2Int mousePosition
 	{
 		get => _mousePosition;
 		set
@@ -67,7 +63,9 @@ public static class UICanvas
 		}
 	}
 
-	public static Vector2Int clickPosition
+	Vector2Int _clickPosition;
+	Vector2Int _previousClickPosition;
+	public Vector2Int clickPosition
 	{
 		get => _clickPosition;
 		set
@@ -83,8 +81,8 @@ public static class UICanvas
 		}
 	}
 
-	static readonly List<UIWidget> _widgetsCopy = new();
-	internal static List<UIWidget> childrenCopy
+	readonly List<UIWidget> _widgetsCopy = new();
+	internal List<UIWidget> childrenCopy
 	{
 		get
 		{
@@ -93,23 +91,22 @@ public static class UICanvas
 		}
 	}
 
-	public static ObservableCollection<UIWidget> widgets { get; } = new ObservableCollection<UIWidget>();
+	public ObservableCollection<UIWidget> widgets { get; } = new ObservableCollection<UIWidget>();
 
-	internal static RectInt internalBounds { get; set; }
+	internal RectInt internalBounds { get; set; }
 
-	public static UIWidget? contextMenu { get; set; }
+	bool _contextMenuShown = false;
+	public UIWidget? contextMenu { get; set; }
 
-	/// <summary>
-	/// UIWidget having keyboard focus
-	/// </summary>
-	public static UIWidget? focusedWidget
+	bool _focusSet = false;
+	UIWidget? _focusedWidget;
+	public UIWidget? focusedWidget
 	{
 		get => _focusedWidget;
 		set
 		{
-			if (value is not null) _focusSet = true;
-
 			if (value == _focusedWidget) return;
+			if (value is not null) _focusSet = true;
 
 			var oldValue = _focusedWidget;
 			if (oldValue is not null)
@@ -124,18 +121,19 @@ public static class UICanvas
 			_focusedWidget = value;
 			if (oldValue is not null)
 			{
-				oldValue.OnLostKeyboardFocus();
+				oldValue.OnLostFocus();
 			}
 
 			if (_focusedWidget is not null)
 			{
-				_focusedWidget.OnGotKeyboardFocus();
+				_focusedWidget.OnGotFocus();
 				// WidgetGotKeyboardFocus.Invoke(_focusedWidget);
 			}
 		}
 	}
 
-	public static UIWidget? mouseInsideWidget
+	UIWidget? _mouseInsideWidget;
+	public UIWidget? mouseInsideWidget
 	{
 		get => _mouseInsideWidget;
 		set
@@ -150,14 +148,14 @@ public static class UICanvas
 		}
 	}
 
-	public static bool isMouseOverGUI { get => IsPointOverGUI(mousePosition); }
-	public static bool isClickOverGUI { get => IsPointOverGUI(clickPosition); }
+	public bool isMouseOverGUI { get => IsPointOverGUI(mousePosition); }
+	public bool isClickOverGUI { get => IsPointOverGUI(clickPosition); }
 
-	internal static bool isShiftDown { get => Input.IsButtonPressed(Button.KB_LeftShift) || Input.IsButtonPressed(Button.KB_RightShift); }
-	internal static bool isControlDown { get => Input.IsButtonPressed(Button.KB_LeftControl) || Input.IsButtonPressed(Button.KB_RightControl); }
-	internal static bool isAltDown { get => Input.IsButtonPressed(Button.KB_LeftAlt) || Input.IsButtonPressed(Button.KB_RightAlt); }
+	internal bool isShiftDown { get => Input.IsButtonPressed(Button.KB_LeftShift) || Input.IsButtonPressed(Button.KB_RightShift); }
+	internal bool isControlDown { get => Input.IsButtonPressed(Button.KB_LeftControl) || Input.IsButtonPressed(Button.KB_RightControl); }
+	internal bool isAltDown { get => Input.IsButtonPressed(Button.KB_LeftAlt) || Input.IsButtonPressed(Button.KB_RightAlt); }
 
-	public static bool isClickDown
+	public bool isClickDown
 	{
 		get => _isClickDown;
 		set
@@ -177,7 +175,7 @@ public static class UICanvas
 		}
 	}
 
-	public static bool hasModalWidget
+	public bool hasModalWidget
 	{
 		get
 		{
@@ -214,19 +212,19 @@ public static class UICanvas
 
 	// public Action<UIWidget?> MouseInsideWidgetChanged = (widget) => { };
 
-	// static UICanvas()
+	//  UICanvas()
 	// {
 	// 	widgets.CollectionChanged += WidgetsOnCollectionChanged;
 	// }
 
-	public static UIWidget? GetWidgetAtPoint(Vector2Int point)
+	public UIWidget? GetWidgetAtPoint(Vector2Int point)
 	{
 		return root!.GetWidgetAtPoint(point);
 	}
 
-	public static UIWidget GetChild(int index) => childrenCopy[index];
+	public UIWidget GetChild(int index) => childrenCopy[index];
 
-	static void HandleDoubleClick()
+	void HandleDoubleClick()
 	{
 		if ((DateTime.Now - _lastClickDown).TotalMilliseconds < _doubleClickIntervalInMs && Vector2.DistanceLessThan(_clickPosition, _previousClickPosition, _doubleClickRadius))
 		{
@@ -242,7 +240,7 @@ public static class UICanvas
 		}
 	}
 
-	static void ContextMenuOnTouchDown()
+	void ContextMenuOnTouchDown()
 	{
 		if (contextMenu is null || contextMenu.bounds.Contains(clickPosition)) return;
 
@@ -254,7 +252,7 @@ public static class UICanvas
 		HideContextMenu();
 	}
 
-	static void OnClickDown()
+	void OnClickDown()
 	{
 		_contextMenuShown = false;
 		_focusSet = false;
@@ -278,12 +276,12 @@ public static class UICanvas
 		}
 	}
 
-	static void OnClickReleased()
+	void OnClickReleased()
 	{
 
 	}
 
-	public static void ShowContextMenu(UIWidget menu, Vector2Int position)
+	public void ShowContextMenu(UIWidget menu, Vector2Int position)
 	{
 		HideContextMenu();
 
@@ -321,7 +319,7 @@ public static class UICanvas
 		_contextMenuShown = true;
 	}
 
-	public static void HideContextMenu()
+	public void HideContextMenu()
 	{
 		if (contextMenu is null) return;
 
@@ -338,7 +336,7 @@ public static class UICanvas
 		}
 	}
 
-	static void WidgetsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs args)
+	void WidgetsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs args)
 	{
 		if (args.Action == NotifyCollectionChangedAction.Add)
 		{
@@ -366,7 +364,7 @@ public static class UICanvas
 		_widgetsDirty = true;
 	}
 
-	public static void RenderVisual()
+	public void RenderVisual()
 	{
 		var oldScissorRectangle = renderContext.scissor;
 
@@ -398,21 +396,21 @@ public static class UICanvas
 		renderContext.scissor = oldScissorRectangle;
 	}
 
-	public static void Render()
+	public void Render()
 	{
 		UpdateInput();
 		UpdateLayout();
 		RenderVisual();
 	}
 
-	public static void InvalidateLayout()
+	public void InvalidateLayout()
 	{
 		_layoutDirty = true;
 	}
 
-	public static void UpdateLayout()
+	public void UpdateLayout()
 	{
-		var newBounds = new(GameWindow.current.Size);
+		var newBounds = new RectInt(GameWindow.current.Size);
 		if (internalBounds != newBounds)
 		{
 			InvalidateLayout();
@@ -457,12 +455,35 @@ public static class UICanvas
 
 		// Fire Mouse Movement without actual mouse movement in order to update UIWidget.IsMouseInside
 		_previousMousePosition = _mousePosition;
+
 		childrenCopy.ProcessMouseMovement();
 
 		_layoutDirty = false;
 	}
 
-	internal static void ProcessWidgets(Func<UIWidget, bool> operation)
+	void UpdateMousePosition()
+	{
+		SetHoveredWidget(root!.GetWidgetAtPoint(_mousePosition));
+	}
+
+	UIWidget? _hoverredWidget;
+
+	void SetHoveredWidget(UIWidget? widget)
+	{
+		if (_hoverredWidget is not null)
+		{
+			_hoverredWidget.hovered = false;
+		}
+
+		if (widget is not null)
+		{
+			widget.hovered = true;
+		}
+
+		_hoverredWidget = widget;
+	}
+
+	internal void ProcessWidgets(Func<UIWidget, bool> operation)
 	{
 		for (var i = childrenCopy.Count - 1; i >= 0; --i)
 		{
@@ -472,7 +493,7 @@ public static class UICanvas
 		}
 	}
 
-	static void UpdateRecursiveLayout(IEnumerable<UIWidget> widgets)
+	void UpdateRecursiveLayout(IEnumerable<UIWidget> widgets)
 	{
 		foreach (var i in widgets)
 		{
@@ -489,7 +510,7 @@ public static class UICanvas
 		}
 	}
 
-	static UIWidget? GetWidgetBy(UIWidget root, Func<UIWidget, bool> filter)
+	UIWidget? GetWidgetBy(UIWidget root, Func<UIWidget, bool> filter)
 	{
 		if (filter(root)) return root;
 
@@ -506,7 +527,7 @@ public static class UICanvas
 		return null;
 	}
 
-	public static UIWidget? GetWidgetBy(Func<UIWidget, bool> filter)
+	public UIWidget? GetWidgetBy(Func<UIWidget, bool> filter)
 	{
 		foreach (var w in childrenCopy)
 		{
@@ -517,9 +538,9 @@ public static class UICanvas
 		return null;
 	}
 
-	public static UIWidget? GetWidgetByID(string ID) => GetWidgetBy(w => w.Id == ID);
+	public UIWidget? GetWidgetByID(string ID) => GetWidgetBy(w => w.id == ID);
 
-	public static int CalculateTotalWidgets(bool visibleOnly)
+	public int CalculateTotalWidgets(bool visibleOnly)
 	{
 		var result = 0;
 		foreach (var w in widgets)
@@ -538,7 +559,7 @@ public static class UICanvas
 		return result;
 	}
 
-	static UIWidget? GetTopWidget()
+	UIWidget? GetTopWidget()
 	{
 		for (var i = childrenCopy.Count - 1; i >= 0; --i)
 		{
@@ -549,7 +570,7 @@ public static class UICanvas
 		return null;
 	}
 
-	public static void HandleButton(bool isDown, bool wasDown, Button buttons)
+	public void HandleButton(bool isDown, bool wasDown, Button buttons)
 	{
 		if (isDown && !wasDown)
 		{
@@ -563,57 +584,57 @@ public static class UICanvas
 		}
 	}
 
-	public static void UpdateMouseInput()
+	public void UpdateMouseInput()
 	{
-		mousePosition = Input.mousePosition;
+		UpdateMousePosition();
 
-		HandleButton(mouseInfo.IsLeftButtonDown, _lastMouseInfo.IsLeftButtonDown, Button.Mouse_Left);
-		HandleButton(mouseInfo.IsMiddleButtonDown, _lastMouseInfo.IsMiddleButtonDown, Button.Mouse_Middle);
-		HandleButton(mouseInfo.IsRightButtonDown, _lastMouseInfo.IsRightButtonDown, Button.Mouse_Right);
+		// 		HandleButton(mouseInfo.IsLeftButtonDown, _lastMouseInfo.IsLeftButtonDown, Button.Mouse_Left);
+		// 		HandleButton(mouseInfo.IsMiddleButtonDown, _lastMouseInfo.IsMiddleButtonDown, Button.Mouse_Middle);
+		// 		HandleButton(mouseInfo.IsRightButtonDown, _lastMouseInfo.IsRightButtonDown, Button.Mouse_Right);
 
-#if STRIDE
-				var handleWheel = mouseInfo.Wheel != 0;
-#else
-		var handleWheel = mouseInfo.Wheel != _lastMouseInfo.Wheel;
-#endif
+		// #if STRIDE
+		// 				var handleWheel = mouseInfo.Wheel != 0;
+		// #else
+		// 		var handleWheel = mouseInfo.Wheel != _lastMouseInfo.Wheel;
+		// #endif
 
-		if (handleWheel)
-		{
-			var delta = mouseInfo.Wheel;
-#if !STRIDE
-			delta -= _lastMouseInfo.Wheel;
-#endif
-			// MouseWheelChanged(delta);
+		// 		if (handleWheel)
+		// 		{
+		// 			var delta = mouseInfo.Wheel;
+		// #if !STRIDE
+		// 			delta -= _lastMouseInfo.Wheel;
+		// #endif
+		// 			// MouseWheelChanged(delta);
 
-			UIWidget? mouseWheelFocusedWidget = null;
-			if (focusedWidget is not null && focusedWidget.mouseWheelFocusType == UIMouseWheelFocusType.Focus)
-			{
-				mouseWheelFocusedWidget = focusedWidget;
-			}
-			else
-			{
-				// Go through the parents chain in order to find first widget that accepts mouse wheel events
-				var widget = mouseInsideWidget;
-				while (widget is not null)
-				{
-					if (widget.mouseWheelFocusType == UIMouseWheelFocusType.Hover)
-					{
-						mouseWheelFocusedWidget = widget;
-						break;
-					}
+		// 			UIWidget? mouseWheelFocusedWidget = null;
+		// 			if (focusedWidget is not null && focusedWidget.mouseWheelFocusType == UIMouseWheelFocusType.Focus)
+		// 			{
+		// 				mouseWheelFocusedWidget = focusedWidget;
+		// 			}
+		// 			else
+		// 			{
+		// 				// Go through the parents chain in order to find first widget that accepts mouse wheel events
+		// 				var widget = mouseInsideWidget;
+		// 				while (widget is not null)
+		// 				{
+		// 					if (widget.mouseWheelFocusType == UIMouseWheelFocusType.Hover)
+		// 					{
+		// 						mouseWheelFocusedWidget = widget;
+		// 						break;
+		// 					}
 
-					widget = widget.parent;
-				}
-			}
+		// 					widget = widget.parent;
+		// 				}
+		// 			}
 
-			if (mouseWheelFocusedWidget is not null)
-			{
-				mouseWheelFocusedWidget.OnMouseWheel(delta);
-			}
-		}
+		// 			if (mouseWheelFocusedWidget is not null)
+		// 			{
+		// 				mouseWheelFocusedWidget.OnMouseWheel(delta);
+		// 			}
+		// 		}
 	}
 
-	public static void UpdateKeyboardInput()
+	public void UpdateKeyboardInput()
 	{
 		// TODO
 		if (Input.IsKeyEntered(Button.KB_Tab))
@@ -627,19 +648,27 @@ public static class UICanvas
 		_focusedWidget.TextInput(Input.textInput);
 
 		foreach (var button in Input.GetKeysEntered())
+		{
 			_focusedWidget.ButtonEntered(button);
+		}
 
 		foreach (var button in Input.GetKeysPressed())
+		{
 			_focusedWidget.ButtonPressed(button);
+		}
 
 		foreach (var button in Input.GetKeysDown())
+		{
 			_focusedWidget.ButtonDown(button);
+		}
 
 		foreach (var button in Input.GetKeysReleased())
+		{
 			_focusedWidget.ButtonReleased(button);
+		}
 	}
 
-	static void FocusNextWidget()
+	void FocusNextWidget()
 	{
 		if (widgets.Count == 0) return;
 
@@ -684,59 +713,15 @@ public static class UICanvas
 		});
 	}
 
-	static bool CanFocusWidget(UIWidget? widget) => widget is not null && widget.visible && widget.active && widget.enabled && widget.acceptsKeyboardFocus;
+	bool CanFocusWidget(UIWidget? widget) => widget is not null && widget.visible && widget.active && widget.enabled && widget.acceptsKeyboardFocus;
 
-	public static void UpdateInput()
+	public void UpdateInput()
 	{
 		UpdateMouseInput();
 		UpdateKeyboardInput();
 	}
 
-	public static void OnButtonDown(Button key)
-	{
-		KeyDown(key);
-
-		if (isMenuBarActive)
-		{
-			MenuBar.OnKeyDown(key);
-		}
-		else
-		{
-			if (_focusedWidget is not null && _focusedWidget.active)
-			{
-				_focusedWidget.OnKeyDown(key);
-
-				if (!hasExternalTextInput && !isControlDown && !isAltDown)
-				{
-					var c = key.ToChar(isShiftDown);
-					if (c is not null)
-					{
-						OnChar(c.Value);
-					}
-				}
-			}
-		}
-
-		if (key == Button.KB_Escape && contextMenu is not null)
-		{
-			HideContextMenu();
-		}
-	}
-
-	public static void OnChar(char c)
-	{
-		// Don't accept chars if menubar is open
-		if (isMenuBarActive) return;
-
-		if (_focusedWidget is not null && _focusedWidget.active)
-		{
-			_focusedWidget.OnChar(c);
-		}
-
-		Char(c);
-	}
-
-	static void UpdateWidgetsCopy()
+	void UpdateWidgetsCopy()
 	{
 		if (!_widgetsDirty) return;
 
@@ -748,7 +733,7 @@ public static class UICanvas
 		_widgetsDirty = false;
 	}
 
-	static bool InternalIsPointOverGUI(Vector2Int p, UIWidget w)
+	bool InternalIsPointOverGUI(Vector2Int p, UIWidget w)
 	{
 		if (!w.visible || !w.borderBounds.Contains(p)) return false;
 		if (!w.FallsThrough(p)) return true;
@@ -764,7 +749,7 @@ public static class UICanvas
 		return false;
 	}
 
-	public static bool IsPointOverGUI(Vector2Int p)
+	public bool IsPointOverGUI(Vector2Int p)
 	{
 		foreach (var widget in childrenCopy)
 		{

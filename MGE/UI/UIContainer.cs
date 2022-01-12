@@ -101,9 +101,9 @@ public abstract class UIContainer : UIWidget
 		ChildrenCopy.ProcessMouseMovement();
 	}
 
-	public override void OnClickEntered()
+	public override void OnDragStart()
 	{
-		base.OnClickEntered();
+		base.OnDragStart();
 
 		ChildrenCopy.ProcessDragMovement();
 	}
@@ -136,9 +136,9 @@ public abstract class UIContainer : UIWidget
 		ChildrenCopy.ProcessTouchUp();
 	}
 
-	public override void OnTouchDoubleClick()
+	public override void OnDoubleClick()
 	{
-		base.OnTouchDoubleClick();
+		base.OnDoubleClick();
 
 		ChildrenCopy.ProcessTouchDoubleClick();
 	}
@@ -194,7 +194,7 @@ public abstract class UIContainer : UIWidget
 	/// <returns>UIWidget instance if found otherwise null</returns>
 	public T? FindChildById<T>(string Id) where T : UIWidget
 	{
-		return FindChild<T>(this, w => w.Id == Id);
+		return FindChild<T>(this, w => w.id == Id);
 	}
 
 	/// <summary>
@@ -217,7 +217,7 @@ public abstract class UIContainer : UIWidget
 	/// <returns>UIWidget instance if found otherwise null</returns>
 	public UIWidget? FindChildById(string Id)
 	{
-		return FindChild(this, w => w.Id == Id);
+		return FindChild(this, w => w.id == Id);
 	}
 
 	/// <summary>
@@ -262,12 +262,12 @@ public abstract class UIContainer : UIWidget
 
 	internal static T? FindChildById<T>(UIContainer container, string Id) where T : UIWidget
 	{
-		return FindChild<T>(container, w => w.Id == Id);
+		return FindChild<T>(container, w => w.id == Id);
 	}
 
 	internal static UIWidget? FindChildById(UIContainer container, string Id)
 	{
-		return FindChild(container, w => w.Id == Id);
+		return FindChild(container, w => w.id == Id);
 	}
 
 	internal static T? FindChild<T>(UIContainer container, Func<T, bool>? predicate = null) where T : UIWidget
