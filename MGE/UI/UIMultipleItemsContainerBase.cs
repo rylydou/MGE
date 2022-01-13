@@ -42,7 +42,7 @@ public class UIMultipleItemsContainerBase : UIContainer, UIIMultipleItemsContain
 		{
 			foreach (UIWidget w in args.NewItems!)
 			{
-				w.desktop = desktop;
+				w.canvas = canvas;
 				w.parent = this;
 			}
 		}
@@ -50,7 +50,7 @@ public class UIMultipleItemsContainerBase : UIContainer, UIIMultipleItemsContain
 		{
 			foreach (UIWidget w in args.OldItems!)
 			{
-				w.desktop = null;
+				w.canvas = null;
 				w.parent = null;
 			}
 		}
@@ -58,7 +58,7 @@ public class UIMultipleItemsContainerBase : UIContainer, UIIMultipleItemsContain
 		{
 			foreach (UIWidget w in ChildrenCopy)
 			{
-				w.desktop = null;
+				w.canvas = null;
 				w.parent = null;
 			}
 		}

@@ -54,7 +54,7 @@ public class UICanvas
 			_mousePosition = value;
 			// MouseMoved.Invoke();
 
-			childrenCopy.ProcessMouseMovement();
+			// childrenCopy.ProcessMouseMovement();
 
 			if (isClickDown)
 			{
@@ -77,7 +77,7 @@ public class UICanvas
 			_clickPosition = value;
 			// TouchMoved.Invoke();
 
-			childrenCopy.ProcessDragMovement();
+			// childrenCopy.ProcessDragMovement();
 		}
 	}
 
@@ -133,7 +133,7 @@ public class UICanvas
 	}
 
 	UIWidget? _mouseInsideWidget;
-	public UIWidget? mouseInsideWidget
+	public UIWidget? hoveredWidget
 	{
 		get => _mouseInsideWidget;
 		set
@@ -204,10 +204,10 @@ public class UICanvas
 	// public Action<Button> KeyDown = (keys) => { };
 	// public Action<Button> Char = (keys) => { };
 
-	// public Func<UIWidget, bool> ContextMenuClosing = (widget) => false /* Do not cancel */;
+	public Func<UIWidget, bool> contextMenuClosing = (widget) => false /* Do not cancel */;
 	// public Action<UIWidget> ContextMenuClosed = (widget) => { };
 
-	// public Func<UIWidget, bool> WidgetLosingKeyboardFocus = (widget) => false /* Do not cancel */;
+	// public Func<UIWidget, bool> widgetLosingKeyboardFocus = (widget) => false /* Do not cancel */;
 	// public Action<UIWidget> WidgetGotKeyboardFocus = (widget) => { };
 
 	// public Action<UIWidget?> MouseInsideWidgetChanged = (widget) => { };
@@ -230,7 +230,7 @@ public class UICanvas
 		{
 			// TouchDoubleClick();
 
-			childrenCopy.ProcessTouchDoubleClick();
+			// childrenCopy.ProcessTouchDoubleClick();
 
 			_lastClickDown = DateTime.MinValue;
 		}
@@ -244,8 +244,7 @@ public class UICanvas
 	{
 		if (contextMenu is null || contextMenu.bounds.Contains(clickPosition)) return;
 
-		var ev = ContextMenuClosing;
-		var cancel = ev(contextMenu);
+		var cancel = contextMenuClosing(contextMenu);
 
 		if (cancel) return;
 
@@ -342,21 +341,21 @@ public class UICanvas
 		{
 			foreach (UIWidget w in args.NewItems!)
 			{
-				w.isPlaced = true;
+				w.canvas = this;
 			}
 		}
 		else if (args.Action == NotifyCollectionChangedAction.Remove)
 		{
 			foreach (UIWidget w in args.OldItems!)
 			{
-				w.isPlaced = false;
+				w.canvas = null;
 			}
 		}
 		else if (args.Action == NotifyCollectionChangedAction.Reset)
 		{
 			foreach (UIWidget w in childrenCopy)
 			{
-				w.isPlaced = false;
+				w.canvas = null;
 			}
 		}
 
@@ -456,7 +455,7 @@ public class UICanvas
 		// Fire Mouse Movement without actual mouse movement in order to update UIWidget.IsMouseInside
 		_previousMousePosition = _mousePosition;
 
-		childrenCopy.ProcessMouseMovement();
+		// childrenCopy.ProcessMouseMovement();
 
 		_layoutDirty = false;
 	}
@@ -733,28 +732,24 @@ public class UICanvas
 		_widgetsDirty = false;
 	}
 
-	bool InternalIsPointOverGUI(Vector2Int p, UIWidget w)
+	// bool InternalIsPointOverGUI(Vector2Int p, UIWidget w)
+	// {
+	// 	if (!w.visible || !w.borderBounds.Contains(p)) return false;
+	// 	if (!w.FallsThrough(p)) return true;
+
+	// 	// If widget fell through, then it is UIContainer for sure
+	// 	var asContainer = (UIContainer)w;
+
+	// 	// Or if any child is solid
+	// 	foreach (var ch in asContainer.ChildrenCopy)
+	// 	{
+	// 		if (InternalIsPointOverGUI(p, ch)) return true;
+	// 	}
+	// 	return false;
+	// }
+
+	public bool IsPointOverGUI(Vector2Int point)
 	{
-		if (!w.visible || !w.borderBounds.Contains(p)) return false;
-		if (!w.FallsThrough(p)) return true;
-
-		// If widget fell through, then it is UIContainer for sure
-		var asContainer = (UIContainer)w;
-
-		// Or if any child is solid
-		foreach (var ch in asContainer.ChildrenCopy)
-		{
-			if (InternalIsPointOverGUI(p, ch)) return true;
-		}
-		return false;
-	}
-
-	public bool IsPointOverGUI(Vector2Int p)
-	{
-		foreach (var widget in childrenCopy)
-		{
-			if (InternalIsPointOverGUI(p, widget)) return true;
-		}
-		return false;
+		return root!.GetWidgetAtPoint(point) is not null;
 	}
 }

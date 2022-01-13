@@ -42,16 +42,16 @@ public abstract class UIContainer : UIWidget
 		}
 	}
 
-	public override UICanvas? desktop
+	public override UICanvas? canvas
 	{
-		get => base.desktop;
+		get => base.canvas;
 		internal set
 		{
-			base.desktop = value;
+			base.canvas = value;
 
 			foreach (var child in ChildrenCopy)
 			{
-				child.desktop = value;
+				child.canvas = value;
 			}
 		}
 	}
@@ -80,68 +80,68 @@ public abstract class UIContainer : UIWidget
 		_childrenDirty = true;
 	}
 
-	public override void OnMouseEntered()
-	{
-		base.OnMouseEntered();
+	// public override void OnCursorEnter()
+	// {
+	// 	base.OnCursorEnter();
 
-		ChildrenCopy.ProcessMouseMovement();
-	}
+	// 	ChildrenCopy.ProcessMouseMovement();
+	// }
 
-	public override void OnMouseLeft()
-	{
-		base.OnMouseLeft();
+	// public override void OnCursorLeave()
+	// {
+	// 	base.OnCursorLeave();
 
-		ChildrenCopy.ProcessMouseMovement();
-	}
+	// 	ChildrenCopy.ProcessMouseMovement();
+	// }
 
-	public override void OnMouseMoved()
-	{
-		base.OnMouseMoved();
+	// public override void OnCursorMove()
+	// {
+	// 	base.OnCursorMove();
 
-		ChildrenCopy.ProcessMouseMovement();
-	}
+	// 	ChildrenCopy.ProcessMouseMovement();
+	// }
 
-	public override void OnDragStart()
-	{
-		base.OnDragStart();
+	// public override void OnDragStart()
+	// {
+	// 	base.OnDragStart();
 
-		ChildrenCopy.ProcessDragMovement();
-	}
+	// 	ChildrenCopy.ProcessDragMovement();
+	// }
 
-	public override void OnClickLeft()
-	{
-		base.OnClickLeft();
+	// public override void OnClickLeft()
+	// {
+	// 	base.OnClickLeft();
 
-		ChildrenCopy.ProcessDragMovement();
-	}
+	// 	ChildrenCopy.ProcessDragMovement();
+	// }
 
-	public override void OnDragMoved()
-	{
-		base.OnDragMoved();
+	// public override void OnDragMoved()
+	// {
+	// 	base.OnDragMoved();
 
-		ChildrenCopy.ProcessDragMovement();
-	}
+	// 	ChildrenCopy.ProcessDragMovement();
+	// }
 
-	public override void OnClick()
-	{
-		base.OnClick();
+	// public override void OnLeftClick()
+	// {
+	// 	base.OnLeftClick();
 
-		ChildrenCopy.ProcessTouchDown();
-	}
+	// 	ChildrenCopy.ProcessTouchDown();
+	// }
 
-	public override void OnTouchUp()
-	{
-		base.OnTouchUp();
+	// public override void OnTouchUp()
+	// {
+	// 	base.OnTouchUp();
 
-		ChildrenCopy.ProcessTouchUp();
-	}
+	// 	ChildrenCopy.ProcessTouchUp();
+	// }
 
-	public override void OnDoubleClick()
-	{
-		base.OnDoubleClick();
+	// public override void OnDoubleClick()
+	// {
+	// 	base.OnDoubleClick();
 
-		ChildrenCopy.ProcessTouchDoubleClick();
-	}
+	// 	ChildrenCopy.ProcessTouchDoubleClick();
+	// }
 
 	internal override void MoveChildren(Vector2Int delta)
 	{

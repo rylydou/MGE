@@ -18,7 +18,7 @@ public abstract class UISingleItemContainer<T> : UIContainer where T : UIWidget
 			if (_internalChild is not null)
 			{
 				_internalChild.parent = null;
-				_internalChild.desktop = null;
+				_internalChild.canvas = null;
 
 				_internalChild = null;
 			}
@@ -28,7 +28,7 @@ public abstract class UISingleItemContainer<T> : UIContainer where T : UIWidget
 			if (_internalChild is not null)
 			{
 				_internalChild.parent = this;
-				_internalChild.desktop = desktop;
+				_internalChild.canvas = canvas;
 			}
 
 			InvalidateChildren();

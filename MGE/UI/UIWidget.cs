@@ -2,15 +2,6 @@ using System;
 
 namespace MGE.UI;
 
-[System.Flags]
-public enum UIDragDirection
-{
-	None = 0,
-	Vertical = 1,
-	Horizontal = 2,
-	Both = Vertical | Horizontal
-}
-
 public struct Thickness : IEquatable<Thickness>
 {
 	public int left;
@@ -28,6 +19,9 @@ public struct Thickness : IEquatable<Thickness>
 
 	public int width { get => left + right; }
 	public int height { get => top + bottom; }
+
+	public static bool operator ==(Thickness a, Thickness b) => a.Equals(b);
+	public static bool operator !=(Thickness a, Thickness b) => !a.Equals(b);
 
 	public override bool Equals(object? obj) => obj is Thickness thickness && Equals(thickness);
 	public bool Equals(Thickness other)
@@ -72,7 +66,40 @@ public class UIWidget
 		Invalid
 	}
 
-	public UICanvas canvas;
+	UICanvas? _canvas;
+	public virtual UICanvas? canvas
+	{
+		get => _canvas;
+
+		internal set
+		{
+			if (_canvas is not null && value is null)
+			{
+				if (_canvas.focusedWidget == this)
+				{
+					_canvas.focusedWidget = null;
+				}
+
+				if (_canvas.hoveredWidget == this)
+				{
+					_canvas.hoveredWidget = null;
+				}
+			}
+
+			_canvas = value;
+			isHoveredWithin = false;
+			isFocused = false;
+			isClicked = false;
+
+			if (_canvas is not null)
+			{
+				InvalidateLayout();
+			}
+
+			// SubscribeOnTouchMoved(IsPlaced && IsDraggable);
+			OnPlacedChanged();
+		}
+	}
 
 	public string? id;
 
@@ -340,10 +367,6 @@ public class UIWidget
 		}
 	}
 
-	public virtual UIDragDirection dragDirection { get; set; } = UIDragDirection.None;
-
-	internal bool isDraggable { get => dragDirection != UIDragDirection.None; }
-
 	int _zIndex;
 	public int zIndex
 	{
@@ -363,8 +386,7 @@ public class UIWidget
 	int _relativeRight;
 	int _relativeBottom;
 
-	// TODO
-	public bool isPlaced { get; internal set; }
+	public bool isPlaced { get => canvas is not null; }
 
 	public bool isModal
 	{
@@ -388,7 +410,7 @@ public class UIWidget
 		}
 	}
 
-	public Layout2D layout2d { get; set; } = Layout2D.NullLayout;
+	// public Layout2D layout2d { get; set; } = Layout2D.NullLayout;
 
 	// 	// public IBrush background { get; set; }
 
@@ -418,8 +440,8 @@ public class UIWidget
 
 	public UIContainer? parent { get; internal set; }
 
-	internal bool containsMouse { get => borderBounds.Contains(canvas.mousePosition); }
-	internal bool containsClick { get => borderBounds.Contains(canvas.clickPosition); }
+	internal bool containsMouse { get => borderBounds.Contains(canvas!.mousePosition); }
+	internal bool containsClick { get => borderBounds.Contains(canvas!.clickPosition); }
 
 	RectInt _bounds;
 	public RectInt bounds { get => _bounds; }
@@ -819,8 +841,8 @@ public class UIWidget
 		}
 		else
 		{
-			_relativeRight = left + canvas.internalBounds.width - bounds.x;
-			_relativeBottom = top + canvas.internalBounds.height - bounds.y;
+			_relativeRight = left + canvas!.internalBounds.width - bounds.x;
+			_relativeBottom = top + canvas!.internalBounds.height - bounds.y;
 		}
 	}
 
@@ -859,7 +881,7 @@ public class UIWidget
 	{
 		if (parent is not null && !(parent is UIIMultipleItemsContainer)) return;
 
-		var widgets = (parent as UIIMultipleItemsContainer)?.Widgets ?? canvas.widgets;
+		var widgets = (parent as UIIMultipleItemsContainer)?.Widgets ?? canvas!.widgets;
 
 		if (widgets[widgets.Count - 1] == this) return;
 
@@ -871,7 +893,7 @@ public class UIWidget
 	{
 		if (parent is not null && !(parent is UIIMultipleItemsContainer)) return;
 
-		var widgets = (parent as UIIMultipleItemsContainer)?.Widgets ?? canvas.widgets;
+		var widgets = (parent as UIIMultipleItemsContainer)?.Widgets ?? canvas!.widgets;
 
 		if (widgets[widgets.Count - 1] == this) return;
 
@@ -921,90 +943,57 @@ public class UIWidget
 		parent.RemoveChild(this);
 	}
 
-	public void RemoveFromDesktop() => canvas.widgets.Remove(this);
+	public void RemoveFromDesktop() => canvas!.widgets.Remove(this);
 
 	#endregion Hierarchy Management
 
 	#region Mouse Input
 
-	public virtual void OnMouseLeft()
+	public virtual void OnCursorEnter()
+	{
+		isHoveredWithin = true;
+		canvas!.hoveredWidget = this;
+	}
+
+	public virtual void OnCursorMove()
+	{
+		isHoveredWithin = true;
+		canvas!.hoveredWidget = this;
+	}
+
+	public virtual void OnCursorLeave()
 	{
 		isHoveredWithin = false;
-		// MouseLeft();
 	}
-
-	public virtual void OnMouseEntered()
-	{
-		isHoveredWithin = true;
-		canvas.mouseInsideWidget = this;
-		// MouseEntered();
-	}
-
-	public virtual void OnMouseMoved()
-	{
-		isHoveredWithin = true;
-		canvas.mouseInsideWidget = this;
-		// MouseMoved();
-	}
-
-	public virtual void OnDoubleClick() => DoubleClick();
-
-	public virtual void OnScroll(float delta) => MouseWheelChanged(delta);
 
 	public virtual void OnClick()
 	{
 		isClicked = true;
 
-		if (enabled) canvas.focusedWidget = this;
+		if (enabled) canvas!.focusedWidget = this;
 
-		var x = this.bounds.x;
-		var y = this.bounds.y;
+		// var x = this.bounds.x;
+		// var y = this.bounds.y;
 
-		var bounds = dragHandle is null ? RectInt.zero : new(x, y, dragHandle.bounds.right - x, dragHandle.bounds.bottom - y);
+		// var bounds = dragHandle is null ? RectInt.zero : new(x, y, dragHandle.bounds.right - x, dragHandle.bounds.bottom - y);
 
-		var touchPos = canvas.clickPosition;
+		// var clickPos = canvas.clickPosition;
 
-		if (bounds == RectInt.zero || bounds.Contains(touchPos))
+		// if (bounds == RectInt.zero || bounds.Contains(clickPos))
+		// {
+		// 	_dragStartPos = new(clickPos.x - left, clickPos.y - top);
+		// }
+	}
+
+	public void Scroll(float delta)
+	{
+		if (!OnScroll(delta))
 		{
-			_dragStartPos = new(touchPos.x - left, touchPos.y - top);
+			parent?.Scroll(delta);
 		}
-
-		// TouchDown();
 	}
 
-	public virtual void OnClickLeft()
-	{
-		isClicked = false;
-		// TouchLeft();
-	}
-
-	public virtual void OnTouchUp()
-	{
-		_dragStartPos = null;
-		isClicked = false;
-		// TouchUp();
-	}
-
-	void DesktopOnTouchMoved()
-	{
-		if (_dragStartPos is null || !isDraggable) return;
-
-		var position = new Vector2Int(canvas.clickPosition.x - _dragStartPos.Value.x, canvas.clickPosition.y - _dragStartPos.Value.y);
-
-		var newLeft = left;
-		var newTop = top;
-
-		if (dragDirection.HasFlag(UIDragDirection.Horizontal)) newLeft = position.x;
-
-		if (dragDirection.HasFlag(UIDragDirection.Vertical)) newTop = position.y;
-
-		ConstrainToBounds(ref newLeft, ref newTop);
-
-		left = newLeft;
-		top = newTop;
-	}
-
-	void DesktopTouchUp() => _dragStartPos = null;
+	protected virtual bool OnScroll(float delta) => false;
 
 	public virtual UIWidget? GetWidgetAtPoint(Vector2Int point)
 	{
@@ -1086,7 +1075,7 @@ public class UIWidget
 
 	public virtual void OnGotFocus() => isFocused = true;
 
-	public void SetKeyboardFocus() => canvas.focusedWidget = this;
+	public void SetKeyboardFocus() => canvas!.focusedWidget = this;
 
 	#endregion Keyboard Input
 

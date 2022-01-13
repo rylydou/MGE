@@ -252,8 +252,8 @@ public struct Rect : IEquatable<Rect>
 	{
 		_xMin -= amount;
 		_yMin -= amount;
-		_width += amount;
-		_height += amount;
+		_width += amount * 2;
+		_height += amount * 2;
 	}
 
 	public bool Contains(Vector2 point) => (point.x >= xMin) && (point.x < xMax) && (point.y >= yMin) && (point.y < yMax);
