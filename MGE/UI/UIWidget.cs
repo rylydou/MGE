@@ -57,7 +57,7 @@ public struct Thickness : IEquatable<Thickness>
 	}
 }
 
-public class UIWidget
+public abstract class UIWidget
 {
 	enum LayoutState
 	{
@@ -86,10 +86,9 @@ public class UIWidget
 				}
 			}
 
+			hovered = false;
+			focused = false;
 			_canvas = value;
-			isHoveredWithin = false;
-			isFocused = false;
-			isClicked = false;
 
 			if (_canvas is not null)
 			{
@@ -361,8 +360,6 @@ public class UIWidget
 		{
 			if (_visible == value) return;
 			_visible = value;
-			isHoveredWithin = false;
-			isClicked = false;
 			OnVisibleChanged();
 		}
 	}
@@ -431,12 +428,9 @@ public class UIWidget
 	public virtual bool clipToBounds { get; set; }
 
 	public bool hovered { get; internal set; }
-	public bool isHoveredWithin { get; internal set; }
 
-	public bool acceptsKeyboardFocus = true;
-	public bool isFocused { get; private set; }
-
-	public bool isClicked { get; private set; }
+	public bool focusable = true;
+	public bool focused { get; internal set; }
 
 	public UIContainer? parent { get; internal set; }
 
@@ -949,29 +943,14 @@ public class UIWidget
 
 	#region Mouse Input
 
-	public virtual void OnCursorEnter()
-	{
-		isHoveredWithin = true;
-		canvas!.hoveredWidget = this;
-	}
+	public virtual void OnCursorEnter() { }
 
-	public virtual void OnCursorMove()
-	{
-		isHoveredWithin = true;
-		canvas!.hoveredWidget = this;
-	}
+	public virtual void OnCursorMove() { }
 
-	public virtual void OnCursorLeave()
-	{
-		isHoveredWithin = false;
-	}
+	public virtual void OnCursorLeave() { }
 
 	public virtual void OnClick()
 	{
-		isClicked = true;
-
-		if (enabled) canvas!.focusedWidget = this;
-
 		// var x = this.bounds.x;
 		// var y = this.bounds.y;
 
@@ -1071,9 +1050,9 @@ public class UIWidget
 
 	protected virtual bool OnTextInput(string textInput) => false;
 
-	public virtual void OnLostFocus() => isFocused = false;
+	public virtual void OnLostFocus() => focused = false;
 
-	public virtual void OnGotFocus() => isFocused = true;
+	public virtual void OnGotFocus() => focused = true;
 
 	public void SetKeyboardFocus() => canvas!.focusedWidget = this;
 

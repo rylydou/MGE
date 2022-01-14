@@ -52,14 +52,6 @@ public class UICanvas
 
 			_previousMousePosition = _mousePosition;
 			_mousePosition = value;
-			// MouseMoved.Invoke();
-
-			// childrenCopy.ProcessMouseMovement();
-
-			if (isClickDown)
-			{
-				clickPosition = mousePosition;
-			}
 		}
 	}
 
@@ -75,9 +67,6 @@ public class UICanvas
 			if (value == _clickPosition) return;
 
 			_clickPosition = value;
-			// TouchMoved.Invoke();
-
-			// childrenCopy.ProcessDragMovement();
 		}
 	}
 
@@ -98,53 +87,49 @@ public class UICanvas
 	bool _contextMenuShown = false;
 	public UIWidget? contextMenu { get; set; }
 
-	bool _focusSet = false;
+	UIWidget? _hoverredWidget;
+	public UIWidget? hoveredWidget
+	{
+		get => _hoverredWidget;
+		internal set
+		{
+			if (_hoverredWidget == value) return;
+
+			if (_hoverredWidget is not null)
+			{
+				_hoverredWidget.hovered = false;
+			}
+
+			if (value is not null)
+			{
+				value.hovered = true;
+			}
+
+			_hoverredWidget = value;
+		}
+	}
+
 	UIWidget? _focusedWidget;
 	public UIWidget? focusedWidget
 	{
 		get => _focusedWidget;
-		set
+		internal set
 		{
-			if (value == _focusedWidget) return;
-			if (value is not null) _focusSet = true;
-
-			var oldValue = _focusedWidget;
-			if (oldValue is not null)
-			{
-				// if (WidgetLosingKeyboardFocus is not null)
-				// {
-				// 	var cancel = WidgetLosingKeyboardFocus(oldValue);
-				// 	if (oldValue.IsPlaced && cancel) return;
-				// }
-			}
-
-			_focusedWidget = value;
-			if (oldValue is not null)
-			{
-				oldValue.OnLostFocus();
-			}
+			if (_focusedWidget == value) return;
 
 			if (_focusedWidget is not null)
 			{
-				_focusedWidget.OnGotFocus();
-				// WidgetGotKeyboardFocus.Invoke(_focusedWidget);
+				_focusedWidget.focused = false;
 			}
-		}
-	}
 
-	UIWidget? _mouseInsideWidget;
-	public UIWidget? hoveredWidget
-	{
-		get => _mouseInsideWidget;
-		set
-		{
-			if (value == _mouseInsideWidget)
+			if (value is not null)
 			{
-				return;
+				if (!value.focusable) return;
+
+				value.focused = true;
 			}
 
-			_mouseInsideWidget = value;
-			// MouseInsideWidgetChanged(mouseInsideWidget);
+			_focusedWidget = value;
 		}
 	}
 
@@ -154,26 +139,6 @@ public class UICanvas
 	internal bool isShiftDown { get => Input.IsButtonPressed(Button.KB_LeftShift) || Input.IsButtonPressed(Button.KB_RightShift); }
 	internal bool isControlDown { get => Input.IsButtonPressed(Button.KB_LeftControl) || Input.IsButtonPressed(Button.KB_RightControl); }
 	internal bool isAltDown { get => Input.IsButtonPressed(Button.KB_LeftAlt) || Input.IsButtonPressed(Button.KB_RightAlt); }
-
-	public bool isClickDown
-	{
-		get => _isClickDown;
-		set
-		{
-			if (_isClickDown == value) return;
-			_isClickDown = value;
-			if (_isClickDown)
-			{
-				OnClickDown();
-				// TouchDown.Invoke();
-			}
-			else
-			{
-				OnClickReleased();
-				// TouchUp.Invoke();
-			}
-		}
-	}
 
 	public bool hasModalWidget
 	{
@@ -251,35 +216,6 @@ public class UICanvas
 		HideContextMenu();
 	}
 
-	void OnClickDown()
-	{
-		_contextMenuShown = false;
-		_focusSet = false;
-
-		var widget = GetWidgetAtPoint(Input.mousePosition);
-
-		if (widget is not null)
-		{
-			widget.OnClick();
-		}
-
-		if (!_focusSet && focusedWidget is not null)
-		{
-			// Nullify keyboard focus
-			focusedWidget = null;
-		}
-
-		if (!_contextMenuShown)
-		{
-			ContextMenuOnTouchDown();
-		}
-	}
-
-	void OnClickReleased()
-	{
-
-	}
-
 	public void ShowContextMenu(UIWidget menu, Vector2Int position)
 	{
 		HideContextMenu();
@@ -309,7 +245,7 @@ public class UICanvas
 
 		widgets.Add(contextMenu);
 
-		if (contextMenu.acceptsKeyboardFocus)
+		if (contextMenu.focusable)
 		{
 			_previousFocus = focusedWidget;
 			focusedWidget = contextMenu;
@@ -460,28 +396,6 @@ public class UICanvas
 		_layoutDirty = false;
 	}
 
-	void UpdateMousePosition()
-	{
-		SetHoveredWidget(root!.GetWidgetAtPoint(_mousePosition));
-	}
-
-	UIWidget? _hoverredWidget;
-
-	void SetHoveredWidget(UIWidget? widget)
-	{
-		if (_hoverredWidget is not null)
-		{
-			_hoverredWidget.hovered = false;
-		}
-
-		if (widget is not null)
-		{
-			widget.hovered = true;
-		}
-
-		_hoverredWidget = widget;
-	}
-
 	internal void ProcessWidgets(Func<UIWidget, bool> operation)
 	{
 		for (var i = childrenCopy.Count - 1; i >= 0; --i)
@@ -569,104 +483,6 @@ public class UICanvas
 		return null;
 	}
 
-	public void HandleButton(bool isDown, bool wasDown, Button buttons)
-	{
-		if (isDown && !wasDown)
-		{
-			clickPosition = mousePosition;
-			isClickDown = true;
-			HandleDoubleClick();
-		}
-		else if (!isDown && wasDown)
-		{
-			isClickDown = false;
-		}
-	}
-
-	public void UpdateMouseInput()
-	{
-		UpdateMousePosition();
-
-		// 		HandleButton(mouseInfo.IsLeftButtonDown, _lastMouseInfo.IsLeftButtonDown, Button.Mouse_Left);
-		// 		HandleButton(mouseInfo.IsMiddleButtonDown, _lastMouseInfo.IsMiddleButtonDown, Button.Mouse_Middle);
-		// 		HandleButton(mouseInfo.IsRightButtonDown, _lastMouseInfo.IsRightButtonDown, Button.Mouse_Right);
-
-		// #if STRIDE
-		// 				var handleWheel = mouseInfo.Wheel != 0;
-		// #else
-		// 		var handleWheel = mouseInfo.Wheel != _lastMouseInfo.Wheel;
-		// #endif
-
-		// 		if (handleWheel)
-		// 		{
-		// 			var delta = mouseInfo.Wheel;
-		// #if !STRIDE
-		// 			delta -= _lastMouseInfo.Wheel;
-		// #endif
-		// 			// MouseWheelChanged(delta);
-
-		// 			UIWidget? mouseWheelFocusedWidget = null;
-		// 			if (focusedWidget is not null && focusedWidget.mouseWheelFocusType == UIMouseWheelFocusType.Focus)
-		// 			{
-		// 				mouseWheelFocusedWidget = focusedWidget;
-		// 			}
-		// 			else
-		// 			{
-		// 				// Go through the parents chain in order to find first widget that accepts mouse wheel events
-		// 				var widget = mouseInsideWidget;
-		// 				while (widget is not null)
-		// 				{
-		// 					if (widget.mouseWheelFocusType == UIMouseWheelFocusType.Hover)
-		// 					{
-		// 						mouseWheelFocusedWidget = widget;
-		// 						break;
-		// 					}
-
-		// 					widget = widget.parent;
-		// 				}
-		// 			}
-
-		// 			if (mouseWheelFocusedWidget is not null)
-		// 			{
-		// 				mouseWheelFocusedWidget.OnMouseWheel(delta);
-		// 			}
-		// 		}
-	}
-
-	public void UpdateKeyboardInput()
-	{
-		// TODO
-		if (Input.IsKeyEntered(Button.KB_Tab))
-		{
-			FocusNextWidget();
-			return;
-		}
-
-		if (_focusedWidget is null || !_focusedWidget.active) return;
-
-		_focusedWidget.TextInput(Input.textInput);
-
-		foreach (var button in Input.GetKeysEntered())
-		{
-			_focusedWidget.ButtonEntered(button);
-		}
-
-		foreach (var button in Input.GetKeysPressed())
-		{
-			_focusedWidget.ButtonPressed(button);
-		}
-
-		foreach (var button in Input.GetKeysDown())
-		{
-			_focusedWidget.ButtonDown(button);
-		}
-
-		foreach (var button in Input.GetKeysReleased())
-		{
-			_focusedWidget.ButtonReleased(button);
-		}
-	}
-
 	void FocusNextWidget()
 	{
 		if (widgets.Count == 0) return;
@@ -712,12 +528,71 @@ public class UICanvas
 		});
 	}
 
-	bool CanFocusWidget(UIWidget? widget) => widget is not null && widget.visible && widget.active && widget.enabled && widget.acceptsKeyboardFocus;
+	bool CanFocusWidget(UIWidget? widget) => widget is not null && widget.visible && widget.active && widget.enabled && widget.focusable;
 
 	public void UpdateInput()
 	{
-		UpdateMouseInput();
-		UpdateKeyboardInput();
+		#region Mouse
+
+		hoveredWidget = root!.GetWidgetAtPoint(_mousePosition);
+
+		if (Input.IsButtonPressed(Button.Mouse_Left))
+		{
+			_contextMenuShown = false;
+
+			var widget = GetWidgetAtPoint(Input.mousePosition);
+
+			focusedWidget = widget;
+
+			if (widget is not null)
+			{
+				widget.OnClick();
+			}
+
+			if (!_contextMenuShown)
+			{
+				if (contextMenu is null || contextMenu.bounds.Contains(clickPosition)) return;
+
+				HideContextMenu();
+			}
+		}
+
+		#endregion Mouse
+
+		#region Keyboard
+
+		// TODO Only accept tab if it falls though all the other widgets
+		if (Input.IsKeyEntered(Button.KB_Tab))
+		{
+			FocusNextWidget();
+			return;
+		}
+
+		if (_focusedWidget is null || !_focusedWidget.active) return;
+
+		_focusedWidget.TextInput(Input.textInput);
+
+		foreach (var button in Input.GetKeysEntered())
+		{
+			_focusedWidget.ButtonEntered(button);
+		}
+
+		foreach (var button in Input.GetKeysPressed())
+		{
+			_focusedWidget.ButtonPressed(button);
+		}
+
+		foreach (var button in Input.GetKeysDown())
+		{
+			_focusedWidget.ButtonDown(button);
+		}
+
+		foreach (var button in Input.GetKeysReleased())
+		{
+			_focusedWidget.ButtonReleased(button);
+		}
+
+		#endregion Keyboard
 	}
 
 	void UpdateWidgetsCopy()

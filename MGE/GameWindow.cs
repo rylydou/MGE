@@ -1,6 +1,7 @@
 using System;
 using MGE.Graphics;
 using MGE.Nodes;
+using MGE.UI;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 
@@ -11,13 +12,15 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	static GameWindow? _current;
 	public static GameWindow current { get => _current ?? throw new NullReferenceException(); }
 
-	Color backgroundColor = new("#394778");
+	Color _backgroundColor = new("#394778");
 
-	double updateTime;
-	double renderTime;
+	double _updateTime;
+	double _renderTime;
 
-	RenderTexture gameRender;
-	Texture sprite;
+	RenderTexture _gameRender;
+	Texture _sprite;
+
+	UICanvas _canvas = new();
 
 	public GameWindow() : base(new() { /* RenderFrequency = 60, UpdateFrequency = 60, */ }, new() { Title = "Mangrove Game Engine", })
 	{
@@ -25,8 +28,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		VSync = VSyncMode.Adaptive;
 
-		gameRender = new(new(320 * 2, 180 * 2));
-		sprite = Texture.LoadFromFile(Folder.assets.GetFile("Icon.png"));
+		_gameRender = new(new(320 * 2, 180 * 2));
+		_sprite = Texture.LoadFromFile(Folder.assets.GetFile("Icon.png"));
 		Icon = new(Texture.LoadImageFromFile(Folder.assets.GetFile("Icon.png")));
 
 		CenterWindow(new(320 * 4, 180 * 4));
@@ -77,7 +80,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnUpdateFrame(args);
 
-		updateTime = args.Time;
+		_updateTime = args.Time;
 
 		Input.UpdateKeyboard(KeyboardState);
 		Input.UpdateMouse(MouseState);
@@ -107,11 +110,11 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnRenderFrame(args);
 
-		renderTime = args.Time;
+		_renderTime = args.Time;
 
-		GFX.SetRenderTarget(gameRender);
+		GFX.SetRenderTarget(_gameRender);
 
-		GFX.Clear(backgroundColor);
+		GFX.Clear(_backgroundColor);
 
 		Scene.Draw();
 
@@ -121,12 +124,14 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		GFX.Clear(Color.black);
 
-		GFX.DrawRenderTexture(gameRender);
+		GFX.DrawRenderTexture(_gameRender);
 
 		GFX.DrawBatches();
 
+		_canvas.Render();
+
 		Font.monospace.DrawString(
-			$"Update:{1f / updateTime:F0}fps ({updateTime * 1000:F2}ms) Render:{1f / renderTime:F0}fps ({renderTime * 1000:F2}ms) Client Size:{Size}",
+			$"Update:{1f / _updateTime:F0}fps ({_updateTime * 1000:F2}ms) Render:{1f / _renderTime:F0}fps ({_renderTime * 1000:F2}ms) Client Size:{Size}",
 			new(-Size.X / 2 + 8, Size.Y / 2 - 8),
 			Color.white.translucent
 		);
