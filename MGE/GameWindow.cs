@@ -47,6 +47,10 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Scene.root.AttachNode(world);
 
 		Input.Init();
+
+		var button = new UIButton();
+		_canvas.root = button;
+		button.InternalChild = new UILabel();
 	}
 
 	protected override void OnLoad()

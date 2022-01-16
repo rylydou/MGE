@@ -17,11 +17,11 @@
 
 	<PropertyGroup>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<ApplicationIcon>icon.ico</ApplicationIcon>
+		<ApplicationIcon>Icon.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="icon.ico" />
+		<EmbeddedResource Include="Icon.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
