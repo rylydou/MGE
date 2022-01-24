@@ -20,8 +20,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	RenderTexture _gameRender;
 	Texture _sprite;
 
-	UICanvas _canvas = new();
-
 	public GameWindow() : base(new() { /* RenderFrequency = 60, UpdateFrequency = 60, */ }, new() { Title = "Mangrove Game Engine", })
 	{
 		_current = this;
@@ -47,10 +45,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Scene.root.AttachNode(world);
 
 		Input.Init();
-
-		var button = new UIButton();
-		_canvas.root = button;
-		button.InternalChild = new UILabel();
 	}
 
 	protected override void OnLoad()
@@ -131,8 +125,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		GFX.DrawRenderTexture(_gameRender);
 
 		GFX.DrawBatches();
-
-		_canvas.Render();
 
 		Font.monospace.DrawString(
 			$"Update:{1f / _updateTime:F0}fps ({_updateTime * 1000:F2}ms) Render:{1f / _renderTime:F0}fps ({_renderTime * 1000:F2}ms) Client Size:{Size}",
