@@ -1,12 +1,17 @@
-# Key
-`[ ]` - Widget
-`#` - Content (The minimum size the widget can be)
-`-` - Whitespace
-
-# Alignment
-|        |          | Notes |
-| ------ | -------- | ----- |
-| Fill   | `[[##----]]` | Fills up all available space |
-| Start  | `[[##]----]` | Lines up to the start of the flow and uses the minimum amount of space |
-| End    | `[----[##]]` | Lines up to the end of the flow and uses the minimum amount of space |
-| Center | `[--[##]--]` | Uses minimum amount of space and centers its self |
+# Resizing
+## Fixed (`fixed`)
+Fixed widget and height based on width and height variables.
+## Hug Contents (`hug`)
+Based on content size, widget must be an auto layout, forces fill widgets to hug.
+## Fill Container (`fill`)
+Based on the amount of space not taken up my fixed and hug elements distributed among all other fill widgets.
+# Updating
+## Hierarchy
+```
+- auto, fill
+	- auto, fill
+		- fixed
+		- fill
+		- min
+	- fill
+```

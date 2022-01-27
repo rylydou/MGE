@@ -1,16 +1,32 @@
 namespace MGE.UI;
 
-public class UIWidget
+public abstract class UIWidget
 {
 	public string? id;
 
-	UIWidget? _parent;
-	public UIWidget? parent
+	UIContainer? _parent;
+	public UIContainer? parent
 	{
 		get => _parent;
 		set
 		{
+			if (_parent == value) return;
 			_parent = value;
+
+			UpdateMeasure();
+		}
+	}
+
+	UIAlignment _alignment;
+	public UIAlignment alignment
+	{
+		get => _alignment;
+		set
+		{
+			if (_alignment == value) return;
+			_alignment = value;
+
+			UpdateMeasure();
 		}
 	}
 
@@ -22,9 +38,12 @@ public class UIWidget
 		{
 			if (_minWidth == value) return;
 			_minWidth = value;
+
+			if (alignment == UIAlignment.FillContainer) return;
 			UpdateMeasure();
 		}
 	}
+
 	int? _minHeight;
 	public int? minHeight
 	{
@@ -33,14 +52,22 @@ public class UIWidget
 		{
 			if (_minHeight == value) return;
 			_minHeight = value;
+
+			if (alignment == UIAlignment.FillContainer) return;
 			UpdateMeasure();
 		}
 	}
 
-	public RectInt bounds;
+	RectInt _bounds;
+	public RectInt bounds { get => _bounds; }
+
+	RectInt _contentBounds;
+	public RectInt contentBounds { get => _contentBounds; }
 
 	void UpdateMeasure()
 	{
+		if (parent is null) return;
 
+		parent.UpdateLayout();
 	}
 }
