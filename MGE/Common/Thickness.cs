@@ -2,7 +2,7 @@ using System;
 
 namespace MGE.UI;
 
-public class Thickness : IEquatable<Thickness>
+public struct Thickness : IEquatable<Thickness>
 {
 	public int top;
 	public int bottom;
@@ -39,10 +39,7 @@ public class Thickness : IEquatable<Thickness>
 	public static bool operator !=(Thickness a, Thickness b) => !a.Equals(b);
 
 	public override bool Equals(object? obj) => obj is Thickness thickness && Equals(thickness);
-	public bool Equals(Thickness? other) => other is not null && top == other.top && bottom == other.bottom && left == other.left && right == other.right;
+	public bool Equals(Thickness other) => top == other.top && bottom == other.bottom && left == other.left && right == other.right;
 
-	public override int GetHashCode()
-	{
-		return HashCode.Combine(top, bottom, left, right);
-	}
+	public override int GetHashCode() => HashCode.Combine(top, bottom, left, right);
 }

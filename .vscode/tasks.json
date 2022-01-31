@@ -9,7 +9,8 @@
         "build",
         "${workspaceFolder}/MGE/MGE.csproj",
         "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary"
+        "/consoleloggerparameters:NoSummary",
+        "--nologo"
       ],
       "problemMatcher": "$msCompile"
     }
