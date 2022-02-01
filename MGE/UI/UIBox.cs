@@ -17,6 +17,13 @@ public class UIBox : UIContainer
 		}
 	}
 
+	protected override void OnChildMeasureChanged(UIWidget widget)
+	{
+		base.OnChildMeasureChanged(widget);
+
+		UpdateLayout();
+	}
+
 	protected override void UpdateMeasure()
 	{
 		base.UpdateMeasure();
@@ -29,7 +36,7 @@ public class UIBox : UIContainer
 		if (horizontalResizing == UIResizing.HugContents) throw new System.NotImplementedException();
 
 		var filledWidgets = new List<UIWidget>();
-		var remainingSpace = realContentBounds.width;
+		var remainingSpace = contentRect.width;
 
 		foreach (var widget in widgets)
 		{
@@ -39,7 +46,7 @@ public class UIBox : UIContainer
 			}
 			else
 			{
-				remainingSpace -= widget.realBounds.width;
+				remainingSpace -= widget.rect.width;
 			}
 		}
 

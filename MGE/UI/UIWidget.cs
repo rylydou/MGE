@@ -106,33 +106,28 @@ public abstract class UIWidget
 		}
 	}
 
-	RectInt _realBounds;
-	public RectInt realBounds { get => _realBounds; }
-	public RectInt realContentBounds { get => _realBounds - _padding; }
+	RectInt _rect;
+	public RectInt rect { get => _rect; }
+	public RectInt contentRect { get => _rect - _padding; }
 
 	protected virtual void UpdateMeasure()
 	{
-		if (parent is null) return;
-
-		if (parent is UIBox box)
-		{
-			box.UpdateLayout();
-		}
+		parent?.ChildMeasureChanged(this);
 	}
 
 	public virtual void SetWidth(int width)
 	{
-		_realBounds.width = width;
+		_rect.width = width;
 	}
 
 	public virtual void SetHeight(int height)
 	{
-		_realBounds.height = height;
+		_rect.height = height;
 	}
 
 	internal virtual void SetPosition(int x, int y)
 	{
-		_realBounds.x = x;
-		_realBounds.y = y;
+		_rect.x = x;
+		_rect.y = y;
 	}
 }
