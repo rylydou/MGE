@@ -20,6 +20,14 @@ public struct Thickness : IEquatable<Thickness>
 		this.right = right;
 	}
 
+	public Thickness(int all)
+	{
+		this.top = all;
+		this.bottom = all;
+		this.left = all;
+		this.right = all;
+	}
+
 	public static RectInt operator -(RectInt a, Thickness b)
 	{
 		var result = a;

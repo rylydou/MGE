@@ -17,6 +17,45 @@ public class UIBox : UIContainer
 		}
 	}
 
+	UIHorizontalAlignment _horizontalAlignment;
+	public UIHorizontalAlignment horizontalAlignment
+	{
+		get => _horizontalAlignment;
+		set
+		{
+			if (_horizontalAlignment == value) return;
+			_horizontalAlignment = value;
+
+			UpdateLayout();
+		}
+	}
+
+	UIVerticalAlignment _verticalAlignment;
+	public UIVerticalAlignment verticalAlignment
+	{
+		get => _verticalAlignment;
+		set
+		{
+			if (_verticalAlignment == value) return;
+			_verticalAlignment = value;
+
+			UpdateLayout();
+		}
+	}
+
+	int _spacing;
+	public int spacing
+	{
+		get => _spacing;
+		set
+		{
+			if (_spacing == value) return;
+			_spacing = value;
+
+			UpdateLayout();
+		}
+	}
+
 	protected override void OnChildMeasureChanged(UIWidget widget)
 	{
 		base.OnChildMeasureChanged(widget);
@@ -35,26 +74,36 @@ public class UIBox : UIContainer
 	{
 		if (horizontalResizing == UIResizing.HugContents) throw new System.NotImplementedException();
 
-		var filledWidgets = new List<UIWidget>();
-		var remainingSpace = contentRect.width;
-
-		foreach (var widget in widgets)
+		// Horizontal
 		{
-			if (widget.horizontalResizing == UIResizing.FillContainer)
-			{
-				filledWidgets.Add(widget);
-			}
-			else
-			{
-				remainingSpace -= widget.rect.width;
-			}
-		}
+			// Get filled widgets and remaining space
+			var filledWidgets = new List<UIWidget>();
+			var remainingSpace = contentRect.width;
 
-		var filledWidgetSize = remainingSpace / filledWidgets.Count;
+			foreach (var widget in widgets)
+			{
+				if (widget.horizontalResizing == UIResizing.FillContainer)
+				{
+					filledWidgets.Add(widget);
+				}
+				else
+				{
+					remainingSpace -= widget.rect.width;
+				}
+			}
 
-		foreach (var widget in filledWidgets)
-		{
-			widget.SetWidth(filledWidgetSize);
+			var x = contentRect.x;
+			foreach (var widget in widgets)
+			{
+				widget._rect.x = x;
+
+				if (widget.horizontalResizing == UIResizing.FillContainer)
+				{
+					widget.RequestWidth(remainingSpace / filledWidgets.Count);
+				}
+
+				x += widget._rect.width;
+			}
 		}
 	}
 }

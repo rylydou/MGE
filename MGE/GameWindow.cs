@@ -20,6 +20,11 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	RenderTexture _gameRender;
 	Texture _sprite;
 
+	UICanvas _canvas = new();
+	UIButton _button1 = new();
+	UIButton _button2 = new();
+	UIButton _button3 = new();
+
 	public GameWindow() : base(new() { /* RenderFrequency = 60, UpdateFrequency = 60, */ }, new() { Title = "Mangrove Game Engine", })
 	{
 		_current = this;
@@ -45,6 +50,23 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Scene.root.AttachNode(world);
 
 		Input.Init();
+
+		_button1.fixedWidth = 90;
+		_button1.fixedHeight = 30;
+		_canvas.AddChild(_button1);
+
+		_button2.fixedWidth = 90;
+		_button2.fixedHeight = 30;
+		_button2.horizontalResizing = UIResizing.FillContainer;
+		_canvas.AddChild(_button2);
+
+		_button3.fixedWidth = 90;
+		_button3.fixedHeight = 30;
+		_canvas.AddChild(_button3);
+
+		_canvas.padding = new(15);
+		_canvas.fixedWidth = 320 * 1;
+		_canvas.fixedHeight = 180 * 1;
 	}
 
 	protected override void OnLoad()
@@ -71,7 +93,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnResize(args);
 
-		GFX.windowViewportTransform = Matrix.CreateOrthographic(Math.CeilToEven(Size.X), Math.CeilToEven(Size.Y), 0, 1);
+		// GFX.windowViewportTransform = Matrix.CreateOrthographicOffCenter(0, Size.X, Size.Y, 0, 0, -1);
+		GFX.windowViewportTransform = Matrix.CreateOrthographic(Math.CeilToEven(Size.X), Math.CeilToEven(Size.Y), 0, -1);
 	}
 
 	protected override void OnUpdateFrame(FrameEventArgs args)
@@ -126,13 +149,17 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		GFX.DrawBatches();
 
-		Font.monospace.DrawString(
-			$"Update:{1f / _updateTime:F0}fps ({_updateTime * 1000:F2}ms) Render:{1f / _renderTime:F0}fps ({_renderTime * 1000:F2}ms) Client Size:{Size}",
-			new(-Size.X / 2 + 8, Size.Y / 2 - 8),
-			Color.white.translucent
-		);
+		// Font.monospace.DrawString(
+		// 	$"Update:{1f / _updateTime:F0}fps ({_updateTime * 1000:F2}ms) Render:{1f / _renderTime:F0}fps ({_renderTime * 1000:F2}ms) Client Size:{Size}",
+		// 	new(8),
+		// 	Color.white.translucent
+		// );
 
 		Input.DrawGamepadInput();
+
+		GFX.DrawBatches();
+
+		_canvas.DoRender();
 
 		GFX.DrawBatches();
 

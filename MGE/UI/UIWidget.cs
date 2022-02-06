@@ -4,18 +4,10 @@ public abstract class UIWidget
 {
 	public string? id;
 
-	UIContainer? _parent;
-	public UIContainer? parent
-	{
-		get => _parent;
-		set
-		{
-			if (_parent == value) return;
-			_parent = value;
+	public UIContainer? parent { get; private set; }
+	public bool isActive { get; private set; }
 
-			UpdateMeasure();
-		}
-	}
+	#region Layout
 
 	UIResizing _horizontalResizing;
 	public UIResizing horizontalResizing
@@ -56,11 +48,11 @@ public abstract class UIWidget
 		}
 	}
 
-	int? _width;
+	int _width;
 	/// <summary>
 	/// The width of the widget. Only has an effect when <see cref="horizontalResizing"/> is set to <see cref="UIResizing.Fixed"/>.
 	/// </summary>
-	public int? fixedWidth
+	public int fixedWidth
 	{
 		get => _width;
 		set
@@ -68,16 +60,19 @@ public abstract class UIWidget
 			if (_width == value) return;
 			_width = value;
 
-			if (horizontalResizing == UIResizing.FillContainer) return;
-			UpdateMeasure();
+			if (_horizontalResizing == UIResizing.Fixed)
+			{
+				_rect.width = fixedWidth;
+				UpdateMeasure();
+			}
 		}
 	}
 
-	int? _height;
+	int _height;
 	/// <summary>
 	/// The height of the widget. Only has an effect when <see cref="verticalResizing"/> is set to <see cref="UIResizing.Fixed"/>.
 	/// </summary>
-	public int? fixedHeight
+	public int fixedHeight
 	{
 		get => _height;
 		set
@@ -85,8 +80,11 @@ public abstract class UIWidget
 			if (_height == value) return;
 			_height = value;
 
-			if (horizontalResizing == UIResizing.FillContainer) return;
-			UpdateMeasure();
+			if (_verticalResizing == UIResizing.Fixed)
+			{
+				_rect.height = fixedHeight;
+				UpdateMeasure();
+			}
 		}
 	}
 
@@ -101,33 +99,56 @@ public abstract class UIWidget
 
 			if (parent is UIFrame)
 			{
-				SetPosition(_position.x, _position.y);
+				_rect.position = value;
 			}
 		}
 	}
 
-	RectInt _rect;
+	internal RectInt _rect;
 	public RectInt rect { get => _rect; }
 	public RectInt contentRect { get => _rect - _padding; }
+
+	#endregion Layout
+
+	public bool clipContent;
+
+	internal void AttachTo(UIContainer parent)
+	{
+		this.parent = parent;
+		OnAttached();
+	}
+	protected virtual void OnAttached() { }
 
 	protected virtual void UpdateMeasure()
 	{
 		parent?.ChildMeasureChanged(this);
 	}
 
-	public virtual void SetWidth(int width)
+	internal virtual void DoRender()
+	{
+		Render();
+	}
+
+	protected virtual void Render()
+	{
+		GFX.DrawBox(rect, new Color(1f, 0.1f));
+		GFX.DrawRect(rect, Color.green, -1);
+
+		Font.normal.DrawString(GetType().Name, rect.topLeft, Color.white);
+	}
+
+	/// <summary>
+	/// The width is guaranteed to be set but the height might also change in responce, eg. a label running out of space horizontally so needing another line.
+	/// When overriding call the base function last.
+	/// </summary>
+	/// <param name="width">The width of the widget</param>
+	public virtual void RequestWidth(int width)
 	{
 		_rect.width = width;
 	}
 
-	public virtual void SetHeight(int height)
+	public void SetHeight(int height)
 	{
 		_rect.height = height;
-	}
-
-	internal virtual void SetPosition(int x, int y)
-	{
-		_rect.x = x;
-		_rect.y = y;
 	}
 }
