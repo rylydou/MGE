@@ -14,7 +14,7 @@ public class RenderTexture : GraphicsResource
 	public RenderTexture(Vector2Int size) : base(GL.GenFramebuffer())
 	{
 		this.size = size;
-		viewportTransform = Matrix.CreateOrthographic(size.x, size.y, 0, 1);
+		viewportTransform = Matrix.CreateOrthographicOffCenter(0, size.x, size.y, 0, 0, -1);
 
 		colorTexture = new(this.size);
 		colorTexture.InitIfNecessary();

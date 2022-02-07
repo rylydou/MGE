@@ -52,6 +52,8 @@ public static class GFX
 	public static Stack<Matrix> transformStack = new();
 	public static Matrix transform;
 
+	public static Vector2Int canvasSize;
+
 #nullable disable
 	public static Texture texture;
 	public static Shader shader;
@@ -120,22 +122,20 @@ public static class GFX
 
 	public static void SetRenderTarget(RenderTexture? renderTexture)
 	{
-		var size = Vector2Int.zero;
-
 		if (renderTexture is null)
 		{
-			size = GameWindow.current.Size;
+			canvasSize = GameWindow.current.Size;
 			currentProjectionTransform = windowViewportTransform;
 			RenderTexture.SetScreenAsTarget();
 		}
 		else
 		{
-			size = renderTexture.size;
+			canvasSize = renderTexture.size;
 			currentProjectionTransform = renderTexture.viewportTransform;
 			renderTexture.SetAsTarget();
 		}
 
-		GL.Viewport(0, 0, size.x, size.y);
+		GL.Viewport(0, 0, canvasSize.x, canvasSize.y);
 	}
 
 	public static void DrawBatches()
@@ -285,13 +285,11 @@ public static class GFX
 
 	#region Special
 
-	public static void DrawRenderTexture(RenderTexture renderTexture)
+	public static void DrawGameRender(RenderTexture renderTexture)
 	{
-		var size = (Vector2Int)GameWindow.current.Size;
-		SetBatch(renderTexture.colorTexture);
-		var scaleFactor = (float)size.y / renderTexture.size.y;
-		var realXSize = renderTexture.size.x * scaleFactor;
-		SetBoxRegionAtDest(new(0, renderTexture.size.y, renderTexture.size.x, -renderTexture.size.y), new(-realXSize / 2, -size.y / 2, realXSize, size.y), Color.white);
+		var src = new Rect(0, renderTexture.size.y, renderTexture.size.x, -renderTexture.size.y);
+		var dest = Rect.Fit(renderTexture.size, new(canvasSize));
+		DrawTextureRegionAtDest(renderTexture.colorTexture, src, dest, Color.white);
 	}
 
 	#endregion
@@ -466,10 +464,10 @@ public static class GFX
 	)
 	{
 		SetSpaceForVertices(4);
-		SetVertex(destTR, srcBR, colorTR); // Top right
-		SetVertex(destBR, srcTR, colorBR); // Bottom right
-		SetVertex(destBL, srcTL, colorBL); // Bottom left
-		SetVertex(destTL, srcBL, colorTL); // Top left
+		SetVertex(destTR, srcTR, colorTR); // Top right
+		SetVertex(destBR, srcBR, colorBR); // Bottom right
+		SetVertex(destBL, srcBL, colorBL); // Bottom left
+		SetVertex(destTL, srcTL, colorTL); // Top left
 
 		SetSpaceForIndices(6);
 		SetIndices(0, 1, 3); // Bottom right

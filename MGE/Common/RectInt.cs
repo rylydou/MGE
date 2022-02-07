@@ -74,30 +74,29 @@ public struct RectInt : IEquatable<RectInt>
 		return rect;
 	}
 
-	public static RectInt Fit(RectInt inner, RectInt outer)
+	public static RectInt Fit(Vector2Int inner, Vector2Int outer)
 	{
 		float scaleRatio;
-		if (outer.width / outer.height >= inner.width / inner.height)
+		if (outer.x / outer.y >= inner.x / inner.y)
 		{
-			scaleRatio = inner.width / outer.width;
+			scaleRatio = inner.x / outer.x;
 		}
 		else
 		{
-			scaleRatio = inner.height / outer.height;
+			scaleRatio = inner.y / outer.y;
 		}
 
-		var width = outer.width * scaleRatio;
-		var height = outer.height * scaleRatio;
+		var width = outer.x * scaleRatio;
+		var height = outer.y * scaleRatio;
 
-		var xCenter = inner.x + (inner.width / 2);
-		var yCenter = inner.y + (inner.height / 2);
+		var xCenter = inner.x + (inner.x / 2);
+		var yCenter = inner.y + (inner.y / 2);
 
 		var x = xCenter - (width / 2);
 		var y = yCenter - (height / 2);
 
 		return new((int)x, (int)y, (int)width, (int)height);
 	}
-
 	#endregion Methods
 
 	#endregion Static

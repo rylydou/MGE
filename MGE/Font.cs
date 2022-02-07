@@ -42,7 +42,7 @@ public class Font
 
 			var texture = (Texture)obj;
 
-			var realPos = new Vector2(pos.X - origin.X * scale.X, pos.Y - (src.Value.Height - origin.Y) * scale.Y);
+			var realPos = new Vector2(pos.X - origin.X * scale.X, pos.Y - origin.Y * scale.Y);
 			var destRect = new Rect(realPos, src.Value.Width * scale.X, src.Value.Height * scale.Y);
 
 			// GFX.DrawRect(destRect, ((Color)color).inverted.WithAlpha(1f / 3));

@@ -74,28 +74,21 @@ public struct Rect : IEquatable<Rect>
 		return rect;
 	}
 
-	public static Rect Fit(Rect inner, Rect outer)
+	public static Rect Fit(Vector2 inner, Rect outer)
 	{
-		float scaleRatio;
-		if (outer.width / outer.height >= inner.width / inner.height)
-		{
-			scaleRatio = inner.width / outer.width;
-		}
-		else
-		{
-			scaleRatio = inner.height / outer.height;
-		}
+		var innerAspectRatio = inner.x / inner.y;
+		var outerAspectRatio = outer.width / outer.height;
 
-		var width = outer.width * scaleRatio;
-		var height = outer.height * scaleRatio;
+		var resizeFactor = (innerAspectRatio >= outerAspectRatio) ?
+		(outer.width / (float)inner.x) :
+		(outer.height / (float)inner.y);
 
-		var xCenter = inner.x + (inner.width / 2);
-		var yCenter = inner.y + (inner.height / 2);
+		var newWidth = inner.x * resizeFactor;
+		var newHeight = inner.y * resizeFactor;
+		var newLeft = outer.left + (outer.width - newWidth) / 2f;
+		var newTop = outer.top + (outer.height - newHeight) / 2f;
 
-		var x = xCenter - (width / 2);
-		var y = yCenter - (height / 2);
-
-		return new((float)x, (float)y, (float)width, (float)height);
+		return new(newLeft, newTop, newWidth + newLeft, newHeight + newTop);
 	}
 
 	#endregion Methods
