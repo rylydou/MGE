@@ -5,7 +5,7 @@ public abstract class UIWidget
 	public string? id;
 
 	public UIContainer? parent { get; private set; }
-	public bool isActive { get; private set; }
+	public UICanvas? canvas { get; private set; }
 
 	#region Layout
 
@@ -112,12 +112,21 @@ public abstract class UIWidget
 
 	public bool clipContent;
 
-	internal void AttachTo(UIContainer parent)
+	internal virtual void AttachTo(UIContainer parent)
 	{
 		this.parent = parent;
+
+		if (parent is UICanvas canvas)
+		{
+			this.canvas = canvas;
+
+			AttachChildren();
+		}
+
 		OnAttached();
 	}
 	protected virtual void OnAttached() { }
+	internal virtual void AttachChildren() { }
 
 	protected virtual void UpdateMeasure()
 	{
@@ -126,16 +135,32 @@ public abstract class UIWidget
 
 	internal virtual void DoRender()
 	{
-		Render();
-	}
+		if (rect.isEmpty) return;
 
-	protected virtual void Render()
-	{
+		var oldScissor = GFX.GetScissor();
+		if (clipContent)
+		{
+			GFX.SetScissor(_rect);
+		}
+
+		Render();
+
+		// if (canvas.enableDebug)
+		// {
 		GFX.DrawBox(rect, new Color(1f, 0.1f));
 		GFX.DrawRect(rect, Color.green, -1);
 
 		Font.normal.DrawString(GetType().Name, rect.topLeft, Color.white);
+		// }
+
+		if (clipContent)
+		{
+			GFX.DrawBatches();
+			GFX.SetScissor(oldScissor);
+		}
 	}
+
+	protected virtual void Render() { }
 
 	/// <summary>
 	/// The width is guaranteed to be set but the height might also change in responce, eg. a label running out of space horizontally so needing another line.

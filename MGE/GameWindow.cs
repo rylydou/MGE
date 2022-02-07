@@ -87,6 +87,20 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		GL.UseProgram(0);
 	}
 
+	protected override void OnRefresh()
+	{
+		base.OnRefresh();
+
+		OnUpdateFrame(new(0));
+	}
+
+	protected override void OnMove(WindowPositionEventArgs e)
+	{
+		base.OnMove(e);
+
+		OnUpdateFrame(new(0));
+	}
+
 	protected override void OnResize(ResizeEventArgs args)
 	{
 		base.OnResize(args);
@@ -94,6 +108,11 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		GFX.windowViewportTransform = Matrix.CreateOrthographicOffCenter(0, args.Width, args.Height, 0, 0, -1);
 		_canvas.fixedWidth = args.Width;
 		_canvas.fixedHeight = args.Height;
+
+		if (Engine.isWindows)
+		{
+			OnRenderFrame(new(0));
+		}
 	}
 
 	protected override void OnUpdateFrame(FrameEventArgs args)
@@ -148,9 +167,10 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		GFX.DrawBatches();
 
-		// var text = $"Update:{1f / _updateTime:F0}fps ({_updateTime * 1000:F2}ms) Render:{1f / _renderTime:F0}fps ({_renderTime * 1000:F2}ms)";
-		// Font.monospace.DrawString(text, new(10), Color.black.translucent);
-		// Font.monospace.DrawString(text, new(8), Color.white);
+		// Draw Stats
+		// var statsText = $"Update:{1f / _updateTime:F0}fps ({_updateTime * 1000:F2}ms) Render:{1f / _renderTime:F0}fps ({_renderTime * 1000:F2}ms)";
+		// Font.monospace.DrawString(statsText, new(10), Color.black.translucent);
+		// Font.monospace.DrawString(statsText, new(8), Color.white);
 
 		Input.DrawGamepadInput();
 

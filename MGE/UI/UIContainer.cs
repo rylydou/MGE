@@ -6,6 +6,14 @@ public abstract class UIContainer : UIWidget
 {
 	public List<UIWidget> widgets { get; } = new();
 
+	internal override void AttachChildren()
+	{
+		foreach (var widget in widgets)
+		{
+			widget.AttachTo(this);
+		}
+	}
+
 	public void AddChild(UIWidget widget)
 	{
 		widgets.Add(widget);

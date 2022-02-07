@@ -99,7 +99,7 @@ public class UIBox : UIContainer
 
 				if (widget.horizontalResizing == UIResizing.FillContainer)
 				{
-					widget.RequestWidth(remainingSpace / filledWidgets.Count);
+					widget.RequestWidth(Math.Max(remainingSpace / filledWidgets.Count, 0));
 				}
 
 				x += widget._rect.width;

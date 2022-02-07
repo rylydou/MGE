@@ -215,7 +215,7 @@ public struct Rect : IEquatable<Rect>
 
 	public Vector2 center { get => new(x + _width / 2, y + _height / 2); }
 
-	public bool isEmpty { get => width == 0 && height == 0; }
+	public bool isEmpty { get => width == 0 || height == 0; }
 
 	#endregion Properties
 

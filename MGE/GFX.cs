@@ -98,8 +98,12 @@ public static class GFX
 		GL.Clear(ClearBufferMask.ColorBufferBit);
 	}
 
+	static RectInt? _scissor;
+	public static RectInt? GetScissor() => _scissor;
 	public static void SetScissor(RectInt? bounds)
 	{
+		_scissor = bounds;
+
 		if (bounds.HasValue)
 		{
 			GL.Scissor(bounds.Value.x, bounds.Value.y, bounds.Value.width, bounds.Value.height);
