@@ -65,8 +65,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		_canvas.AddChild(_button3);
 
 		_canvas.padding = new(15);
-		_canvas.fixedWidth = 320 * 1;
-		_canvas.fixedHeight = 180 * 1;
 	}
 
 	protected override void OnLoad()
@@ -93,8 +91,9 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnResize(args);
 
-		GFX.windowViewportTransform = Matrix.CreateOrthographicOffCenter(0, Size.X, Size.Y, 0, 0, -1);
-		// GFX.windowViewportTransform = Matrix.CreateOrthographic(Math.CeilToEven(Size.X), Math.CeilToEven(Size.Y), 0, -1);
+		GFX.windowViewportTransform = Matrix.CreateOrthographicOffCenter(0, args.Width, args.Height, 0, 0, -1);
+		_canvas.fixedWidth = args.Width;
+		_canvas.fixedHeight = args.Height;
 	}
 
 	protected override void OnUpdateFrame(FrameEventArgs args)
@@ -149,17 +148,13 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		GFX.DrawBatches();
 
-		Font.monospace.DrawString(
-			$"Update:{1f / _updateTime:F0}fps ({_updateTime * 1000:F2}ms) Render:{1f / _renderTime:F0}fps ({_renderTime * 1000:F2}ms) Client Size:{Size}",
-			new(8),
-			Color.white.translucent
-		);
+		// var text = $"Update:{1f / _updateTime:F0}fps ({_updateTime * 1000:F2}ms) Render:{1f / _renderTime:F0}fps ({_renderTime * 1000:F2}ms)";
+		// Font.monospace.DrawString(text, new(10), Color.black.translucent);
+		// Font.monospace.DrawString(text, new(8), Color.white);
 
 		Input.DrawGamepadInput();
 
 		GFX.DrawBatches();
-
-		GFX.DrawTexture(_sprite, new(16), Color.white);
 
 		_canvas.DoRender();
 

@@ -88,7 +88,7 @@ public struct Rect : IEquatable<Rect>
 		var newLeft = outer.left + (outer.width - newWidth) / 2f;
 		var newTop = outer.top + (outer.height - newHeight) / 2f;
 
-		return new(newLeft, newTop, newWidth + newLeft, newHeight + newTop);
+		return new(newLeft, newTop, newWidth, newHeight);
 	}
 
 	#endregion Methods
