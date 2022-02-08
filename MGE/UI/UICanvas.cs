@@ -9,11 +9,11 @@ public class UICanvas : UIBox
 		canvas = this;
 	}
 
-	protected override void UpdateMeasure()
+	internal override void PropertiesChanged()
 	{
-		_rect.width = fixedWidth;
-		_rect.height = fixedHeight;
+		_rect.size = fixedSize;
+		_rect.position = position;
 
-		base.UpdateMeasure();
+		base.PropertiesChanged();
 	}
 }

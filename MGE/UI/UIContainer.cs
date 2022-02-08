@@ -13,7 +13,7 @@ public abstract class UIContainer : UIWidget
 			if (_padding == value) return;
 			_padding = value;
 
-			UpdateMeasure();
+			PropertiesChanged();
 		}
 	}
 

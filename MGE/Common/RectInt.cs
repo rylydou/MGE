@@ -110,17 +110,14 @@ public struct RectInt : IEquatable<RectInt>
 
 	public int this[int index]
 	{
-		get
+		get => index switch
 		{
-			switch (index)
-			{
-				case 0: return _xMin;
-				case 1: return _yMin;
-				case 2: return _width;
-				case 3: return _height;
-				default: throw new IndexOutOfRangeException($"Invalid Rect index of {index}!");
-			}
-		}
+			0 => _xMin,
+			1 => _yMin,
+			2 => _width,
+			3 => _height,
+			_ => throw new IndexOutOfRangeException($"Invalid Rect index of {index}!"),
+		};
 
 		set
 		{

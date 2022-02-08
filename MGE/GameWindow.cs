@@ -21,9 +21,12 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	Texture _sprite;
 
 	UICanvas _canvas = new();
+	UIBox _bar = new();
 	UIButton _button1 = new();
 	UIButton _button2 = new();
 	UIButton _button3 = new();
+	UIButton _button4 = new();
+	UIButton _button5 = new();
 
 	public GameWindow() : base(new() { /* RenderFrequency = 60, UpdateFrequency = 60, */ }, new() { Title = "Mangrove Game Engine", })
 	{
@@ -51,21 +54,33 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		Input.Init();
 
-		_button1.fixedWidth = 90;
-		_button1.fixedHeight = 30;
-		_canvas.AddChild(_button1);
-
-		_button2.fixedWidth = 90;
-		_button2.fixedHeight = 30;
-		_button2.horizontalResizing = UIResizing.FillContainer;
-		_canvas.AddChild(_button2);
-
-		_button3.fixedWidth = 90;
-		_button3.fixedHeight = 30;
-		_canvas.AddChild(_button3);
-
+		_canvas.direction = UIDirection.Verticel;
 		_canvas.padding = new(15);
 		_canvas.spacing = 15;
+		{
+			_bar.spacing = 15;
+			_bar.padding = new(16);
+			_bar.resizing = new(UIResizing.FillContainer, UIResizing.HugContents);
+			_canvas.AddChild(_bar);
+			{
+				_button1.fixedSize = new(90, 30);
+				_bar.AddChild(_button1);
+
+				_button2.resizing = new(UIResizing.FillContainer, UIResizing.Fixed);
+				_button2.fixedSize = new(90, 30);
+				_bar.AddChild(_button2);
+
+				_button3.resizing = new(UIResizing.Fixed, UIResizing.FillContainer);
+				_button3.fixedSize = new(90, 30);
+				_bar.AddChild(_button3);
+			}
+
+			_button4.resizing = new(UIResizing.FillContainer, UIResizing.FillContainer);
+			_canvas.AddChild(_button4);
+
+			_button5.fixedSize = new(90, 30);
+			_canvas.AddChild(_button5);
+		}
 	}
 
 	protected override void OnLoad()
@@ -111,8 +126,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		GFX.windowViewportTransform = Matrix.CreateOrthographicOffCenter(0, args.Width, args.Height, 0, 0, -1);
 		_canvas.position = new(16);
-		_canvas.fixedWidth = args.Width - 32;
-		_canvas.fixedHeight = args.Height - 32;
+		_canvas.fixedSize = new(args.Width - 32, args.Height - 32);
 
 		if (Engine.isWindows)
 		{
@@ -124,6 +138,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnUpdateFrame(args);
 
+		Time.updateTime = (float)args.Time;
 		_updateTime = args.Time;
 
 		Input.UpdateKeyboard(KeyboardState);
@@ -154,6 +169,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnRenderFrame(args);
 
+		Time.drawTime = (float)args.Time;
 		_renderTime = args.Time;
 
 		GFX.SetRenderTarget(_gameRender);

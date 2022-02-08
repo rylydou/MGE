@@ -171,6 +171,13 @@ public struct Vector2 : IEquatable<Vector2>
 		}
 	}
 
+	public Vector2 With(int index, float value) => index switch
+	{
+		0 => new(value, y),
+		1 => new(x, value),
+		_ => throw new System.ArgumentOutOfRangeException(nameof(index)),
+	};
+
 	public Vector2 normalized
 	{
 		get

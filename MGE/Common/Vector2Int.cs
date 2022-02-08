@@ -88,6 +88,13 @@ public struct Vector2Int : IEquatable<Vector2Int>
 		}
 	}
 
+	public Vector2Int With(int index, int value) => index switch
+	{
+		0 => new(value, y),
+		1 => new(x, value),
+		_ => throw new System.ArgumentOutOfRangeException(nameof(index)),
+	};
+
 	////////////////////////////////////////////////////////////
 
 	public Vector2Int sign { get => new Vector2Int(Math.Sign(x), Math.Sign(y)); }

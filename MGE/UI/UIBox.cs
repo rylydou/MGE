@@ -63,9 +63,9 @@ public class UIBox : UIContainer
 		UpdateLayout();
 	}
 
-	protected override void UpdateMeasure()
+	protected override void OnMeasureChanged()
 	{
-		base.UpdateMeasure();
+		base.OnMeasureChanged();
 
 		UpdateLayout();
 	}
@@ -74,41 +74,240 @@ public class UIBox : UIContainer
 	{
 		if (widgets.Count == 0) return;
 
-		if (horizontalResizing == UIResizing.HugContents) throw new System.NotImplementedException();
+		var dir = (int)direction;
 
-		// Horizontal
+		if (resizing[dir] == UIResizing.HugContents)
+		{
+			var usedSpace = 0;
+			var pos = contentRect[dir];
+
+			foreach (var widget in widgets)
+			{
+				widget._rect[dir] = pos;
+
+				var offset = widget.rect[dir + 2] + spacing;
+				pos += offset;
+				usedSpace += offset;
+			}
+
+			fixedSize = fixedSize.With(dir, usedSpace);
+		}
+		else
 		{
 			// Get filled widgets and remaining space
 			var filledWidgets = new List<UIWidget>();
-			var remainingSpace = contentRect.width;
+			var remainingSpace = contentRect[dir];
 
 			remainingSpace -= spacing * (widgets.Count - 1);
 
 			foreach (var widget in widgets)
 			{
-				if (widget.horizontalResizing == UIResizing.FillContainer)
+				if (widget.resizing[dir] == UIResizing.FillContainer)
 				{
 					filledWidgets.Add(widget);
 				}
 				else
 				{
-					remainingSpace -= widget.rect.width;
+					remainingSpace -= widget.rect[dir + 2];
 				}
 			}
 
-			var x = contentRect.x;
+			var pos = contentRect[dir];
 			foreach (var widget in widgets)
 			{
-				widget._rect.x = x;
+				widget._rect[dir] = pos;
 
-				if (widget.horizontalResizing == UIResizing.FillContainer)
+				if (widget.resizing[dir] == UIResizing.FillContainer)
 				{
-					widget.RequestWidth(Math.Max(remainingSpace / filledWidgets.Count, 0));
+					widget._rect[dir + 2] = Math.Max(remainingSpace / filledWidgets.Count, 0);
 				}
 
-				x += widget._rect.width;
-				x += spacing;
+				widget.ParentChangedMeasure();
+
+				pos += widget._rect[dir + 2];
+				pos += spacing;
 			}
 		}
+
+		dir = dir == 0 ? 1 : 0;
+
+		var size = 0;
+		var allowFill = resizing[dir] != UIResizing.HugContents;
+
+		foreach (var widget in widgets)
+		{
+			widget._rect.x = contentRect.x;
+
+			if (widget._rect.width > size)
+			{
+				size = widget._rect.width;
+			}
+
+			if (widget.resizing[dir] == UIResizing.FillContainer && allowFill)
+			{
+				widget._rect[dir + 2] = contentRect[dir + 2];
+			}
+
+			widget.ParentChangedMeasure();
+		}
+
+		fixedSize = fixedSize.With(dir, size);
+
+#if false
+			// Horizontal
+			{
+				if (dir == UIDirection.Horizontal)
+				{
+					if (horizontalResizing == UIResizing.HugContents)
+					{
+						var usedSpace = 0;
+
+						var x = contentRect.x;
+						foreach (var widget in widgets)
+						{
+							widget._rect.x = x;
+
+							var offset = widget.rect.width + spacing;
+							x += offset;
+							usedSpace += offset;
+						}
+
+						fixedWidth = usedSpace;
+					}
+					else
+					{
+						// Get filled widgets and remaining space
+						var filledWidgets = new List<UIWidget>();
+						var remainingSpace = contentRect.width;
+
+						remainingSpace -= spacing * (widgets.Count - 1);
+
+						foreach (var widget in widgets)
+						{
+							if (widget.horizontalResizing == UIResizing.FillContainer)
+							{
+								filledWidgets.Add(widget);
+							}
+							else
+							{
+								remainingSpace -= widget.rect.width;
+							}
+						}
+
+						var x = contentRect.x;
+						foreach (var widget in widgets)
+						{
+							widget._rect.x = x;
+
+							if (widget.horizontalResizing == UIResizing.FillContainer)
+							{
+								widget.RequestWidth(Math.Max(remainingSpace / filledWidgets.Count, 0));
+							}
+
+							widget.ParentChangedMeasure();
+
+							x += widget._rect.width;
+							x += spacing;
+						}
+					}
+				}
+				else
+				{
+					var width = 0;
+
+					foreach (var widget in widgets)
+					{
+						widget._rect.x = contentRect.x;
+
+						if (widget._rect.width > width)
+						{
+							width = widget._rect.width;
+						}
+
+						if (widget.horizontalResizing == UIResizing.FillContainer && horizontalResizing != UIResizing.HugContents)
+						{
+							widget.RequestWidth(contentRect.width);
+						}
+
+						widget.ParentChangedMeasure();
+					}
+
+					fixedWidth = width;
+				}
+			}
+
+			// Vertical
+			{
+				if (dir == UIDirection.Verticel)
+				{
+					if (verticalResizing == UIResizing.HugContents)
+					{
+						var usedSpace = 0;
+
+						var y = contentRect.y;
+						foreach (var widget in widgets)
+						{
+							widget._rect.y = y;
+
+							var offset = widget.rect.height + spacing;
+							y += offset;
+							usedSpace += offset;
+						}
+
+						fixedWidth = usedSpace;
+					}
+					else
+					{
+						// Get filled widgets and remaining space
+						var filledWidgets = new List<UIWidget>();
+						var remainingSpace = contentRect.height;
+
+						remainingSpace -= spacing * (widgets.Count - 1);
+
+						foreach (var widget in widgets)
+						{
+							if (widget.verticalResizing == UIResizing.FillContainer)
+							{
+								filledWidgets.Add(widget);
+							}
+							else
+							{
+								remainingSpace -= widget.rect.height;
+							}
+						}
+
+						var y = contentRect.y;
+						foreach (var widget in widgets)
+						{
+							widget._rect.y = y;
+
+							if (widget.verticalResizing == UIResizing.FillContainer)
+							{
+								widget.SetHeight(Math.Max(remainingSpace / filledWidgets.Count, 0));
+							}
+
+							widget.ParentChangedMeasure();
+
+							y += widget._rect.height;
+							y += spacing;
+						}
+					}
+				}
+				else
+				{
+					foreach (var widget in widgets)
+					{
+						widget._rect.y = contentRect.y;
+
+						if (widget.verticalResizing == UIResizing.FillContainer)
+						{
+							widget.SetHeight(contentRect.height);
+						}
+
+						widget.ParentChangedMeasure();
+					}
+				}
+			}
+#endif
 	}
 }
