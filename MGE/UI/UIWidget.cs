@@ -5,7 +5,7 @@ public abstract class UIWidget
 	public string? id;
 
 	public UIContainer? parent { get; private set; }
-	public UICanvas? canvas { get; private set; }
+	public UICanvas? canvas { get; internal set; }
 
 	#region Layout
 
@@ -30,19 +30,6 @@ public abstract class UIWidget
 		{
 			if (_verticalResizing == value) return;
 			_verticalResizing = value;
-
-			UpdateMeasure();
-		}
-	}
-
-	Thickness _padding;
-	public Thickness padding
-	{
-		get => _padding;
-		set
-		{
-			if (_padding == value) return;
-			_padding = value;
 
 			UpdateMeasure();
 		}
@@ -97,7 +84,7 @@ public abstract class UIWidget
 			if (_position == value) return;
 			_position = value;
 
-			if (parent is UIFrame)
+			if (parent is UIFrame || this is UICanvas)
 			{
 				_rect.position = value;
 			}
@@ -106,27 +93,23 @@ public abstract class UIWidget
 
 	internal RectInt _rect;
 	public RectInt rect { get => _rect; }
-	public RectInt contentRect { get => _rect - _padding; }
 
 	#endregion Layout
 
-	public bool clipContent;
+	public bool clipContent = true;
 
 	internal virtual void AttachTo(UIContainer parent)
 	{
 		this.parent = parent;
 
-		if (parent is UICanvas canvas)
+		canvas = parent.canvas;
+
+		if (canvas is not null)
 		{
-			this.canvas = canvas;
-
-			AttachChildren();
+			OnAttached();
 		}
-
-		OnAttached();
 	}
 	protected virtual void OnAttached() { }
-	internal virtual void AttachChildren() { }
 
 	protected virtual void UpdateMeasure()
 	{
@@ -135,23 +118,24 @@ public abstract class UIWidget
 
 	internal virtual void DoRender()
 	{
-		if (rect.isEmpty) return;
+		if (!rect.isProper) return;
 
-		var oldScissor = GFX.GetScissor();
+		RectInt? oldScissor = null;
 		if (clipContent)
 		{
+			oldScissor = GFX.GetScissor();
 			GFX.SetScissor(_rect);
 		}
 
 		Render();
 
-		// if (canvas.enableDebug)
-		// {
-		GFX.DrawBox(rect, new Color(1f, 0.1f));
-		GFX.DrawRect(rect, Color.green, -1);
+		if (canvas!.enableDebug)
+		{
+			GFX.DrawBox(rect, new Color(1f, 0.1f));
+			GFX.DrawRect(rect, Color.green, -1);
 
-		Font.normal.DrawString(GetType().Name, rect.topLeft, Color.white);
-		// }
+			Font.normal.DrawString(GetType().Name, rect.topLeft, Color.white);
+		}
 
 		if (clipContent)
 		{

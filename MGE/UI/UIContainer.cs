@@ -4,14 +4,31 @@ namespace MGE.UI;
 
 public abstract class UIContainer : UIWidget
 {
+	Thickness _padding;
+	public Thickness padding
+	{
+		get => _padding;
+		set
+		{
+			if (_padding == value) return;
+			_padding = value;
+
+			UpdateMeasure();
+		}
+	}
+
+	public RectInt contentRect { get => _rect - _padding; }
+
 	public List<UIWidget> widgets { get; } = new();
 
-	internal override void AttachChildren()
+	protected override void OnAttached()
 	{
 		foreach (var widget in widgets)
 		{
 			widget.AttachTo(this);
 		}
+
+		base.OnAttached();
 	}
 
 	public void AddChild(UIWidget widget)

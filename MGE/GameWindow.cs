@@ -65,6 +65,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		_canvas.AddChild(_button3);
 
 		_canvas.padding = new(15);
+		_canvas.spacing = 15;
 	}
 
 	protected override void OnLoad()
@@ -98,7 +99,10 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnMove(e);
 
-		OnUpdateFrame(new(0));
+		if (Engine.isWindows)
+		{
+			OnUpdateFrame(new(0));
+		}
 	}
 
 	protected override void OnResize(ResizeEventArgs args)
@@ -106,8 +110,9 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		base.OnResize(args);
 
 		GFX.windowViewportTransform = Matrix.CreateOrthographicOffCenter(0, args.Width, args.Height, 0, 0, -1);
-		_canvas.fixedWidth = args.Width;
-		_canvas.fixedHeight = args.Height;
+		_canvas.position = new(16);
+		_canvas.fixedWidth = args.Width - 32;
+		_canvas.fixedHeight = args.Height - 32;
 
 		if (Engine.isWindows)
 		{

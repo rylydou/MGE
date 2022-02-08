@@ -106,7 +106,8 @@ public static class GFX
 
 		if (bounds.HasValue)
 		{
-			GL.Scissor(bounds.Value.x, bounds.Value.y, bounds.Value.width, bounds.Value.height);
+			var rect = bounds.Value;
+			GL.Scissor(bounds.Value.x, canvasSize.y - rect.height - bounds.Value.y, rect.width, rect.height);
 			GL.Enable(EnableCap.ScissorTest);
 			return;
 		}

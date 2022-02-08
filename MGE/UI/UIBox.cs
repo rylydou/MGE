@@ -72,6 +72,8 @@ public class UIBox : UIContainer
 
 	internal void UpdateLayout()
 	{
+		if (widgets.Count == 0) return;
+
 		if (horizontalResizing == UIResizing.HugContents) throw new System.NotImplementedException();
 
 		// Horizontal
@@ -79,6 +81,8 @@ public class UIBox : UIContainer
 			// Get filled widgets and remaining space
 			var filledWidgets = new List<UIWidget>();
 			var remainingSpace = contentRect.width;
+
+			remainingSpace -= spacing * (widgets.Count - 1);
 
 			foreach (var widget in widgets)
 			{
@@ -103,6 +107,7 @@ public class UIBox : UIContainer
 				}
 
 				x += widget._rect.width;
+				x += spacing;
 			}
 		}
 	}
