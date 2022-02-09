@@ -159,12 +159,13 @@ public class UIBox : UIContainer
 		_(0);
 		_(1);
 
-#if false
+		if (false)
+		{
 			// Horizontal
 			{
 				if (direction == UIDirection.Horizontal)
 				{
-					if (horizontalResizing == UIResizing.HugContents)
+					if (resizing.horizontal == UIResizing.HugContents)
 					{
 						var usedSpace = 0;
 
@@ -178,7 +179,7 @@ public class UIBox : UIContainer
 							usedSpace += offset;
 						}
 
-						fixedWidth = usedSpace;
+						fixedSize = new(usedSpace, fixedSize.y);
 					}
 					else
 					{
@@ -190,7 +191,7 @@ public class UIBox : UIContainer
 
 						foreach (var widget in widgets)
 						{
-							if (widget.horizontalResizing == UIResizing.FillContainer)
+							if (widget.resizing.horizontal == UIResizing.FillContainer)
 							{
 								filledWidgets.Add(widget);
 							}
@@ -205,9 +206,9 @@ public class UIBox : UIContainer
 						{
 							widget._rect.x = x;
 
-							if (widget.horizontalResizing == UIResizing.FillContainer)
+							if (widget.resizing.horizontal == UIResizing.FillContainer)
 							{
-								widget.RequestWidth(Math.Max(remainingSpace / filledWidgets.Count, 0));
+								widget._rect.width = Math.Max(remainingSpace / filledWidgets.Count, 0);
 							}
 
 							widget.ParentChangedMeasure();
@@ -230,15 +231,15 @@ public class UIBox : UIContainer
 							width = widget._rect.width;
 						}
 
-						if (widget.horizontalResizing == UIResizing.FillContainer && horizontalResizing != UIResizing.HugContents)
+						if (widget.resizing.horizontal == UIResizing.FillContainer && resizing.horizontal != UIResizing.HugContents)
 						{
-							widget.RequestWidth(contentRect.width);
+							widget._rect.width = contentRect.width;
 						}
 
 						widget.ParentChangedMeasure();
 					}
 
-					fixedWidth = width;
+					fixedSize = new(width, fixedSize.y);
 				}
 			}
 
@@ -246,7 +247,7 @@ public class UIBox : UIContainer
 			{
 				if (direction == UIDirection.Vertical)
 				{
-					if (verticalResizing == UIResizing.HugContents)
+					if (resizing.vertical == UIResizing.HugContents)
 					{
 						var usedSpace = 0;
 
@@ -260,7 +261,7 @@ public class UIBox : UIContainer
 							usedSpace += offset;
 						}
 
-						fixedWidth = usedSpace;
+						fixedSize = new(fixedSize.x, usedSpace);
 					}
 					else
 					{
@@ -272,7 +273,7 @@ public class UIBox : UIContainer
 
 						foreach (var widget in widgets)
 						{
-							if (widget.verticalResizing == UIResizing.FillContainer)
+							if (widget.resizing.vertical == UIResizing.FillContainer)
 							{
 								filledWidgets.Add(widget);
 							}
@@ -287,9 +288,9 @@ public class UIBox : UIContainer
 						{
 							widget._rect.y = y;
 
-							if (widget.verticalResizing == UIResizing.FillContainer)
+							if (widget.resizing.vertical == UIResizing.FillContainer)
 							{
-								widget.SetHeight(Math.Max(remainingSpace / filledWidgets.Count, 0));
+								widget._rect.height = Math.Max(remainingSpace / filledWidgets.Count, 0);
 							}
 
 							widget.ParentChangedMeasure();
@@ -301,19 +302,28 @@ public class UIBox : UIContainer
 				}
 				else
 				{
+					var height = 0;
+
 					foreach (var widget in widgets)
 					{
 						widget._rect.y = contentRect.y;
 
-						if (widget.verticalResizing == UIResizing.FillContainer)
+						if (widget._rect.height > height)
 						{
-							widget.SetHeight(contentRect.height);
+							height = widget._rect.height;
+						}
+
+						if (widget.resizing.vertical == UIResizing.FillContainer && resizing.vertical != UIResizing.HugContents)
+						{
+							widget._rect.height = contentRect.height;
 						}
 
 						widget.ParentChangedMeasure();
 					}
+
+					fixedSize = new(fixedSize.x, height);
 				}
 			}
-#endif
+		}
 	}
 }
