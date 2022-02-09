@@ -3,7 +3,7 @@ namespace MGE.UI;
 public enum UIDirection
 {
 	Horizontal,
-	Verticel,
+	Vertical,
 }
 
 public enum UIHorizontalAlignment

@@ -12,7 +12,6 @@ public class UICanvas : UIBox
 	internal override void PropertiesChanged()
 	{
 		_rect.size = fixedSize;
-		_rect.position = position;
 
 		base.PropertiesChanged();
 	}

@@ -58,6 +58,8 @@ public abstract class UIWidget
 			_fixedSize = value;
 
 			PropertiesChanged();
+
+			Debug.Log(fixedSize, GetType().Name);
 		}
 	}
 

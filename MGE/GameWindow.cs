@@ -54,7 +54,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		Input.Init();
 
-		_canvas.direction = UIDirection.Verticel;
+		_canvas.direction = UIDirection.Vertical;
 		_canvas.padding = new(15);
 		_canvas.spacing = 15;
 		{
