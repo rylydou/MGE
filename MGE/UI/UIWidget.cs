@@ -22,32 +22,6 @@ public abstract class UIWidget
 		}
 	}
 
-	// UIResizing _horizontalResizing;
-	// public UIResizing horizontalResizing
-	// {
-	// 	get => _horizontalResizing;
-	// 	set
-	// 	{
-	// 		if (_horizontalResizing == value) return;
-	// 		_horizontalResizing = value;
-
-	// 		OnPropertiesChanged();
-	// 	}
-	// }
-
-	// UIResizing _verticalResizing;
-	// public UIResizing verticalResizing
-	// {
-	// 	get => _verticalResizing;
-	// 	set
-	// 	{
-	// 		if (_verticalResizing == value) return;
-	// 		_verticalResizing = value;
-
-	// 		OnPropertiesChanged();
-	// 	}
-	// }
-
 	Vector2Int _fixedSize;
 	public Vector2Int fixedSize
 	{
@@ -57,51 +31,27 @@ public abstract class UIWidget
 			if (_fixedSize == value) return;
 			_fixedSize = value;
 
-			PropertiesChanged();
+			var updated = false;
+			if (_resizing.horizontal == UIResizing.Fixed)
+			{
+				updated = true;
+				_rect.width = value.x;
+			}
 
-			Debug.Log(fixedSize, GetType().Name);
+			if (_resizing.vertical == UIResizing.Fixed)
+			{
+				updated = true;
+				_rect.height = value.y;
+			}
+
+			if (updated)
+			{
+				PropertiesChanged();
+			}
+
+			// Debug.Log(fixedSize, GetType().Name);
 		}
 	}
-
-	// int _width;
-	// /// <summary>
-	// /// The width of the widget. Only has an effect when <see cref="horizontalResizing"/> is set to <see cref="UIResizing.Fixed"/>.
-	// /// </summary>
-	// public int fixedWidth
-	// {
-	// 	get => _width;
-	// 	set
-	// 	{
-	// 		if (_width == value) return;
-	// 		_width = value;
-
-	// 		if (_horizontalResizing == UIResizing.Fixed)
-	// 		{
-	// 			_rect.width = fixedWidth;
-	// 			PropertiesChanged();
-	// 		}
-	// 	}
-	// }
-
-	// int _height;
-	// /// <summary>
-	// /// The height of the widget. Only has an effect when <see cref="verticalResizing"/> is set to <see cref="UIResizing.Fixed"/>.
-	// /// </summary>
-	// public int fixedHeight
-	// {
-	// 	get => _height;
-	// 	set
-	// 	{
-	// 		if (_height == value) return;
-	// 		_height = value;
-
-	// 		if (_verticalResizing == UIResizing.Fixed)
-	// 		{
-	// 			_rect.height = fixedHeight;
-	// 			PropertiesChanged();
-	// 		}
-	// 	}
-	// }
 
 	Vector2Int _position;
 	public Vector2Int position
