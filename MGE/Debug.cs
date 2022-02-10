@@ -1,44 +1,77 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace MGE;
 
 public static class Debug
 {
-	public static void Log(object? obj, [CallerArgumentExpression("obj")] string? message = null)
+	public static TextWriter stdout = System.Console.Out;
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	static void _Write(char ch) => stdout.Write(ch);
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	static void _Write(string text) => stdout.Write(text);
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	static void _Newline() => stdout.WriteLine();
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void LogMsg(string msg)
 	{
-		if (string.IsNullOrEmpty(message))
-		{
-			Trace.WriteLine(obj ?? "(null)");
-			return;
-		}
-
-		switch (message[0])
-		{
-			case '"':
-			case '$':
-			case '@':
-				Trace.WriteLine(obj ?? "(null)");
-				return;
-		}
-
-		Trace.Write(message);
-		Trace.Write(": ");
-		Trace.WriteLine(obj ?? "(null)");
+		_Write(msg);
+		_Newline();
 	}
 
-	public static void LogList(IEnumerable list, [CallerArgumentExpression("list")] string message = "")
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	static string ObjAsString(object? obj)
 	{
-		Trace.Write(message);
+		if (obj is float f) return f.ToString("F4");
+		else if (obj is double d) return d.ToString("F4");
+
+		if (obj is null) return "(null)";
+
+		try
+		{
+			return obj.ToString() ?? "(nothing)";
+		}
+		catch (System.Exception)
+		{
+			return "(error)";
+		}
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	static void WriteValue(string? label, string value)
+	{
+		if (label is not null)
+		{
+			_Write(label);
+			_Write(": ");
+		}
+
+		_Write(value);
+		_Newline();
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void LogVal(object? value, [CallerArgumentExpression("value")] string? label = null)
+	{
+		WriteValue(label, ObjAsString(value));
+	}
+
+	public static void LogList(IEnumerable value, [CallerArgumentExpression("value")] string label = "list")
+	{
+		Trace.Write(label);
 		Trace.WriteLine(":");
 
 		var index = 0;
-		foreach (var item in list)
+		foreach (var item in value)
 		{
-			Trace.Write("  ");
-			Trace.Write(index);
+			Trace.Write(string.Format("0,2", index));
 			Trace.Write(". ");
 			Trace.WriteLine(item ?? "(null)");
 
@@ -46,9 +79,9 @@ public static class Debug
 		}
 	}
 
-	public static void LogDict(IDictionary dict, [CallerArgumentExpression("dict")] string message = "")
+	public static void LogDict(IDictionary dict, [CallerArgumentExpression("dict")] string label = "list")
 	{
-		Trace.Write(message);
+		Trace.Write(label);
 		Trace.Write(" (");
 		Trace.Write(dict.Count);
 		Trace.WriteLine("):");
@@ -66,7 +99,7 @@ public static class Debug
 
 	static Stack<(string name, Stopwatch stopwatch)> _timerStack = new();
 
-	public static void StartStopwatch(string name)
+	public static void StartStopwatch(string name = "Timmer")
 	{
 		var stopwatch = new Stopwatch();
 		stopwatch.Start();

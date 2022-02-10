@@ -209,12 +209,12 @@ public static class Input
 		{
 			var hasMapping = GLFW.JoystickIsGamepad(e.JoystickId);
 
-			Debug.Log($"\"{name}\"(#{uuid}) connected at {e.JoystickId} with{(hasMapping ? "" : "out")} a mapping");
+			Debug.LogMsg($"\"{name}\"(#{uuid}) connected at {e.JoystickId} with{(hasMapping ? "" : "out")} a mapping");
 
 			return;
 		}
 
-		Debug.Log($" \"{name}\"(#{uuid}) disconnected at {e.JoystickId}");
+		Debug.LogMsg($" \"{name}\"(#{uuid}) disconnected at {e.JoystickId}");
 	}
 
 	internal static void RegisterJoystick(int jid)

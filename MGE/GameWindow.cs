@@ -4,6 +4,7 @@ using MGE.Nodes;
 using MGE.UI;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace MGE;
 
@@ -28,7 +29,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	UIButton _button4 = new();
 	UIButton _button5 = new();
 
-	public GameWindow() : base(new() { /* RenderFrequency = 60, UpdateFrequency = 60, */ }, new() { Title = "Mangrove Game Engine", })
+	public GameWindow() : base(new() { IsMultiThreaded = false }, new() { Title = "Mangrove Game Engine", StartFocused = true, StartVisible = true, })
 	{
 		_current = this;
 
@@ -37,9 +38,6 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		_gameRender = new(new(320 * 2, 180 * 2));
 		_sprite = Texture.LoadFromFile(Folder.assets.GetFile("Icon.png"));
 		Icon = new(Texture.LoadImageFromFile(Folder.assets.GetFile("Icon.png")));
-
-		CenterWindow(new(320 * 4, 180 * 4));
-		Focus();
 
 		var world = new WorldNode();
 
@@ -54,6 +52,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		Input.Init();
 
+		_canvas.position = new(15);
 		_canvas.direction = UIDirection.Vertical;
 		_canvas.padding = new(15);
 		_canvas.spacing = 15;
@@ -81,6 +80,13 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 			_button5.fixedSize = new(90, 30);
 			_canvas.AddChild(_button5);
 		}
+
+		unsafe
+		{
+			GLFW.SetWindowSizeLimits(this.WindowPtr, 320, 180, GLFW.DontCare, GLFW.DontCare);
+		}
+
+		CenterWindow(new(320 * 4, 180 * 4));
 	}
 
 	protected override void OnLoad()
@@ -103,35 +109,32 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		GL.UseProgram(0);
 	}
 
-	protected override void OnRefresh()
-	{
-		base.OnRefresh();
+	// protected override void OnMove(WindowPositionEventArgs e)
+	// {
+	// 	base.OnMove(e);
 
-		OnUpdateFrame(new(0));
-	}
+	// 	if (Engine.isWindows)
+	// 	{
+	// 		OnUpdateFrame(new(1.0 / UpdateFrequency));
+	// 		OnRenderFrame(new(1.0 / RenderFrequency));
+	// 	}
+	// }
 
-	protected override void OnMove(WindowPositionEventArgs e)
-	{
-		base.OnMove(e);
-
-		if (Engine.isWindows)
-		{
-			OnUpdateFrame(new(0));
-		}
-	}
-
+	DateTime _lastRefresh;
 	protected override void OnResize(ResizeEventArgs args)
 	{
 		base.OnResize(args);
 
-		GFX.windowViewportTransform = Matrix.CreateOrthographicOffCenter(0, args.Width, args.Height, 0, 0, -1);
-		_canvas.position = new(16);
-		_canvas.fixedSize = new(args.Width - 32, args.Height - 32);
+		GFX.windowViewportTransform = Matrix.CreateOrthographicOffCenter(0, Size.X, Size.Y, 0, 0, -1);
+		_canvas.fixedSize = new(Size.X - 30, Size.Y - 30);
 
-		if (Engine.isWindows)
-		{
-			OnRenderFrame(new(0));
-		}
+		var now = DateTime.Now;
+		var deltaTime = (now - _lastRefresh).TotalSeconds;
+		_lastRefresh = now;
+
+		Debug.LogVal(1.0 / deltaTime, "fps");
+		OnUpdateFrame(new(deltaTime));
+		OnRenderFrame(new(deltaTime));
 	}
 
 	protected override void OnUpdateFrame(FrameEventArgs args)
