@@ -80,7 +80,9 @@ public class UIBox : UIContainer
 						usedSpace += offset;
 					}
 
-					fixedSize = fixedSize.With(dir, usedSpace);
+					usedSpace += padding.GetAxis(dir);
+
+					_rect[dir + 2] = usedSpace;
 				}
 				else
 				{
@@ -127,20 +129,22 @@ public class UIBox : UIContainer
 				{
 					widget._rect[dir] = contentRect[dir];
 
+					if (widget.resizing[dir] == UIResizing.FillContainer)
+					{
+						widget._rect[dir + 2] = contentRect[dir + 2];
+					}
+
 					if (widget._rect[dir + 2] > size)
 					{
 						size = widget._rect[dir + 2];
 					}
 
-					if (widget.resizing[dir] == UIResizing.FillContainer /* && resizing[dir] != UIResizing.HugContents */)
-					{
-						widget._rect[dir + 2] = contentRect[dir + 2];
-					}
-
 					widget.ParentChangedMeasure();
 				}
 
-				fixedSize = fixedSize.With(dir, size /* + padding.GetAxis(dir) */);
+				size += padding.GetAxis(dir);
+
+				_rect[dir + 2] = size;
 			}
 		}
 

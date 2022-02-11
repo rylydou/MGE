@@ -33,13 +33,13 @@ public struct RectInt : IEquatable<RectInt>
 
 	#region Methods
 
-	public static Rect Intersect(Rect a, Rect b)
+	public static RectInt Intersect(RectInt a, RectInt b)
 	{
 		Intersect(ref a, ref b, out var result);
 		return result;
 	}
 
-	public static void Intersect(ref Rect a, ref Rect b, out Rect result)
+	public static void Intersect(ref RectInt a, ref RectInt b, out RectInt result)
 	{
 		if (a.Overlaps(b))
 		{

@@ -102,6 +102,7 @@ public static class GFX
 	public static RectInt? GetScissor() => _scissor;
 	public static void SetScissor(RectInt? bounds)
 	{
+
 		_scissor = bounds;
 
 		if (bounds.HasValue)

@@ -62,7 +62,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 			_bar.resizing = new(UIResizing.FillContainer, UIResizing.HugContents);
 			_canvas.AddChild(_bar);
 			{
-				_button1.fixedSize = new(90, 30);
+				_button1.fixedSize = new(180, 90);
 				_bar.AddChild(_button1);
 
 				_button2.resizing = new(UIResizing.FillContainer, UIResizing.Fixed);
@@ -84,7 +84,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		unsafe
 		{
-			GLFW.SetWindowSizeLimits(this.WindowPtr, 320, 180, GLFW.DontCare, GLFW.DontCare);
+			GLFW.SetWindowSizeLimits(WindowPtr, 320, 180, GLFW.DontCare, GLFW.DontCare);
+			GLFW.SetWindowAspectRatio(WindowPtr, 320, 180);
 		}
 
 		CenterWindow(new(320 * 4, 180 * 4));
@@ -126,8 +127,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	{
 		base.OnResize(args);
 
-		GFX.windowViewportTransform = Matrix.CreateOrthographicOffCenter(0, Size.X, Size.Y, 0, 0, -1);
-		_canvas.fixedSize = new(Size.X - 30, Size.Y - 30);
+		GFX.windowViewportTransform = Matrix.CreateOrthographicOffCenter(0, args.Width, args.Height, 0, 0, -1);
+		_canvas.fixedSize = new(args.Width - 30, args.Height - 30);
 
 		if (Engine.isWindows)
 		{

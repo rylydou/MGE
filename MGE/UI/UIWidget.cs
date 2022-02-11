@@ -77,7 +77,7 @@ public abstract class UIWidget
 
 	#endregion Layout
 
-	public bool clipContent = false;
+	public bool clipContent = true;
 
 	internal virtual void AttachTo(UIContainer parent)
 	{
@@ -116,11 +116,11 @@ public abstract class UIWidget
 	{
 		if (!rect.isProper) return;
 
-		RectInt? oldScissor = null;
+		RectInt? prevScissor = null;
 		if (clipContent)
 		{
-			oldScissor = GFX.GetScissor();
-			GFX.SetScissor(_rect);
+			prevScissor = GFX.GetScissor();
+			GFX.SetScissor(RectInt.Intersect(_rect, prevScissor.HasValue ? RectInt.Intersect(_rect, prevScissor.Value) : _rect));
 		}
 
 		Render();
@@ -137,24 +137,9 @@ public abstract class UIWidget
 		if (clipContent)
 		{
 			GFX.DrawBatches();
-			GFX.SetScissor(oldScissor);
+			GFX.SetScissor(prevScissor);
 		}
 	}
 
 	protected virtual void Render() { }
-
-	// /// <summary>
-	// /// The width is guaranteed to be set but the height might also change in responce, eg. a label running out of space horizontally so needing another line.
-	// /// When overriding call the base function last.
-	// /// </summary>
-	// /// <param name="width">The width of the widget</param>
-	// public virtual void RequestWidth(int width)
-	// {
-	// 	_rect.width = width;
-	// }
-
-	// public void SetHeight(int height)
-	// {
-	// 	_rect.height = height;
-	// }
 }
