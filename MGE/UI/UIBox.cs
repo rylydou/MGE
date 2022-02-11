@@ -17,27 +17,14 @@ public class UIBox : UIContainer
 		}
 	}
 
-	UIHorizontalAlignment _horizontalAlignment;
-	public UIHorizontalAlignment horizontalAlignment
+	Vec2<UIAlignment> _alignment;
+	public Vec2<UIAlignment> alignment
 	{
-		get => _horizontalAlignment;
+		get => _alignment;
 		set
 		{
-			if (_horizontalAlignment == value) return;
-			_horizontalAlignment = value;
-
-			UpdateLayout();
-		}
-	}
-
-	UIVerticalAlignment _verticalAlignment;
-	public UIVerticalAlignment verticalAlignment
-	{
-		get => _verticalAlignment;
-		set
-		{
-			if (_verticalAlignment == value) return;
-			_verticalAlignment = value;
+			if (_alignment == value) return;
+			_alignment = value;
 
 			UpdateLayout();
 		}
@@ -145,7 +132,7 @@ public class UIBox : UIContainer
 						size = widget._rect[dir + 2];
 					}
 
-					if (widget.resizing[dir] == UIResizing.FillContainer && resizing[dir] != UIResizing.HugContents)
+					if (widget.resizing[dir] == UIResizing.FillContainer /* && resizing[dir] != UIResizing.HugContents */)
 					{
 						widget._rect[dir + 2] = contentRect[dir + 2];
 					}
@@ -153,11 +140,11 @@ public class UIBox : UIContainer
 					widget.ParentChangedMeasure();
 				}
 
-				fixedSize = fixedSize.With(dir, size);
+				fixedSize = fixedSize.With(dir, size /* + padding.GetAxis(dir) */);
 			}
 		}
 
-		_(0);
-		_(1);
+		_(0); // Horizontal
+		_(1); // Vertical
 	}
 }

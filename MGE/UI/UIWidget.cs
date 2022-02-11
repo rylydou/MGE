@@ -77,7 +77,7 @@ public abstract class UIWidget
 
 	#endregion Layout
 
-	public bool clipContent = true;
+	public bool clipContent = false;
 
 	internal virtual void AttachTo(UIContainer parent)
 	{

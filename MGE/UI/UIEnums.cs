@@ -6,18 +6,11 @@ public enum UIDirection
 	Vertical,
 }
 
-public enum UIHorizontalAlignment
+public enum UIAlignment
 {
-	Left,
+	Start,
 	Center,
-	Right,
-}
-
-public enum UIVerticalAlignment
-{
-	Top,
-	Center,
-	Bottom,
+	End,
 }
 
 public enum UIResizing

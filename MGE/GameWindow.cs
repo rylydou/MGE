@@ -75,6 +75,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 			}
 
 			_button4.resizing = new(UIResizing.FillContainer, UIResizing.FillContainer);
+			// _button4.fixedSize = new(90, 30);
 			_canvas.AddChild(_button4);
 
 			_button5.fixedSize = new(90, 30);
@@ -128,13 +129,15 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		GFX.windowViewportTransform = Matrix.CreateOrthographicOffCenter(0, Size.X, Size.Y, 0, 0, -1);
 		_canvas.fixedSize = new(Size.X - 30, Size.Y - 30);
 
-		var now = DateTime.Now;
-		var deltaTime = (now - _lastRefresh).TotalSeconds;
-		_lastRefresh = now;
+		if (Engine.isWindows)
+		{
+			var now = DateTime.Now;
+			var deltaTime = (now - _lastRefresh).TotalSeconds;
+			_lastRefresh = now;
 
-		Debug.LogVal(1.0 / deltaTime, "fps");
-		OnUpdateFrame(new(deltaTime));
-		OnRenderFrame(new(deltaTime));
+			OnUpdateFrame(new(deltaTime));
+			OnRenderFrame(new(deltaTime));
+		}
 	}
 
 	protected override void OnUpdateFrame(FrameEventArgs args)

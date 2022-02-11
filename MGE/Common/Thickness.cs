@@ -28,6 +28,13 @@ public struct Thickness : IEquatable<Thickness>
 		this.right = all;
 	}
 
+	public int GetAxis(int index) => index switch
+	{
+		0 => left + right,
+		1 => top + bottom,
+		_ => throw new System.ArgumentOutOfRangeException(nameof(index)),
+	};
+
 	public static RectInt operator -(RectInt a, Thickness b)
 	{
 		var result = a;
