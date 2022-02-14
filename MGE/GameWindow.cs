@@ -13,7 +13,8 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	static GameWindow? _current;
 	public static GameWindow current { get => _current ?? throw new NullReferenceException(); }
 
-	Color _backgroundColor = new("#394778");
+	// Color _backgroundColor = new("#394778");
+	Color _backgroundColor = new("#1A1A1A");
 
 	double _updateTime;
 	double _renderTime;
@@ -24,12 +25,12 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 	UICanvas _canvas = new();
 	UIBox _bar = new();
 	UIButton _button1 = new();
-	UIButton _button2 = new();
+	UILabel _button2 = new("Hello World");
 	UIButton _button3 = new();
 	UIButton _button4 = new();
 	UIButton _button5 = new();
 
-	public GameWindow() : base(new() { IsMultiThreaded = false }, new() { Title = "Mangrove Game Engine", StartFocused = true, StartVisible = true, })
+	public GameWindow() : base(new() { IsMultiThreaded = false, }, new() { Title = "Mangrove Game Engine", StartFocused = true, StartVisible = true, })
 	{
 		_current = this;
 
@@ -52,15 +53,13 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 
 		Input.Init();
 
-		_canvas.position = new(15);
 		_canvas.direction = UIDirection.Vertical;
-		_canvas.padding = new(15);
-		_canvas.spacing = 15;
+		_canvas.padding = new(20);
+		_canvas.spacing = 20;
 		{
-			_bar.spacing = 15;
-			_bar.padding = new(16);
+			_bar.spacing = 20;
+			_bar.padding = new(20);
 			_bar.resizing = new(UIResizing.FillContainer, UIResizing.HugContents);
-			_canvas.AddChild(_bar);
 			{
 				_button1.fixedSize = new(180, 90);
 				_bar.AddChild(_button1);
@@ -73,6 +72,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 				_button3.fixedSize = new(90, 30);
 				_bar.AddChild(_button3);
 			}
+			_canvas.AddChild(_bar);
 
 			_button4.resizing = new(UIResizing.FillContainer, UIResizing.FillContainer);
 			// _button4.fixedSize = new(90, 30);
@@ -128,7 +128,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		base.OnResize(args);
 
 		GFX.windowViewportTransform = Matrix.CreateOrthographicOffCenter(0, args.Width, args.Height, 0, 0, -1);
-		_canvas.fixedSize = new(args.Width - 30, args.Height - 30);
+		_canvas.fixedSize = new(args.Width, args.Height);
 
 		if (Engine.isWindows)
 		{
@@ -165,6 +165,24 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 			{
 				WindowState = WindowState.Fullscreen;
 			}
+		}
+
+		if (Input.IsButtonDown(Button.KB_Equal) && !alt)
+		{
+			_button1.fixedSize = new(_button1.fixedSize.x + 1, _button1.fixedSize.y);
+		}
+		else if (Input.IsButtonDown(Button.KB_Minus) && !alt)
+		{
+			_button1.fixedSize = new(_button1.fixedSize.x - 1, _button1.fixedSize.y);
+		}
+
+		if (Input.IsButtonDown(Button.KB_Equal) && alt)
+		{
+			_button1.fixedSize = new(_button1.fixedSize.x, _button1.fixedSize.y + 1);
+		}
+		else if (Input.IsButtonDown(Button.KB_Minus) && alt)
+		{
+			_button1.fixedSize = new(_button1.fixedSize.x, _button1.fixedSize.y - 1);
 		}
 
 		Scene.Tick();

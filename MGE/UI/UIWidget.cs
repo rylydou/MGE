@@ -72,12 +72,12 @@ public abstract class UIWidget
 	internal RectInt _rect;
 	public RectInt rect { get => _rect; }
 
-	float flashTime;
-	Color flashColor;
+	internal float _flashTime;
+	internal Color _flashColor;
 
 	#endregion Layout
 
-	public bool clipContent = true;
+	public bool clipContent = false;
 
 	internal virtual void AttachTo(UIContainer parent)
 	{
@@ -95,16 +95,19 @@ public abstract class UIWidget
 
 	internal virtual void ParentChangedMeasure()
 	{
-		flashTime = 1f;
-		flashColor = Color.green;
+		if (!(_flashTime > 0 && (_flashColor == Color.magenta || _flashColor == Color.yellow)))
+		{
+			_flashTime = 1f;
+			_flashColor = Color.green;
+		}
 
 		OnMeasureChanged();
 	}
 
 	internal virtual void PropertiesChanged()
 	{
-		flashTime = 1f;
-		flashColor = Color.yellow;
+		_flashTime = 1f;
+		_flashColor = Color.magenta;
 		parent?.ChildMeasureChanged(this);
 
 		OnMeasureChanged();
@@ -114,22 +117,29 @@ public abstract class UIWidget
 
 	internal virtual void DoRender()
 	{
+		_flashTime -= Time.drawTime;
+
 		if (!rect.isProper) return;
 
-		RectInt? prevScissor = null;
+		var prevScissor = GFX.GetScissor();
 		if (clipContent)
 		{
-			prevScissor = GFX.GetScissor();
 			GFX.SetScissor(RectInt.Intersect(_rect, prevScissor.HasValue ? RectInt.Intersect(_rect, prevScissor.Value) : _rect));
+		}
+
+		if (canvas!.enableDebug)
+		{
+			if (this is not UICanvas)
+			{
+				GFX.DrawBox(rect, new Color(1f, 0.05f));
+			}
 		}
 
 		Render();
 
-		flashTime -= Time.drawTime;
 		if (canvas!.enableDebug)
 		{
-			GFX.DrawBox(rect, new Color(1f, 0.1f));
-			GFX.DrawRect(rect, Color.LerpClamped(Color.green.translucent, flashColor, flashTime), -1);
+			GFX.DrawRect(rect, Color.LerpClamped(_flashColor.WithAlpha(0), _flashColor, _flashTime), -1);
 
 			Font.normal.DrawString(GetType().Name, rect.topLeft, Color.white);
 		}

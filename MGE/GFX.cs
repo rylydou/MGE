@@ -102,17 +102,18 @@ public static class GFX
 	public static RectInt? GetScissor() => _scissor;
 	public static void SetScissor(RectInt? bounds)
 	{
-
 		_scissor = bounds;
 
 		if (bounds.HasValue)
 		{
 			var rect = bounds.Value;
-			GL.Scissor(bounds.Value.x, canvasSize.y - rect.height - bounds.Value.y, rect.width, rect.height);
+			GL.Scissor(rect.x, canvasSize.y - rect.height - rect.y, rect.width, rect.height);
 			GL.Enable(EnableCap.ScissorTest);
-			return;
 		}
-		GL.Disable(EnableCap.ScissorTest);
+		else
+		{
+			GL.Disable(EnableCap.ScissorTest);
+		}
 	}
 
 	public static void PushTransform(Matrix transform)

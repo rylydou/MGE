@@ -67,11 +67,8 @@ public class Font
 	}
 
 	public void DrawString(string text, Vector2 position, Color color, int fontSize = 18) => fontSystem.GetFont(fontSize).DrawText(renderer, text, position, color);
-	public void DrawString(StringBuilder sb, Vector2 position, Color color, int fontSize = 18) => fontSystem.GetFont(fontSize).DrawText(renderer, sb, position, color);
+	public void DrawString(StringBuilder text, Vector2 position, Color color, int fontSize = 18) => fontSystem.GetFont(fontSize).DrawText(renderer, text, position, color);
 
-	public Vector2 MeasureString(string text, int fontSize)
-	{
-		var font = fontSystem.GetFont(fontSize);
-		return font.MeasureString(text);
-	}
+	public Vector2 MeasureString(string text, int fontSize = 18) => fontSystem.GetFont(fontSize).MeasureString(text);
+	public Vector2 MeasureString(StringBuilder text, int fontSize = 18) => fontSystem.GetFont(fontSize).MeasureString(text);
 }

@@ -59,6 +59,7 @@ public class UIBox : UIContainer
 
 	internal void UpdateLayout()
 	{
+		// if (parent is null) return;
 		if (widgets.Count == 0) return;
 
 		void _(int dir)
@@ -82,7 +83,12 @@ public class UIBox : UIContainer
 
 					usedSpace += padding.GetAxis(dir);
 
-					_rect[dir + 2] = usedSpace;
+					if (_rect[dir + 2] != usedSpace)
+					{
+						_rect[dir + 2] = usedSpace;
+
+						parent?.ChildMeasureChanged(this);
+					}
 				}
 				else
 				{
@@ -123,7 +129,7 @@ public class UIBox : UIContainer
 			}
 			else
 			{
-				var size = 0;
+				var hugContentSize = 0;
 
 				foreach (var widget in widgets)
 				{
@@ -133,18 +139,25 @@ public class UIBox : UIContainer
 					{
 						widget._rect[dir + 2] = contentRect[dir + 2];
 					}
-
-					if (widget._rect[dir + 2] > size)
+					else if (widget._rect[dir + 2] > hugContentSize)
 					{
-						size = widget._rect[dir + 2];
+						hugContentSize = widget._rect[dir + 2];
 					}
 
 					widget.ParentChangedMeasure();
 				}
 
-				size += padding.GetAxis(dir);
+				if (resizing[dir] == UIResizing.HugContents)
+				{
+					hugContentSize += padding.GetAxis(dir);
 
-				_rect[dir + 2] = size;
+					if (_rect[dir + 2] != hugContentSize)
+					{
+						_rect[dir + 2] = hugContentSize;
+
+						parent?.ChildMeasureChanged(this);
+					}
+				}
 			}
 		}
 

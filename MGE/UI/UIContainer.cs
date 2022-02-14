@@ -46,7 +46,15 @@ public abstract class UIContainer : UIWidget
 	}
 	protected virtual void OnChildRemoved(UIWidget widget) { }
 
-	internal void ChildMeasureChanged(UIWidget widget) => OnChildMeasureChanged(widget);
+	internal void ChildMeasureChanged(UIWidget widget)
+	{
+		if (!(_flashTime > 0 && _flashColor == Color.magenta))
+		{
+			_flashTime = 1f;
+			_flashColor = Color.yellow;
+		}
+		OnChildMeasureChanged(widget);
+	}
 	protected virtual void OnChildMeasureChanged(UIWidget widget) { }
 
 	internal override void DoRender()
