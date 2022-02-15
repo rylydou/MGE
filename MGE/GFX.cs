@@ -159,7 +159,7 @@ public static class GFX
 			// Debug.Log(string.Join(' ', batch.elements.array.Select(x => x.ToString()).ToArray(), 0, batch.elements.Count));
 
 			batch.key.texture.Bind();
-			batch.key.shader.SetMatrix("transform", transform * currentProjectionTransform);
+			batch.key.shader.SetMatrix("u_matrix", transform * currentProjectionTransform);
 
 			_vertexBuffer.SubData(BufferTarget.ArrayBuffer, batch.vertexData.array, 0, batch.vertexData.Count);
 			_indexBuffer.SubData(BufferTarget.ElementArrayBuffer, batch.indices.array, 0, batch.indices.Count);
