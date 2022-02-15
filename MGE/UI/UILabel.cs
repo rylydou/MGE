@@ -5,7 +5,7 @@ namespace MGE.UI;
 public class UILabel : UIWidget
 {
 	public StringBuilder text = new();
-	public Color textColor;
+	public Color textColor = Color.white;
 
 	public Vec2<UIAlignment> textAlignment = new(UIAlignment.Start, UIAlignment.Center);
 
@@ -36,6 +36,6 @@ public class UILabel : UIWidget
 			case UIAlignment.End: position.y += (rect.height - textSize.y); break;
 		}
 
-		Font.normal.DrawString(text, rect.position, textColor);
+		Font.normal.DrawString(text, position, textColor);
 	}
 }

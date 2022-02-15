@@ -1,18 +1,20 @@
-#version 330 core
+#version 330
 
-uniform mat4 transform;
+uniform	mat4 u_matrix;
 
-layout (location = 0) in vec2 aPosition;
-layout (location = 1) in vec2 aTextureCoord;
-layout (location = 2) in vec4 aColor;
+in vec2 a_pos;
+in vec2 a_tex;
+in vec4 a_col;
+in vec3 a_type;
 
-out vec4 vertColor;
-out vec2 textureCoord;
+out vec2 v_tex;
+out vec4 v_col;
 
 void main()
 {
-	vertColor = aColor;
-	textureCoord = aTextureCoord;
+	gl_Position = u_matrix * vec4(a_pos, 0.0, 1.0);
 
-	gl_Position = vec4(aPosition, 0.0, 1.0) * transform;
+	v_col = a_col;
+	v_tex = a_tex;
+	v_type = a_type;
 }

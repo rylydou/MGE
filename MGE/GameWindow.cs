@@ -65,7 +65,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 				_bar.AddChild(_button1);
 
 				_button2.resizing = new(UIResizing.FillContainer, UIResizing.Fixed);
-				_button2.fixedSize = new(90, 30);
+				_button2.fixedSize = new(90, 180);
 				_bar.AddChild(_button2);
 
 				_button3.resizing = new(UIResizing.Fixed, UIResizing.FillContainer);
@@ -152,7 +152,7 @@ public class GameWindow : OpenTK.Windowing.Desktop.GameWindow
 		Input.UpdateMouse(MouseState);
 		Input.UpdateJoysticks(JoystickStates);
 
-		var alt = Input.IsButtonDown(Button.KB_RightAlt) || Input.IsButtonDown(Button.KB_RightAlt);
+		var alt = Input.IsButtonDown(Button.KB_LeftAlt) || Input.IsButtonDown(Button.KB_RightAlt);
 
 		if (Input.IsButtonPressed(Button.KB_F11) || (alt && Input.IsButtonPressed(Button.KB_Enter)))
 		{
