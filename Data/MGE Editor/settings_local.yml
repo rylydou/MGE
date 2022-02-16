@@ -1,7 +1,0 @@
-%YAML 1.2
----
-projectsFolder: "/home/ciberturtle/MGE Projects"
-preferredApps:
-  ".cs": "code {f}"
-openFile: "xdg-open {f}"
-# openFile: "explorer {f}"

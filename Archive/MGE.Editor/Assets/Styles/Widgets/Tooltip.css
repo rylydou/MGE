@@ -1,6 +1,0 @@
-tooltip {
-	background-color: @popup;
-	border-top: solid 2px @accent;
-
-	animation: 250ms forwards fade-in;
-}

@@ -1,9 +1,0 @@
-@define-color base #1f2430;
-@define-color background #191e2a;
-@define-color element @base;
-
-@define-color foreground #cbccc6;
-@define-color midground #5c6773;
-
-@define-color accent #ffcc66;
-@define-color accent-foreground @base;

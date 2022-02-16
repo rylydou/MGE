@@ -1,8 +1,0 @@
-.statusbar {
-  padding: 6px 8px;
-  background-color: @base;
-}
-
-.statusbar * {
-  color: @midground;
-}
