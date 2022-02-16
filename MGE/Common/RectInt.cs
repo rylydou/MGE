@@ -20,7 +20,6 @@ namespace MGE;
 // 	}
 // }
 
-[System.Serializable]
 public struct RectInt : IEquatable<RectInt>
 {
 	#region Static
@@ -103,19 +102,19 @@ public struct RectInt : IEquatable<RectInt>
 
 	#region Instance
 
-	int _xMin;
-	int _yMin;
-	int _width;
-	int _height;
+	[Prop] public int x;
+	[Prop] public int y;
+	[Prop] public int width;
+	[Prop] public int height;
 
 	public int this[int index]
 	{
 		get => index switch
 		{
-			0 => _xMin,
-			1 => _yMin,
-			2 => _width,
-			3 => _height,
+			0 => x,
+			1 => y,
+			2 => width,
+			3 => height,
 			_ => throw new IndexOutOfRangeException($"Invalid Rect index of {index}!"),
 		};
 
@@ -123,10 +122,10 @@ public struct RectInt : IEquatable<RectInt>
 		{
 			switch (index)
 			{
-				case 0: _xMin = value; break;
-				case 1: _yMin = value; break;
-				case 2: _width = value; break;
-				case 3: _height = value; break;
+				case 0: x = value; break;
+				case 1: y = value; break;
+				case 2: width = value; break;
+				case 3: height = value; break;
 				default: throw new IndexOutOfRangeException($"Invalid Rect index of {index}!");
 			}
 		}
@@ -136,34 +135,34 @@ public struct RectInt : IEquatable<RectInt>
 
 	public RectInt(int x, int y, int width, int height)
 	{
-		_xMin = x;
-		_yMin = y;
-		_width = width;
-		_height = height;
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
 	}
 
 	public RectInt(Vector2Int position, Vector2Int size)
 	{
-		_xMin = position.x;
-		_yMin = position.y;
-		_width = size.x;
-		_height = size.y;
+		x = position.x;
+		y = position.y;
+		width = size.x;
+		height = size.y;
 	}
 
 	public RectInt(Vector2Int position, int width, int height)
 	{
-		_xMin = position.x;
-		_yMin = position.y;
-		_width = width;
-		_height = height;
+		x = position.x;
+		y = position.y;
+		this.width = width;
+		this.height = height;
 	}
 
 	public RectInt(Vector2Int position, int size)
 	{
-		_xMin = position.x;
-		_yMin = position.y;
-		_width = size;
-		_height = size;
+		x = position.x;
+		y = position.y;
+		width = size;
+		height = size;
 	}
 
 	#endregion Size & Position
@@ -172,32 +171,27 @@ public struct RectInt : IEquatable<RectInt>
 
 	public RectInt(int width, int height)
 	{
-		_xMin = 0;
-		_yMin = 0;
-		_width = width;
-		_height = height;
+		x = 0;
+		y = 0;
+		this.width = width;
+		this.height = height;
 	}
 	public RectInt(Vector2Int size)
 	{
-		_xMin = 0;
-		_yMin = 0;
-		_width = size.x;
-		_height = size.y;
+		x = 0;
+		y = 0;
+		width = size.x;
+		height = size.y;
 	}
 
 	#endregion Size Only
 
 	#region Properties
 
-	public int xMin { get => _xMin; set { var oldxmax = xMax; _yMin = value; _width = oldxmax - _xMin; } }
-	public int yMin { get => _yMin; set { var oldymax = yMax; _yMin = value; _height = oldymax - _yMin; } }
-	public int xMax { get => _width + _xMin; set => _width = value - _xMin; }
-	public int yMax { get => _height + _yMin; set => _height = value - _yMin; }
-
-	[Prop] public int x { get => _xMin; set => _xMin = value; }
-	[Prop] public int y { get => _yMin; set => _yMin = value; }
-	[Prop] public int width { get => _width; set => _width = value; }
-	[Prop] public int height { get => _height; set => _height = value; }
+	public int xMin { get => x; set { var oldxmax = xMax; y = value; width = oldxmax - x; } }
+	public int yMin { get => y; set { var oldymax = yMax; y = value; height = oldymax - y; } }
+	public int xMax { get => width + x; set => width = value - x; }
+	public int yMax { get => height + y; set => height = value - y; }
 
 	public Vector2Int min { get => new(xMin, yMin); set { xMin = value.x; yMin = value.y; } }
 	public Vector2Int max { get => new(xMax, yMax); set { xMax = value.x; yMax = value.y; } }
@@ -212,11 +206,13 @@ public struct RectInt : IEquatable<RectInt>
 	public Vector2Int bottomLeft { get => new(xMin, yMax); set { xMin = value.x; yMax = value.y; } }
 	public Vector2Int bottomRight { get => new(xMax, yMax); set { xMax = value.x; yMax = value.y; } }
 
-	public Vector2Int position { get => new(_xMin, _yMin); set { _xMin = value.x; _yMin = value.y; } }
+	public Vector2Int position { get => new(x, y); set { x = value.x; y = value.y; } }
 
-	public Vector2Int size { get => new(_width, _height); set { _width = value.x; _height = value.y; } }
+	public Vector2Int size { get => new(width, height); set { width = value.x; height = value.y; } }
 
-	public Vector2 center { get => new(x + _width / 2, y + _height / 2); }
+	public Vector2 center { get => new(x + width / 2, y + height / 2); }
+
+	public int area { get => width * height; }
 
 	public bool isEmpty { get => width == 0 || height == 0; }
 	public bool isInverted { get => width < 0 || height < 0; }
@@ -228,10 +224,10 @@ public struct RectInt : IEquatable<RectInt>
 
 	public void Set(int x, int y, int width, int height)
 	{
-		_xMin = x;
-		_yMin = y;
-		_width = width;
-		_height = height;
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
 	}
 
 	public void Offset(int offsetX, int offsetY)
@@ -277,8 +273,8 @@ public struct RectInt : IEquatable<RectInt>
 
 	#region Thirdparty
 
-	public static implicit operator System.Drawing.Rectangle(RectInt rect) => new(rect.x, rect.y, rect.width, rect.height);
-	public static implicit operator RectInt(System.Drawing.Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
+	// public static implicit operator System.Drawing.Rectangle(RectInt rect) => new(rect.x, rect.y, rect.width, rect.height);
+	// public static implicit operator RectInt(System.Drawing.Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 
 	#endregion Thirdparty
 

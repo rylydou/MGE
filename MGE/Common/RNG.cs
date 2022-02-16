@@ -34,5 +34,5 @@ public class RNG
 		return new((float)Math.Cos(angle), (float)Math.Sin(angle));
 	}
 
-	public Color RandomColor() => new(RandomFloat(), RandomFloat(), RandomFloat());
+	public Color RandomColor() => new(RandomFloat(), RandomFloat(), RandomFloat(), 1.0f);
 }

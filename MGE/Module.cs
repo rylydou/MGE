@@ -6,7 +6,7 @@ public abstract class Module
 
 	protected internal readonly int priority;
 
-	public int threadId { get; internal set; }
+	public int mainThreadId { get; internal set; }
 
 	public bool isRegistered { get; internal set; }
 

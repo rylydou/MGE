@@ -1,4 +1,4 @@
-namespace MGE.Graphics.Rendering;
+namespace MGE;
 
 /// <summary>
 /// An Object that can be rendered to (ex. a FrameBuffer or a Window)

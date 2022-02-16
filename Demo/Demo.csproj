@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="../MGE/MGE.csproj" />
+		<ProjectReference Include="../Platforms/GLFW/MGE.GLFW.csproj" />
+		<ProjectReference Include="../Platforms/OpenGL/MGE.OpenGL.csproj" />
+	</ItemGroup>
+
+</Project>

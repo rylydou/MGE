@@ -1,18 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+	<PropertyGroup>
 
-		<OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 
 		<RootNamespace>MGE</RootNamespace>
 
+		<Nullable>enable</Nullable>
 		<ImplicitUsings>false</ImplicitUsings>
-    <Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 
-  </PropertyGroup>
+	</PropertyGroup>
 
 </Project>

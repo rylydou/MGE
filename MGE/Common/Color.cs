@@ -1,268 +1,320 @@
 using System;
 using System.Globalization;
+using System.Numerics;
 using System.Runtime.InteropServices;
-using Newtonsoft.Json;
 
 namespace MGE;
 
-// public class ColorJsonConverter : JsonConverter<Color>
-// {
-// 	public override Color ReadJson(JsonReader reader, Type objectType, Color existingValue, bool hasExistingValue, JsonSerializer serializer)
-// 	{
-// 		var value = (string?)reader.Value;
-// 		if (value is null) return Color.transparent;
-// 		return value.StartsWith("#") ? new Color(value) : (Color)System.Drawing.Color.FromName(value);
-// 	}
-
-// 	public override void WriteJson(JsonWriter writer, Color color, JsonSerializer serializer)
-// 	{
-// 		writer.WriteValue(color.ToHex());
-// 	}
-// }
-
-[Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
+[StructLayout(LayoutKind.Sequential, Pack = 4, Size = 4)]
 public struct Color : IEquatable<Color>
 {
-	#region Static
+	public static readonly Color transparent = new Color(0, 0, 0, 0);
+	public static readonly Color white = new Color(0xffffff);
+	public static readonly Color black = new Color(0x000000);
+	public static readonly Color lightGray = new Color(0xc0c0c0);
+	public static readonly Color gray = new Color(0x808080);
+	public static readonly Color darkGray = new Color(0x404040);
+	public static readonly Color red = new Color(0xff0000);
+	public static readonly Color green = new Color(0x00ff00);
+	public static readonly Color blue = new Color(0x0000ff);
+	public static readonly Color yellow = new Color(0xffff00);
 
-	#region Constants
+	/// <summary>
+	/// The Color Value in a ABGR 32-bit unsigned integer
+	/// </summary>
+	public uint ABGR;
 
-	public static readonly Color red = new(1f, 0f, 0f);
-	public static readonly Color green = new(0f, 1f, 0f);
-	public static readonly Color blue = new(0f, 0f, 1f);
+	/// <summary>
+	/// Gets the Color Value in a RGBA 32-bit unsigned integer
+	/// </summary>
+	public uint RGBA => new Color(A, B, G, R).ABGR;
 
-	public static readonly Color yellow = new(1f, 1f, 0f);
-	public static readonly Color cyan = new(0f, 1f, 1f);
-	public static readonly Color magenta = new(1f, 0f, 1f);
-
-	public static readonly Color white = new(1f);
-	public static readonly Color lightGray = new(0.75f);
-	public static readonly Color gray = new(0.5f);
-	public static readonly Color darkGray = new(0.25f);
-	public static readonly Color black = new(0f);
-
-	public static readonly Color transparent = new();
-
-	#endregion Constants
-
-	#region Interpolation
-
-	public static Color Lerp(Color a, Color b, float t)
+	/// <summary>
+	/// The Red Component
+	/// </summary>
+	public byte R
 	{
-		return new Color(
-			a.r + (b.r - a.r) * t,
-			a.g + (b.g - a.g) * t,
-			a.b + (b.b - a.b) * t,
-			a.a + (b.a - a.a) * t
-		);
+		get => (byte)ABGR;
+		set => ABGR = (ABGR & 0xffffff00) | value;
 	}
 
-	public static Color LerpClamped(Color a, Color b, float t)
+	/// <summary>
+	/// The Green Component
+	/// </summary>
+	public byte G
 	{
-		t = (float)Math.Clamp01(t);
-
-		return new Color(
-			a.r + (b.r - a.r) * t,
-			a.g + (b.g - a.g) * t,
-			a.b + (b.b - a.b) * t,
-			a.a + (b.a - a.a) * t
-		);
+		get => (byte)(ABGR >> 8);
+		set => ABGR = (ABGR & 0xffff00ff) | ((uint)value << 8);
 	}
 
-	#endregion Interpolation
-
-	#endregion Static
-
-	#region Instance
-
-	public byte intR;
-	public byte intG;
-	public byte intB;
-	public byte intA;
-
-	public float r { get => (float)intR / 255; set => intR = (byte)(value * 255); }
-	public float g { get => (float)intG / 255; set => intG = (byte)(value * 255); }
-	public float b { get => (float)intB / 255; set => intB = (byte)(value * 255); }
-	public float a { get => (float)intA / 255; set => intA = (byte)(value * 255); }
-
-	[Prop] public string hex { get => ToHex(); set => this = new(value); }
-
-	public Color(byte value) : this(value, value, value) { }
-	public Color(byte intR, byte intG, byte intB) : this(intR, intG, intB, 255) { }
-
-	public Color(byte value, byte a) : this(value, value, value, a) { }
-	public Color(byte intR, byte intG, byte intB, byte intA)
+	/// <summary>
+	/// The Blue Component
+	/// </summary>
+	public byte B
 	{
-		this.intR = intR;
-		this.intG = intG;
-		this.intB = intB;
-		this.intA = intA;
+		get => (byte)(ABGR >> 16);
+		set => ABGR = (ABGR & 0xff00ffff) | ((uint)value << 16);
 	}
 
-	public Color(float value) : this(value, value, value) { }
-	public Color(float r, float g, float b) : this((byte)(r * 255), (byte)(g * 255), (byte)(b * 255)) { }
-
-	public Color(float value, float a) : this(value, value, value, a) { }
-	public Color(float r, float g, float b, float a) : this((byte)(r * 255), (byte)(g * 255), (byte)(b * 255), (byte)(a * 255)) { }
-
-	public Color(string hex)
+	/// <summary>
+	/// The Alpha Component
+	/// </summary>
+	public byte A
 	{
-		if (hex.StartsWith('#'))
-			hex = hex.Substring(1);
+		get => (byte)(ABGR >> 24);
+		set => ABGR = (ABGR & 0x00ffffff) | ((uint)value << 24);
+	}
 
-		switch (hex.Length)
+	/// <summary>
+	/// Creates a color given the int32 RGB data
+	/// </summary>
+	public Color(int rgb, byte alpha = 255)
+	{
+		ABGR = 0;
+
+		R = (byte)(rgb >> 16);
+		G = (byte)(rgb >> 08);
+		B = (byte)(rgb);
+		A = alpha;
+	}
+
+	public Color(int rgb, float alpha)
+	{
+		ABGR = 0;
+
+		R = (byte)((rgb >> 16) * alpha);
+		G = (byte)((rgb >> 08) * alpha);
+		B = (byte)(rgb * alpha);
+		A = (byte)(255 * alpha);
+	}
+
+	/// <summary>
+	/// Creates a color given the uint32 RGBA data
+	/// </summary>
+	public Color(uint rgba)
+	{
+		ABGR = 0;
+
+		R = (byte)(rgba >> 24);
+		G = (byte)(rgba >> 16);
+		B = (byte)(rgba >> 08);
+		A = (byte)(rgba);
+	}
+
+	public Color(byte r, byte g, byte b, byte a)
+	{
+		ABGR = 0;
+		R = r;
+		G = g;
+		B = b;
+		A = a;
+	}
+
+	public Color(int r, int g, int b, int a)
+	{
+		ABGR = 0;
+		R = (byte)r;
+		G = (byte)g;
+		B = (byte)b;
+		A = (byte)a;
+	}
+
+	public Color(float r, float g, float b, float a)
+	{
+		ABGR = 0;
+		R = (byte)(r * 255);
+		G = (byte)(g * 255);
+		B = (byte)(b * 255);
+		A = (byte)(a * 255);
+	}
+
+	/// <summary>
+	/// Premultiplies the color value based on its Alpha component
+	/// </summary>
+	/// <returns></returns>
+	public Color Premultiply()
+	{
+		byte a = A;
+		return new Color((byte)(R * a / 255), (byte)(G * a / 255), (byte)(B * a / 255), a);
+	}
+
+	/// <summary>
+	/// Converts the Color to a Vector4
+	/// </summary>
+	public Vector4 ToVector4() => new Vector4(R / 255f, G / 255f, B / 255f, A / 255f);
+
+	/// <summary>
+	/// Converts the Color to a Vector3
+	/// </summary>
+	public Vector3 ToVector3() => new Vector3(R / 255f, G / 255f, B / 255f);
+
+	public override bool Equals(object? obj) => obj is Color color && Equals(color);
+	public bool Equals(Color other) => this == other;
+
+	public override int GetHashCode() => (int)ABGR;
+
+	public override string ToString() => ($"[{R}, {G}, {B}, {A}]");
+
+	/// <summary>
+	/// Returns a Hex String representation of the Color's given components
+	/// </summary>
+	/// <param name="components">The Components, in any order. ex. "RGBA" or "RGB" or "ARGB"</param>
+	/// <returns></returns>
+	public string ToHexString(string components)
+	{
+		const string HEX = "0123456789ABCDEF";
+		Span<char> result = stackalloc char[components.Length * 2];
+
+		for (int i = 0; i < components.Length; i++)
 		{
-			case 3:
-				intR = byte.Parse(hex.Substring(0, 1) + hex.Substring(0, 1), NumberStyles.AllowHexSpecifier);
-				intG = byte.Parse(hex.Substring(1, 1) + hex.Substring(1, 1), NumberStyles.AllowHexSpecifier);
-				intB = byte.Parse(hex.Substring(2, 1) + hex.Substring(2, 1), NumberStyles.AllowHexSpecifier);
-				intA = 255;
-				return;
-			case 4:
-				intR = byte.Parse(hex.Substring(0, 1) + hex.Substring(0, 1), NumberStyles.AllowHexSpecifier);
-				intG = byte.Parse(hex.Substring(1, 1) + hex.Substring(1, 1), NumberStyles.AllowHexSpecifier);
-				intB = byte.Parse(hex.Substring(2, 1) + hex.Substring(2, 1), NumberStyles.AllowHexSpecifier);
-				intA = byte.Parse(hex.Substring(3, 1) + hex.Substring(3, 1), NumberStyles.AllowHexSpecifier);
-				return;
-			case 6:
-				intR = byte.Parse(hex.Substring(0, 2), NumberStyles.AllowHexSpecifier);
-				intG = byte.Parse(hex.Substring(2, 2), NumberStyles.AllowHexSpecifier);
-				intB = byte.Parse(hex.Substring(4, 2), NumberStyles.AllowHexSpecifier);
-				intA = 255;
-				return;
-			case 8:
-				intR = byte.Parse(hex.Substring(0, 2), NumberStyles.AllowHexSpecifier);
-				intG = byte.Parse(hex.Substring(2, 2), NumberStyles.AllowHexSpecifier);
-				intB = byte.Parse(hex.Substring(4, 2), NumberStyles.AllowHexSpecifier);
-				intA = byte.Parse(hex.Substring(6, 2), NumberStyles.AllowHexSpecifier);
-				return;
-		}
-
-		throw new Exception();
-	}
-
-	public static Color FromNonPremultiplied(byte r, byte g, byte b, byte a) => new(r * a, g * a, b * a, a);
-
-	public byte this[int index]
-	{
-		get
-		{
-			switch (index)
+			switch (components[i])
 			{
-				case 0: return intR;
-				case 1: return intG;
-				case 2: return intB;
-				case 3: return intA;
-				default: throw new IndexOutOfRangeException($"Invalid Color index of {index}!");
+				case 'R':
+				case 'r':
+					result[i * 2 + 0] = HEX[(R & 0xf0) >> 4];
+					result[i * 2 + 1] = HEX[(R & 0x0f)];
+					break;
+				case 'G':
+				case 'g':
+					result[i * 2 + 0] = HEX[(G & 0xf0) >> 4];
+					result[i * 2 + 1] = HEX[(G & 0x0f)];
+					break;
+				case 'B':
+				case 'b':
+					result[i * 2 + 0] = HEX[(B & 0xf0) >> 4];
+					result[i * 2 + 1] = HEX[(B & 0x0f)];
+					break;
+				case 'A':
+				case 'a':
+					result[i * 2 + 0] = HEX[(A & 0xf0) >> 4];
+					result[i * 2 + 1] = HEX[(A & 0x0f)];
+					break;
 			}
 		}
 
-		set
+		return new string(result);
+	}
+
+	/// <summary>
+	/// Returns an RGB Hex string representation of the Color
+	/// </summary>
+	public string ToHexStringRGB() => ToHexString("RGB");
+
+	/// <summary>
+	/// Returns an RGBA Hex string representation of the Color
+	/// </summary>
+	public string ToHexStringRGBA() => ToHexString("RGBA");
+
+	/// <summary>
+	/// Creates a new Color with the given components from the given string value
+	/// </summary>
+	/// <param name="components">The components to parse in order, ex. "RGBA"</param>
+	/// <param name="value">The Hex value to parse</param>
+	/// <returns></returns>
+	public static Color FromHexString(string components, ReadOnlySpan<char> value)
+	{
+		// skip past useless string data (ex. if the string was 0xffffff or #ffffff)
+		if (value.Length > 0 && value[0] == '#')
+			value = value.Slice(1);
+		if (value.Length > 1 && value[0] == '0' && (value[1] == 'x' || value[1] == 'X'))
+			value = value.Slice(2);
+
+		var color = black;
+
+		for (int i = 0; i < components.Length && i * 2 + 2 <= value.Length; i++)
 		{
-			switch (index)
+			switch (components[i])
 			{
-				case 0: intR = value; break;
-				case 1: intG = value; break;
-				case 2: intB = value; break;
-				case 3: intA = value; break;
-				default: throw new IndexOutOfRangeException($"Invalid Color index of {index}!");
+				case 'R':
+				case 'r':
+					if (byte.TryParse(value.Slice(i * 2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var r))
+						color.R = r;
+					break;
+				case 'G':
+				case 'g':
+					if (byte.TryParse(value.Slice(i * 2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var g))
+						color.G = g;
+					break;
+				case 'B':
+				case 'b':
+					if (byte.TryParse(value.Slice(i * 2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var b))
+						color.B = b;
+					break;
+				case 'A':
+				case 'a':
+					if (byte.TryParse(value.Slice(i * 2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var a))
+						color.A = a;
+					break;
 			}
 		}
+
+		return color;
 	}
 
-	#region Properties
+	/// <summary>
+	/// Creates a new Color from the given RGB Hex value
+	/// </summary>
+	/// <param name="value"></param>
+	/// <returns></returns>
+	public static Color FromHexStringRGB(string value) => FromHexString("RGB", value);
 
-	public float average { get => (r + g + b) / 3; }
-	public float grayscale { get => r * 0.299f + g * 0.587f + b * 0.114f; }
-	public Color inverted { get => new(1f - r, 1f - g, 1f - b, a); }
-	public Color opaque { get => new(r, g, b); }
-	public Color translucent { get => new(r, g, b, 0.5f); }
+	/// <summary>
+	/// Creates a new Color from the given RGBA Hex value
+	/// </summary>
+	/// <param name="value"></param>
+	/// <returns></returns>
+	public static Color FromHexStringRGBA(string value) => FromHexString("RGBA", value);
 
-	#endregion
-
-	#region Methods
-
-	public string ToHex(int length = 8)
+	/// <summary>
+	/// Linearly interpolates between two colors
+	/// </summary>
+	/// <returns></returns>
+	public static Color Lerp(Color a, Color b, float amount)
 	{
-		switch (length)
-		{
-			case 3: return $"#{intR / 15:X1}{intG / 15:X1}{intB / 15:X1}";
-			case 4: return $"#{intR / 15:X1}{intG / 15:X1}{intB / 15:X1}{intA / 15:X1}";
-			case 6: return $"#{intR:X2}{intG:X2}{intB:X2}";
-			case 8: return $"#{intR:X2}{intG:X2}{intB:X2}{intA:X2}";
-		}
-		throw new ArgumentException($"Color '{this.ToString()}' can not be converted to hex string a length of {length}!", nameof(length));
+		amount = Math.Max(0, Math.Min(1, amount));
+
+		return new Color(
+			(int)(a.R + (b.R - a.R) * amount),
+			(int)(a.G + (b.G - a.G) * amount),
+			(int)(a.B + (b.B - a.B) * amount),
+			(int)(a.A + (b.A - a.A) * amount)
+		);
 	}
+	/// <summary>
+	/// Implicitely converts an int32 to a Color, ex 0xffffff
+	/// This does not include Alpha values
+	/// </summary>
+	/// <param name="color"></param>
+	public static implicit operator Color(int color) => new Color(color);
 
-	public Color WithAlpha(float a) => new(r, g, b, a);
+	/// <summary>
+	/// Implicitely converts an uint32 to a Color, ex 0xffffffff
+	/// </summary>
+	/// <param name="color"></param>
+	public static implicit operator Color(uint color) => new Color(color);
 
-	public void Deconstruct(out byte r, out byte g, out byte b, out byte a)
+	/// <summary>
+	/// Multiplies a Color by a scaler
+	/// </summary>
+	public static Color operator *(Color value, float scaler)
 	{
-		r = intR;
-		g = intG;
-		b = intB;
-		a = intA;
+		return new Color(
+			(int)(value.R * scaler),
+			(int)(value.G * scaler),
+			(int)(value.B * scaler),
+			(int)(value.A * scaler)
+		);
 	}
 
-	public void Deconstruct(out byte r, out byte g, out byte b)
-	{
-		r = intR;
-		g = intG;
-		b = intB;
-	}
+	public static bool operator ==(Color a, Color b) => a.ABGR == b.ABGR;
 
-	#endregion
+	public static bool operator !=(Color a, Color b) => a.ABGR != b.ABGR;
 
-	#region Operators
+	static public implicit operator Color(Vector4 vec) => new Color(vec.X, vec.Y, vec.Z, vec.W);
 
-	public static Color operator +(Color left, Color right) => new(left.intR + right.intR, left.intG + left.intG, left.intB + right.intB);
-	public static Color operator -(Color left, Color right) => new(left.intR - right.intR, left.intG - left.intG, left.intB - right.intB);
-	public static Color operator *(Color left, Color right) => new(left.intR * right.intR, left.intG * left.intG, left.intB * right.intB);
-	public static Color operator /(Color left, Color right) => new(left.intR / right.intR, left.intG / left.intG, left.intB / right.intB);
+	static public implicit operator Color(Vector3 vec) => new Color(vec.x, vec.y, vec.z, 1.0f);
 
-	// public static Color operator -(Color color) => new(-color.intR, -color.intG, -color.intB, color.intA);
+	static public implicit operator Vector4(Color col) => col.ToVector4();
 
-	public static Color operator *(Color left, float right) => new Color(left.r * right, left.g * right, left.b * right);
-	public static Color operator /(Color left, float right) => new Color(left.r / right, left.g / right, left.b / right);
-
-	public static bool operator ==(Color left, Color right) => left.intA == right.intA && left.intR == right.intR && left.intG == right.intG && left.intB == right.intB;
-	public static bool operator !=(Color left, Color right) => !(left == right);
-
-	#endregion Operators
-
-	#region Conversion
-
-	public static implicit operator (float, float, float, float)(Color color) => (color.r, color.g, color.b, color.a);
-	public static implicit operator Color((float, float, float, float) color) => new(color.Item1, color.Item2, color.Item3, color.Item4);
-
-	public static implicit operator (float, float, float)(Color color) => (color.r, color.g, color.b);
-	public static implicit operator Color((float, float, float) color) => new(color.Item1, color.Item2, color.Item3);
-
-	#region Thirdparty
-
-	public static implicit operator System.Drawing.Color(Color color) => System.Drawing.Color.FromArgb(color.intA, color.intR, color.intG, color.intB);
-	public static implicit operator Color(System.Drawing.Color color) => new(color.R, color.G, color.B, color.A);
-
-	#endregion Thirdparty
-
-	#endregion Conversion
-
-	#region Overrides
-
-	public override string ToString() => $"({intR} {intG} {intB} {intA})";
-	public string ToString(string format)
-	{
-		if (format.StartsWith('#'))
-			return string.Format(format, intR, intG, intB, intA);
-		return string.Format(format, r, g, b, a);
-	}
-
-	public override int GetHashCode() => HashCode.Combine(r, g, b, a);
-
-	public bool Equals(Color color) => intA == color.intA && intR == color.intR && intG == color.intG && intB == color.intB;
-	public override bool Equals(object? other) => other is Color color && Equals(color);
-
-	#endregion Overrides
-
-	#endregion Instance
+	static public implicit operator Vector3(Color col) => col.ToVector3();
 }

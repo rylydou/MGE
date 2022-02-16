@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 
 namespace MGE;
@@ -161,7 +162,7 @@ public class Noise
 	/// <summary> Create new FastNoise object </summary>
 	public Noise()
 	{
-		this.seed = System.Environment.TickCount;
+		this.seed = Environment.TickCount;
 	}
 	/// <summary> Create new FastNoise object with a seed </summary>
 	public Noise(int seed)

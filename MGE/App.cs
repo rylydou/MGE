@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace MGE;
 
@@ -43,12 +45,12 @@ public static class App
 	/// <summary>
 	/// Gets the Audio Module
 	/// </summary>
-	public static Audio audio => modules.Get<Audio>();
+	// public static Audio audio => modules.Get<Audio>();
 
 	/// <summary>
 	/// Gets the System Input
 	/// </summary>
-	public static Input input => system.Input;
+	// public static Input input => system.Input;
 
 	/// <summary>
 	/// Gets the Primary Window
@@ -87,7 +89,7 @@ public static class App
 
 		Log.Info($"Version: {version}");
 		Log.Info($"Platform: {RuntimeInformation.OSDescription} ({RuntimeInformation.OSArchitecture})");
-		Log.Info($"Framework: {RuntimeInformation.FrameworkDescription}");
+		Log.Info($"MGE: {RuntimeInformation.FrameworkDescription}");
 
 #if DEBUG
 		Launch();
@@ -142,7 +144,7 @@ public static class App
 		{
 			var forceFixedTimestep = App.forceFixedTimestep;
 			if (!forceFixedTimestep)
-				system.Input.Step();
+				system.input.Step();
 
 			modules.FrameStart();
 
@@ -154,14 +156,14 @@ public static class App
 			// fixed timestep update
 			{
 				// fixed delta time is always the same
-				var fixedTarget = TimeSpan.FromSeconds(1f / Time.FixedStepTarget);
-				Time.RawDelta = Time.RawFixedDelta = (float)fixedTarget.TotalSeconds;
-				Time.Delta = Time.FixedDelta = Time.RawFixedDelta * Time.DeltaScale;
+				var fixedTarget = TimeSpan.FromSeconds(1f / Time.fixedStepTarget);
+				Time.rawDelta = Time.rawFixedDelta = (float)fixedTarget.TotalSeconds;
+				Time.delta = Time.fixedDelta = Time.rawFixedDelta * Time.DeltaScale;
 
 				if (forceFixedTimestep)
 				{
-					Time.RawVariableDelta = Time.RawFixedDelta;
-					Time.VariableDelta = Time.FixedDelta;
+					Time.rawVariableDelta = Time.rawFixedDelta;
+					Time.variableDelta = Time.fixedDelta;
 				}
 
 				// increment time
@@ -183,20 +185,20 @@ public static class App
 				}
 
 				// Do not allow any update to take longer than our maximum.
-				if (fixedAccumulator > Time.FixedMaxElapsedTime)
-					fixedAccumulator = Time.FixedMaxElapsedTime;
+				if (fixedAccumulator > Time.fixedMaxElapsedTime)
+					fixedAccumulator = Time.fixedMaxElapsedTime;
 
 				// do as many fixed updates as we can
 				while (fixedAccumulator >= fixedTarget)
 				{
-					Time.FixedDuration += fixedTarget;
+					Time.fixedDuration += fixedTarget;
 					fixedAccumulator -= fixedTarget;
 
 					if (forceFixedTimestep)
 					{
-						Time.Duration += fixedTarget;
+						Time.duration += fixedTarget;
 
-						system.Input.Step();
+						system.input.Step();
 						modules.FixedUpdate();
 						modules.Update();
 					}
@@ -214,9 +216,9 @@ public static class App
 			if (!forceFixedTimestep)
 			{
 				// get Time values
-				Time.Duration += diffTime;
-				Time.RawDelta = Time.RawVariableDelta = (float)diffTime.TotalSeconds;
-				Time.Delta = Time.VariableDelta = Time.RawDelta * Time.DeltaScale;
+				Time.duration += diffTime;
+				Time.rawDelta = Time.rawVariableDelta = (float)diffTime.TotalSeconds;
+				Time.delta = Time.variableDelta = Time.rawDelta * Time.DeltaScale;
 
 				// update
 				modules.Update();
@@ -225,7 +227,7 @@ public static class App
 			modules.FrameEnd();
 
 			// Check if the Primary Window has been closed
-			if (primaryWindow == null || !primaryWindow.Opened)
+			if (primaryWindow == null || !primaryWindow.opened)
 				Exit();
 
 			// render
@@ -248,7 +250,7 @@ public static class App
 			framecount++;
 			if (TimeSpan.FromTicks(timer.Elapsed.Ticks - frameticks).TotalSeconds >= 1)
 			{
-				Time.FPS = framecount;
+				Time.fps = framecount;
 				frameticks = timer.Elapsed.Ticks;
 				framecount = 0;
 			}

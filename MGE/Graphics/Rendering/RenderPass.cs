@@ -1,4 +1,4 @@
-namespace MGE.Graphics.Rendering;
+namespace MGE;
 
 public enum IndexElementSize
 {
@@ -20,80 +20,80 @@ public struct RenderPass
 	/// <summary>
 	/// Render Target
 	/// </summary>
-	public RenderTarget Target;
+	public RenderTarget target;
 
 	/// <summary>
 	/// Render Viewport
 	/// </summary>
-	public RectInt? Viewport;
+	public RectInt? viewport;
 
 	/// <summary>
 	/// Material to use
 	/// </summary>
-	public Material Material;
+	public Material material;
 
 	/// <summary>
 	/// Mesh to use
 	/// </summary>
-	public Mesh Mesh;
+	public Mesh mesh;
 
 	/// <summary>
 	/// The Index to begin rendering from the Mesh
 	/// </summary>
-	public uint MeshIndexStart;
+	public uint meshIndexStart;
 
 	/// <summary>
 	/// The total number of Indices to draw from the Mesh
 	/// </summary>
-	public uint MeshIndexCount;
+	public uint meshIndexCount;
 
 	/// <summary>
 	/// The total number of Indices to draw from the Mesh
 	/// </summary>
-	public IndexElementSize IndexElementSize;
+	public IndexElementSize indexElementSize;
 
 	/// <summary>
 	/// The total number of Instances to draw from the Mesh
 	/// </summary>
-	public uint MeshInstanceCount;
+	public uint meshInstanceCount;
 
 	/// <summary>
 	/// The Render State Blend Mode
 	/// </summary>
-	public BlendMode BlendMode;
+	public BlendMode blendMode;
 
 	/// <summary>
 	/// The Render State Culling Mode
 	/// </summary>
-	public CullMode CullMode;
+	public CullMode cullMode;
 
 	/// <summary>
 	/// The Render State Depth comparison Function
 	/// </summary>
-	public Compare DepthFunction;
+	public Compare depthFunction;
 
 	/// <summary>
 	/// The Render State Scissor Rectangle
 	/// </summary>
-	public RectInt? Scissor;
+	public RectInt? scissor;
 
 	/// <summary>
 	/// Creates a Render Pass based on the given mesh and material
 	/// </summary>
 	public RenderPass(RenderTarget target, Mesh mesh, Material material)
 	{
-		Target = target;
-		Viewport = null;
-		Mesh = mesh;
-		Material = material;
-		MeshIndexStart = 0;
-		MeshIndexCount = mesh.indexCount;
-		MeshInstanceCount = mesh.instanceCount;
-		Scissor = null;
-		BlendMode = BlendMode.Normal;
-		DepthFunction = Compare.None;
-		CullMode = CullMode.None;
-		IndexElementSize = IndexElementSize.ThirtyTwoBits;  // Default to 32 bits.
+		this.target = target;
+		viewport = null;
+		this.mesh = mesh;
+		this.material = material;
+		meshIndexStart = 0;
+		meshIndexCount = mesh.indexCount;
+		meshInstanceCount = mesh.instanceCount;
+		scissor = null;
+		blendMode = BlendMode.Normal;
+		depthFunction = Compare.None;
+		cullMode = CullMode.None;
+		indexElementSize = IndexElementSize.ThirtyTwoBits;  // Default to 32 bits.
 	}
 
 	public void Render()

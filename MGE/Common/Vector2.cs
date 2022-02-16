@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace MGE;
@@ -113,20 +114,20 @@ public struct Vector2 : IEquatable<Vector2>
 		return vector;
 	}
 
-	public static Vector2 Transform(Vector2 position, Matrix matrix) => new(
-		position.x * matrix.m11 + position.y * matrix.m21 + matrix.m41,
-		position.x * matrix.m12 + position.y * matrix.m22 + matrix.m42
+	public static Vector2 Transform(Vector2 position, Matrix4x4 matrix) => new(
+		position.x * matrix.M11 + position.y * matrix.M21 + matrix.M41,
+		position.x * matrix.M12 + position.y * matrix.M22 + matrix.M42
 	);
 
-	public static void Transform(ref Vector2 position, ref Matrix matrix, out Vector2 result)
+	public static void Transform(ref Vector2 position, ref Matrix4x4 matrix, out Vector2 result)
 	{
-		result.x = position.x * matrix.m11 + position.y * matrix.m21 + matrix.m41;
-		result.y = position.x * matrix.m12 + position.y * matrix.m22 + matrix.m42;
+		result.x = position.x * matrix.M11 + position.y * matrix.M21 + matrix.M41;
+		result.y = position.x * matrix.M12 + position.y * matrix.M22 + matrix.M42;
 	}
 
-	public static Vector2 TransformNormal(Vector2 position, Matrix matrix) => new(
-		position.x * matrix.m11 + position.y * matrix.m21,
-		position.x * matrix.m12 + position.y * matrix.m22
+	public static Vector2 TransformNormal(Vector2 position, Matrix4x4 matrix) => new(
+		position.x * matrix.M11 + position.y * matrix.M21,
+		position.x * matrix.M12 + position.y * matrix.M22
 	);
 
 	#endregion Static
@@ -175,7 +176,7 @@ public struct Vector2 : IEquatable<Vector2>
 	{
 		0 => new(value, y),
 		1 => new(x, value),
-		_ => throw new System.ArgumentOutOfRangeException(nameof(index)),
+		_ => throw new ArgumentOutOfRangeException(nameof(index)),
 	};
 
 	public Vector2 normalized
@@ -274,20 +275,20 @@ public struct Vector2 : IEquatable<Vector2>
 
 	#region Thirdparty
 
-	public static implicit operator System.Numerics.Vector2(Vector2 vector) => new(vector.x, vector.y);
-	public static implicit operator Vector2(System.Numerics.Vector2 vector) => new(vector.X, vector.Y);
+	// public static implicit operator System.Numerics.Vector2(Vector2 vector) => new(vector.x, vector.y);
+	// public static implicit operator Vector2(System.Numerics.Vector2 vector) => new(vector.X, vector.Y);
 
-	public static implicit operator OpenTK.Mathematics.Vector2(Vector2 vector) => new(vector.x, vector.y);
-	public static implicit operator Vector2(OpenTK.Mathematics.Vector2 vector) => new(vector.X, vector.Y);
+	// public static implicit operator OpenTK.Mathematics.Vector2(Vector2 vector) => new(vector.x, vector.y);
+	// public static implicit operator Vector2(OpenTK.Mathematics.Vector2 vector) => new(vector.X, vector.Y);
 
-	public static implicit operator OpenTK.Mathematics.Vector3(Vector2 vector) => new(vector.x, vector.y, 0);
-	public static implicit operator Vector2(OpenTK.Mathematics.Vector3 vector) => new(vector.X, vector.Y);
+	// public static implicit operator OpenTK.Mathematics.Vector3(Vector2 vector) => new(vector.x, vector.y, 0);
+	// public static implicit operator Vector2(OpenTK.Mathematics.Vector3 vector) => new(vector.X, vector.Y);
 
-	public static implicit operator tainicom.Aether.Physics2D.Common.Vector2(Vector2 vector) => new(vector.x, vector.y);
-	public static implicit operator Vector2(tainicom.Aether.Physics2D.Common.Vector2 vector) => new(vector.X, vector.Y);
+	// public static implicit operator tainicom.Aether.Physics2D.Common.Vector2(Vector2 vector) => new(vector.x, vector.y);
+	// public static implicit operator Vector2(tainicom.Aether.Physics2D.Common.Vector2 vector) => new(vector.X, vector.Y);
 
-	public static implicit operator tainicom.Aether.Physics2D.Common.Vector3(Vector2 vector) => new(vector.x, vector.y, 0);
-	public static implicit operator Vector2(tainicom.Aether.Physics2D.Common.Vector3 vector) => new(vector.X, vector.Y);
+	// public static implicit operator tainicom.Aether.Physics2D.Common.Vector3(Vector2 vector) => new(vector.x, vector.y, 0);
+	// public static implicit operator Vector2(tainicom.Aether.Physics2D.Common.Vector3 vector) => new(vector.X, vector.Y);
 
 	#endregion Thirdparty
 

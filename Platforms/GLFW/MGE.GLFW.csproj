@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+
+		<TargetFramework>net6.0</TargetFramework>
+
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="../../MGE/MGE.csproj" />
+	</ItemGroup>
+
+	<!-- Determine OS Platform -->
+	<PropertyGroup Condition="($([MSBuild]::IsOsPlatform(Windows)) and '$(RuntimeIdentifier)'=='') or '$(RuntimeIdentifier)'=='win-x64'">
+		<TargetOS>win</TargetOS>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="($([MSBuild]::IsOsPlatform(OSX)) and '$(RuntimeIdentifier)'=='') or '$(RuntimeIdentifier)'=='osx-x64'">
+		<TargetOS>osx</TargetOS>
+	</PropertyGroup>
+
+	<!-- Copy glfw3.dll for Windows -->
+	<ItemGroup Condition="'$(TargetOS)'=='win'">
+		<None Update="glfw3.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<!-- Copy libglfw3.dylib for macOS -->
+	<ItemGroup Condition="'$(TargetOS)'=='osx'">
+		<None Update="libglfw3.dylib">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+</Project>

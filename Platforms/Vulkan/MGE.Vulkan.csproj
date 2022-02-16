@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+
+		<TargetFramework>net6.0</TargetFramework>
+
+		<Nullable>enable</Nullable>
+
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Resources\batch2d.frag.spv" />
+		<None Remove="Resources\batch2d.vert.spv" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Resources\batch2d.frag.spv" />
+		<EmbeddedResource Include="Resources\batch2d.vert.spv" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="../../MGE/MGE.csproj" />
+	</ItemGroup>
+
+</Project>

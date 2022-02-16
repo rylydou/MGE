@@ -32,7 +32,7 @@ public struct Thickness : IEquatable<Thickness>
 	{
 		0 => left + right,
 		1 => top + bottom,
-		_ => throw new System.ArgumentOutOfRangeException(nameof(index)),
+		_ => throw new ArgumentOutOfRangeException(nameof(index)),
 	};
 
 	public static RectInt operator -(RectInt a, Thickness b)

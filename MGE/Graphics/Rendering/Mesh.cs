@@ -1,7 +1,7 @@
 using System;
 using System.Buffers;
 
-namespace MGE.Graphics.Rendering;
+namespace MGE;
 
 public class Mesh : IDisposable
 {

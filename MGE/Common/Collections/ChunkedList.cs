@@ -64,13 +64,19 @@ public class ChunkedList<T> : IEnumerable<T> where T : struct
 	public void Add(T[] items)
 	{
 		EnsureSpaceFor(items.Length);
-		items.ForEach(item => AddUnsafe(item));
+		foreach (var item in items)
+		{
+			AddUnsafe(item);
+		}
 	}
 
 	public void Add(IEnumerable<T> items, int count)
 	{
 		EnsureSpaceFor(count);
-		items.ForEach(item => AddUnsafe(item));
+		foreach (var item in items)
+		{
+			AddUnsafe(item);
+		}
 	}
 
 	public void Clear() => _position = 0;

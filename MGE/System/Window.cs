@@ -1,5 +1,4 @@
 using System;
-using MGE.Graphics.Rendering;
 
 namespace MGE;
 

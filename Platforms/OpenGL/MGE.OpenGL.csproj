@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+
+		<TargetFramework>net6.0</TargetFramework>
+
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+		<RootNamespace>MGE.OpenGL</RootNamespace>
+		<AssemblyName>MGE.OpenGL</AssemblyName>
+
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Resources\batch2d.frag" />
+		<None Remove="Resources\batch2d.vert" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Resources\batch2d.frag" />
+		<EmbeddedResource Include="Resources\batch2d.vert" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="../../MGE/MGE.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using MathD = System.Math;
 using MathF = System.MathF;
@@ -109,7 +110,7 @@ public static class Math
 	public static float Trunc(float value) => MathF.Truncate(value);
 	public static int TruncToInt(float value) => (int)MathF.Truncate(value);
 
-	public static float CeilToEven(float value) => MathF.Round(value / 2, System.MidpointRounding.AwayFromZero) * 2;
+	public static float CeilToEven(float value) => MathF.Round(value / 2, MidpointRounding.AwayFromZero) * 2;
 	public static int CeilToEvenInt(float value) => (int)CeilToEven(value);
 
 	public static uint CeilToPowerOf2(uint value)

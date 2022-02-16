@@ -2,16 +2,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "MGE",
+      "name": "Run Demo",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "build engine",
-      "program": "${workspaceFolder}/MGE/bin/Debug/MGE.dll",
+      "preLaunchTask": "Build Demo",
+      "program": "${workspaceFolder}/Demo/bin/Debug/Demo.dll",
       "args": [],
       "env": {
         "data-dir": "${workspaceFolder}/Data"
       },
-      "cwd": "${workspaceFolder}/MGE",
+      "cwd": "${workspaceFolder}/Demo",
       "console": "internalConsole",
       "stopAtEntry": false,
       "logging": {

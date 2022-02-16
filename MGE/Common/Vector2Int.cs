@@ -92,7 +92,7 @@ public struct Vector2Int : IEquatable<Vector2Int>
 	{
 		0 => new(value, y),
 		1 => new(x, value),
-		_ => throw new System.ArgumentOutOfRangeException(nameof(index)),
+		_ => throw new ArgumentOutOfRangeException(nameof(index)),
 	};
 
 	////////////////////////////////////////////////////////////
@@ -162,11 +162,11 @@ public struct Vector2Int : IEquatable<Vector2Int>
 	public static implicit operator (int, int)(Vector2Int vector) => (vector.x, vector.y);
 	public static implicit operator Vector2Int((int, int) vector) => new(vector.Item1, vector.Item2);
 
-	public static implicit operator OpenTK.Mathematics.Vector2i(Vector2Int vector) => new(vector.x, vector.y);
-	public static implicit operator Vector2Int(OpenTK.Mathematics.Vector2i vector) => new(vector.X, vector.Y);
+	// public static implicit operator OpenTK.Mathematics.Vector2i(Vector2Int vector) => new(vector.x, vector.y);
+	// public static implicit operator Vector2Int(OpenTK.Mathematics.Vector2i vector) => new(vector.X, vector.Y);
 
-	public static implicit operator System.Drawing.Point(Vector2Int vector) => new(vector.x, vector.y);
-	public static implicit operator Vector2Int(System.Drawing.Point vector) => new(vector.X, vector.Y);
+	// public static implicit operator System.Drawing.Point(Vector2Int vector) => new(vector.x, vector.y);
+	// public static implicit operator Vector2Int(System.Drawing.Point vector) => new(vector.X, vector.Y);
 
 	////////////////////////////////////////////////////////////
 
