@@ -113,12 +113,12 @@ public class Texture : IDisposable
 	/// <summary>
 	/// Gets the Width of the Texture
 	/// </summary>
-	public int width { get; private set; }
+	public int width { get; set; }
 
 	/// <summary>
 	/// Gets the Height of the Texture
 	/// </summary>
-	public int height { get; private set; }
+	public int height { get; set; }
 
 	/// <summary>
 	/// Whether the Texture is part of a FrameBuffer
@@ -165,10 +165,10 @@ public class Texture : IDisposable
 		set => implementation.SetWrap(wrapX, wrapY = value);
 	}
 
-	private readonly Graphics graphics;
-	private TextureFilter filter = TextureFilter.Linear;
-	private TextureWrap wrapX = TextureWrap.Clamp;
-	private TextureWrap wrapY = TextureWrap.Clamp;
+	readonly Graphics graphics;
+	TextureFilter filter = TextureFilter.Linear;
+	TextureWrap wrapX = TextureWrap.Clamp;
+	TextureWrap wrapY = TextureWrap.Clamp;
 
 	public Texture(Graphics graphics, int width, int height, TextureFormat format = TextureFormat.Color)
 	{

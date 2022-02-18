@@ -39,7 +39,7 @@ namespace SDL2
 	{
 		#region SDL2# Variables
 
-		private const string nativeLibName = "SDL2";
+		const string nativeLibName = "SDL2";
 
 		#endregion
 
@@ -199,7 +199,7 @@ string result = new string(
 
 		/* IntPtr refers to an SDL_RWops* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_RWFromFile", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_RWFromFile(
+		static extern IntPtr INTERNAL_SDL_RWFromFile(
 				byte[] file,
 				byte[] mode
 		);
@@ -398,7 +398,7 @@ string result = new string(
 		#region SDL_platform.h
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetPlatform", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetPlatform();
+		static extern IntPtr INTERNAL_SDL_GetPlatform();
 		public static string SDL_GetPlatform()
 		{
 			return UTF8_ToManaged(INTERNAL_SDL_GetPlatform());
@@ -584,7 +584,7 @@ string result = new string(
 		public static extern void SDL_ClearHints();
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetHint", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetHint(byte[] name);
+		static extern IntPtr INTERNAL_SDL_GetHint(byte[] name);
 		public static string SDL_GetHint(string name)
 		{
 			return UTF8_ToManaged(
@@ -595,7 +595,7 @@ string result = new string(
 		}
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_SetHint", CallingConvention = CallingConvention.Cdecl)]
-		private static extern SDL_bool INTERNAL_SDL_SetHint(
+		static extern SDL_bool INTERNAL_SDL_SetHint(
 				byte[] name,
 				byte[] value
 		);
@@ -608,7 +608,7 @@ string result = new string(
 		}
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_SetHintWithPriority", CallingConvention = CallingConvention.Cdecl)]
-		private static extern SDL_bool INTERNAL_SDL_SetHintWithPriority(
+		static extern SDL_bool INTERNAL_SDL_SetHintWithPriority(
 				byte[] name,
 				byte[] value,
 				SDL_HintPriority priority
@@ -628,7 +628,7 @@ string result = new string(
 
 		/* Available in 2.0.5 or higher */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetHintBoolean", CallingConvention = CallingConvention.Cdecl)]
-		private static extern SDL_bool INTERNAL_SDL_GetHintBoolean(
+		static extern SDL_bool INTERNAL_SDL_GetHintBoolean(
 				byte[] name,
 				SDL_bool default_value
 		);
@@ -651,7 +651,7 @@ string result = new string(
 		public static extern void SDL_ClearError();
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetError", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetError();
+		static extern IntPtr INTERNAL_SDL_GetError();
 		public static string SDL_GetError()
 		{
 			return UTF8_ToManaged(INTERNAL_SDL_GetError());
@@ -659,7 +659,7 @@ string result = new string(
 
 		/* Use string.Format for arglists */
 		[DllImport(nativeLibName, EntryPoint = "SDL_SetError", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void INTERNAL_SDL_SetError(byte[] fmtAndArglist);
+		static extern void INTERNAL_SDL_SetError(byte[] fmtAndArglist);
 		public static void SDL_SetError(string fmtAndArglist)
 		{
 			INTERNAL_SDL_SetError(
@@ -727,7 +727,7 @@ string result = new string(
 
 		/* Use string.Format for arglists */
 		[DllImport(nativeLibName, EntryPoint = "SDL_Log", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void INTERNAL_SDL_Log(byte[] fmtAndArglist);
+		static extern void INTERNAL_SDL_Log(byte[] fmtAndArglist);
 		public static void SDL_Log(string fmtAndArglist)
 		{
 			INTERNAL_SDL_Log(
@@ -737,7 +737,7 @@ string result = new string(
 
 		/* Use string.Format for arglists */
 		[DllImport(nativeLibName, EntryPoint = "SDL_LogVerbose", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void INTERNAL_SDL_LogVerbose(
+		static extern void INTERNAL_SDL_LogVerbose(
 				int category,
 				byte[] fmtAndArglist
 		);
@@ -754,7 +754,7 @@ string result = new string(
 
 		/* Use string.Format for arglists */
 		[DllImport(nativeLibName, EntryPoint = "SDL_LogDebug", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void INTERNAL_SDL_LogDebug(
+		static extern void INTERNAL_SDL_LogDebug(
 				int category,
 				byte[] fmtAndArglist
 		);
@@ -771,7 +771,7 @@ string result = new string(
 
 		/* Use string.Format for arglists */
 		[DllImport(nativeLibName, EntryPoint = "SDL_LogInfo", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void INTERNAL_SDL_LogInfo(
+		static extern void INTERNAL_SDL_LogInfo(
 				int category,
 				byte[] fmtAndArglist
 		);
@@ -788,7 +788,7 @@ string result = new string(
 
 		/* Use string.Format for arglists */
 		[DllImport(nativeLibName, EntryPoint = "SDL_LogWarn", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void INTERNAL_SDL_LogWarn(
+		static extern void INTERNAL_SDL_LogWarn(
 				int category,
 				byte[] fmtAndArglist
 		);
@@ -805,7 +805,7 @@ string result = new string(
 
 		/* Use string.Format for arglists */
 		[DllImport(nativeLibName, EntryPoint = "SDL_LogError", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void INTERNAL_SDL_LogError(
+		static extern void INTERNAL_SDL_LogError(
 				int category,
 				byte[] fmtAndArglist
 		);
@@ -822,7 +822,7 @@ string result = new string(
 
 		/* Use string.Format for arglists */
 		[DllImport(nativeLibName, EntryPoint = "SDL_LogCritical", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void INTERNAL_SDL_LogCritical(
+		static extern void INTERNAL_SDL_LogCritical(
 				int category,
 				byte[] fmtAndArglist
 		);
@@ -839,7 +839,7 @@ string result = new string(
 
 		/* Use string.Format for arglists */
 		[DllImport(nativeLibName, EntryPoint = "SDL_LogMessage", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void INTERNAL_SDL_LogMessage(
+		static extern void INTERNAL_SDL_LogMessage(
 				int category,
 				SDL_LogPriority priority,
 				byte[] fmtAndArglist
@@ -859,7 +859,7 @@ string result = new string(
 
 		/* Use string.Format for arglists */
 		[DllImport(nativeLibName, EntryPoint = "SDL_LogMessageV", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void INTERNAL_SDL_LogMessageV(
+		static extern void INTERNAL_SDL_LogMessageV(
 				int category,
 				SDL_LogPriority priority,
 				byte[] fmtAndArglist
@@ -898,7 +898,7 @@ string result = new string(
 
 		/* userdata refers to a void* */
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-		private static extern void SDL_LogGetOutputFunction(
+		static extern void SDL_LogGetOutputFunction(
 				out IntPtr callback,
 				out IntPtr userdata
 		);
@@ -952,7 +952,7 @@ string result = new string(
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		private struct INTERNAL_SDL_MessageBoxButtonData
+		struct INTERNAL_SDL_MessageBoxButtonData
 		{
 			public SDL_MessageBoxButtonFlags flags;
 			public int buttonid;
@@ -991,7 +991,7 @@ string result = new string(
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		private struct INTERNAL_SDL_MessageBoxData
+		struct INTERNAL_SDL_MessageBoxData
 		{
 			public SDL_MessageBoxFlags flags;
 			public IntPtr window;               /* Parent window, can be NULL */
@@ -1015,10 +1015,10 @@ string result = new string(
 		}
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_ShowMessageBox", CallingConvention = CallingConvention.Cdecl)]
-		private static extern int INTERNAL_SDL_ShowMessageBox([In()] ref INTERNAL_SDL_MessageBoxData messageboxdata, out int buttonid);
+		static extern int INTERNAL_SDL_ShowMessageBox([In()] ref INTERNAL_SDL_MessageBoxData messageboxdata, out int buttonid);
 
 		/* Ripped from Jameson's LpUtf8StrMarshaler */
-		private static IntPtr INTERNAL_AllocUTF8(string str)
+		static IntPtr INTERNAL_AllocUTF8(string str)
 		{
 			if (string.IsNullOrEmpty(str))
 			{
@@ -1078,7 +1078,7 @@ string result = new string(
 
 		/* window refers to an SDL_Window* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_ShowSimpleMessageBox", CallingConvention = CallingConvention.Cdecl)]
-		private static extern int INTERNAL_SDL_ShowSimpleMessageBox(
+		static extern int INTERNAL_SDL_ShowSimpleMessageBox(
 				SDL_MessageBoxFlags flags,
 				byte[] title,
 				byte[] message,
@@ -1146,7 +1146,7 @@ string result = new string(
 		public static extern void SDL_GetVersion(out SDL_version ver);
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetRevision", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetRevision();
+		static extern IntPtr INTERNAL_SDL_GetRevision();
 		public static string SDL_GetRevision()
 		{
 			return UTF8_ToManaged(INTERNAL_SDL_GetRevision());
@@ -1328,7 +1328,7 @@ string result = new string(
 
 		/* IntPtr refers to an SDL_Window* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_CreateWindow", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_CreateWindow(
+		static extern IntPtr INTERNAL_SDL_CreateWindow(
 				byte[] title,
 				int x,
 				int y,
@@ -1391,7 +1391,7 @@ string result = new string(
 		);
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetCurrentVideoDriver", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetCurrentVideoDriver();
+		static extern IntPtr INTERNAL_SDL_GetCurrentVideoDriver();
 		public static string SDL_GetCurrentVideoDriver()
 		{
 			return UTF8_ToManaged(INTERNAL_SDL_GetCurrentVideoDriver());
@@ -1404,7 +1404,7 @@ string result = new string(
 		);
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetDisplayName", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetDisplayName(int index);
+		static extern IntPtr INTERNAL_SDL_GetDisplayName(int index);
 		public static string SDL_GetDisplayName(int index)
 		{
 			return UTF8_ToManaged(INTERNAL_SDL_GetDisplayName(index));
@@ -1457,7 +1457,7 @@ string result = new string(
 		public static extern int SDL_GetNumVideoDrivers();
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetVideoDriver", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetVideoDriver(
+		static extern IntPtr INTERNAL_SDL_GetVideoDriver(
 				int index
 		);
 		public static string SDL_GetVideoDriver(int index)
@@ -1502,7 +1502,7 @@ string result = new string(
 
 		/* window refers to an SDL_Window*, IntPtr to a void* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetWindowData", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetWindowData(
+		static extern IntPtr INTERNAL_SDL_GetWindowData(
 				IntPtr window,
 				byte[] name
 		);
@@ -1602,7 +1602,7 @@ string result = new string(
 
 		/* window refers to an SDL_Window* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetWindowTitle", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetWindowTitle(
+		static extern IntPtr INTERNAL_SDL_GetWindowTitle(
 				IntPtr window
 		);
 		public static string SDL_GetWindowTitle(IntPtr window)
@@ -1630,7 +1630,7 @@ string result = new string(
 
 		/* IntPtr refers to a function pointer */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GL_GetProcAddress", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GL_GetProcAddress(
+		static extern IntPtr INTERNAL_SDL_GL_GetProcAddress(
 				byte[] proc
 		);
 		public static IntPtr SDL_GL_GetProcAddress(string proc)
@@ -1641,7 +1641,7 @@ string result = new string(
 		}
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GL_LoadLibrary", CallingConvention = CallingConvention.Cdecl)]
-		private static extern int INTERNAL_SDL_GL_LoadLibrary(byte[] path);
+		static extern int INTERNAL_SDL_GL_LoadLibrary(byte[] path);
 		public static int SDL_GL_LoadLibrary(string path)
 		{
 			return INTERNAL_SDL_GL_LoadLibrary(
@@ -1657,7 +1657,7 @@ string result = new string(
 		public static extern void SDL_GL_UnloadLibrary();
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GL_ExtensionSupported", CallingConvention = CallingConvention.Cdecl)]
-		private static extern SDL_bool INTERNAL_SDL_GL_ExtensionSupported(
+		static extern SDL_bool INTERNAL_SDL_GL_ExtensionSupported(
 				byte[] extension
 		);
 		public static SDL_bool SDL_GL_ExtensionSupported(string extension)
@@ -1760,7 +1760,7 @@ string result = new string(
 
 		/* IntPtr and userdata are void*, window is an SDL_Window* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_SetWindowData", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_SetWindowData(
+		static extern IntPtr INTERNAL_SDL_SetWindowData(
 				IntPtr window,
 				byte[] name,
 				IntPtr userdata
@@ -1877,7 +1877,7 @@ string result = new string(
 
 		/* window refers to an SDL_Window* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_SetWindowTitle", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void INTERNAL_SDL_SetWindowTitle(
+		static extern void INTERNAL_SDL_SetWindowTitle(
 				IntPtr window,
 				byte[] title
 		);
@@ -1909,7 +1909,7 @@ string result = new string(
 		);
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_VideoInit", CallingConvention = CallingConvention.Cdecl)]
-		private static extern int INTERNAL_SDL_VideoInit(
+		static extern int INTERNAL_SDL_VideoInit(
 				byte[] driver_name
 		);
 		public static int SDL_VideoInit(string driver_name)
@@ -1990,7 +1990,7 @@ string result = new string(
 
 		/* Only available in 2.0.6 */
 		[DllImport(nativeLibName, EntryPoint = "SDL_Vulkan_LoadLibrary", CallingConvention = CallingConvention.Cdecl)]
-		private static extern int INTERNAL_SDL_Vulkan_LoadLibrary(
+		static extern int INTERNAL_SDL_Vulkan_LoadLibrary(
 				byte[] path
 		);
 		public static int SDL_Vulkan_LoadLibrary(string path)
@@ -3416,7 +3416,7 @@ string result = new string(
 		public static extern void SDL_FreePalette(IntPtr palette);
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetPixelFormatName", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetPixelFormatName(
+		static extern IntPtr INTERNAL_SDL_GetPixelFormatName(
 				uint format
 		);
 		public static string SDL_GetPixelFormatName(uint format)
@@ -3900,7 +3900,7 @@ string result = new string(
 		/* IntPtr refers to an SDL_Surface* */
 		/* THIS IS AN RWops FUNCTION! */
 		[DllImport(nativeLibName, EntryPoint = "SDL_LoadBMP_RW", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_LoadBMP_RW(
+		static extern IntPtr INTERNAL_SDL_LoadBMP_RW(
 				IntPtr src,
 				int freesrc
 		);
@@ -3936,7 +3936,7 @@ string result = new string(
 		/* IntPtr refers to an SDL_Surface* */
 		/* THIS IS AN RWops FUNCTION! */
 		[DllImport(nativeLibName, EntryPoint = "SDL_SaveBMP_RW", CallingConvention = CallingConvention.Cdecl)]
-		private static extern int INTERNAL_SDL_SaveBMP_RW(
+		static extern int INTERNAL_SDL_SaveBMP_RW(
 				IntPtr surface,
 				IntPtr src,
 				int freesrc
@@ -4042,14 +4042,14 @@ string result = new string(
 		public static extern SDL_bool SDL_HasClipboardText();
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetClipboardText", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetClipboardText();
+		static extern IntPtr INTERNAL_SDL_GetClipboardText();
 		public static string SDL_GetClipboardText()
 		{
 			return UTF8_ToManaged(INTERNAL_SDL_GetClipboardText());
 		}
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_SetClipboardText", CallingConvention = CallingConvention.Cdecl)]
-		private static extern int INTERNAL_SDL_SetClipboardText(
+		static extern int INTERNAL_SDL_SetClipboardText(
 				byte[] text
 		);
 		public static int SDL_SetClipboardText(
@@ -4187,7 +4187,7 @@ string result = new string(
 			public UInt32 timestamp;
 		}
 
-		// Ignore private members used for padding in this struct
+		// Ignore  members used for padding in this struct
 #pragma warning disable 0169
 		[StructLayout(LayoutKind.Sequential)]
 		public struct SDL_DisplayEvent
@@ -4196,14 +4196,14 @@ string result = new string(
 			public UInt32 timestamp;
 			public UInt32 display;
 			public SDL_DisplayEventID displayEvent; // event, lolC#
-			private byte padding1;
-			private byte padding2;
-			private byte padding3;
+			byte padding1;
+			byte padding2;
+			byte padding3;
 			public Int32 data1;
 		}
 #pragma warning restore 0169
 
-		// Ignore private members used for padding in this struct
+		// Ignore  members used for padding in this struct
 #pragma warning disable 0169
 		/* Window state change event data (event.window.*) */
 		[StructLayout(LayoutKind.Sequential)]
@@ -4213,15 +4213,15 @@ string result = new string(
 			public UInt32 timestamp;
 			public UInt32 windowID;
 			public SDL_WindowEventID windowEvent; // event, lolC#
-			private byte padding1;
-			private byte padding2;
-			private byte padding3;
+			byte padding1;
+			byte padding2;
+			byte padding3;
 			public Int32 data1;
 			public Int32 data2;
 		}
 #pragma warning restore 0169
 
-		// Ignore private members used for padding in this struct
+		// Ignore  members used for padding in this struct
 #pragma warning disable 0169
 		/* Keyboard button event structure (event.key.*) */
 		[StructLayout(LayoutKind.Sequential)]
@@ -4232,8 +4232,8 @@ string result = new string(
 			public UInt32 windowID;
 			public byte state;
 			public byte repeat; /* non-zero if this is a repeat */
-			private byte padding2;
-			private byte padding3;
+			byte padding2;
+			byte padding3;
 			public SDL_Keysym keysym;
 		}
 #pragma warning restore 0169
@@ -4258,7 +4258,7 @@ string result = new string(
 			public fixed byte text[SDL_TEXTINPUTEVENT_TEXT_SIZE];
 		}
 
-		// Ignore private members used for padding in this struct
+		// Ignore  members used for padding in this struct
 #pragma warning disable 0169
 		/* Mouse motion event structure (event.motion.*) */
 		[StructLayout(LayoutKind.Sequential)]
@@ -4269,9 +4269,9 @@ string result = new string(
 			public UInt32 windowID;
 			public UInt32 which;
 			public byte state; /* bitmask of buttons */
-			private byte padding1;
-			private byte padding2;
-			private byte padding3;
+			byte padding1;
+			byte padding2;
+			byte padding3;
 			public Int32 x;
 			public Int32 y;
 			public Int32 xrel;
@@ -4279,7 +4279,7 @@ string result = new string(
 		}
 #pragma warning restore 0169
 
-		// Ignore private members used for padding in this struct
+		// Ignore  members used for padding in this struct
 #pragma warning disable 0169
 		/* Mouse button event structure (event.button.*) */
 		[StructLayout(LayoutKind.Sequential)]
@@ -4292,7 +4292,7 @@ string result = new string(
 			public byte button; /* button id */
 			public byte state; /* SDL_PRESSED or SDL_RELEASED */
 			public byte clicks; /* 1 for single-click, 2 for double-click, etc. */
-			private byte padding1;
+			byte padding1;
 			public Int32 x;
 			public Int32 y;
 		}
@@ -4311,7 +4311,7 @@ string result = new string(
 			public UInt32 direction; /* Set to one of the SDL_MOUSEWHEEL_* defines */
 		}
 
-		// Ignore private members used for padding in this struct
+		// Ignore  members used for padding in this struct
 #pragma warning disable 0169
 		/* Joystick axis motion event structure (event.jaxis.*) */
 		[StructLayout(LayoutKind.Sequential)]
@@ -4321,15 +4321,15 @@ string result = new string(
 			public UInt32 timestamp;
 			public Int32 which; /* SDL_JoystickID */
 			public byte axis;
-			private byte padding1;
-			private byte padding2;
-			private byte padding3;
+			byte padding1;
+			byte padding2;
+			byte padding3;
 			public Int16 axisValue; /* value, lolC# */
 			public UInt16 padding4;
 		}
 #pragma warning restore 0169
 
-		// Ignore private members used for padding in this struct
+		// Ignore  members used for padding in this struct
 #pragma warning disable 0169
 		/* Joystick trackball motion event structure (event.jball.*) */
 		[StructLayout(LayoutKind.Sequential)]
@@ -4339,15 +4339,15 @@ string result = new string(
 			public UInt32 timestamp;
 			public Int32 which; /* SDL_JoystickID */
 			public byte ball;
-			private byte padding1;
-			private byte padding2;
-			private byte padding3;
+			byte padding1;
+			byte padding2;
+			byte padding3;
 			public Int16 xrel;
 			public Int16 yrel;
 		}
 #pragma warning restore 0169
 
-		// Ignore private members used for padding in this struct
+		// Ignore  members used for padding in this struct
 #pragma warning disable 0169
 		/* Joystick hat position change event struct (event.jhat.*) */
 		[StructLayout(LayoutKind.Sequential)]
@@ -4358,12 +4358,12 @@ string result = new string(
 			public Int32 which; /* SDL_JoystickID */
 			public byte hat; /* index of the hat */
 			public byte hatValue; /* value, lolC# */
-			private byte padding1;
-			private byte padding2;
+			byte padding1;
+			byte padding2;
 		}
 #pragma warning restore 0169
 
-		// Ignore private members used for padding in this struct
+		// Ignore  members used for padding in this struct
 #pragma warning disable 0169
 		/* Joystick button event structure (event.jbutton.*) */
 		[StructLayout(LayoutKind.Sequential)]
@@ -4374,8 +4374,8 @@ string result = new string(
 			public Int32 which; /* SDL_JoystickID */
 			public byte button;
 			public byte state; /* SDL_PRESSED or SDL_RELEASED */
-			private byte padding1;
-			private byte padding2;
+			byte padding1;
+			byte padding2;
 		}
 #pragma warning restore 0169
 
@@ -4388,7 +4388,7 @@ string result = new string(
 			public Int32 which; /* SDL_JoystickID */
 		}
 
-		// Ignore private members used for padding in this struct
+		// Ignore  members used for padding in this struct
 #pragma warning disable 0169
 		/* Game controller axis motion event (event.caxis.*) */
 		[StructLayout(LayoutKind.Sequential)]
@@ -4398,15 +4398,15 @@ string result = new string(
 			public UInt32 timestamp;
 			public Int32 which; /* SDL_JoystickID */
 			public byte axis;
-			private byte padding1;
-			private byte padding2;
-			private byte padding3;
+			byte padding1;
+			byte padding2;
+			byte padding3;
 			public Int16 axisValue; /* value, lolC# */
-			private UInt16 padding4;
+			UInt16 padding4;
 		}
 #pragma warning restore 0169
 
-		// Ignore private members used for padding in this struct
+		// Ignore  members used for padding in this struct
 #pragma warning disable 0169
 		/* Game controller button event (event.cbutton.*) */
 		[StructLayout(LayoutKind.Sequential)]
@@ -4417,8 +4417,8 @@ string result = new string(
 			public Int32 which; /* SDL_JoystickID */
 			public byte button;
 			public byte state;
-			private byte padding1;
-			private byte padding2;
+			byte padding1;
+			byte padding2;
 		}
 #pragma warning restore 0169
 
@@ -4433,7 +4433,7 @@ string result = new string(
 						 */
 		}
 
-		// Ignore private members used for padding in this struct
+		// Ignore  members used for padding in this struct
 #pragma warning disable 0169
 		/* Audio device event (event.adevice.*) */
 		[StructLayout(LayoutKind.Sequential)]
@@ -4443,9 +4443,9 @@ string result = new string(
 			public UInt32 timestamp;
 			public UInt32 which;
 			public byte iscapture;
-			private byte padding1;
-			private byte padding2;
-			private byte padding3;
+			byte padding1;
+			byte padding2;
+			byte padding3;
 		}
 #pragma warning restore 0169
 
@@ -4676,7 +4676,7 @@ string result = new string(
 
 		/* userdata refers to a void* */
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-		private static extern SDL_bool SDL_GetEventFilter(
+		static extern SDL_bool SDL_GetEventFilter(
 				out IntPtr filter,
 				out IntPtr userdata
 		);
@@ -5368,7 +5368,7 @@ Skip uppercase letters
 
 		/* Wrapper for SDL_GetScancodeName */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetScancodeName", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetScancodeName(SDL_Scancode scancode);
+		static extern IntPtr INTERNAL_SDL_GetScancodeName(SDL_Scancode scancode);
 		public static string SDL_GetScancodeName(SDL_Scancode scancode)
 		{
 			return UTF8_ToManaged(
@@ -5378,7 +5378,7 @@ Skip uppercase letters
 
 		/* Get a scancode from a human-readable name */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetScancodeFromName", CallingConvention = CallingConvention.Cdecl)]
-		private static extern SDL_Scancode INTERNAL_SDL_GetScancodeFromName(
+		static extern SDL_Scancode INTERNAL_SDL_GetScancodeFromName(
 				byte[] name
 		);
 		public static SDL_Scancode SDL_GetScancodeFromName(string name)
@@ -5390,7 +5390,7 @@ Skip uppercase letters
 
 		/* Wrapper for SDL_GetKeyName */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetKeyName", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetKeyName(SDL_Keycode key);
+		static extern IntPtr INTERNAL_SDL_GetKeyName(SDL_Keycode key);
 		public static string SDL_GetKeyName(SDL_Keycode key)
 		{
 			return UTF8_ToManaged(INTERNAL_SDL_GetKeyName(key));
@@ -5398,7 +5398,7 @@ Skip uppercase letters
 
 		/* Get a key code from a human-readable name */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetKeyFromName", CallingConvention = CallingConvention.Cdecl)]
-		private static extern SDL_Keycode INTERNAL_SDL_GetKeyFromName(
+		static extern SDL_Keycode INTERNAL_SDL_GetKeyFromName(
 				byte[] name
 		);
 		public static SDL_Keycode SDL_GetKeyFromName(string name)
@@ -5744,7 +5744,7 @@ Skip uppercase letters
 
 		/* joystick refers to an SDL_Joystick* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_JoystickName", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_JoystickName(
+		static extern IntPtr INTERNAL_SDL_JoystickName(
 				IntPtr joystick
 		);
 		public static string SDL_JoystickName(IntPtr joystick)
@@ -5755,7 +5755,7 @@ Skip uppercase letters
 		}
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_JoystickNameForIndex", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_JoystickNameForIndex(
+		static extern IntPtr INTERNAL_SDL_JoystickNameForIndex(
 				int device_index
 		);
 		public static string SDL_JoystickNameForIndex(int device_index)
@@ -5812,7 +5812,7 @@ Skip uppercase letters
 		);
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_JoystickGetGUIDFromString", CallingConvention = CallingConvention.Cdecl)]
-		private static extern Guid INTERNAL_SDL_JoystickGetGUIDFromString(
+		static extern Guid INTERNAL_SDL_JoystickGetGUIDFromString(
 				byte[] pchGUID
 		);
 		public static Guid SDL_JoystickGetGUIDFromString(string pchGuid)
@@ -5943,7 +5943,7 @@ Skip uppercase letters
 			SDL_CONTROLLER_BUTTON_MAX,
 		}
 
-		// FIXME: I'd rather this somehow be private...
+		// FIXME: I'd rather this somehow be ...
 		[StructLayout(LayoutKind.Sequential)]
 		public struct INTERNAL_GameControllerButtonBind_hat
 		{
@@ -5951,7 +5951,7 @@ Skip uppercase letters
 			public int hat_mask;
 		}
 
-		// FIXME: I'd rather this somehow be private...
+		// FIXME: I'd rather this somehow be ...
 		[StructLayout(LayoutKind.Explicit)]
 		public struct INTERNAL_GameControllerButtonBind_union
 		{
@@ -5972,7 +5972,7 @@ Skip uppercase letters
 
 		/* This exists to deal with C# being stupid about blittable types. */
 		[StructLayout(LayoutKind.Sequential)]
-		private struct INTERNAL_SDL_GameControllerButtonBind
+		struct INTERNAL_SDL_GameControllerButtonBind
 		{
 			public int bindType;
 			/* Largest data type in the union is two ints in size */
@@ -5981,7 +5981,7 @@ Skip uppercase letters
 		}
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerAddMapping", CallingConvention = CallingConvention.Cdecl)]
-		private static extern int INTERNAL_SDL_GameControllerAddMapping(
+		static extern int INTERNAL_SDL_GameControllerAddMapping(
 				byte[] mappingString
 		);
 		public static int SDL_GameControllerAddMapping(
@@ -5999,7 +5999,7 @@ Skip uppercase letters
 
 		/* This function is only available in 2.0.6 or higher. */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerMappingForIndex", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GameControllerMappingForIndex(int mapping_index);
+		static extern IntPtr INTERNAL_SDL_GameControllerMappingForIndex(int mapping_index);
 		public static string SDL_GameControllerMappingForIndex(int mapping_index)
 		{
 			return UTF8_ToManaged(
@@ -6011,7 +6011,7 @@ Skip uppercase letters
 
 		/* THIS IS AN RWops FUNCTION! */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerAddMappingsFromRW", CallingConvention = CallingConvention.Cdecl)]
-		private static extern int INTERNAL_SDL_GameControllerAddMappingsFromRW(
+		static extern int INTERNAL_SDL_GameControllerAddMappingsFromRW(
 				IntPtr rw,
 				int freerw
 		);
@@ -6022,7 +6022,7 @@ Skip uppercase letters
 		}
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerMappingForGUID", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GameControllerMappingForGUID(
+		static extern IntPtr INTERNAL_SDL_GameControllerMappingForGUID(
 				Guid guid
 		);
 		public static string SDL_GameControllerMappingForGUID(Guid guid)
@@ -6034,7 +6034,7 @@ Skip uppercase letters
 
 		/* gamecontroller refers to an SDL_GameController* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerMapping", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GameControllerMapping(
+		static extern IntPtr INTERNAL_SDL_GameControllerMapping(
 				IntPtr gamecontroller
 		);
 		public static string SDL_GameControllerMapping(
@@ -6052,7 +6052,7 @@ Skip uppercase letters
 		public static extern SDL_bool SDL_IsGameController(int joystick_index);
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerNameForIndex", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GameControllerNameForIndex(
+		static extern IntPtr INTERNAL_SDL_GameControllerNameForIndex(
 				int joystick_index
 		);
 		public static string SDL_GameControllerNameForIndex(
@@ -6066,7 +6066,7 @@ Skip uppercase letters
 
 		/* Only available in 2.0.9 or higher */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerMappingForDeviceIndex", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GameControllerMappingForDeviceIndex(
+		static extern IntPtr INTERNAL_SDL_GameControllerMappingForDeviceIndex(
 				int joystick_index
 		);
 		public static string SDL_GameControllerMappingForDeviceIndex(
@@ -6084,7 +6084,7 @@ Skip uppercase letters
 
 		/* gamecontroller refers to an SDL_GameController* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerName", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GameControllerName(
+		static extern IntPtr INTERNAL_SDL_GameControllerName(
 				IntPtr gamecontroller
 		);
 		public static string SDL_GameControllerName(
@@ -6141,7 +6141,7 @@ Skip uppercase letters
 		public static extern void SDL_GameControllerUpdate();
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerGetAxisFromString", CallingConvention = CallingConvention.Cdecl)]
-		private static extern SDL_GameControllerAxis INTERNAL_SDL_GameControllerGetAxisFromString(
+		static extern SDL_GameControllerAxis INTERNAL_SDL_GameControllerGetAxisFromString(
 				byte[] pchString
 		);
 		public static SDL_GameControllerAxis SDL_GameControllerGetAxisFromString(
@@ -6154,7 +6154,7 @@ Skip uppercase letters
 		}
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerGetStringForAxis", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GameControllerGetStringForAxis(
+		static extern IntPtr INTERNAL_SDL_GameControllerGetStringForAxis(
 				SDL_GameControllerAxis axis
 		);
 		public static string SDL_GameControllerGetStringForAxis(
@@ -6170,7 +6170,7 @@ Skip uppercase letters
 
 		/* gamecontroller refers to an SDL_GameController* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerGetBindForAxis", CallingConvention = CallingConvention.Cdecl)]
-		private static extern INTERNAL_SDL_GameControllerButtonBind INTERNAL_SDL_GameControllerGetBindForAxis(
+		static extern INTERNAL_SDL_GameControllerButtonBind INTERNAL_SDL_GameControllerGetBindForAxis(
 				IntPtr gamecontroller,
 				SDL_GameControllerAxis axis
 		);
@@ -6199,7 +6199,7 @@ Skip uppercase letters
 		);
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerGetButtonFromString", CallingConvention = CallingConvention.Cdecl)]
-		private static extern SDL_GameControllerButton INTERNAL_SDL_GameControllerGetButtonFromString(
+		static extern SDL_GameControllerButton INTERNAL_SDL_GameControllerGetButtonFromString(
 				byte[] pchString
 		);
 		public static SDL_GameControllerButton SDL_GameControllerGetButtonFromString(
@@ -6212,7 +6212,7 @@ Skip uppercase letters
 		}
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerGetStringForButton", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GameControllerGetStringForButton(
+		static extern IntPtr INTERNAL_SDL_GameControllerGetStringForButton(
 				SDL_GameControllerButton button
 		);
 		public static string SDL_GameControllerGetStringForButton(
@@ -6226,7 +6226,7 @@ Skip uppercase letters
 
 		/* gamecontroller refers to an SDL_GameController* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GameControllerGetBindForButton", CallingConvention = CallingConvention.Cdecl)]
-		private static extern INTERNAL_SDL_GameControllerButtonBind INTERNAL_SDL_GameControllerGetBindForButton(
+		static extern INTERNAL_SDL_GameControllerButtonBind INTERNAL_SDL_GameControllerGetBindForButton(
 				IntPtr gamecontroller,
 				SDL_GameControllerButton button
 		);
@@ -6487,7 +6487,7 @@ Skip uppercase letters
 
 		/* haptic refers to an SDL_Haptic* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_HapticName", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_HapticName(int device_index);
+		static extern IntPtr INTERNAL_SDL_HapticName(int device_index);
 		public static string SDL_HapticName(int device_index)
 		{
 			return UTF8_ToManaged(INTERNAL_SDL_HapticName(device_index));
@@ -6632,7 +6632,7 @@ Skip uppercase letters
 		public static extern int SDL_NumSensors();
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_SensorGetDeviceName", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_SensorGetDeviceName(int device_index);
+		static extern IntPtr INTERNAL_SDL_SensorGetDeviceName(int device_index);
 		public static string SDL_SensorGetDeviceName(int device_index)
 		{
 			return UTF8_ToManaged(INTERNAL_SDL_SensorGetDeviceName(device_index));
@@ -6659,7 +6659,7 @@ Skip uppercase letters
 
 		/* sensor refers to an SDL_Sensor* */
 		[DllImport(nativeLibName, EntryPoint = "SDL_SensorGetName", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_SensorGetName(IntPtr sensor);
+		static extern IntPtr INTERNAL_SDL_SensorGetName(IntPtr sensor);
 		public static string SDL_SensorGetName(IntPtr sensor)
 		{
 			return UTF8_ToManaged(INTERNAL_SDL_SensorGetName(sensor));
@@ -6802,7 +6802,7 @@ Skip uppercase letters
 		);
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_AudioInit", CallingConvention = CallingConvention.Cdecl)]
-		private static extern int INTERNAL_SDL_AudioInit(
+		static extern int INTERNAL_SDL_AudioInit(
 				byte[] driver_name
 		);
 		public static int SDL_AudioInit(string driver_name)
@@ -6827,7 +6827,7 @@ Skip uppercase letters
 		public static extern void SDL_FreeWAV(IntPtr audio_buf);
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetAudioDeviceName", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetAudioDeviceName(
+		static extern IntPtr INTERNAL_SDL_GetAudioDeviceName(
 				int index,
 				int iscapture
 		);
@@ -6848,7 +6848,7 @@ Skip uppercase letters
 		);
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetAudioDriver", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetAudioDriver(int index);
+		static extern IntPtr INTERNAL_SDL_GetAudioDriver(int index);
 		public static string SDL_GetAudioDriver(int index)
 		{
 			return UTF8_ToManaged(
@@ -6860,7 +6860,7 @@ Skip uppercase letters
 		public static extern SDL_AudioStatus SDL_GetAudioStatus();
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetCurrentAudioDriver", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetCurrentAudioDriver();
+		static extern IntPtr INTERNAL_SDL_GetCurrentAudioDriver();
 		public static string SDL_GetCurrentAudioDriver()
 		{
 			return UTF8_ToManaged(INTERNAL_SDL_GetCurrentAudioDriver());
@@ -6875,7 +6875,7 @@ Skip uppercase letters
 		/* audio_buf will refer to a malloc()'d byte buffer */
 		/* THIS IS AN RWops FUNCTION! */
 		[DllImport(nativeLibName, EntryPoint = "SDL_LoadWAV_RW", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_LoadWAV_RW(
+		static extern IntPtr INTERNAL_SDL_LoadWAV_RW(
 				IntPtr src,
 				int freesrc,
 				ref SDL_AudioSpec spec,
@@ -6948,7 +6948,7 @@ Skip uppercase letters
 
 		/* uint refers to an SDL_AudioDeviceID */
 		[DllImport(nativeLibName, EntryPoint = "SDL_OpenAudioDevice", CallingConvention = CallingConvention.Cdecl)]
-		private static extern uint INTERNAL_SDL_OpenAudioDevice(
+		static extern uint INTERNAL_SDL_OpenAudioDevice(
 				byte[] device,
 				int iscapture,
 				ref SDL_AudioSpec desired,
@@ -7180,7 +7180,7 @@ Skip uppercase letters
 		public static extern void SDL_AndroidBackButton();
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_AndroidGetInternalStoragePath", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_AndroidGetInternalStoragePath();
+		static extern IntPtr INTERNAL_SDL_AndroidGetInternalStoragePath();
 
 		public static string SDL_AndroidGetInternalStoragePath()
 		{
@@ -7193,7 +7193,7 @@ Skip uppercase letters
 		public static extern int SDL_AndroidGetExternalStorageState();
 
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_AndroidGetExternalStoragePath();
+		static extern IntPtr INTERNAL_SDL_AndroidGetExternalStoragePath();
 
 		public static string SDL_AndroidGetExternalStoragePath()
 		{
@@ -7323,7 +7323,7 @@ Skip uppercase letters
 			public INTERNAL_mir_wminfo mir;
 			[FieldOffset(0)]
 			public INTERNAL_android_wminfo android;
-			// private int dummy;
+			//  int dummy;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
@@ -7347,7 +7347,7 @@ Skip uppercase letters
 
 		/* Only available in 2.0.1 */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetBasePath", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetBasePath();
+		static extern IntPtr INTERNAL_SDL_GetBasePath();
 		public static string SDL_GetBasePath()
 		{
 			return UTF8_ToManaged(INTERNAL_SDL_GetBasePath(), true);
@@ -7355,7 +7355,7 @@ Skip uppercase letters
 
 		/* Only available in 2.0.1 */
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetPrefPath", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr INTERNAL_SDL_GetPrefPath(
+		static extern IntPtr INTERNAL_SDL_GetPrefPath(
 				byte[] org,
 				byte[] app
 		);

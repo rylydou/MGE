@@ -8,8 +8,8 @@ namespace MGE.OpenGL
 	internal class GL_FrameBuffer : FrameBuffer.Platform
 	{
 
-		private readonly GL_Graphics graphics;
-		private readonly Dictionary<ISystemOpenGL.Context, uint> framebuffers = new Dictionary<ISystemOpenGL.Context, uint>();
+		readonly GL_Graphics graphics;
+		readonly Dictionary<ISystemOpenGL.Context, uint> framebuffers = new Dictionary<ISystemOpenGL.Context, uint>();
 
 		internal GL_FrameBuffer(GL_Graphics graphics, int width, int height, TextureFormat[] attachments)
 		{

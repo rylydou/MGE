@@ -15,7 +15,7 @@ namespace MGE;
 /// </summary>
 public static class PNG
 {
-	private enum Colors
+	enum Colors
 	{
 		Greyscale = 0,
 		Truecolor = 2,
@@ -24,14 +24,14 @@ public static class PNG
 		TruecolorAlpha = 6
 	}
 
-	private enum Interlace
+	enum Interlace
 	{
 		None = 0,
 		Adam7 = 1
 	}
 
-	private static readonly byte[] header = { 137, 80, 78, 71, 13, 10, 26, 10 };
-	private static readonly uint[] crcTable = new uint[256];
+	static readonly byte[] header = { 137, 80, 78, 71, 13, 10, 26, 10 };
+	static readonly uint[] crcTable = new uint[256];
 
 	static PNG()
 	{
@@ -525,7 +525,7 @@ public static class PNG
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static byte PaethPredictor(byte a, byte b, byte c)
+	static byte PaethPredictor(byte a, byte b, byte c)
 	{
 		int p = a + b - c;
 		int pa = SysMath.Abs(p - a);
@@ -541,7 +541,7 @@ public static class PNG
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static bool Check(string name, Span<byte> buffer)
+	static bool Check(string name, Span<byte> buffer)
 	{
 		if (buffer.Length < name.Length)
 			return false;
@@ -556,7 +556,7 @@ public static class PNG
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static int SwapEndian(int input)
+	static int SwapEndian(int input)
 	{
 		if (BitConverter.IsLittleEndian)
 		{

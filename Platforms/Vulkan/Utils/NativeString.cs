@@ -13,7 +13,7 @@ namespace MGE.Vulkan
 
 		}
 
-		private string GetString()
+		string GetString()
 		{
 			return Encoding.UTF8.GetString(Pointer, (int)Size);
 		}

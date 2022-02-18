@@ -8,15 +8,15 @@ namespace MGE.OpenGL
 	internal class GL_Texture : Texture.Platform
 	{
 
-		public uint ID { get; private set; }
+		public uint ID { get; set; }
 
-		private readonly GL_Graphics graphics;
+		readonly GL_Graphics graphics;
 		internal bool isRenderTexture;
 
-		private Texture texture;
-		private GLEnum glInternalFormat;
-		private GLEnum glFormat;
-		private GLEnum glType;
+		Texture texture;
+		GLEnum glInternalFormat;
+		GLEnum glFormat;
+		GLEnum glType;
 
 		internal GL_Texture(GL_Graphics graphics)
 		{
@@ -71,7 +71,7 @@ namespace MGE.OpenGL
 			Initialize();
 		}
 
-		private void Initialize()
+		void Initialize()
 		{
 			if (graphics.mainThreadId != Thread.CurrentThread.ManagedThreadId)
 			{

@@ -6,7 +6,7 @@ namespace MGE.GLFW
 {
 	internal static class GLFW
 	{
-		private const string DLL = "glfw3";
+		const string DLL = "glfw3";
 
 		[StructLayout(LayoutKind.Sequential)]
 		public struct VidMode

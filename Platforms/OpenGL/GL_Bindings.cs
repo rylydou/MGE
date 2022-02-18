@@ -6,7 +6,7 @@ namespace MGE.OpenGL
 {
 	internal class GL_Bindings
 	{
-		private readonly ISystemOpenGL system;
+		readonly ISystemOpenGL system;
 
 		public GL_Bindings(ISystemOpenGL system)
 		{
@@ -116,7 +116,7 @@ namespace MGE.OpenGL
 			CreateDelegate(ref glUniformMatrix4x3fv!, "glUniformMatrix4x3fv");
 		}
 
-		private void CreateDelegate<T>(ref T def, string name) where T : class
+		void CreateDelegate<T>(ref T def, string name) where T : class
 		{
 			var addr = system.GetGLProcAddress(name);
 			if (addr != IntPtr.Zero && (Marshal.GetDelegateForFunctionPointer(addr, typeof(T)) is T del))

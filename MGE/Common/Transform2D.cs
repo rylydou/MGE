@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
 
-namespace MGE.Common;
+namespace MGE;
 
 /// <summary>
 /// An interface that implements a 2D Transform
@@ -34,20 +34,20 @@ public interface ITransform2D
 /// </summary>
 public class Transform2D : ITransform2D
 {
-	private Transform2D? _parent = null;
-	private bool _dirty = true;
+	Transform2D? _parent = null;
+	bool _dirty = true;
 
-	private Vector2 _position = Vector2.zero;
-	private Vector2 _localPosition = Vector2.zero;
-	private Vector2 _scale = Vector2.one;
-	private Vector2 _localScale = Vector2.one;
-	private Vector2 _origin = Vector2.zero;
-	private float _rotation = 0f;
-	private float _localRotation = 0f;
+	Vector2 _position = Vector2.zero;
+	Vector2 _localPosition = Vector2.zero;
+	Vector2 _scale = Vector2.one;
+	Vector2 _localScale = Vector2.one;
+	Vector2 _origin = Vector2.zero;
+	float _rotation = 0f;
+	float _localRotation = 0f;
 
-	private Matrix3x2 _localMatrix = Matrix3x2.Identity;
-	private Matrix3x2 _worldMatrix = Matrix3x2.Identity;
-	private Matrix3x2 _worldToLocalMatrix = Matrix3x2.Identity;
+	Matrix3x2 _localMatrix = Matrix3x2.Identity;
+	Matrix3x2 _worldMatrix = Matrix3x2.Identity;
+	Matrix3x2 _worldToLocalMatrix = Matrix3x2.Identity;
 
 	/// <summary>
 	/// An action called whenever the Transform is modified
@@ -152,21 +152,21 @@ public class Transform2D : ITransform2D
 		{
 			if (_parent == null)
 			{
-				LocalScale = value;
+				localScale = value;
 			}
 			else
 			{
-				if (_parent.scale.X == 0)
-					value.X = 0;
+				if (_parent.scale.x == 0)
+					value.x = 0;
 				else
-					value.X /= _parent.scale.X;
+					value.x /= _parent.scale.x;
 
-				if (_parent.scale.Y == 0)
-					value.Y = 0;
+				if (_parent.scale.y == 0)
+					value.y = 0;
 				else
-					value.Y /= _parent.scale.Y;
+					value.y /= _parent.scale.y;
 
-				LocalScale = value;
+				localScale = value;
 			}
 		}
 	}
@@ -174,7 +174,7 @@ public class Transform2D : ITransform2D
 	/// <summary>
 	/// Gets or Sets the Local Scale of the Transform
 	/// </summary>
-	public Vector2 LocalScale
+	public Vector2 localScale
 	{
 		get => _localScale;
 		set
@@ -202,16 +202,16 @@ public class Transform2D : ITransform2D
 		set
 		{
 			if (_parent == null)
-				LocalRotation = value;
+				localRotation = value;
 			else
-				LocalRotation = value - _parent.rotation;
+				localRotation = value - _parent.rotation;
 		}
 	}
 
 	/// <summary>
 	/// Gets or Sets the Local Rotation of the Transform
 	/// </summary>
-	public float LocalRotation
+	public float localRotation
 	{
 		get => _localRotation;
 		set
@@ -227,7 +227,7 @@ public class Transform2D : ITransform2D
 	/// <summary>
 	/// Gets the Local Matrix of the Transform
 	/// </summary>
-	public Matrix3x2 LocalMatrix
+	public Matrix3x2 localMatrix
 	{
 		get
 		{
@@ -240,7 +240,7 @@ public class Transform2D : ITransform2D
 	/// <summary>
 	/// Gets the World Matrix of the Transform
 	/// </summary>
-	public Matrix3x2 WorldMatrix
+	public Matrix3x2 worldMatrix
 	{
 		get
 		{
@@ -253,7 +253,7 @@ public class Transform2D : ITransform2D
 	/// <summary>
 	/// Gets the World-to-Local Matrix of the Transform
 	/// </summary>
-	public Matrix3x2 WorldToLocalMatrix
+	public Matrix3x2 worldToLocalMatrix
 	{
 		get
 		{
@@ -307,7 +307,7 @@ public class Transform2D : ITransform2D
 		}
 	}
 
-	private void Update()
+	void Update()
 	{
 		_dirty = false;
 
@@ -323,16 +323,15 @@ public class Transform2D : ITransform2D
 		}
 		else
 		{
-			_worldMatrix = _localMatrix * _parent.WorldMatrix;
+			_worldMatrix = _localMatrix * _parent.worldMatrix;
 			Matrix3x2.Invert(_parent._worldMatrix, out _worldToLocalMatrix);
-			_position = Vector2.Transform(_localPosition, _parent.WorldMatrix);
+			_position = Vector2.Transform(_localPosition, _parent.worldMatrix);
 			_scale = _localScale * _parent.scale;
 			_rotation = _localRotation + _parent.rotation;
 		}
-
 	}
 
-	private void MakeDirty()
+	void MakeDirty()
 	{
 		if (!_dirty)
 		{
@@ -348,19 +347,19 @@ public class Transform2D : ITransform2D
 	{
 		Matrix3x2 matrix;
 
-		if (origin != Vector2.Zero)
-			matrix = Matrix3x2.CreateTranslation(-origin.X, -origin.Y);
+		if (origin != Vector2.zero)
+			matrix = Matrix3x2.CreateTranslation(-origin.x, -origin.y);
 		else
 			matrix = Matrix3x2.Identity;
 
-		if (scale != Vector2.One)
-			matrix *= Matrix3x2.CreateScale(scale.X, scale.Y);
+		if (scale != Vector2.one)
+			matrix *= Matrix3x2.CreateScale(scale.x, scale.y);
 
 		if (rotation != 0)
 			matrix *= Matrix3x2.CreateRotation(rotation);
 
-		if (position != Vector2.Zero)
-			matrix *= Matrix3x2.CreateTranslation(position.X, position.Y);
+		if (position != Vector2.zero)
+			matrix *= Matrix3x2.CreateTranslation(position.x, position.y);
 
 		return matrix;
 	}

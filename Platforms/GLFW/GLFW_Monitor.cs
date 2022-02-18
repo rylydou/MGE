@@ -8,10 +8,10 @@ namespace MGE.GLFW
 	{
 		public readonly IntPtr Pointer;
 
-		private string _name;
-		private bool _isPrimary;
-		private RectInt _bounds;
-		private Vector2 _contentScale;
+		string _name;
+		bool _isPrimary;
+		RectInt _bounds;
+		Vector2 _contentScale;
 
 		public override string name => name;
 		public override bool isPrimary => isPrimary;

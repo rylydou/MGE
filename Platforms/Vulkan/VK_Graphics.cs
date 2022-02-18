@@ -25,15 +25,15 @@ namespace MGE.Vulkan
 
 		// Debug Validation Layers
 #if DEBUG
-		private readonly string[] requestedValidationLayers = new[] { "VK_LAYER_KHRONOS_validation" };
+		readonly string[] requestedValidationLayers = new[] { "VK_LAYER_KHRONOS_validation" };
 #else
-		private readonly string[] requestedValidationLayers = new string[0];
+		 readonly string[] requestedValidationLayers = new string[0];
 #endif
-		private readonly List<string> validationLayers = new List<string>();
-		private bool HasValidationLayers => validationLayers.Count > 0;
+		readonly List<string> validationLayers = new List<string>();
+		bool HasValidationLayers => validationLayers.Count > 0;
 
-		private readonly string[] deviceExtensions = new[] { VkConst.VK_KHR_SWAPCHAIN_EXTENSION_NAME };
-		private readonly List<Delegate> trackedDelegates = new List<Delegate>();
+		readonly string[] deviceExtensions = new[] { VkConst.VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+		readonly List<Delegate> trackedDelegates = new List<Delegate>();
 
 		protected override void ApplicationStarted()
 		{
@@ -123,7 +123,7 @@ namespace MGE.Vulkan
 			}
 		}
 
-		private void FindValidationLayers(List<string> appendTo)
+		void FindValidationLayers(List<string> appendTo)
 		{
 			uint availableLayerCount;
 			VK.EnumerateInstanceLayerProperties(&availableLayerCount, null);
@@ -147,7 +147,7 @@ namespace MGE.Vulkan
 			}
 		}
 
-		private VkDebugUtilsMessengerEXT CreateDebugMessenger(PFN_vkDebugUtilsMessengerCallbackEXT callback)
+		VkDebugUtilsMessengerEXT CreateDebugMessenger(PFN_vkDebugUtilsMessengerCallbackEXT callback)
 		{
 			var createInfo = new VkDebugUtilsMessengerCreateInfoEXT
 			{
@@ -167,7 +167,7 @@ namespace MGE.Vulkan
 			return messenger;
 		}
 
-		private VkInstance CreateVulkanInstance()
+		VkInstance CreateVulkanInstance()
 		{
 			NativeString name = App.name;
 			NativeString engine = "MGE";
@@ -214,7 +214,7 @@ namespace MGE.Vulkan
 			return instance;
 		}
 
-		private VkPhysicalDevice PickPhysicalDevice()
+		VkPhysicalDevice PickPhysicalDevice()
 		{
 			uint deviceCount;
 			VK.EnumeratePhysicalDevices(Instance, &deviceCount, null);
@@ -278,7 +278,7 @@ namespace MGE.Vulkan
 			}
 		}
 
-		private bool TryGetQueueFamilyIndex(VkPhysicalDevice device, VkQueueFlags flag, out uint index)
+		bool TryGetQueueFamilyIndex(VkPhysicalDevice device, VkQueueFlags flag, out uint index)
 		{
 			index = 0;
 

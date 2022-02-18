@@ -19,7 +19,7 @@ namespace MGE.SDL2
 		internal readonly SDL_Input _input;
 
 		[DllImport("user32.dll", SetLastError = true)]
-		private static extern bool SetProcessDPIAware();
+		static extern bool SetProcessDPIAware();
 
 		public SDL_System()
 		{

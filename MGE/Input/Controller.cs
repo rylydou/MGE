@@ -49,11 +49,11 @@ public class Controller
 
 	public readonly Input Input;
 
-	public string Name { get; private set; } = "Unknown";
-	public bool Connected { get; private set; } = false;
-	public bool IsGamepad { get; private set; } = false;
-	public int Buttons { get; private set; } = 0;
-	public int Axes { get; private set; } = 0;
+	public string Name { get; set; } = "Unknown";
+	public bool Connected { get; set; } = false;
+	public bool IsGamepad { get; set; } = false;
+	public int Buttons { get; set; } = 0;
+	public int Axes { get; set; } = 0;
 
 	internal readonly bool[] pressed = new bool[MaxButtons];
 	internal readonly bool[] down = new bool[MaxButtons];

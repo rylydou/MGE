@@ -20,8 +20,8 @@ namespace MGE.OpenGL
 		public static int MaxTextureSize;
 
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-		private static GL_Bindings bindings;
-		private static OnError onErrorRef;
+		static GL_Bindings bindings;
+		static OnError onErrorRef;
 #pragma warning restore CS8618
 
 		public static void Init(GL_Graphics graphics, ISystemOpenGL system)
@@ -90,7 +90,7 @@ namespace MGE.OpenGL
 #endif
 		}
 
-		private delegate void OnError(GLEnum source, GLEnum type, uint id, GLEnum severity, uint length, IntPtr message, IntPtr userParam);
+		delegate void OnError(GLEnum source, GLEnum type, uint id, GLEnum severity, uint length, IntPtr message, IntPtr userParam);
 
 		public static unsafe string GetString(GLEnum name)
 		{

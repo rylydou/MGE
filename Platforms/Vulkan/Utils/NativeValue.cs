@@ -7,7 +7,7 @@ namespace MGE.Vulkan
 {
 	internal abstract unsafe class NativeValue : IDisposable
 	{
-		private GCHandle handle;
+		GCHandle handle;
 
 		public byte* Pointer => (byte*)handle.AddrOfPinnedObject().ToPointer();
 		public readonly int Size;

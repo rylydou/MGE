@@ -10,18 +10,18 @@ namespace MGE.GLFW
 
 		// we need to keep track of delegates because otherwise they can be garbage collected
 		// and then the C++ GLFW stuff is calling garbage collected delegates...
-		private readonly Dictionary<IntPtr, List<Delegate>> delegateTracker = new Dictionary<IntPtr, List<Delegate>>();
-		private readonly Dictionary<Cursors, IntPtr> cursors = new Dictionary<Cursors, IntPtr>();
-		private readonly List<IntPtr> windows = new List<IntPtr>();
-		private string? clipboardText;
+		readonly Dictionary<IntPtr, List<Delegate>> delegateTracker = new Dictionary<IntPtr, List<Delegate>>();
+		readonly Dictionary<Cursors, IntPtr> cursors = new Dictionary<Cursors, IntPtr>();
+		readonly List<IntPtr> windows = new List<IntPtr>();
+		string? clipboardText;
 
 		// GLFW has this really weird bug where if you're holding the Mouse Down
 		// while creating a new Window, it will trigger a Mouse Up event, along with a second
 		// Mouse-Up when you actually release the mouse ... So when a new Window is created
 		// we ignore the next mouse-up event, if a Mouse Button is held
-		private readonly bool[] ignoreMouseUp = new bool[3];
+		readonly bool[] ignoreMouseUp = new bool[3];
 
-		private GLFW.GamepadState gamepadState = new GLFW.GamepadState()
+		GLFW.GamepadState gamepadState = new GLFW.GamepadState()
 		{
 			Buttons = new char[(int)GLFW_Enum.GAMEPAD_BUTTON_LAST + 1],
 			Axes = new float[(int)GLFW_Enum.GAMEPAD_AXIS_LAST + 1]
@@ -68,7 +68,7 @@ namespace MGE.GLFW
 			delegateTracker.Remove(window);
 		}
 
-		private T TrackDelegate<T>(IntPtr windowPtr, T method) where T : Delegate
+		T TrackDelegate<T>(IntPtr windowPtr, T method) where T : Delegate
 		{
 			if (!delegateTracker.TryGetValue(windowPtr, out var list))
 				delegateTracker[windowPtr] = list = new List<Delegate>();
@@ -102,7 +102,7 @@ namespace MGE.GLFW
 				GLFW.SetClipboardString(window._pointer, value);
 		}
 
-		private IntPtr GetCursor(Cursors MGECursor)
+		IntPtr GetCursor(Cursors MGECursor)
 		{
 			if (!cursors.TryGetValue(MGECursor, out var ptr))
 			{
@@ -136,7 +136,7 @@ namespace MGE.GLFW
 			return ptr;
 		}
 
-		private void OnJoystickCallback(int jid, GLFW_Enum eventType)
+		void OnJoystickCallback(int jid, GLFW_Enum eventType)
 		{
 			if (eventType == GLFW_Enum.CONNECTED)
 			{
@@ -154,7 +154,7 @@ namespace MGE.GLFW
 			}
 		}
 
-		private void OnMouseCallback(IntPtr window, int button, int action, int mods)
+		void OnMouseCallback(IntPtr window, int button, int action, int mods)
 		{
 			MouseButtons mb = MouseButtons.Unknown;
 			if (button == 0)
@@ -176,17 +176,17 @@ namespace MGE.GLFW
 			}
 		}
 
-		private void OnScrollCallback(IntPtr window, double offsetX, double offsetY)
+		void OnScrollCallback(IntPtr window, double offsetX, double offsetY)
 		{
 			OnMouseWheel((float)offsetX, (float)offsetY);
 		}
 
-		private void OnCharCallback(IntPtr window, uint codepoint)
+		void OnCharCallback(IntPtr window, uint codepoint)
 		{
 			OnText((char)codepoint);
 		}
 
-		private void OnKeyCallback(IntPtr window, int key, int scancode, int action, int mods)
+		void OnKeyCallback(IntPtr window, int key, int scancode, int action, int mods)
 		{
 			if (key >= 0 && key < Keyboard.MaxKeys)
 			{
@@ -289,7 +289,7 @@ namespace MGE.GLFW
 			}
 		}
 
-		private Buttons GamepadButtonToEnum(GLFW_Enum btn)
+		Buttons GamepadButtonToEnum(GLFW_Enum btn)
 		{
 			return btn switch
 			{
@@ -312,7 +312,7 @@ namespace MGE.GLFW
 			};
 		}
 
-		private Axes GamepadAxisToEnum(GLFW_Enum axes)
+		Axes GamepadAxisToEnum(GLFW_Enum axes)
 		{
 			return axes switch
 			{

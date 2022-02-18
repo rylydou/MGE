@@ -21,17 +21,17 @@ public class Mesh : IDisposable
 	/// <summary>
 	/// Number of Vertices in the Mesh
 	/// </summary>
-	public uint vertexCount { get; private set; }
+	public uint vertexCount { get; set; }
 
 	/// <summary>
 	/// Number of Indices in the Mesh
 	/// </summary>
-	public uint indexCount { get; private set; }
+	public uint indexCount { get; set; }
 
 	/// <summary>
 	/// Number of Instances in the Mesh
 	/// </summary>
-	public uint instanceCount { get; private set; }
+	public uint instanceCount { get; set; }
 
 	/// <summary>
 	/// The Number of Triangle Elements in the Mesh (IndicesCount / 3)
@@ -41,12 +41,12 @@ public class Mesh : IDisposable
 	/// <summary>
 	/// Gets the Vertex Format, or null if never set
 	/// </summary>
-	public VertexFormat? vertexFormat { get; private set; } = null;
+	public VertexFormat? vertexFormat { get; set; } = null;
 
 	/// <summary>
 	/// Gets the Instance Format, or null if never set
 	/// </summary>
-	public VertexFormat? instanceFormat { get; private set; } = null;
+	public VertexFormat? instanceFormat { get; set; } = null;
 
 	public Mesh()
 	{

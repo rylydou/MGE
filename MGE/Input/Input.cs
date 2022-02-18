@@ -22,7 +22,7 @@ public abstract class Input
 	/// <summary>
 	/// The Input State of the next frame
 	/// </summary>
-	private readonly InputState nextState;
+	readonly InputState nextState;
 
 	/// <summary>
 	/// The Keyboard of the current State
@@ -259,7 +259,7 @@ public class InputState
 	/// <summary>
 	/// A list of all the Controllers
 	/// </summary>
-	private readonly Controller[] controllers;
+	readonly Controller[] controllers;
 
 	/// <summary>
 	/// A Read-Only Collection of the Controllers

@@ -4,41 +4,41 @@ namespace Demo;
 
 public class Game : Module
 {
-	public readonly Batch2D Batcher = new Batch2D();
-	public float Offset = 0f;
+	public readonly Batch2D batcher = new Batch2D();
+	public float offset = 0f;
 
 	// This is called when the Application has Started
 	protected override void Startup()
 	{
 		// Add a Callback to the primary window's Render loop
-		App.Window.OnRender += Render;
+		App.window.onRender += Render;
 	}
 
 	// This is called when the Application is shutting down, or when the Module is removed
 	protected override void Shutdown()
 	{
 		// Remove our Callback
-		App.Window.OnRender -= Render;
+		App.window.onRender -= Render;
 	}
 
 	// This is called every frame of the Application
 	protected override void Update()
 	{
-		Offset += 32 * Time.DeltaTime;
+		offset += 32 * Time.delta;
 	}
 
-	private void Render(Window window)
+	void Render(Window window)
 	{
 		// clear the batcher from the previous frame
-		Batcher.Clear();
+		batcher.Clear();
 
 		// draw a rectangle
-		Batcher.Rect(Offset, 0, 32, 32, Color.Red);
+		batcher.Rect(offset, 0, 32, 32, Color.red);
 
 		// clear the Window
-		App.Graphics.Clear(window, Color.Black);
+		App.graphics.Clear(window, Color.black);
 
 		// draw the batcher to the Window
-		Batcher.Render(window);
+		batcher.Render(window);
 	}
 }

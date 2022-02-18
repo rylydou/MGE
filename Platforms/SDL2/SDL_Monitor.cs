@@ -9,9 +9,9 @@ namespace MGE.SDL2
 	{
 		public readonly int index;
 
-		private string _name;
-		private RectInt _bounds;
-		private Vector2 _contentScale;
+		string _name;
+		RectInt _bounds;
+		Vector2 _contentScale;
 
 		public override string name => _name;
 		public override bool isPrimary => index == 0;

@@ -20,12 +20,12 @@ public static class App
 	/// <summary>
 	/// Whether the Application is running
 	/// </summary>
-	public static bool running { get; private set; } = false;
+	public static bool running { get; set; } = false;
 
 	/// <summary>
 	/// Whether the Application is exiting
 	/// </summary>
-	public static bool exiting { get; private set; } = false;
+	public static bool exiting { get; set; } = false;
 
 	/// <summary>
 	/// A List of all the Application Modules
@@ -70,7 +70,7 @@ public static class App
 	/// <summary>
 	/// Reference to the Primary Window
 	/// </summary>
-	private static Window? primaryWindow;
+	static Window? primaryWindow;
 
 	/// <summary>
 	/// Starts running the Application
@@ -131,7 +131,7 @@ public static class App
 		}
 	}
 
-	private static void Run()
+	static void Run()
 	{
 		// timer
 		var timer = Stopwatch.StartNew();
@@ -158,7 +158,7 @@ public static class App
 				// fixed delta time is always the same
 				var fixedTarget = TimeSpan.FromSeconds(1f / Time.fixedStepTarget);
 				Time.rawDelta = Time.rawFixedDelta = (float)fixedTarget.TotalSeconds;
-				Time.delta = Time.fixedDelta = Time.rawFixedDelta * Time.DeltaScale;
+				Time.delta = Time.fixedDelta = Time.rawFixedDelta * Time.deltaScale;
 
 				if (forceFixedTimestep)
 				{
@@ -218,7 +218,7 @@ public static class App
 				// get Time values
 				Time.duration += diffTime;
 				Time.rawDelta = Time.rawVariableDelta = (float)diffTime.TotalSeconds;
-				Time.delta = Time.variableDelta = Time.rawDelta * Time.DeltaScale;
+				Time.delta = Time.variableDelta = Time.rawDelta * Time.deltaScale;
 
 				// update
 				modules.Update();

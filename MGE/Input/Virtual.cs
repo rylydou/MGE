@@ -104,7 +104,7 @@ public class VirtualAxis
 	public readonly List<INode> Nodes = new List<INode>();
 	public Overlaps OverlapBehavior = Overlaps.CancelOut;
 
-	private const float EPSILON = 0.00001f;
+	const float EPSILON = 0.00001f;
 
 	public VirtualAxis(Input input)
 	{
@@ -117,7 +117,7 @@ public class VirtualAxis
 		OverlapBehavior = overlapBehavior;
 	}
 
-	private float GetValue(bool deadzone)
+	float GetValue(bool deadzone)
 	{
 		var value = 0f;
 
@@ -321,8 +321,8 @@ public class VirtualButton
 		public Axes Axis;
 		public float Threshold;
 
-		private float pressedTimestamp;
-		private const float AXIS_EPSILON = 0.00001f;
+		float pressedTimestamp;
+		const float AXIS_EPSILON = 0.00001f;
 
 		public bool Pressed(float buffer, long lastBufferConsumedTime)
 		{
@@ -370,7 +370,7 @@ public class VirtualButton
 			throw new NotImplementedException();
 		}
 
-		private bool Pressed()
+		bool Pressed()
 		{
 			if (Math.Abs(Threshold) <= AXIS_EPSILON)
 				return (Math.Abs(Input.LastState.Controllers[Index].Axis(Axis)) < AXIS_EPSILON && Math.Abs(Input.Controllers[Index].Axis(Axis)) > AXIS_EPSILON);
@@ -402,7 +402,7 @@ public class VirtualButton
 	public float RepeatInterval;
 	public float Buffer;
 
-	private long lastBufferConsumeTime;
+	long lastBufferConsumeTime;
 
 	public bool Pressed
 	{

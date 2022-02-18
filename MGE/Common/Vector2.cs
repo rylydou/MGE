@@ -1,23 +1,10 @@
 using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SysVector2 = System.Numerics.Vector2;
 
 namespace MGE;
-
-// public class Vector2JsonConverter : JsonConverter<Vector2>
-// {
-// 	public override Vector2 ReadJson(JsonReader reader, Type objectType, Vector2 existingValue, bool hasExistingValue, JsonSerializer serializer)
-// 	{
-// 		var values = reader.ReadAsMultiDimensional<float>();
-// 		if (values.Length == 2) return new Vector2(values[0], values[1]);
-// 		throw new InvalidOperationException("Invalid Vector2");
-// 	}
-
-// 	public override void WriteJson(JsonWriter writer, Vector2 vector, JsonSerializer serializer)
-// 	{
-// 		writer.WriteValue($"{vector.x} {vector.y}");
-// 	}
-// }
 
 [Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct Vector2 : IEquatable<Vector2>
@@ -27,8 +14,8 @@ public struct Vector2 : IEquatable<Vector2>
 	public static readonly Vector2 zero = new Vector2(0, 0);
 	public static readonly Vector2 one = new Vector2(1, 1);
 
-	public static readonly Vector2 up = new Vector2(0, 1);
-	public static readonly Vector2 down = new Vector2(0, -1);
+	public static readonly Vector2 down = new Vector2(0, 1);
+	public static readonly Vector2 up = new Vector2(0, -1);
 	public static readonly Vector2 left = new Vector2(-1, 0);
 	public static readonly Vector2 right = new Vector2(1, 0);
 
@@ -114,20 +101,48 @@ public struct Vector2 : IEquatable<Vector2>
 		return vector;
 	}
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static Vector2 Transform(Vector2 position, Matrix3x2 matrix) => new Vector2(
+		(position.x * matrix.M11) + (position.y * matrix.M21) + matrix.M31,
+		(position.x * matrix.M12) + (position.y * matrix.M22) + matrix.M32
+	);
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Vector2 Transform(Vector2 position, Matrix4x4 matrix) => new(
 		position.x * matrix.M11 + position.y * matrix.M21 + matrix.M41,
 		position.x * matrix.M12 + position.y * matrix.M22 + matrix.M42
 	);
 
-	public static void Transform(ref Vector2 position, ref Matrix4x4 matrix, out Vector2 result)
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static Vector2 Transform(Vector2 value, Quaternion rotation)
 	{
-		result.x = position.x * matrix.M11 + position.y * matrix.M21 + matrix.M41;
-		result.y = position.x * matrix.M12 + position.y * matrix.M22 + matrix.M42;
+		var x2 = rotation.X + rotation.X;
+		var y2 = rotation.Y + rotation.Y;
+		var z2 = rotation.Z + rotation.Z;
+
+		var wz2 = rotation.W * z2;
+		var xx2 = rotation.X * x2;
+		var xy2 = rotation.X * y2;
+		var yy2 = rotation.Y * y2;
+		var zz2 = rotation.Z * z2;
+
+		return new Vector2(
+			value.x * (1.0f - yy2 - zz2) + value.y * (xy2 - wz2),
+			value.x * (xy2 + wz2) + value.y * (1.0f - xx2 - zz2)
+		);
 	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 
 	public static Vector2 TransformNormal(Vector2 position, Matrix4x4 matrix) => new(
 		position.x * matrix.M11 + position.y * matrix.M21,
 		position.x * matrix.M12 + position.y * matrix.M22
+	);
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static Vector2 TransformNormal(Vector2 normal, Matrix3x2 matrix) => new Vector2(
+		(normal.x * matrix.M11) + (normal.y * matrix.M21),
+		(normal.x * matrix.M12) + (normal.y * matrix.M22)
 	);
 
 	#endregion Static
@@ -193,13 +208,16 @@ public struct Vector2 : IEquatable<Vector2>
 
 	public Vector2 abs => new Vector2(Math.Abs(x), Math.Abs(y));
 
-	public Vector2 xVector => new Vector2(x, 0);
-	public Vector2 yVector => new Vector2(0, y);
+	// public Vector2 xVector => new Vector2(x, 0);
+	// public Vector2 yVector => new Vector2(0, y);
 
 	public float lengthSqr => x * x + y * y;
 	public float length => Math.Sqrt(lengthSqr);
 
 	public float angle => Math.Atan2(y, x);
+
+	public Vector2 turnRight => new Vector2(-y, x);
+	public Vector2 turnLeft => new Vector2(y, -x);
 
 	public void Normalize()
 	{
@@ -275,8 +293,8 @@ public struct Vector2 : IEquatable<Vector2>
 
 	#region Thirdparty
 
-	// public static implicit operator System.Numerics.Vector2(Vector2 vector) => new(vector.x, vector.y);
-	// public static implicit operator Vector2(System.Numerics.Vector2 vector) => new(vector.X, vector.Y);
+	public static implicit operator SysVector2(Vector2 vector) => new(vector.x, vector.y);
+	public static implicit operator Vector2(SysVector2 vector) => new(vector.X, vector.Y);
 
 	// public static implicit operator OpenTK.Mathematics.Vector2(Vector2 vector) => new(vector.x, vector.y);
 	// public static implicit operator Vector2(OpenTK.Mathematics.Vector2 vector) => new(vector.X, vector.Y);

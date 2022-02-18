@@ -20,6 +20,10 @@
 		<TargetOS>win</TargetOS>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="($([MSBuild]::IsOsPlatform(Linux)) and '$(RuntimeIdentifier)'=='') or '$(RuntimeIdentifier)'=='linux-x64'">
+		<TargetOS>linux</TargetOS>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="($([MSBuild]::IsOsPlatform(OSX)) and '$(RuntimeIdentifier)'=='') or '$(RuntimeIdentifier)'=='osx-x64'">
 		<TargetOS>osx</TargetOS>
 	</PropertyGroup>
@@ -27,6 +31,13 @@
 	<!-- Copy SDL2 for Windows -->
 	<ItemGroup Condition="'$(TargetOS)'=='win'">
 		<None Update="SDL2.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<!-- Copy libSDL2 for Linux -->
+	<ItemGroup Condition="'$(TargetOS)'=='linux'">
+		<None Update="libSDL2.so">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

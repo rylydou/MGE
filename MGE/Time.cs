@@ -32,7 +32,7 @@ public static class Time
 	/// <summary>
 	/// Multiplies the Delta Time per frame by the scale value
 	/// </summary>
-	public static float DeltaScale = 1.0f;
+	public static float deltaScale = 1.0f;
 
 	/// <summary>
 	/// The Delta Time from the last frame. Fixed or Variable depending on the current Update method.

@@ -10,19 +10,19 @@ namespace MGE.OpenGL
 	internal class GL_Mesh : Mesh.Platform
 	{
 
-		private readonly Dictionary<ISystemOpenGL.Context, uint> vertexArrays = new Dictionary<ISystemOpenGL.Context, uint>();
-		private readonly Dictionary<ISystemOpenGL.Context, bool> bindedArrays = new Dictionary<ISystemOpenGL.Context, bool>();
+		readonly Dictionary<ISystemOpenGL.Context, uint> vertexArrays = new Dictionary<ISystemOpenGL.Context, uint>();
+		readonly Dictionary<ISystemOpenGL.Context, bool> bindedArrays = new Dictionary<ISystemOpenGL.Context, bool>();
 
-		private readonly GL_Graphics graphics;
-		private uint indexBuffer;
-		private uint vertexBuffer;
-		private uint instanceBuffer;
-		private VertexFormat? lastVertexFormat;
-		private VertexFormat? lastInstanceFormat;
-		private Material? lastMaterial;
-		private long indexBufferSize;
-		private long vertexBufferSize;
-		private long instanceBufferSize;
+		readonly GL_Graphics graphics;
+		uint indexBuffer;
+		uint vertexBuffer;
+		uint instanceBuffer;
+		VertexFormat? lastVertexFormat;
+		VertexFormat? lastInstanceFormat;
+		Material? lastMaterial;
+		long indexBufferSize;
+		long vertexBufferSize;
+		long instanceBufferSize;
 
 		internal GL_Mesh(GL_Graphics graphics)
 		{
@@ -62,7 +62,7 @@ namespace MGE.OpenGL
 			UploadBuffer(ref indexBuffer, GLEnum.ELEMENT_ARRAY_BUFFER, indices, ref indexBufferSize);
 		}
 
-		private unsafe void UploadBuffer<T>(ref uint id, GLEnum type, ReadOnlySequence<T> data, ref long currentBufferSize)
+		unsafe void UploadBuffer<T>(ref uint id, GLEnum type, ReadOnlySequence<T> data, ref long currentBufferSize)
 		{
 			if (graphics.mainThreadId != Thread.CurrentThread.ManagedThreadId)
 			{
@@ -184,7 +184,7 @@ namespace MGE.OpenGL
 			}
 		}
 
-		private static GLEnum ConvertVertexType(VertexType value)
+		static GLEnum ConvertVertexType(VertexType value)
 		{
 			return value switch
 			{

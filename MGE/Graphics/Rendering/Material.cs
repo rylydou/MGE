@@ -42,7 +42,7 @@ public class Material
 		/// <summary>
 		/// The Value of the Parameter
 		/// </summary>
-		public object value { get; private set; }
+		public object value { get; set; }
 
 		public Parameter(ShaderUniform uniform)
 		{
@@ -64,7 +64,7 @@ public class Material
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AssertParameters(UniformType expected, int index)
+		void AssertParameters(UniformType expected, int index)
 		{
 			if (type != expected)
 				throw new Exception($"Parameter {name} isn't a {expected}");
@@ -350,7 +350,7 @@ public class Material
 	/// </summary>
 	public readonly ReadOnlyCollection<Parameter> parameters;
 
-	private readonly Dictionary<string, Parameter> parametersByName = new Dictionary<string, Parameter>();
+	readonly Dictionary<string, Parameter> parametersByName = new Dictionary<string, Parameter>();
 
 	public Material(Shader shader)
 	{

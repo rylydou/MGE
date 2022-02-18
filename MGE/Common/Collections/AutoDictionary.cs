@@ -7,8 +7,8 @@ namespace MGE;
 
 public class AutoDictionary<TKey, TValue> : ICollection<TValue> where TKey : notnull
 {
-	private readonly Func<TValue, TKey> _getKey;
-	private readonly Dictionary<TKey, TValue> _dictionary = new Dictionary<TKey, TValue>();
+	readonly Func<TValue, TKey> _getKey;
+	readonly Dictionary<TKey, TValue> _dictionary = new Dictionary<TKey, TValue>();
 
 	public AutoDictionary(Func<TValue, TKey> getKey) => _getKey = getKey;
 

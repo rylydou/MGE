@@ -11,14 +11,14 @@ namespace MGE.Vulkan
 	internal unsafe class VK
 	{
 
-		private readonly VK_Graphics graphics;
+		readonly VK_Graphics graphics;
 
-		private void CreateDelegate<T>(ref T def, string name) where T : class
+		void CreateDelegate<T>(ref T def, string name) where T : class
 		{
 			CreateDelegate(graphics.System, graphics.Instance, ref def, name);
 		}
 
-		private static void CreateDelegate<T>(ISystemVulkan system, IntPtr vkInstance, ref T def, string name) where T : class
+		static void CreateDelegate<T>(ISystemVulkan system, IntPtr vkInstance, ref T def, string name) where T : class
 		{
 			var addr = system.GetVKProcAddress(vkInstance, name);
 			if (addr != IntPtr.Zero && (Marshal.GetDelegateForFunctionPointer(addr, typeof(T)) is T del))

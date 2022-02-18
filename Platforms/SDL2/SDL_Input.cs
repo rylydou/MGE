@@ -8,10 +8,10 @@ namespace MGE.SDL2
 {
 	internal class SDL_Input : Input
 	{
-		private readonly IntPtr[] sdlCursors;
-		private readonly IntPtr[] sdlJoysticks;
-		private readonly IntPtr[] sdlGamepads;
-		private static int MaxGamepads = 64;
+		readonly IntPtr[] sdlCursors;
+		readonly IntPtr[] sdlJoysticks;
+		readonly IntPtr[] sdlGamepads;
+		static int MaxGamepads = 64;
 
 		public SDL_Input()
 		{
@@ -224,7 +224,7 @@ namespace MGE.SDL2
 			}
 		}
 
-		private static Buttons GamepadButtonToEnum(byte button)
+		static Buttons GamepadButtonToEnum(byte button)
 		{
 			return button switch
 			{
@@ -247,7 +247,7 @@ namespace MGE.SDL2
 			};
 		}
 
-		private static Axes GamepadAxisToEnum(byte axes)
+		static Axes GamepadAxisToEnum(byte axes)
 		{
 			return axes switch
 			{
@@ -261,7 +261,7 @@ namespace MGE.SDL2
 			};
 		}
 
-		private static Dictionary<SDL.SDL_Keycode, Keys> KeycodeToKeys = new Dictionary<SDL.SDL_Keycode, Keys>()
+		static Dictionary<SDL.SDL_Keycode, Keys> KeycodeToKeys = new Dictionary<SDL.SDL_Keycode, Keys>()
 				{
 						{ SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Unknown },
 
@@ -394,7 +394,7 @@ namespace MGE.SDL2
 						{ SDL.SDL_Keycode.SDLK_RGUI, Keys.RightSuper },
 				};
 
-		private int FindJoystickIndex(int joystickId)
+		int FindJoystickIndex(int joystickId)
 		{
 			for (int i = 0; i < MaxGamepads; i++)
 			{
@@ -410,7 +410,7 @@ namespace MGE.SDL2
 			return -1;
 		}
 
-		private int FindGamepadIndex(int gamepadId)
+		int FindGamepadIndex(int gamepadId)
 		{
 			for (int i = 0; i < MaxGamepads; i++)
 			{

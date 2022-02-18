@@ -16,7 +16,7 @@ public class Optional<T>
 	}
 	T? _value;
 
-	public bool isSet { get; private set; } = false;
+	public bool isSet { get; set; } = false;
 	public bool isUnset { get => !isSet; }
 
 	public Optional() { }

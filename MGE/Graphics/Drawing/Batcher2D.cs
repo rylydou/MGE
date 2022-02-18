@@ -48,56 +48,56 @@ public class Batch2D
 		}
 	}
 
-	private static Shader? defaultBatchShader;
+	static Shader? defaultBatchShader;
 
-	public readonly Graphics Graphics;
-	public readonly Shader DefaultShader;
-	public readonly Material DefaultMaterial;
-	public readonly Mesh Mesh;
+	public readonly Graphics graphics;
+	public readonly Shader defaultShader;
+	public readonly Material defaultMaterial;
+	public readonly Mesh mesh;
 
-	public Matrix3x2 MatrixStack = Matrix3x2.Identity;
-	public RectInt? Scissor => currentBatch.Scissor;
+	public Matrix3x2 matrixStack = Matrix3x2.Identity;
+	public RectInt? scissor => _currentBatch.scissor;
 
-	public string TextureUniformName = "u_texture";
-	public string MatrixUniformName = "u_matrix";
+	public string textureUniformName = "u_texture";
+	public string matrixUniformName = "u_matrix";
 
-	private readonly Stack<Matrix3x2> matrixStack = new Stack<Matrix3x2>();
-	private Vertex[] vertices;
-	private int[] indices;
-	private RenderPass pass;
-	private readonly List<Batch> batches;
-	private Batch currentBatch;
-	private int currentBatchInsert;
-	private bool dirty;
-	private int vertexCount;
-	private int indexCount;
+	readonly Stack<Matrix3x2> _matrixStack = new Stack<Matrix3x2>();
+	Vertex[] _vertices;
+	int[] _indices;
+	RenderPass _pass;
+	readonly List<Batch> _batches;
+	Batch _currentBatch;
+	int _currentBatchInsert;
+	bool _dirty;
+	int _vertexCount;
+	int _indexCount;
 
-	public int TriangleCount => indexCount / 3;
-	public int VertexCount => vertexCount;
-	public int IndexCount => indexCount;
-	public int BatchCount => batches.Count + (currentBatch.Elements > 0 ? 1 : 0);
+	public int triangleCount => _indexCount / 3;
+	public int vertexCount => _vertexCount;
+	public int indexCount => _indexCount;
+	public int batchCount => _batches.Count + (_currentBatch.elements > 0 ? 1 : 0);
 
-	private struct Batch
+	struct Batch
 	{
-		public int Layer;
-		public Material? Material;
-		public BlendMode BlendMode;
-		public Matrix3x2 Matrix;
-		public Texture? Texture;
-		public RectInt? Scissor;
-		public uint Offset;
-		public uint Elements;
+		public int layer;
+		public Material? material;
+		public BlendMode blendMode;
+		public Matrix3x2 matrix;
+		public Texture? texture;
+		public RectInt? scissor;
+		public uint offset;
+		public uint elements;
 
 		public Batch(Material? material, BlendMode blend, Texture? texture, Matrix3x2 matrix, uint offset, uint elements)
 		{
-			Layer = 0;
-			Material = material;
-			BlendMode = blend;
-			Texture = texture;
-			Matrix = matrix;
-			Scissor = null;
-			Offset = offset;
-			Elements = elements;
+			layer = 0;
+			this.material = material;
+			blendMode = blend;
+			this.texture = texture;
+			this.matrix = matrix;
+			scissor = null;
+			this.offset = offset;
+			this.elements = elements;
 		}
 	}
 
@@ -108,32 +108,32 @@ public class Batch2D
 
 	public Batch2D(Graphics graphics)
 	{
-		Graphics = graphics;
+		this.graphics = graphics;
 
 		if (defaultBatchShader == null)
 			defaultBatchShader = new Shader(graphics, graphics.CreateShaderSourceBatch2D());
 
-		DefaultShader = defaultBatchShader;
-		DefaultMaterial = new Material(DefaultShader);
+		defaultShader = defaultBatchShader;
+		defaultMaterial = new Material(defaultShader);
 
-		Mesh = new Mesh(graphics);
+		mesh = new Mesh(graphics);
 
-		vertices = new Vertex[64];
-		indices = new int[64];
-		batches = new List<Batch>();
+		_vertices = new Vertex[64];
+		_indices = new int[64];
+		_batches = new List<Batch>();
 
 		Clear();
 	}
 
 	public void Clear()
 	{
-		vertexCount = 0;
-		indexCount = 0;
-		currentBatchInsert = 0;
-		currentBatch = new Batch(null, BlendMode.Normal, null, Matrix3x2.Identity, 0, 0);
-		batches.Clear();
-		matrixStack.Clear();
-		MatrixStack = Matrix3x2.Identity;
+		_vertexCount = 0;
+		_indexCount = 0;
+		_currentBatchInsert = 0;
+		_currentBatch = new Batch(null, BlendMode.Normal, null, Matrix3x2.Identity, 0, 0);
+		_batches.Clear();
+		_matrixStack.Clear();
+		matrixStack = Matrix3x2.Identity;
 	}
 
 	#region Rendering
@@ -155,56 +155,56 @@ public class Batch2D
 		if (clearColor != null)
 			App.graphics.Clear(target, clearColor.Value);
 
-		pass = new RenderPass(target, Mesh, DefaultMaterial);
-		pass.viewport = viewport;
+		_pass = new RenderPass(target, mesh, defaultMaterial);
+		_pass.viewport = viewport;
 
-		Debug.Assert(matrixStack.Count <= 0, "Batch.MatrixStack Pushes more than it Pops");
+		Debug.Assert(_matrixStack.Count <= 0, "Batch.MatrixStack Pushes more than it Pops");
 
-		if (batches.Count > 0 || currentBatch.Elements > 0)
+		if (_batches.Count > 0 || _currentBatch.elements > 0)
 		{
-			if (dirty)
+			if (_dirty)
 			{
-				Mesh.SetVertices(new ReadOnlyMemory<Vertex>(vertices, 0, vertexCount));
-				Mesh.SetIndices(new ReadOnlyMemory<int>(indices, 0, indexCount));
+				mesh.SetVertices(new ReadOnlyMemory<Vertex>(_vertices, 0, _vertexCount));
+				mesh.SetIndices(new ReadOnlyMemory<int>(_indices, 0, _indexCount));
 
-				dirty = false;
+				_dirty = false;
 			}
 
 			// render batches
-			for (int i = 0; i < batches.Count; i++)
+			for (int i = 0; i < _batches.Count; i++)
 			{
 				// remaining elements in the current batch
-				if (currentBatchInsert == i && currentBatch.Elements > 0)
-					RenderBatch(currentBatch, matrix);
+				if (_currentBatchInsert == i && _currentBatch.elements > 0)
+					RenderBatch(_currentBatch, matrix);
 
 				// render the batch
-				RenderBatch(batches[i], matrix);
+				RenderBatch(_batches[i], matrix);
 			}
 
 			// remaining elements in the current batch
-			if (currentBatchInsert == batches.Count && currentBatch.Elements > 0)
-				RenderBatch(currentBatch, matrix);
+			if (_currentBatchInsert == _batches.Count && _currentBatch.elements > 0)
+				RenderBatch(_currentBatch, matrix);
 		}
 	}
 
-	private void RenderBatch(in Batch batch, in Matrix4x4 matrix)
+	void RenderBatch(in Batch batch, in Matrix4x4 matrix)
 	{
-		pass.scissor = batch.Scissor;
-		pass.blendMode = batch.BlendMode;
+		_pass.scissor = batch.scissor;
+		_pass.blendMode = batch.blendMode;
 
 		// Render the Mesh
 		// Note we apply the texture and matrix based on the current batch
 		// If the user set these on the Material themselves, they will be overwritten here
 
-		pass.material = batch.Material ?? DefaultMaterial;
-		pass.material[TextureUniformName]?.SetTexture(batch.Texture);
-		pass.material[MatrixUniformName]?.SetMatrix4x4(new Matrix4x4(batch.Matrix) * matrix);
+		_pass.material = batch.material ?? defaultMaterial;
+		_pass.material[textureUniformName]?.SetTexture(batch.texture);
+		_pass.material[matrixUniformName]?.SetMatrix4x4(new Matrix4x4(batch.matrix) * matrix);
 
-		pass.meshIndexStart = batch.Offset * 3;
-		pass.meshIndexCount = batch.Elements * 3;
-		pass.meshInstanceCount = 0;
+		_pass.meshIndexStart = batch.offset * 3;
+		_pass.meshIndexCount = batch.elements * 3;
+		_pass.meshInstanceCount = 0;
 
-		Graphics.Render(ref pass);
+		graphics.Render(ref _pass);
 	}
 
 	#endregion
@@ -213,114 +213,114 @@ public class Batch2D
 
 	public void SetMaterial(Material? material)
 	{
-		if (currentBatch.Elements == 0)
+		if (_currentBatch.elements == 0)
 		{
-			currentBatch.Material = material;
+			_currentBatch.material = material;
 		}
-		else if (currentBatch.Material != material)
+		else if (_currentBatch.material != material)
 		{
-			batches.Insert(currentBatchInsert, currentBatch);
+			_batches.Insert(_currentBatchInsert, _currentBatch);
 
-			currentBatch.Material = material;
-			currentBatch.Offset += currentBatch.Elements;
-			currentBatch.Elements = 0;
-			currentBatchInsert++;
+			_currentBatch.material = material;
+			_currentBatch.offset += _currentBatch.elements;
+			_currentBatch.elements = 0;
+			_currentBatchInsert++;
 		}
 	}
 
 	public void SetBlendMode(in BlendMode blendmode)
 	{
-		if (currentBatch.Elements == 0)
+		if (_currentBatch.elements == 0)
 		{
-			currentBatch.BlendMode = blendmode;
+			_currentBatch.blendMode = blendmode;
 		}
-		else if (currentBatch.BlendMode != blendmode)
+		else if (_currentBatch.blendMode != blendmode)
 		{
-			batches.Insert(currentBatchInsert, currentBatch);
+			_batches.Insert(_currentBatchInsert, _currentBatch);
 
-			currentBatch.BlendMode = blendmode;
-			currentBatch.Offset += currentBatch.Elements;
-			currentBatch.Elements = 0;
-			currentBatchInsert++;
+			_currentBatch.blendMode = blendmode;
+			_currentBatch.offset += _currentBatch.elements;
+			_currentBatch.elements = 0;
+			_currentBatchInsert++;
 		}
 	}
 
 	public BlendMode GetBlendMode()
 	{
-		return currentBatch.BlendMode;
+		return _currentBatch.blendMode;
 	}
 
 	public void SetMatrix(in Matrix3x2 matrix)
 	{
-		if (currentBatch.Elements == 0)
+		if (_currentBatch.elements == 0)
 		{
-			currentBatch.Matrix = matrix;
+			_currentBatch.matrix = matrix;
 		}
-		else if (currentBatch.Matrix != matrix)
+		else if (_currentBatch.matrix != matrix)
 		{
-			batches.Insert(currentBatchInsert, currentBatch);
+			_batches.Insert(_currentBatchInsert, _currentBatch);
 
-			currentBatch.Matrix = matrix;
-			currentBatch.Offset += currentBatch.Elements;
-			currentBatch.Elements = 0;
-			currentBatchInsert++;
+			_currentBatch.matrix = matrix;
+			_currentBatch.offset += _currentBatch.elements;
+			_currentBatch.elements = 0;
+			_currentBatchInsert++;
 		}
 	}
 
 	public void SetScissor(RectInt? scissor)
 	{
-		if (currentBatch.Elements == 0)
+		if (_currentBatch.elements == 0)
 		{
-			currentBatch.Scissor = scissor;
+			_currentBatch.scissor = scissor;
 		}
-		else if (currentBatch.Scissor != scissor)
+		else if (_currentBatch.scissor != scissor)
 		{
-			batches.Insert(currentBatchInsert, currentBatch);
+			_batches.Insert(_currentBatchInsert, _currentBatch);
 
-			currentBatch.Scissor = scissor;
-			currentBatch.Offset += currentBatch.Elements;
-			currentBatch.Elements = 0;
-			currentBatchInsert++;
+			_currentBatch.scissor = scissor;
+			_currentBatch.offset += _currentBatch.elements;
+			_currentBatch.elements = 0;
+			_currentBatchInsert++;
 		}
 	}
 
 	public void SetTexture(Texture? texture)
 	{
-		if (currentBatch.Texture == null || currentBatch.Elements == 0)
+		if (_currentBatch.texture == null || _currentBatch.elements == 0)
 		{
-			currentBatch.Texture = texture;
+			_currentBatch.texture = texture;
 		}
-		else if (currentBatch.Texture != texture)
+		else if (_currentBatch.texture != texture)
 		{
-			batches.Insert(currentBatchInsert, currentBatch);
+			_batches.Insert(_currentBatchInsert, _currentBatch);
 
-			currentBatch.Texture = texture;
-			currentBatch.Offset += currentBatch.Elements;
-			currentBatch.Elements = 0;
-			currentBatchInsert++;
+			_currentBatch.texture = texture;
+			_currentBatch.offset += _currentBatch.elements;
+			_currentBatch.elements = 0;
+			_currentBatchInsert++;
 		}
 	}
 
 	public void SetLayer(int layer)
 	{
-		if (currentBatch.Layer == layer)
+		if (_currentBatch.layer == layer)
 			return;
 
 		// insert last batch
-		if (currentBatch.Elements > 0)
+		if (_currentBatch.elements > 0)
 		{
-			batches.Insert(currentBatchInsert, currentBatch);
-			currentBatch.Offset += currentBatch.Elements;
-			currentBatch.Elements = 0;
+			_batches.Insert(_currentBatchInsert, _currentBatch);
+			_currentBatch.offset += _currentBatch.elements;
+			_currentBatch.elements = 0;
 		}
 
 		// find the point to insert us
 		var insert = 0;
-		while (insert < batches.Count && batches[insert].Layer >= layer)
+		while (insert < _batches.Count && _batches[insert].layer >= layer)
 			insert++;
 
-		currentBatch.Layer = layer;
-		currentBatchInsert = insert;
+		_currentBatch.layer = layer;
+		_currentBatchInsert = insert;
 	}
 
 	public void SetState(Material? material, in BlendMode blendmode, in Matrix3x2 matrix, RectInt? scissor)
@@ -338,44 +338,44 @@ public class Batch2D
 
 	public Matrix3x2 PushMatrix(Transform2D transform, bool relative = true)
 	{
-		return PushMatrix(transform.WorldMatrix, relative);
+		return PushMatrix(transform.worldMatrix, relative);
 	}
 
 	public Matrix3x2 PushMatrix(in Vector2 position, bool relative = true)
 	{
-		return PushMatrix(Matrix3x2.CreateTranslation(position.X, position.Y), relative);
+		return PushMatrix(Matrix3x2.CreateTranslation(position.x, position.y), relative);
 	}
 
 	public Matrix3x2 PushMatrix(in Matrix3x2 matrix, bool relative = true)
 	{
-		matrixStack.Push(MatrixStack);
+		_matrixStack.Push(matrixStack);
 
 		if (relative)
 		{
-			MatrixStack = matrix * MatrixStack;
+			matrixStack = matrix * matrixStack;
 		}
 		else
 		{
-			MatrixStack = matrix;
+			matrixStack = matrix;
 		}
 
-		return MatrixStack;
+		return matrixStack;
 	}
 
 	public Matrix3x2 PopMatrix()
 	{
-		Debug.Assert(matrixStack.Count > 0, "Batch.MatrixStack Pops more than it Pushes");
+		Debug.Assert(_matrixStack.Count > 0, "Batch.MatrixStack Pops more than it Pushes");
 
-		if (matrixStack.Count > 0)
+		if (_matrixStack.Count > 0)
 		{
-			MatrixStack = matrixStack.Pop();
+			matrixStack = _matrixStack.Pop();
 		}
 		else
 		{
-			MatrixStack = Matrix3x2.Identity;
+			matrixStack = Matrix3x2.Identity;
 		}
 
-		return MatrixStack;
+		return matrixStack;
 	}
 
 	#endregion
@@ -384,17 +384,17 @@ public class Batch2D
 
 	public void Line(Vector2 from, Vector2 to, float thickness, Color color)
 	{
-		var normal = (to - from).Normalized();
-		var perp = new Vector2(-normal.Y, normal.X) * thickness * .5f;
+		var normal = (to - from).normalized;
+		var perp = new Vector2(-normal.y, normal.x) * thickness * .5f;
 		Quad(from + perp, from - perp, to - perp, to + perp, color);
 	}
 
 	public void DashedLine(Vector2 from, Vector2 to, float thickness, Color color, float dashLength, float offsetPercent)
 	{
 		var diff = to - from;
-		var dist = diff.Length();
-		var axis = diff.Normalized();
-		var perp = axis.TurnLeft() * (thickness * 0.5f);
+		var dist = diff.length;
+		var axis = diff.normalized;
+		var perp = axis.turnLeft * (thickness * 0.5f);
 		offsetPercent = ((offsetPercent % 1f) + 1f) % 1f;
 
 		var startD = dashLength * offsetPercent * 2f;
@@ -421,177 +421,177 @@ public class Batch2D
 	public void Quad(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3, Color color)
 	{
 		PushQuad();
-		ExpandVertices(vertexCount + 4);
+		ExpandVertices(_vertexCount + 4);
 
 		// POS
-		Transform(ref vertices[vertexCount + 0].pos, v0, MatrixStack);
-		Transform(ref vertices[vertexCount + 1].pos, v1, MatrixStack);
-		Transform(ref vertices[vertexCount + 2].pos, v2, MatrixStack);
-		Transform(ref vertices[vertexCount + 3].pos, v3, MatrixStack);
+		Transform(ref _vertices[_vertexCount + 0].pos, v0, matrixStack);
+		Transform(ref _vertices[_vertexCount + 1].pos, v1, matrixStack);
+		Transform(ref _vertices[_vertexCount + 2].pos, v2, matrixStack);
+		Transform(ref _vertices[_vertexCount + 3].pos, v3, matrixStack);
 
 		// COL
-		vertices[vertexCount + 0].col = color;
-		vertices[vertexCount + 1].col = color;
-		vertices[vertexCount + 2].col = color;
-		vertices[vertexCount + 3].col = color;
+		_vertices[_vertexCount + 0].col = color;
+		_vertices[_vertexCount + 1].col = color;
+		_vertices[_vertexCount + 2].col = color;
+		_vertices[_vertexCount + 3].col = color;
 
 		// MULT
-		vertices[vertexCount + 0].mult = 0;
-		vertices[vertexCount + 1].mult = 0;
-		vertices[vertexCount + 2].mult = 0;
-		vertices[vertexCount + 3].mult = 0;
+		_vertices[_vertexCount + 0].mult = 0;
+		_vertices[_vertexCount + 1].mult = 0;
+		_vertices[_vertexCount + 2].mult = 0;
+		_vertices[_vertexCount + 3].mult = 0;
 
 		// WASH
-		vertices[vertexCount + 0].wash = 0;
-		vertices[vertexCount + 1].wash = 0;
-		vertices[vertexCount + 2].wash = 0;
-		vertices[vertexCount + 3].wash = 0;
+		_vertices[_vertexCount + 0].wash = 0;
+		_vertices[_vertexCount + 1].wash = 0;
+		_vertices[_vertexCount + 2].wash = 0;
+		_vertices[_vertexCount + 3].wash = 0;
 
 		// FILL
-		vertices[vertexCount + 0].fill = 255;
-		vertices[vertexCount + 1].fill = 255;
-		vertices[vertexCount + 2].fill = 255;
-		vertices[vertexCount + 3].fill = 255;
+		_vertices[_vertexCount + 0].fill = 255;
+		_vertices[_vertexCount + 1].fill = 255;
+		_vertices[_vertexCount + 2].fill = 255;
+		_vertices[_vertexCount + 3].fill = 255;
 
-		vertexCount += 4;
+		_vertexCount += 4;
 	}
 
 	public void Quad(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3, in Vector2 t0, in Vector2 t1, in Vector2 t2, in Vector2 t3, Color color, bool washed = false)
 	{
 		PushQuad();
-		ExpandVertices(vertexCount + 4);
+		ExpandVertices(_vertexCount + 4);
 
 		var mult = (byte)(washed ? 0 : 255);
 		var wash = (byte)(washed ? 255 : 0);
 
 		// POS
-		Transform(ref vertices[vertexCount + 0].pos, v0, MatrixStack);
-		Transform(ref vertices[vertexCount + 1].pos, v1, MatrixStack);
-		Transform(ref vertices[vertexCount + 2].pos, v2, MatrixStack);
-		Transform(ref vertices[vertexCount + 3].pos, v3, MatrixStack);
+		Transform(ref _vertices[_vertexCount + 0].pos, v0, matrixStack);
+		Transform(ref _vertices[_vertexCount + 1].pos, v1, matrixStack);
+		Transform(ref _vertices[_vertexCount + 2].pos, v2, matrixStack);
+		Transform(ref _vertices[_vertexCount + 3].pos, v3, matrixStack);
 
 		// TEX
-		vertices[vertexCount + 0].tex = t0;
-		vertices[vertexCount + 1].tex = t1;
-		vertices[vertexCount + 2].tex = t2;
-		vertices[vertexCount + 3].tex = t3;
+		_vertices[_vertexCount + 0].tex = t0;
+		_vertices[_vertexCount + 1].tex = t1;
+		_vertices[_vertexCount + 2].tex = t2;
+		_vertices[_vertexCount + 3].tex = t3;
 
-		if (Graphics.OriginBottomLeft && (currentBatch.Texture?.IsFrameBuffer ?? false))
-			VerticalFlip(ref vertices[vertexCount + 0].tex, ref vertices[vertexCount + 1].tex, ref vertices[vertexCount + 2].tex, ref vertices[vertexCount + 3].tex);
+		if (graphics.originBottomLeft && (_currentBatch.texture?.isFrameBuffer ?? false))
+			VerticalFlip(ref _vertices[_vertexCount + 0].tex, ref _vertices[_vertexCount + 1].tex, ref _vertices[_vertexCount + 2].tex, ref _vertices[_vertexCount + 3].tex);
 
 		// COL
-		vertices[vertexCount + 0].col = color;
-		vertices[vertexCount + 1].col = color;
-		vertices[vertexCount + 2].col = color;
-		vertices[vertexCount + 3].col = color;
+		_vertices[_vertexCount + 0].col = color;
+		_vertices[_vertexCount + 1].col = color;
+		_vertices[_vertexCount + 2].col = color;
+		_vertices[_vertexCount + 3].col = color;
 
 		// MULT
-		vertices[vertexCount + 0].mult = mult;
-		vertices[vertexCount + 1].mult = mult;
-		vertices[vertexCount + 2].mult = mult;
-		vertices[vertexCount + 3].mult = mult;
+		_vertices[_vertexCount + 0].mult = mult;
+		_vertices[_vertexCount + 1].mult = mult;
+		_vertices[_vertexCount + 2].mult = mult;
+		_vertices[_vertexCount + 3].mult = mult;
 
 		// WASH
-		vertices[vertexCount + 0].wash = wash;
-		vertices[vertexCount + 1].wash = wash;
-		vertices[vertexCount + 2].wash = wash;
-		vertices[vertexCount + 3].wash = wash;
+		_vertices[_vertexCount + 0].wash = wash;
+		_vertices[_vertexCount + 1].wash = wash;
+		_vertices[_vertexCount + 2].wash = wash;
+		_vertices[_vertexCount + 3].wash = wash;
 
 		// FILL
-		vertices[vertexCount + 0].fill = 0;
-		vertices[vertexCount + 1].fill = 0;
-		vertices[vertexCount + 2].fill = 0;
-		vertices[vertexCount + 3].fill = 0;
+		_vertices[_vertexCount + 0].fill = 0;
+		_vertices[_vertexCount + 1].fill = 0;
+		_vertices[_vertexCount + 2].fill = 0;
+		_vertices[_vertexCount + 3].fill = 0;
 
-		vertexCount += 4;
+		_vertexCount += 4;
 	}
 
 	public void Quad(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3, Color c0, Color c1, Color c2, Color c3)
 	{
 		PushQuad();
-		ExpandVertices(vertexCount + 4);
+		ExpandVertices(_vertexCount + 4);
 
 		// POS
-		Transform(ref vertices[vertexCount + 0].pos, v0, MatrixStack);
-		Transform(ref vertices[vertexCount + 1].pos, v1, MatrixStack);
-		Transform(ref vertices[vertexCount + 2].pos, v2, MatrixStack);
-		Transform(ref vertices[vertexCount + 3].pos, v3, MatrixStack);
+		Transform(ref _vertices[_vertexCount + 0].pos, v0, matrixStack);
+		Transform(ref _vertices[_vertexCount + 1].pos, v1, matrixStack);
+		Transform(ref _vertices[_vertexCount + 2].pos, v2, matrixStack);
+		Transform(ref _vertices[_vertexCount + 3].pos, v3, matrixStack);
 
 		// COL
-		vertices[vertexCount + 0].col = c0;
-		vertices[vertexCount + 1].col = c1;
-		vertices[vertexCount + 2].col = c2;
-		vertices[vertexCount + 3].col = c3;
+		_vertices[_vertexCount + 0].col = c0;
+		_vertices[_vertexCount + 1].col = c1;
+		_vertices[_vertexCount + 2].col = c2;
+		_vertices[_vertexCount + 3].col = c3;
 
 		// MULT
-		vertices[vertexCount + 0].mult = 0;
-		vertices[vertexCount + 1].mult = 0;
-		vertices[vertexCount + 2].mult = 0;
-		vertices[vertexCount + 3].mult = 0;
+		_vertices[_vertexCount + 0].mult = 0;
+		_vertices[_vertexCount + 1].mult = 0;
+		_vertices[_vertexCount + 2].mult = 0;
+		_vertices[_vertexCount + 3].mult = 0;
 
 		// WASH
-		vertices[vertexCount + 0].wash = 0;
-		vertices[vertexCount + 1].wash = 0;
-		vertices[vertexCount + 2].wash = 0;
-		vertices[vertexCount + 3].wash = 0;
+		_vertices[_vertexCount + 0].wash = 0;
+		_vertices[_vertexCount + 1].wash = 0;
+		_vertices[_vertexCount + 2].wash = 0;
+		_vertices[_vertexCount + 3].wash = 0;
 
 		// FILL
-		vertices[vertexCount + 0].fill = 255;
-		vertices[vertexCount + 1].fill = 255;
-		vertices[vertexCount + 2].fill = 255;
-		vertices[vertexCount + 3].fill = 255;
+		_vertices[_vertexCount + 0].fill = 255;
+		_vertices[_vertexCount + 1].fill = 255;
+		_vertices[_vertexCount + 2].fill = 255;
+		_vertices[_vertexCount + 3].fill = 255;
 
-		vertexCount += 4;
+		_vertexCount += 4;
 	}
 
 	public void Quad(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3, in Vector2 t0, in Vector2 t1, in Vector2 t2, in Vector2 t3, Color c0, Color c1, Color c2, Color c3, bool washed = false)
 	{
 		PushQuad();
-		ExpandVertices(vertexCount + 4);
+		ExpandVertices(_vertexCount + 4);
 
 		var mult = (byte)(washed ? 0 : 255);
 		var wash = (byte)(washed ? 255 : 0);
 
 		// POS
-		Transform(ref vertices[vertexCount + 0].pos, v0, MatrixStack);
-		Transform(ref vertices[vertexCount + 1].pos, v1, MatrixStack);
-		Transform(ref vertices[vertexCount + 2].pos, v2, MatrixStack);
-		Transform(ref vertices[vertexCount + 3].pos, v3, MatrixStack);
+		Transform(ref _vertices[_vertexCount + 0].pos, v0, matrixStack);
+		Transform(ref _vertices[_vertexCount + 1].pos, v1, matrixStack);
+		Transform(ref _vertices[_vertexCount + 2].pos, v2, matrixStack);
+		Transform(ref _vertices[_vertexCount + 3].pos, v3, matrixStack);
 
 		// TEX
-		vertices[vertexCount + 0].tex = t0;
-		vertices[vertexCount + 1].tex = t1;
-		vertices[vertexCount + 2].tex = t2;
-		vertices[vertexCount + 3].tex = t3;
+		_vertices[_vertexCount + 0].tex = t0;
+		_vertices[_vertexCount + 1].tex = t1;
+		_vertices[_vertexCount + 2].tex = t2;
+		_vertices[_vertexCount + 3].tex = t3;
 
-		if (Graphics.OriginBottomLeft && (currentBatch.Texture?.IsFrameBuffer ?? false))
-			VerticalFlip(ref vertices[vertexCount + 0].tex, ref vertices[vertexCount + 1].tex, ref vertices[vertexCount + 2].tex, ref vertices[vertexCount + 3].tex);
+		if (graphics.originBottomLeft && (_currentBatch.texture?.isFrameBuffer ?? false))
+			VerticalFlip(ref _vertices[_vertexCount + 0].tex, ref _vertices[_vertexCount + 1].tex, ref _vertices[_vertexCount + 2].tex, ref _vertices[_vertexCount + 3].tex);
 
 		// COL
-		vertices[vertexCount + 0].col = c0;
-		vertices[vertexCount + 1].col = c1;
-		vertices[vertexCount + 2].col = c2;
-		vertices[vertexCount + 3].col = c3;
+		_vertices[_vertexCount + 0].col = c0;
+		_vertices[_vertexCount + 1].col = c1;
+		_vertices[_vertexCount + 2].col = c2;
+		_vertices[_vertexCount + 3].col = c3;
 
 		// MULT
-		vertices[vertexCount + 0].mult = mult;
-		vertices[vertexCount + 1].mult = mult;
-		vertices[vertexCount + 2].mult = mult;
-		vertices[vertexCount + 3].mult = mult;
+		_vertices[_vertexCount + 0].mult = mult;
+		_vertices[_vertexCount + 1].mult = mult;
+		_vertices[_vertexCount + 2].mult = mult;
+		_vertices[_vertexCount + 3].mult = mult;
 
 		// WASH
-		vertices[vertexCount + 0].wash = wash;
-		vertices[vertexCount + 1].wash = wash;
-		vertices[vertexCount + 2].wash = wash;
-		vertices[vertexCount + 3].wash = wash;
+		_vertices[_vertexCount + 0].wash = wash;
+		_vertices[_vertexCount + 1].wash = wash;
+		_vertices[_vertexCount + 2].wash = wash;
+		_vertices[_vertexCount + 3].wash = wash;
 
 		// FILL
-		vertices[vertexCount + 0].fill = 0;
-		vertices[vertexCount + 1].fill = 0;
-		vertices[vertexCount + 2].fill = 0;
-		vertices[vertexCount + 3].fill = 0;
+		_vertices[_vertexCount + 0].fill = 0;
+		_vertices[_vertexCount + 1].fill = 0;
+		_vertices[_vertexCount + 2].fill = 0;
+		_vertices[_vertexCount + 3].fill = 0;
 
-		vertexCount += 4;
+		_vertexCount += 4;
 	}
 
 	#endregion
@@ -601,73 +601,73 @@ public class Batch2D
 	public void Triangle(in Vector2 v0, in Vector2 v1, in Vector2 v2, Color color)
 	{
 		PushTriangle();
-		ExpandVertices(vertexCount + 3);
+		ExpandVertices(_vertexCount + 3);
 
 		// POS
-		Transform(ref vertices[vertexCount + 0].pos, v0, MatrixStack);
-		Transform(ref vertices[vertexCount + 1].pos, v1, MatrixStack);
-		Transform(ref vertices[vertexCount + 2].pos, v2, MatrixStack);
+		Transform(ref _vertices[_vertexCount + 0].pos, v0, matrixStack);
+		Transform(ref _vertices[_vertexCount + 1].pos, v1, matrixStack);
+		Transform(ref _vertices[_vertexCount + 2].pos, v2, matrixStack);
 
 		// COL
-		vertices[vertexCount + 0].col = color;
-		vertices[vertexCount + 1].col = color;
-		vertices[vertexCount + 2].col = color;
+		_vertices[_vertexCount + 0].col = color;
+		_vertices[_vertexCount + 1].col = color;
+		_vertices[_vertexCount + 2].col = color;
 
 		// MULT
-		vertices[vertexCount + 0].mult = 0;
-		vertices[vertexCount + 1].mult = 0;
-		vertices[vertexCount + 2].mult = 0;
-		vertices[vertexCount + 3].mult = 0;
+		_vertices[_vertexCount + 0].mult = 0;
+		_vertices[_vertexCount + 1].mult = 0;
+		_vertices[_vertexCount + 2].mult = 0;
+		_vertices[_vertexCount + 3].mult = 0;
 
 		// WASH
-		vertices[vertexCount + 0].wash = 0;
-		vertices[vertexCount + 1].wash = 0;
-		vertices[vertexCount + 2].wash = 0;
-		vertices[vertexCount + 3].wash = 0;
+		_vertices[_vertexCount + 0].wash = 0;
+		_vertices[_vertexCount + 1].wash = 0;
+		_vertices[_vertexCount + 2].wash = 0;
+		_vertices[_vertexCount + 3].wash = 0;
 
 		// FILL
-		vertices[vertexCount + 0].fill = 255;
-		vertices[vertexCount + 1].fill = 255;
-		vertices[vertexCount + 2].fill = 255;
-		vertices[vertexCount + 3].fill = 255;
+		_vertices[_vertexCount + 0].fill = 255;
+		_vertices[_vertexCount + 1].fill = 255;
+		_vertices[_vertexCount + 2].fill = 255;
+		_vertices[_vertexCount + 3].fill = 255;
 
-		vertexCount += 3;
+		_vertexCount += 3;
 	}
 
 	public void Triangle(in Vector2 v0, in Vector2 v1, in Vector2 v2, Color c0, Color c1, Color c2)
 	{
 		PushTriangle();
-		ExpandVertices(vertexCount + 3);
+		ExpandVertices(_vertexCount + 3);
 
 		// POS
-		Transform(ref vertices[vertexCount + 0].pos, v0, MatrixStack);
-		Transform(ref vertices[vertexCount + 1].pos, v1, MatrixStack);
-		Transform(ref vertices[vertexCount + 2].pos, v2, MatrixStack);
+		Transform(ref _vertices[_vertexCount + 0].pos, v0, matrixStack);
+		Transform(ref _vertices[_vertexCount + 1].pos, v1, matrixStack);
+		Transform(ref _vertices[_vertexCount + 2].pos, v2, matrixStack);
 
 		// COL
-		vertices[vertexCount + 0].col = c0;
-		vertices[vertexCount + 1].col = c1;
-		vertices[vertexCount + 2].col = c2;
+		_vertices[_vertexCount + 0].col = c0;
+		_vertices[_vertexCount + 1].col = c1;
+		_vertices[_vertexCount + 2].col = c2;
 
 		// MULT
-		vertices[vertexCount + 0].mult = 0;
-		vertices[vertexCount + 1].mult = 0;
-		vertices[vertexCount + 2].mult = 0;
-		vertices[vertexCount + 3].mult = 0;
+		_vertices[_vertexCount + 0].mult = 0;
+		_vertices[_vertexCount + 1].mult = 0;
+		_vertices[_vertexCount + 2].mult = 0;
+		_vertices[_vertexCount + 3].mult = 0;
 
 		// WASH
-		vertices[vertexCount + 0].wash = 0;
-		vertices[vertexCount + 1].wash = 0;
-		vertices[vertexCount + 2].wash = 0;
-		vertices[vertexCount + 3].wash = 0;
+		_vertices[_vertexCount + 0].wash = 0;
+		_vertices[_vertexCount + 1].wash = 0;
+		_vertices[_vertexCount + 2].wash = 0;
+		_vertices[_vertexCount + 3].wash = 0;
 
 		// FILL
-		vertices[vertexCount + 0].fill = 255;
-		vertices[vertexCount + 1].fill = 255;
-		vertices[vertexCount + 2].fill = 255;
-		vertices[vertexCount + 3].fill = 255;
+		_vertices[_vertexCount + 0].fill = 255;
+		_vertices[_vertexCount + 1].fill = 255;
+		_vertices[_vertexCount + 2].fill = 255;
+		_vertices[_vertexCount + 3].fill = 255;
 
-		vertexCount += 3;
+		_vertexCount += 3;
 	}
 
 	#endregion
@@ -677,10 +677,10 @@ public class Batch2D
 	public void Rect(in Rect rect, Color color)
 	{
 		Quad(
-				new Vector2(rect.X, rect.Y),
-				new Vector2(rect.X + rect.Width, rect.Y),
-				new Vector2(rect.X + rect.Width, rect.Y + rect.Height),
-				new Vector2(rect.X, rect.Y + rect.Height),
+				new Vector2(rect.x, rect.y),
+				new Vector2(rect.x + rect.width, rect.y),
+				new Vector2(rect.x + rect.width, rect.y + rect.height),
+				new Vector2(rect.x, rect.y + rect.height),
 				color);
 	}
 
@@ -688,9 +688,9 @@ public class Batch2D
 	{
 		Quad(
 				position,
-				position + new Vector2(size.X, 0),
-				position + new Vector2(size.X, size.Y),
-				position + new Vector2(0, size.Y),
+				position + new Vector2(size.x, 0),
+				position + new Vector2(size.x, size.y),
+				position + new Vector2(0, size.y),
 				color);
 	}
 
@@ -706,10 +706,10 @@ public class Batch2D
 	public void Rect(in Rect rect, Color c0, Color c1, Color c2, Color c3)
 	{
 		Quad(
-				new Vector2(rect.X, rect.Y),
-				new Vector2(rect.X + rect.Width, rect.Y),
-				new Vector2(rect.X + rect.Width, rect.Y + rect.Height),
-				new Vector2(rect.X, rect.Y + rect.Height),
+				new Vector2(rect.x, rect.y),
+				new Vector2(rect.x + rect.width, rect.y),
+				new Vector2(rect.x + rect.width, rect.y + rect.height),
+				new Vector2(rect.x, rect.y + rect.height),
 				c0, c1, c2, c3);
 	}
 
@@ -717,9 +717,9 @@ public class Batch2D
 	{
 		Quad(
 				position,
-				position + new Vector2(size.X, 0),
-				position + new Vector2(size.X, size.Y),
-				position + new Vector2(0, size.Y),
+				position + new Vector2(size.x, 0),
+				position + new Vector2(size.x, size.y),
+				position + new Vector2(0, size.y),
 				c0, c1, c2, c3);
 	}
 
@@ -755,10 +755,10 @@ public class Batch2D
 	public void RoundedRect(in Rect rect, float r0, float r1, float r2, float r3, Color color)
 	{
 		// clamp
-		r0 = Math.Min(Math.Min(Math.Max(0, r0), rect.Width / 2f), rect.Height / 2f);
-		r1 = Math.Min(Math.Min(Math.Max(0, r1), rect.Width / 2f), rect.Height / 2f);
-		r2 = Math.Min(Math.Min(Math.Max(0, r2), rect.Width / 2f), rect.Height / 2f);
-		r3 = Math.Min(Math.Min(Math.Max(0, r3), rect.Width / 2f), rect.Height / 2f);
+		r0 = Math.Min(Math.Min(Math.Max(0, r0), rect.width / 2f), rect.height / 2f);
+		r1 = Math.Min(Math.Min(Math.Max(0, r1), rect.width / 2f), rect.height / 2f);
+		r2 = Math.Min(Math.Min(Math.Max(0, r2), rect.width / 2f), rect.height / 2f);
+		r3 = Math.Min(Math.Min(Math.Max(0, r3), rect.width / 2f), rect.height / 2f);
 
 		if (r0 <= 0 && r1 <= 0 && r2 <= 0 && r3 <= 0)
 		{
@@ -767,121 +767,121 @@ public class Batch2D
 		else
 		{
 			// get corners
-			var r0_tl = rect.TopLeft;
+			var r0_tl = rect.topLeft;
 			var r0_tr = r0_tl + new Vector2(r0, 0);
 			var r0_br = r0_tl + new Vector2(r0, r0);
 			var r0_bl = r0_tl + new Vector2(0, r0);
 
-			var r1_tl = rect.TopRight + new Vector2(-r1, 0);
+			var r1_tl = rect.topRight + new Vector2(-r1, 0);
 			var r1_tr = r1_tl + new Vector2(r1, 0);
 			var r1_br = r1_tl + new Vector2(r1, r1);
 			var r1_bl = r1_tl + new Vector2(0, r1);
 
-			var r2_tl = rect.BottomRight + new Vector2(-r2, -r2);
+			var r2_tl = rect.bottomRight + new Vector2(-r2, -r2);
 			var r2_tr = r2_tl + new Vector2(r2, 0);
 			var r2_bl = r2_tl + new Vector2(0, r2);
 			var r2_br = r2_tl + new Vector2(r2, r2);
 
-			var r3_tl = rect.BottomLeft + new Vector2(0, -r3);
+			var r3_tl = rect.bottomLeft + new Vector2(0, -r3);
 			var r3_tr = r3_tl + new Vector2(r3, 0);
 			var r3_bl = r3_tl + new Vector2(0, r3);
 			var r3_br = r3_tl + new Vector2(r3, r3);
 
 			// set tris
 			{
-				while (indexCount + 30 >= indices.Length)
-					Array.Resize(ref indices, indices.Length * 2);
+				while (_indexCount + 30 >= _indices.Length)
+					Array.Resize(ref _indices, _indices.Length * 2);
 
 				// top quad
 				{
-					indices[indexCount + 00] = vertexCount + 00; // r0b
-					indices[indexCount + 01] = vertexCount + 03; // r1a
-					indices[indexCount + 02] = vertexCount + 05; // r1d
+					_indices[_indexCount + 00] = _vertexCount + 00; // r0b
+					_indices[_indexCount + 01] = _vertexCount + 03; // r1a
+					_indices[_indexCount + 02] = _vertexCount + 05; // r1d
 
-					indices[indexCount + 03] = vertexCount + 00; // r0b
-					indices[indexCount + 04] = vertexCount + 05; // r1d
-					indices[indexCount + 05] = vertexCount + 01; // r0c
+					_indices[_indexCount + 03] = _vertexCount + 00; // r0b
+					_indices[_indexCount + 04] = _vertexCount + 05; // r1d
+					_indices[_indexCount + 05] = _vertexCount + 01; // r0c
 				}
 
 				// left quad
 				{
-					indices[indexCount + 06] = vertexCount + 02; // r0d
-					indices[indexCount + 07] = vertexCount + 01; // r0c
-					indices[indexCount + 08] = vertexCount + 10; // r3b
+					_indices[_indexCount + 06] = _vertexCount + 02; // r0d
+					_indices[_indexCount + 07] = _vertexCount + 01; // r0c
+					_indices[_indexCount + 08] = _vertexCount + 10; // r3b
 
-					indices[indexCount + 09] = vertexCount + 02; // r0d
-					indices[indexCount + 10] = vertexCount + 10; // r3b
-					indices[indexCount + 11] = vertexCount + 09; // r3a
+					_indices[_indexCount + 09] = _vertexCount + 02; // r0d
+					_indices[_indexCount + 10] = _vertexCount + 10; // r3b
+					_indices[_indexCount + 11] = _vertexCount + 09; // r3a
 				}
 
 				// right quad
 				{
-					indices[indexCount + 12] = vertexCount + 05; // r1d
-					indices[indexCount + 13] = vertexCount + 04; // r1c
-					indices[indexCount + 14] = vertexCount + 07; // r2b
+					_indices[_indexCount + 12] = _vertexCount + 05; // r1d
+					_indices[_indexCount + 13] = _vertexCount + 04; // r1c
+					_indices[_indexCount + 14] = _vertexCount + 07; // r2b
 
-					indices[indexCount + 15] = vertexCount + 05; // r1d
-					indices[indexCount + 16] = vertexCount + 07; // r2b
-					indices[indexCount + 17] = vertexCount + 06; // r2a
+					_indices[_indexCount + 15] = _vertexCount + 05; // r1d
+					_indices[_indexCount + 16] = _vertexCount + 07; // r2b
+					_indices[_indexCount + 17] = _vertexCount + 06; // r2a
 				}
 
 				// bottom quad
 				{
-					indices[indexCount + 18] = vertexCount + 10; // r3b
-					indices[indexCount + 19] = vertexCount + 06; // r2a
-					indices[indexCount + 20] = vertexCount + 08; // r2d
+					_indices[_indexCount + 18] = _vertexCount + 10; // r3b
+					_indices[_indexCount + 19] = _vertexCount + 06; // r2a
+					_indices[_indexCount + 20] = _vertexCount + 08; // r2d
 
-					indices[indexCount + 21] = vertexCount + 10; // r3b
-					indices[indexCount + 22] = vertexCount + 08; // r2d
-					indices[indexCount + 23] = vertexCount + 11; // r3c
+					_indices[_indexCount + 21] = _vertexCount + 10; // r3b
+					_indices[_indexCount + 22] = _vertexCount + 08; // r2d
+					_indices[_indexCount + 23] = _vertexCount + 11; // r3c
 				}
 
 				// center quad
 				{
-					indices[indexCount + 24] = vertexCount + 01; // r0c
-					indices[indexCount + 25] = vertexCount + 05; // r1d
-					indices[indexCount + 26] = vertexCount + 06; // r2a
+					_indices[_indexCount + 24] = _vertexCount + 01; // r0c
+					_indices[_indexCount + 25] = _vertexCount + 05; // r1d
+					_indices[_indexCount + 26] = _vertexCount + 06; // r2a
 
-					indices[indexCount + 27] = vertexCount + 01; // r0c
-					indices[indexCount + 28] = vertexCount + 06; // r2a
-					indices[indexCount + 29] = vertexCount + 10; // r3b
+					_indices[_indexCount + 27] = _vertexCount + 01; // r0c
+					_indices[_indexCount + 28] = _vertexCount + 06; // r2a
+					_indices[_indexCount + 29] = _vertexCount + 10; // r3b
 				}
 
-				indexCount += 30;
-				currentBatch.Elements += 10;
-				dirty = true;
+				_indexCount += 30;
+				_currentBatch.elements += 10;
+				_dirty = true;
 			}
 
 			// set verts
 			{
-				ExpandVertices(vertexCount + 12);
+				ExpandVertices(_vertexCount + 12);
 
-				Array.Fill(vertices, new Vertex(Vector2.Zero, Vector2.Zero, color, 0, 0, 255), vertexCount, 12);
+				Array.Fill(_vertices, new Vertex(Vector2.zero, Vector2.zero, color, 0, 0, 255), _vertexCount, 12);
 
-				Transform(ref vertices[vertexCount + 00].pos, r0_tr, MatrixStack); // 0
-				Transform(ref vertices[vertexCount + 01].pos, r0_br, MatrixStack); // 1
-				Transform(ref vertices[vertexCount + 02].pos, r0_bl, MatrixStack); // 2
+				Transform(ref _vertices[_vertexCount + 00].pos, r0_tr, matrixStack); // 0
+				Transform(ref _vertices[_vertexCount + 01].pos, r0_br, matrixStack); // 1
+				Transform(ref _vertices[_vertexCount + 02].pos, r0_bl, matrixStack); // 2
 
-				Transform(ref vertices[vertexCount + 03].pos, r1_tl, MatrixStack); // 3
-				Transform(ref vertices[vertexCount + 04].pos, r1_br, MatrixStack); // 4
-				Transform(ref vertices[vertexCount + 05].pos, r1_bl, MatrixStack); // 5
+				Transform(ref _vertices[_vertexCount + 03].pos, r1_tl, matrixStack); // 3
+				Transform(ref _vertices[_vertexCount + 04].pos, r1_br, matrixStack); // 4
+				Transform(ref _vertices[_vertexCount + 05].pos, r1_bl, matrixStack); // 5
 
-				Transform(ref vertices[vertexCount + 06].pos, r2_tl, MatrixStack); // 6
-				Transform(ref vertices[vertexCount + 07].pos, r2_tr, MatrixStack); // 7
-				Transform(ref vertices[vertexCount + 08].pos, r2_bl, MatrixStack); // 8
+				Transform(ref _vertices[_vertexCount + 06].pos, r2_tl, matrixStack); // 6
+				Transform(ref _vertices[_vertexCount + 07].pos, r2_tr, matrixStack); // 7
+				Transform(ref _vertices[_vertexCount + 08].pos, r2_bl, matrixStack); // 8
 
-				Transform(ref vertices[vertexCount + 09].pos, r3_tl, MatrixStack); // 9
-				Transform(ref vertices[vertexCount + 10].pos, r3_tr, MatrixStack); // 10
-				Transform(ref vertices[vertexCount + 11].pos, r3_br, MatrixStack); // 11
+				Transform(ref _vertices[_vertexCount + 09].pos, r3_tl, matrixStack); // 9
+				Transform(ref _vertices[_vertexCount + 10].pos, r3_tr, matrixStack); // 10
+				Transform(ref _vertices[_vertexCount + 11].pos, r3_br, matrixStack); // 11
 
-				vertexCount += 12;
+				_vertexCount += 12;
 			}
 
 			// TODO: replace with hard-coded values
-			var left = Calc.Angle(-Vector2.UnitX);
-			var right = Calc.Angle(Vector2.UnitX);
-			var up = Calc.Angle(-Vector2.UnitY);
-			var down = Calc.Angle(Vector2.UnitY);
+			var left = Calc.Angle(Vector2.left);
+			var right = Calc.Angle(Vector2.right);
+			var up = Calc.Angle(Vector2.up);
+			var down = Calc.Angle(Vector2.down);
 
 			// top-left corner
 			if (r0 > 0)
@@ -968,13 +968,13 @@ public class Batch2D
 	{
 		if (t > 0)
 		{
-			var tx = Math.Min(t, rect.Width / 2f);
-			var ty = Math.Min(t, rect.Height / 2f);
+			var tx = Math.Min(t, rect.width / 2f);
+			var ty = Math.Min(t, rect.height / 2f);
 
-			Rect(rect.X, rect.Y, rect.Width, ty, color);
-			Rect(rect.X, rect.Bottom - ty, rect.Width, ty, color);
-			Rect(rect.X, rect.Y + ty, tx, rect.Height - ty * 2, color);
-			Rect(rect.Right - tx, rect.Y + ty, tx, rect.Height - ty * 2, color);
+			Rect(rect.x, rect.y, rect.width, ty, color);
+			Rect(rect.x, rect.bottom - ty, rect.width, ty, color);
+			Rect(rect.x, rect.y + ty, tx, rect.height - ty * 2, color);
+			Rect(rect.right - tx, rect.y + ty, tx, rect.height - ty * 2, color);
 		}
 	}
 
@@ -983,9 +983,9 @@ public class Batch2D
 	#region Image
 
 	public void Image(Texture texture,
-			in Vector2 pos0, in Vector2 pos1, in Vector2 pos2, in Vector2 pos3,
-			in Vector2 uv0, in Vector2 uv1, in Vector2 uv2, in Vector2 uv3,
-			Color col0, Color col1, Color col2, Color col3, bool washed = false)
+		in Vector2 pos0, in Vector2 pos1, in Vector2 pos2, in Vector2 pos3,
+		in Vector2 uv0, in Vector2 uv1, in Vector2 uv2, in Vector2 uv3,
+		Color col0, Color col1, Color col2, Color col3, bool washed = false)
 	{
 		SetTexture(texture);
 		Quad(pos0, pos1, pos2, pos3, uv0, uv1, uv2, uv3, col0, col1, col2, col3, washed);
@@ -1005,13 +1005,13 @@ public class Batch2D
 		SetTexture(texture);
 		Quad(
 				new Vector2(0, 0),
-				new Vector2(texture.Width, 0),
-				new Vector2(texture.Width, texture.Height),
-				new Vector2(0, texture.Height),
+				new Vector2(texture.width, 0),
+				new Vector2(texture.width, texture.height),
+				new Vector2(0, texture.height),
 				new Vector2(0, 0),
-				Vector2.UnitX,
+				Vector2.right,
 				new Vector2(1, 1),
-				Vector2.UnitY,
+				Vector2.down,
 				color, washed);
 	}
 
@@ -1020,50 +1020,50 @@ public class Batch2D
 		SetTexture(texture);
 		Quad(
 				position,
-				position + new Vector2(texture.Width, 0),
-				position + new Vector2(texture.Width, texture.Height),
-				position + new Vector2(0, texture.Height),
+				position + new Vector2(texture.width, 0),
+				position + new Vector2(texture.width, texture.height),
+				position + new Vector2(0, texture.height),
 				new Vector2(0, 0),
-				Vector2.UnitX,
+				Vector2.right,
 				new Vector2(1, 1),
-				Vector2.UnitY,
+				Vector2.down,
 				color, washed);
 	}
 
 	public void Image(Texture texture, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, Color color, bool washed = false)
 	{
-		var was = MatrixStack;
+		var was = matrixStack;
 
-		MatrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * MatrixStack;
+		matrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
 
 		SetTexture(texture);
 		Quad(
 				new Vector2(0, 0),
-				new Vector2(texture.Width, 0),
-				new Vector2(texture.Width, texture.Height),
-				new Vector2(0, texture.Height),
+				new Vector2(texture.width, 0),
+				new Vector2(texture.width, texture.height),
+				new Vector2(0, texture.height),
 				new Vector2(0, 0),
-				Vector2.UnitX,
+				Vector2.right,
 				new Vector2(1, 1),
-				Vector2.UnitY,
+				Vector2.down,
 				color, washed);
 
-		MatrixStack = was;
+		matrixStack = was;
 	}
 
 	public void Image(Texture texture, in Rect clip, in Vector2 position, Color color, bool washed = false)
 	{
-		var tx0 = clip.X / texture.Width;
-		var ty0 = clip.Y / texture.Height;
-		var tx1 = clip.Right / texture.Width;
-		var ty1 = clip.Bottom / texture.Height;
+		var tx0 = clip.x / texture.width;
+		var ty0 = clip.y / texture.height;
+		var tx1 = clip.right / texture.width;
+		var ty1 = clip.bottom / texture.height;
 
 		SetTexture(texture);
 		Quad(
 				position,
-				position + new Vector2(clip.Width, 0),
-				position + new Vector2(clip.Width, clip.Height),
-				position + new Vector2(0, clip.Height),
+				position + new Vector2(clip.width, 0),
+				position + new Vector2(clip.width, clip.height),
+				position + new Vector2(0, clip.height),
 				new Vector2(tx0, ty0),
 				new Vector2(tx1, ty0),
 				new Vector2(tx1, ty1),
@@ -1072,74 +1072,74 @@ public class Batch2D
 
 	public void Image(Texture texture, in Rect clip, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, Color color, bool washed = false)
 	{
-		var was = MatrixStack;
+		var was = matrixStack;
 
-		MatrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * MatrixStack;
+		matrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
 
-		var tx0 = clip.X / texture.Width;
-		var ty0 = clip.Y / texture.Height;
-		var tx1 = clip.Right / texture.Width;
-		var ty1 = clip.Bottom / texture.Height;
+		var tx0 = clip.x / texture.width;
+		var ty0 = clip.y / texture.height;
+		var tx1 = clip.right / texture.width;
+		var ty1 = clip.bottom / texture.height;
 
 		SetTexture(texture);
 		Quad(
 				new Vector2(0, 0),
-				new Vector2(clip.Width, 0),
-				new Vector2(clip.Width, clip.Height),
-				new Vector2(0, clip.Height),
+				new Vector2(clip.width, 0),
+				new Vector2(clip.width, clip.height),
+				new Vector2(0, clip.height),
 				new Vector2(tx0, ty0),
 				new Vector2(tx1, ty0),
 				new Vector2(tx1, ty1),
 				new Vector2(tx0, ty1),
 				color, washed);
 
-		MatrixStack = was;
+		matrixStack = was;
 	}
 
 	public void Image(Subtexture subtex, Color color, bool washed = false)
 	{
-		SetTexture(subtex.Texture);
+		SetTexture(subtex.texture);
 		Quad(
-				subtex.DrawCoords[0], subtex.DrawCoords[1], subtex.DrawCoords[2], subtex.DrawCoords[3],
-				subtex.TexCoords[0], subtex.TexCoords[1], subtex.TexCoords[2], subtex.TexCoords[3],
+				subtex.drawCoords[0], subtex.drawCoords[1], subtex.drawCoords[2], subtex.drawCoords[3],
+				subtex.texCoords[0], subtex.texCoords[1], subtex.texCoords[2], subtex.texCoords[3],
 				color, washed);
 	}
 
 	public void Image(Subtexture subtex, in Vector2 position, Color color, bool washed = false)
 	{
-		SetTexture(subtex.Texture);
-		Quad(position + subtex.DrawCoords[0], position + subtex.DrawCoords[1], position + subtex.DrawCoords[2], position + subtex.DrawCoords[3],
-				subtex.TexCoords[0], subtex.TexCoords[1], subtex.TexCoords[2], subtex.TexCoords[3],
+		SetTexture(subtex.texture);
+		Quad(position + subtex.drawCoords[0], position + subtex.drawCoords[1], position + subtex.drawCoords[2], position + subtex.drawCoords[3],
+				subtex.texCoords[0], subtex.texCoords[1], subtex.texCoords[2], subtex.texCoords[3],
 				color, washed);
 	}
 
 	public void Image(Subtexture subtex, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, Color color, bool washed = false)
 	{
-		var was = MatrixStack;
+		var was = matrixStack;
 
-		MatrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * MatrixStack;
+		matrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
 
-		SetTexture(subtex.Texture);
+		SetTexture(subtex.texture);
 		Quad(
-				subtex.DrawCoords[0], subtex.DrawCoords[1], subtex.DrawCoords[2], subtex.DrawCoords[3],
-				subtex.TexCoords[0], subtex.TexCoords[1], subtex.TexCoords[2], subtex.TexCoords[3],
+				subtex.drawCoords[0], subtex.drawCoords[1], subtex.drawCoords[2], subtex.drawCoords[3],
+				subtex.texCoords[0], subtex.texCoords[1], subtex.texCoords[2], subtex.texCoords[3],
 				color, washed);
 
-		MatrixStack = was;
+		matrixStack = was;
 	}
 
 	public void Image(Subtexture subtex, in Rect clip, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, Color color, bool washed = false)
 	{
 		var (source, frame) = subtex.GetClip(clip);
-		var tex = subtex.Texture;
-		var was = MatrixStack;
+		var tex = subtex.texture;
+		var was = matrixStack;
 
-		MatrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * MatrixStack;
+		matrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
 
-		var px0 = -frame.X;
-		var py0 = -frame.Y;
-		var px1 = -frame.X + source.Width;
-		var py1 = -frame.Y + source.Height;
+		var px0 = -frame.x;
+		var py0 = -frame.y;
+		var px1 = -frame.x + source.width;
+		var py1 = -frame.y + source.height;
 
 		var tx0 = 0f;
 		var ty0 = 0f;
@@ -1148,19 +1148,19 @@ public class Batch2D
 
 		if (tex != null)
 		{
-			tx0 = source.Left / tex.Width;
-			ty0 = source.Top / tex.Height;
-			tx1 = source.Right / tex.Width;
-			ty1 = source.Bottom / tex.Height;
+			tx0 = source.left / tex.width;
+			ty0 = source.top / tex.height;
+			tx1 = source.right / tex.width;
+			ty1 = source.bottom / tex.height;
 		}
 
-		SetTexture(subtex.Texture);
+		SetTexture(subtex.texture);
 		Quad(
 				new Vector2(px0, py0), new Vector2(px1, py0), new Vector2(px1, py1), new Vector2(px0, py1),
 				new Vector2(tx0, ty0), new Vector2(tx1, ty0), new Vector2(tx1, ty1), new Vector2(tx0, ty1),
 				color, washed);
 
-		MatrixStack = was;
+		matrixStack = was;
 	}
 
 	#endregion
@@ -1174,34 +1174,34 @@ public class Batch2D
 
 	public void Text(SpriteFont font, ReadOnlySpan<char> text, Color color)
 	{
-		var position = new Vector2(0, font.Ascent);
+		var position = new Vector2(0, font.ascent);
 
 		for (int i = 0; i < text.Length; i++)
 		{
 			if (text[i] == '\n')
 			{
-				position.X = 0;
-				position.Y += font.LineHeight;
+				position.x = 0;
+				position.y += font.lineHeight;
 				continue;
 			}
 
-			if (!font.Charset.TryGetValue(text[i], out var ch))
+			if (!font.charset.TryGetValue(text[i], out var ch))
 				continue;
 
-			if (ch.Image != null)
+			if (ch.image != null)
 			{
-				var at = position + ch.Offset;
+				var at = position + ch.offset;
 
 				if (i < text.Length - 1 && text[i + 1] != '\n')
 				{
-					if (ch.Kerning.TryGetValue(text[i + 1], out float kerning))
-						at.X += kerning;
+					if (ch.kerning.TryGetValue(text[i + 1], out float kerning))
+						at.x += kerning;
 				}
 
-				Image(ch.Image, at, color, true);
+				Image(ch.image, at, color, true);
 			}
 
-			position.X += ch.Advance;
+			position.x += ch.advance;
 		}
 	}
 
@@ -1239,9 +1239,9 @@ public class Batch2D
 	/// </summary>
 	public void Text(SpriteFont font, ReadOnlySpan<char> text, Vector2 position, int size, float rotation, Color color)
 	{
-		float s = size / (float)font.Size;
+		float s = size / (float)font.size;
 		var scale = new Vector2(s, s);
-		var origin = new Vector2(0f, font.Ascent);
+		var origin = new Vector2(0f, font.ascent);
 		PushMatrix(position, scale, origin, rotation);
 		Text(font, text, color);
 		PopMatrix();
@@ -1253,9 +1253,9 @@ public class Batch2D
 	/// </summary>
 	public void Text(SpriteFont font, string text, Vector2 position, int size, float rotation, Color color)
 	{
-		float s = size / (float)font.Size;
+		float s = size / (float)font.size;
 		var scale = new Vector2(s, s);
-		var origin = new Vector2(0f, font.Ascent);
+		var origin = new Vector2(0f, font.ascent);
 		PushMatrix(position, scale, origin, rotation);
 		Text(font, text.AsSpan(), color);
 		PopMatrix();
@@ -1268,10 +1268,10 @@ public class Batch2D
 	{
 		var textSpan = text.AsSpan();
 		var size = font.SizeOf(textSpan);
-		var sx = rect.Width / size.X;
-		var sy = rect.Height / font.Size;
-		var scale = Math.Min(maxSize / font.Size, Math.Min(sx, sy));
-		var pos = rect.Size * 0.5f - size * scale * 0.5f;
+		var sx = rect.width / size.x;
+		var sy = rect.height / font.size;
+		var scale = Math.Min(maxSize / font.size, Math.Min(sx, sy));
+		var pos = rect.size * 0.5f - size * scale * 0.5f;
 		PushMatrix(Matrix3x2.CreateScale(scale) * Matrix3x2.CreateTranslation(pos));
 		Text(font, textSpan, color);
 		PopMatrix();
@@ -1284,10 +1284,10 @@ public class Batch2D
 	{
 		var textSpan = text.AsSpan();
 		var size = font.SizeOf(textSpan);
-		var sx = rect.Width / size.X;
-		var sy = rect.Height / font.Size;
+		var sx = rect.width / size.x;
+		var sy = rect.height / font.size;
 		var scale = Math.Min(sx, sy);
-		var pos = rect.Size * 0.5f - size * scale * 0.5f;
+		var pos = rect.size * 0.5f - size * scale * 0.5f;
 		PushMatrix(Matrix3x2.CreateScale(scale) * Matrix3x2.CreateTranslation(pos));
 		Text(font, textSpan, color);
 		PopMatrix();
@@ -1303,20 +1303,20 @@ public class Batch2D
 	public void CopyArray(ReadOnlySpan<Vertex> vertexBuffer, ReadOnlySpan<int> indexBuffer)
 	{
 		// copy vertices over
-		ExpandVertices(vertexCount + vertexBuffer.Length);
-		vertexBuffer.CopyTo(vertices.AsSpan().Slice(vertexCount));
+		ExpandVertices(_vertexCount + vertexBuffer.Length);
+		vertexBuffer.CopyTo(_vertices.AsSpan().Slice(_vertexCount));
 
 		// copy indices over
-		while (indexCount + indexBuffer.Length >= indices.Length)
-			Array.Resize(ref indices, indices.Length * 2);
-		for (int i = 0, n = indexCount; i < indexBuffer.Length; i++, n++)
-			indices[n] = vertexCount + indexBuffer[i];
+		while (_indexCount + indexBuffer.Length >= _indices.Length)
+			Array.Resize(ref _indices, _indices.Length * 2);
+		for (int i = 0, n = _indexCount; i < indexBuffer.Length; i++, n++)
+			_indices[n] = _vertexCount + indexBuffer[i];
 
 		// increment
-		vertexCount += vertexBuffer.Length;
-		indexCount += indexBuffer.Length;
-		currentBatch.Elements += (uint)(vertexBuffer.Length / 3);
-		dirty = true;
+		_vertexCount += vertexBuffer.Length;
+		_indexCount += indexBuffer.Length;
+		_currentBatch.elements += (uint)(vertexBuffer.Length / 3);
+		_dirty = true;
 	}
 
 	#endregion
@@ -1327,14 +1327,14 @@ public class Batch2D
 	{
 		var odd = false;
 
-		for (float y = bounds.Top; y < bounds.Bottom; y += cellHeight)
+		for (float y = bounds.top; y < bounds.bottom; y += cellHeight)
 		{
 			var cells = 0;
-			for (float x = bounds.Left; x < bounds.Right; x += cellWidth)
+			for (float x = bounds.left; x < bounds.right; x += cellWidth)
 			{
 				var color = (odd ? a : b);
 				if (color.A > 0)
-					Rect(x, y, Math.Min(bounds.Right - x, cellWidth), Math.Min(bounds.Bottom - y, cellHeight), color);
+					Rect(x, y, Math.Min(bounds.right - x, cellWidth), Math.Min(bounds.bottom - y, cellHeight), color);
 
 				odd = !odd;
 				cells++;
@@ -1350,64 +1350,64 @@ public class Batch2D
 	#region Internal Utils
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private void PushTriangle()
+	void PushTriangle()
 	{
-		while (indexCount + 3 >= indices.Length)
-			Array.Resize(ref indices, indices.Length * 2);
+		while (_indexCount + 3 >= _indices.Length)
+			Array.Resize(ref _indices, _indices.Length * 2);
 
-		indices[indexCount + 0] = vertexCount + 0;
-		indices[indexCount + 1] = vertexCount + 1;
-		indices[indexCount + 2] = vertexCount + 2;
+		_indices[_indexCount + 0] = _vertexCount + 0;
+		_indices[_indexCount + 1] = _vertexCount + 1;
+		_indices[_indexCount + 2] = _vertexCount + 2;
 
-		indexCount += 3;
-		currentBatch.Elements++;
-		dirty = true;
+		_indexCount += 3;
+		_currentBatch.elements++;
+		_dirty = true;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private void PushQuad()
+	void PushQuad()
 	{
-		int index = indexCount;
-		int vert = vertexCount;
+		int index = _indexCount;
+		int vert = _vertexCount;
 
-		while (index + 6 >= indices.Length)
-			Array.Resize(ref indices, indices.Length * 2);
+		while (index + 6 >= _indices.Length)
+			Array.Resize(ref _indices, _indices.Length * 2);
 
-		indices[index + 0] = vert + 0;
-		indices[index + 1] = vert + 1;
-		indices[index + 2] = vert + 2;
-		indices[index + 3] = vert + 0;
-		indices[index + 4] = vert + 2;
-		indices[index + 5] = vert + 3;
+		_indices[index + 0] = vert + 0;
+		_indices[index + 1] = vert + 1;
+		_indices[index + 2] = vert + 2;
+		_indices[index + 3] = vert + 0;
+		_indices[index + 4] = vert + 2;
+		_indices[index + 5] = vert + 3;
 
-		indexCount += 6;
-		currentBatch.Elements += 2;
-		dirty = true;
+		_indexCount += 6;
+		_currentBatch.elements += 2;
+		_dirty = true;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private void ExpandVertices(int index)
+	void ExpandVertices(int index)
 	{
-		while (index >= vertices.Length)
+		while (index >= _vertices.Length)
 		{
-			Array.Resize(ref vertices, vertices.Length * 2);
+			Array.Resize(ref _vertices, _vertices.Length * 2);
 		}
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private void Transform(ref Vector2 to, in Vector2 position, in Matrix3x2 matrix)
+	void Transform(ref Vector2 to, in Vector2 position, in Matrix3x2 matrix)
 	{
-		to.X = (position.X * matrix.M11) + (position.Y * matrix.M21) + matrix.M31;
-		to.Y = (position.X * matrix.M12) + (position.Y * matrix.M22) + matrix.M32;
+		to.x = (position.x * matrix.M11) + (position.y * matrix.M21) + matrix.M31;
+		to.y = (position.x * matrix.M12) + (position.y * matrix.M22) + matrix.M32;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private void VerticalFlip(ref Vector2 uv0, ref Vector2 uv1, ref Vector2 uv2, ref Vector2 uv3)
+	void VerticalFlip(ref Vector2 uv0, ref Vector2 uv1, ref Vector2 uv2, ref Vector2 uv3)
 	{
-		uv0.Y = 1 - uv0.Y;
-		uv1.Y = 1 - uv1.Y;
-		uv2.Y = 1 - uv2.Y;
-		uv3.Y = 1 - uv3.Y;
+		uv0.y = 1 - uv0.y;
+		uv1.y = 1 - uv1.y;
+		uv2.y = 1 - uv2.y;
+		uv3.y = 1 - uv3.y;
 	}
 
 	#endregion

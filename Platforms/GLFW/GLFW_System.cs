@@ -7,12 +7,12 @@ namespace MGE.GLFW
 {
 	public class GLFW_System : System, ISystemOpenGL, ISystemVulkan
 	{
-		private readonly GLFW_Input _input;
+		readonly GLFW_Input _input;
 
-		private readonly List<IntPtr> windowPointers = new List<IntPtr>();
-		private readonly Dictionary<IntPtr, GLFW_Window> glfwWindows = new Dictionary<IntPtr, GLFW_Window>();
-		private readonly Dictionary<IntPtr, GLFW_GLContext> glContexts = new Dictionary<IntPtr, GLFW_GLContext>();
-		private readonly Dictionary<IntPtr, IntPtr> vkSurfaces = new Dictionary<IntPtr, IntPtr>();
+		readonly List<IntPtr> windowPointers = new List<IntPtr>();
+		readonly Dictionary<IntPtr, GLFW_Window> glfwWindows = new Dictionary<IntPtr, GLFW_Window>();
+		readonly Dictionary<IntPtr, GLFW_GLContext> glContexts = new Dictionary<IntPtr, GLFW_GLContext>();
+		readonly Dictionary<IntPtr, IntPtr> vkSurfaces = new Dictionary<IntPtr, IntPtr>();
 
 		public override bool supportsMultipleWindows => true;
 		public override Input input => _input;
@@ -101,7 +101,7 @@ namespace MGE.GLFW
 			_input.AfterUpdate();
 		}
 
-		private void Poll()
+		void Poll()
 		{
 			GLFW.PollEvents();
 
@@ -131,8 +131,8 @@ namespace MGE.GLFW
 						if (vkDestroySurfaceKHR == null)
 						{
 							var ptr = GetVKProcAddress(vkInstance, "vkDestroySurfaceKHR");
-							if (ptr != null)
-								vkDestroySurfaceKHR = (VkDestroySurfaceKHR)Marshal.GetDelegateForFunctionPointer(ptr, typeof(VkDestroySurfaceKHR));
+							// if (ptr != null) FIXME
+							vkDestroySurfaceKHR = (VkDestroySurfaceKHR)Marshal.GetDelegateForFunctionPointer(ptr, typeof(VkDestroySurfaceKHR));
 						}
 
 						vkDestroySurfaceKHR?.Invoke(vkInstance, vkSurfaces[windowPointers[i]], IntPtr.Zero);
@@ -265,8 +265,8 @@ namespace MGE.GLFW
 		#region ISystemVulkan Method Calls
 
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
-		private unsafe delegate int VkDestroySurfaceKHR(IntPtr instance, IntPtr surface, IntPtr allocator);
-		private VkDestroySurfaceKHR? vkDestroySurfaceKHR;
+		unsafe delegate int VkDestroySurfaceKHR(IntPtr instance, IntPtr surface, IntPtr allocator);
+		VkDestroySurfaceKHR? vkDestroySurfaceKHR;
 
 		public IntPtr GetVKProcAddress(IntPtr instance, string name)
 		{

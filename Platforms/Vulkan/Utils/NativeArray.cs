@@ -26,8 +26,8 @@ namespace MGE.Vulkan
 		public readonly uint Length;
 		public readonly IntPtr Pointer;
 
-		private readonly T[] array;
-		private bool disposed;
+		readonly T[] array;
+		bool disposed;
 
 		public NativeArray(int length)
 		{

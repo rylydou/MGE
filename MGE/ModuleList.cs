@@ -10,11 +10,11 @@ namespace MGE;
 /// </summary>
 public class ModuleList : IEnumerable<Module>
 {
-	private readonly List<Type> registered = new List<Type>();
-	private readonly List<Module?> modules = new List<Module?>();
-	private readonly Dictionary<Type, Module> modulesByType = new Dictionary<Type, Module>();
-	private bool immediateInit;
-	private bool immediateStart;
+	readonly List<Type> registered = new List<Type>();
+	readonly List<Module?> modules = new List<Module?>();
+	readonly Dictionary<Type, Module> modulesByType = new Dictionary<Type, Module>();
+	bool immediateInit;
+	bool immediateStart;
 
 	/// <summary>
 	/// Registers a Module
@@ -45,7 +45,7 @@ public class ModuleList : IEnumerable<Module>
 	/// <summary>
 	/// Registers a Module
 	/// </summary>
-	private Module Instantiate(Type type)
+	Module Instantiate(Type type)
 	{
 		if (!(Activator.CreateInstance(type) is Module module))
 			throw new Exception("Type must inherit from Module");
@@ -226,7 +226,7 @@ public class ModuleList : IEnumerable<Module>
 		immediateStart = true;
 	}
 
-	private static void StartupModule(Module? module, bool callAppMethods)
+	static void StartupModule(Module? module, bool callAppMethods)
 	{
 		if (module != null && !module.isStarted)
 		{

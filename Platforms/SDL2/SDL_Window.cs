@@ -17,12 +17,12 @@ namespace MGE.SDL2
 		internal readonly SDL_System _system;
 		internal readonly SDL_GLContext? _glContext;
 
-		private bool _isBordered = true;
-		private bool _isFullscreen = false;
-		private bool _isResizable = false;
-		private bool _isVisible = false;
-		private bool _isVSyncEnabled = true;
-		private bool _isClosed = false;
+		bool _isBordered = true;
+		bool _isFullscreen = false;
+		bool _isResizable = false;
+		bool _isVisible = false;
+		bool _isVSyncEnabled = true;
+		bool _isClosed = false;
 
 		protected override IntPtr pointer
 		{

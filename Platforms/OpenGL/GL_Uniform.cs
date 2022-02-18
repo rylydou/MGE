@@ -13,7 +13,7 @@ namespace MGE.OpenGL
 			Shader = shader;
 		}
 
-		private static UniformType ToMGEType(GLEnum type)
+		static UniformType ToMGEType(GLEnum type)
 		{
 			return type switch
 			{

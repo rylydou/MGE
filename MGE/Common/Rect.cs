@@ -271,6 +271,9 @@ public struct Rect : IEquatable<Rect>
 	public static bool operator !=(Rect lhs, Rect rhs) => !(lhs == rhs);
 	public static bool operator ==(Rect lhs, Rect rhs) => lhs.x == rhs.x && lhs.y == rhs.y && lhs.width == rhs.width && lhs.height == rhs.height;
 
+	public static Rect operator +(Rect a, Vector2 b) => new Rect(a.x + b.x, a.y + b.y, a.width, a.height);
+	public static Rect operator -(Rect a, Vector2 b) => new Rect(a.x - b.x, a.y - b.y, a.width, a.height);
+
 	#endregion Operators
 
 	#region Conversion

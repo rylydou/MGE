@@ -46,21 +46,21 @@ public static class Log
 		public string Color;
 	}
 
-	private const int STD_OUTPUT_HANDLE = -11;
-	private const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
+	const int STD_OUTPUT_HANDLE = -11;
+	const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
 
 	[DllImport("kernel32.dll")]
-	private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+	static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
 
 	[DllImport("kernel32.dll")]
-	private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+	static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
 	[DllImport("kernel32.dll", SetLastError = true)]
-	private static extern IntPtr GetStdHandle(int nStdHandle);
+	static extern IntPtr GetStdHandle(int nStdHandle);
 
-	private static readonly StringBuilder log;
-	private static readonly LogAttribute[] logAttributes;
-	private static readonly bool colorEnabled;
+	static readonly StringBuilder log;
+	static readonly LogAttribute[] logAttributes;
+	static readonly bool colorEnabled;
 
 	public static LogLevel verbosity = LogLevel.Trace;
 	public static bool printToConsole = true;

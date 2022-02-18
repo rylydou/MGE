@@ -11,9 +11,9 @@ namespace MGE.OpenGL
 	internal class GL_Shader : Shader.Platform
 	{
 
-		private readonly GL_Graphics graphics;
+		readonly GL_Graphics graphics;
 
-		public uint ID { get; private set; }
+		public uint ID { get; set; }
 
 		internal GL_Shader(GL_Graphics graphics, ShaderSource source)
 		{

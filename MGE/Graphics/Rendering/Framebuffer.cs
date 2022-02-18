@@ -19,12 +19,12 @@ public class FrameBuffer : RenderTarget, IDisposable
 	/// <summary>
 	/// A reference to the internal platform implementation of the FrameBuffer
 	/// </summary>
-	public Platform implementation { get; private set; }
+	public Platform implementation { get; set; }
 
 	/// <summary>
 	/// Texture Attachments
 	/// </summary>
-	public ReadOnlyCollection<Texture> attachments { get; private set; }
+	public ReadOnlyCollection<Texture> attachments { get; set; }
 
 	/// <summary>
 	/// Render Target Width
@@ -36,8 +36,8 @@ public class FrameBuffer : RenderTarget, IDisposable
 	/// </summary>
 	public override int renderHeight => height;
 
-	private int width;
-	private int height;
+	int width;
+	int height;
 
 	public FrameBuffer(int width, int height) : this(App.graphics, width, height)
 	{

@@ -30,16 +30,16 @@ namespace MGE.OpenGL
 		internal List<uint> TexturesToDelete = new List<uint>();
 
 		// list of Contexts and their associated Metadata
-		private readonly Dictionary<ISystemOpenGL.Context, ContextMeta> contextMetadata = new Dictionary<ISystemOpenGL.Context, ContextMeta>();
-		private readonly List<ISystemOpenGL.Context> disposedContexts = new List<ISystemOpenGL.Context>();
+		readonly Dictionary<ISystemOpenGL.Context, ContextMeta> contextMetadata = new Dictionary<ISystemOpenGL.Context, ContextMeta>();
+		readonly List<ISystemOpenGL.Context> disposedContexts = new List<ISystemOpenGL.Context>();
 
 		// stored delegates for deleting graphics resources
-		private delegate void DeleteResource(uint id);
-		private readonly DeleteResource deleteArray = GL.DeleteVertexArray;
-		private readonly DeleteResource deleteFramebuffer = GL.DeleteFramebuffer;
-		private readonly DeleteResource deleteBuffer = GL.DeleteBuffer;
-		private readonly DeleteResource deleteTexture = GL.DeleteTexture;
-		private readonly DeleteResource deleteProgram = GL.DeleteProgram;
+		delegate void DeleteResource(uint id);
+		readonly DeleteResource deleteArray = GL.DeleteVertexArray;
+		readonly DeleteResource deleteFramebuffer = GL.DeleteFramebuffer;
+		readonly DeleteResource deleteBuffer = GL.DeleteBuffer;
+		readonly DeleteResource deleteTexture = GL.DeleteTexture;
+		readonly DeleteResource deleteProgram = GL.DeleteProgram;
 
 		public override Renderer renderer => Renderer.OpenGL;
 
@@ -117,7 +117,7 @@ namespace MGE.OpenGL
 			GL.Flush();
 		}
 
-		private void DeleteResources(DeleteResource deleter, List<uint> list)
+		void DeleteResources(DeleteResource deleter, List<uint> list)
 		{
 			lock (list)
 			{
@@ -496,7 +496,7 @@ namespace MGE.OpenGL
 			}
 		}
 
-		private static GLEnum GetBlendFunc(BlendOperations operation)
+		static GLEnum GetBlendFunc(BlendOperations operation)
 		{
 			return operation switch
 			{
@@ -510,7 +510,7 @@ namespace MGE.OpenGL
 			};
 		}
 
-		private static GLEnum GetBlendFactor(BlendFactors factor)
+		static GLEnum GetBlendFactor(BlendFactors factor)
 		{
 			return factor switch
 			{

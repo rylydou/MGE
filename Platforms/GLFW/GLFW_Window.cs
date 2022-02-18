@@ -7,21 +7,21 @@ namespace MGE.GLFW
 {
 	internal class GLFW_Window : Window.Platform
 	{
-		private readonly GLFW_System _system;
+		readonly GLFW_System _system;
 		internal readonly IntPtr _pointer;
 
-		private readonly GLFW.WindowCloseFunc _windowCloseCallbackRef;
-		private readonly GLFW.WindowSizeFunc _windowSizeCallbackRef;
-		private readonly GLFW.WindowFocusFunc _windowFocusCallbackRef;
-		private readonly GLFW.CursorEnterFunc _windowCursorEnterCallbackRef;
+		readonly GLFW.WindowCloseFunc _windowCloseCallbackRef;
+		readonly GLFW.WindowSizeFunc _windowSizeCallbackRef;
+		readonly GLFW.WindowFocusFunc _windowFocusCallbackRef;
+		readonly GLFW.CursorEnterFunc _windowCursorEnterCallbackRef;
 
-		private string _title;
-		private bool _isVisible;
-		private bool _isFocused;
-		private bool _isMouseOver;
-		private bool _isDisposed;
-		private bool _isFullscreen;
-		private RectInt _storedBounds;
+		string _title;
+		bool _isVisible;
+		bool _isFocused;
+		bool _isMouseOver;
+		bool _isDisposed;
+		bool _isFullscreen;
+		RectInt _storedBounds;
 
 		protected override Vector2Int position
 		{
@@ -222,25 +222,25 @@ namespace MGE.GLFW
 			GLFW.SetCursorEnterCallback(this._pointer, _windowCursorEnterCallbackRef = OnCursorEnter);
 		}
 
-		private void OnWindowClose(IntPtr window)
+		void OnWindowClose(IntPtr window)
 		{
 			GLFW.SetWindowShouldClose(window, true);
 			onCloseRequested?.Invoke();
 		}
 
-		private void OnWindowResize(IntPtr window, int width, int height)
+		void OnWindowResize(IntPtr window, int width, int height)
 		{
 			onResize?.Invoke();
 		}
 
-		private void OnWindowFocus(IntPtr window, int focused)
+		void OnWindowFocus(IntPtr window, int focused)
 		{
 			_isFocused = (focused != 0);
 			if (_isFocused)
 				onFocus?.Invoke();
 		}
 
-		private void OnCursorEnter(IntPtr window, int entered)
+		void OnCursorEnter(IntPtr window, int entered)
 		{
 			_isMouseOver = (entered != 0);
 		}
