@@ -95,7 +95,7 @@ public class Transform2D : ITransform2D
 		}
 		set
 		{
-			if (_parent == null)
+			if (_parent is null)
 				localPosition = value;
 			else
 				localPosition = Vector2.Transform(value, worldToLocalMatrix);
@@ -150,7 +150,7 @@ public class Transform2D : ITransform2D
 		}
 		set
 		{
-			if (_parent == null)
+			if (_parent is null)
 			{
 				localScale = value;
 			}
@@ -201,7 +201,7 @@ public class Transform2D : ITransform2D
 		}
 		set
 		{
-			if (_parent == null)
+			if (_parent is null)
 				localRotation = value;
 			else
 				localRotation = value - _parent.rotation;
@@ -274,11 +274,11 @@ public class Transform2D : ITransform2D
 		{
 			// Circular Hierarchy isn't allowed
 			// TODO: this only checks 1 parent, instead of the whole tree
-			if (value != null && value.parent == this)
+			if (value is not null && value.parent == this)
 				throw new Exception("Circular Transform Heritage is not allowed");
 
 			// Remove our OnChanged listener from the existing parent
-			if (_parent != null)
+			if (_parent is not null)
 				_parent.onChanged -= MakeDirty;
 
 			// store state
@@ -299,7 +299,7 @@ public class Transform2D : ITransform2D
 			}
 
 			// Add our OnChanged listener to the new parent
-			if (_parent != null)
+			if (_parent is not null)
 				_parent.onChanged += MakeDirty;
 
 			// we have changed
@@ -313,7 +313,7 @@ public class Transform2D : ITransform2D
 
 		_localMatrix = CreateMatrix(_localPosition, _origin, _localScale, _localRotation);
 
-		if (_parent == null)
+		if (_parent is null)
 		{
 			_worldMatrix = _localMatrix;
 			_worldToLocalMatrix = Matrix3x2.Identity;

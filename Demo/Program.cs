@@ -4,13 +4,14 @@ using MGE.GLFW;
 using MGE.OpenGL;
 using MGE.SDL2;
 
-// our System Module (this is Mandatory)
+// System Module (this is Mandatory)
 App.modules.Register<GLFW_System>();
 
-// our Graphics Module (not Mandatory but required for drawing anything)
+// Graphics Module (not Mandatory but required for drawing anything)
 App.modules.Register<GL_Graphics>();
 
+// Register the custom Game Module to run your code
 App.modules.Register<Game>();
 
-// start the Application with a single 1280x720 Window
+// Start the Application with a single 1280x720 Window
 App.Start("My Application", 1280, 720);

@@ -149,73 +149,72 @@ public enum Keys
 /// </summary>
 public class Keyboard
 {
+	public const int MAX_KEYS = 400;
 
-	public const int MaxKeys = 400;
-
-	internal readonly bool[] pressed = new bool[MaxKeys];
-	internal readonly bool[] down = new bool[MaxKeys];
-	internal readonly bool[] released = new bool[MaxKeys];
-	internal readonly long[] timestamp = new long[MaxKeys];
+	internal readonly bool[] _pressed = new bool[MAX_KEYS];
+	internal readonly bool[] _down = new bool[MAX_KEYS];
+	internal readonly bool[] _released = new bool[MAX_KEYS];
+	internal readonly long[] _timestamp = new long[MAX_KEYS];
 
 	/// <summary>
 	/// The Input Module this Keyboard belong to
 	/// </summary>
-	public readonly Input Input;
+	public readonly Input input;
 
 	/// <summary>
 	/// Any Text that was typed over the last frame
 	/// </summary>
-	public readonly StringBuilder Text = new StringBuilder();
+	public readonly StringBuilder text = new StringBuilder();
 
 	internal Keyboard(Input input)
 	{
-		Input = input;
+		this.input = input;
 	}
 
 	/// <summary>
 	/// Checks if the given key was pressed
 	/// </summary>
-	public bool Pressed(Keys key) => pressed[(int)key];
+	public bool Pressed(Keys key) => _pressed[(int)key];
 
 	/// <summary>
 	/// Checks if any of the given keys were pressed
 	/// </summary>
-	public bool Pressed(Keys key1, Keys key2) => pressed[(int)key1] || pressed[(int)key2];
+	public bool Pressed(Keys key1, Keys key2) => _pressed[(int)key1] || _pressed[(int)key2];
 
 	/// <summary>
 	/// Checks if any of the given keys were pressed
 	/// </summary>
-	public bool Pressed(Keys key1, Keys key2, Keys key3) => pressed[(int)key1] || pressed[(int)key2] || pressed[(int)key3];
+	public bool Pressed(Keys key1, Keys key2, Keys key3) => _pressed[(int)key1] || _pressed[(int)key2] || _pressed[(int)key3];
 
 	/// <summary>
 	/// Checks if the given key is held
 	/// </summary>
-	public bool Down(Keys key) => down[(int)key];
+	public bool Down(Keys key) => _down[(int)key];
 
 	/// <summary>
 	/// Checks if any of the given keys were down
 	/// </summary>
-	public bool Down(Keys key1, Keys key2) => down[(int)key1] || down[(int)key2];
+	public bool Down(Keys key1, Keys key2) => _down[(int)key1] || _down[(int)key2];
 
 	/// <summary>
 	/// Checks if any of the given keys were down
 	/// </summary>
-	public bool Down(Keys key1, Keys key2, Keys key3) => down[(int)key1] || down[(int)key2] || down[(int)key3];
+	public bool Down(Keys key1, Keys key2, Keys key3) => _down[(int)key1] || _down[(int)key2] || _down[(int)key3];
 
 	/// <summary>
 	/// Checks if the given key was released
 	/// </summary>
-	public bool Released(Keys key) => released[(int)key];
+	public bool Released(Keys key) => _released[(int)key];
 
 	/// <summary>
 	/// Checks if any of the given keys were released
 	/// </summary>
-	public bool Released(Keys key1, Keys key2) => released[(int)key1] || released[(int)key2];
+	public bool Released(Keys key1, Keys key2) => _released[(int)key1] || _released[(int)key2];
 
 	/// <summary>
 	/// Checks if any of the given keys were released
 	/// </summary>
-	public bool Released(Keys key1, Keys key2, Keys key3) => released[(int)key1] || released[(int)key2] || released[(int)key3];
+	public bool Released(Keys key1, Keys key2, Keys key3) => _released[(int)key1] || _released[(int)key2] || _released[(int)key3];
 
 	/// <summary>
 	/// Checks if any of the given keys were pressed
@@ -223,7 +222,7 @@ public class Keyboard
 	public bool Pressed(ReadOnlySpan<Keys> keys)
 	{
 		for (int i = 0; i < keys.Length; i++)
-			if (pressed[(int)keys[i]])
+			if (_pressed[(int)keys[i]])
 				return true;
 
 		return false;
@@ -235,7 +234,7 @@ public class Keyboard
 	public bool Down(ReadOnlySpan<Keys> keys)
 	{
 		for (int i = 0; i < keys.Length; i++)
-			if (down[(int)keys[i]])
+			if (_down[(int)keys[i]])
 				return true;
 
 		return false;
@@ -247,7 +246,7 @@ public class Keyboard
 	public bool Released(ReadOnlySpan<Keys> keys)
 	{
 		for (int i = 0; i < keys.Length; i++)
-			if (released[(int)keys[i]])
+			if (_released[(int)keys[i]])
 				return true;
 
 		return false;
@@ -258,7 +257,7 @@ public class Keyboard
 	/// </summary>
 	public bool Repeated(Keys key)
 	{
-		return Repeated(key, Input.RepeatDelay, Input.RepeatInterval);
+		return Repeated(key, input.repeatDelay, input.repeatInterval);
 	}
 
 	/// <summary>
@@ -269,7 +268,7 @@ public class Keyboard
 		if (Pressed(key))
 			return true;
 
-		var time = timestamp[(int)key] / (float)TimeSpan.TicksPerSecond;
+		var time = _timestamp[(int)key] / (float)TimeSpan.TicksPerSecond;
 
 		return Down(key) && (Time.duration.TotalSeconds - time) > delay && Time.OnInterval(interval, time);
 	}
@@ -279,18 +278,18 @@ public class Keyboard
 	/// </summary>
 	public long Timestamp(Keys key)
 	{
-		return timestamp[(int)key];
+		return _timestamp[(int)key];
 	}
 
 	/// <summary>
 	/// Returns True if the Left or Right Control keys are held
 	/// </summary>
-	public bool Ctrl => Down(Keys.LeftControl, Keys.RightControl);
+	public bool ctrl => Down(Keys.LeftControl, Keys.RightControl);
 
 	/// <summary>
 	/// Returns True if the Left or Right Control keys are held (or Command on MacOS)
 	/// </summary>
-	public bool CtrlOrCommand
+	public bool ctrlOrCommand
 	{
 		get
 		{
@@ -304,46 +303,46 @@ public class Keyboard
 	/// <summary>
 	/// Returns True if the Left or Right Alt keys are held
 	/// </summary>
-	public bool Alt => Down(Keys.LeftAlt, Keys.RightAlt);
+	public bool alt => Down(Keys.LeftAlt, Keys.RightAlt);
 
 	/// <summary>
 	/// Returns True of the Left or Right Shift keys are held
 	/// </summary>
-	public bool Shift => Down(Keys.LeftShift, Keys.RightShift);
+	public bool shift => Down(Keys.LeftShift, Keys.RightShift);
 
 	public void Clear()
 	{
-		Array.Clear(pressed, 0, MaxKeys);
-		Array.Clear(down, 0, MaxKeys);
-		Array.Clear(released, 0, MaxKeys);
-		Array.Clear(timestamp, 0, MaxKeys);
-		Text.Clear();
+		Array.Clear(_pressed, 0, MAX_KEYS);
+		Array.Clear(_down, 0, MAX_KEYS);
+		Array.Clear(_released, 0, MAX_KEYS);
+		Array.Clear(_timestamp, 0, MAX_KEYS);
+		text.Clear();
 	}
 
 	public void Clear(Keys key)
 	{
-		pressed[(int)key] = false;
-		down[(int)key] = false;
-		released[(int)key] = false;
-		timestamp[(int)key] = 0;
+		_pressed[(int)key] = false;
+		_down[(int)key] = false;
+		_released[(int)key] = false;
+		_timestamp[(int)key] = 0;
 	}
 
 	internal void Copy(Keyboard other)
 	{
-		Array.Copy(other.pressed, 0, pressed, 0, MaxKeys);
-		Array.Copy(other.down, 0, down, 0, MaxKeys);
-		Array.Copy(other.released, 0, released, 0, MaxKeys);
-		Array.Copy(other.timestamp, 0, timestamp, 0, MaxKeys);
+		Array.Copy(other._pressed, 0, _pressed, 0, MAX_KEYS);
+		Array.Copy(other._down, 0, _down, 0, MAX_KEYS);
+		Array.Copy(other._released, 0, _released, 0, MAX_KEYS);
+		Array.Copy(other._timestamp, 0, _timestamp, 0, MAX_KEYS);
 
-		Text.Clear();
-		Text.Append(other.Text);
+		text.Clear();
+		text.Append(other.text);
 	}
 
 	internal void Step()
 	{
-		Array.Fill(pressed, false);
-		Array.Fill(released, false);
+		Array.Fill(_pressed, false);
+		Array.Fill(_released, false);
 
-		Text.Clear();
+		text.Clear();
 	}
 }

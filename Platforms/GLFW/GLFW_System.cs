@@ -9,10 +9,10 @@ namespace MGE.GLFW
 	{
 		readonly GLFW_Input _input;
 
-		readonly List<IntPtr> windowPointers = new List<IntPtr>();
-		readonly Dictionary<IntPtr, GLFW_Window> glfwWindows = new Dictionary<IntPtr, GLFW_Window>();
-		readonly Dictionary<IntPtr, GLFW_GLContext> glContexts = new Dictionary<IntPtr, GLFW_GLContext>();
-		readonly Dictionary<IntPtr, IntPtr> vkSurfaces = new Dictionary<IntPtr, IntPtr>();
+		readonly List<IntPtr> _windowPointers = new List<IntPtr>();
+		readonly Dictionary<IntPtr, GLFW_Window> _glfwWindows = new Dictionary<IntPtr, GLFW_Window>();
+		readonly Dictionary<IntPtr, GLFW_GLContext> _glContexts = new Dictionary<IntPtr, GLFW_GLContext>();
+		readonly Dictionary<IntPtr, IntPtr> _vkSurfaces = new Dictionary<IntPtr, IntPtr>();
 
 		public override bool supportsMultipleWindows => true;
 		public override Input input => _input;
@@ -73,7 +73,7 @@ namespace MGE.GLFW
 		{
 			_input.Dispose();
 
-			foreach (var window in windowPointers)
+			foreach (var window in _windowPointers)
 				GLFW.SetWindowShouldClose(window, true);
 
 			Poll(); // this will actually close the Windows
@@ -106,49 +106,48 @@ namespace MGE.GLFW
 			GLFW.PollEvents();
 
 			// check for closing windows
-			for (int i = windowPointers.Count - 1; i >= 0; i--)
+			for (int i = _windowPointers.Count - 1; i >= 0; i--)
 			{
-				if (GLFW.WindowShouldClose(windowPointers[i]))
+				if (GLFW.WindowShouldClose(_windowPointers[i]))
 				{
 					// see if we have a GLFW_Window associated
-					if (glfwWindows.TryGetValue(windowPointers[i], out var window))
+					if (_glfwWindows.TryGetValue(_windowPointers[i], out var window))
 					{
 						_input.StopListening(window._pointer);
-						glfwWindows.Remove(window._pointer);
+						_glfwWindows.Remove(window._pointer);
 						window.InvokeCloseWindowCallback();
 					}
 
 					// remove OpenGL context
 					if (App.graphics is IGraphicsOpenGL)
 					{
-						glContexts.Remove(windowPointers[i]);
+						_glContexts.Remove(_windowPointers[i]);
 					}
 					// remove Vulkan Surface
 					else if (App.graphics is IGraphicsVulkan vkGraphics)
 					{
 						var vkInstance = vkGraphics.GetVulkanInstancePointer();
 
-						if (vkDestroySurfaceKHR == null)
+						if (vkDestroySurfaceKHR is null)
 						{
 							var ptr = GetVKProcAddress(vkInstance, "vkDestroySurfaceKHR");
-							// if (ptr != null) FIXME
+							// if (ptr is not null) FIXME
 							vkDestroySurfaceKHR = (VkDestroySurfaceKHR)Marshal.GetDelegateForFunctionPointer(ptr, typeof(VkDestroySurfaceKHR));
 						}
 
-						vkDestroySurfaceKHR?.Invoke(vkInstance, vkSurfaces[windowPointers[i]], IntPtr.Zero);
-						vkSurfaces.Remove(windowPointers[i]);
+						vkDestroySurfaceKHR?.Invoke(vkInstance, _vkSurfaces[_windowPointers[i]], IntPtr.Zero);
+						_vkSurfaces.Remove(_windowPointers[i]);
 					}
 
-					GLFW.DestroyWindow(windowPointers[i]);
-					windowPointers.RemoveAt(i);
+					GLFW.DestroyWindow(_windowPointers[i]);
+					_windowPointers.RemoveAt(i);
 				}
 			}
 		}
 
 		protected override Window.Platform CreateWindow(string title, int width, int height, WindowFlags flags = WindowFlags.None)
 		{
-			if (Thread.CurrentThread.ManagedThreadId != mainThreadId)
-				throw new Exception("Creating a Window must be called from the Main Thread");
+			if (Thread.CurrentThread.ManagedThreadId != mainThreadId) throw new Exception("Creating a Window must be called from the Main Thread");
 
 			// create GLFW Window
 			var ptr = CreateGlfwWindow(title, width, height, flags);
@@ -159,12 +158,12 @@ namespace MGE.GLFW
 			// Add the GL Context
 			if (App.graphics is IGraphicsOpenGL)
 			{
-				glContexts.Add(ptr, new GLFW_GLContext(ptr));
+				_glContexts.Add(ptr, new GLFW_GLContext(ptr));
 			}
 
 			// create the actual Window object
 			var window = new GLFW_Window(this, ptr, title, !flags.HasFlag(WindowFlags.Hidden));
-			glfwWindows.Add(ptr, window);
+			_glfwWindows.Add(ptr, window);
 			return window;
 		}
 
@@ -178,9 +177,9 @@ namespace MGE.GLFW
 			GLFW.WindowHint(GLFW_Enum.SAMPLES, flags.HasFlag(WindowFlags.MultiSampling) ? 4 : 0);
 			GLFW.WindowHint(GLFW_Enum.MAXIMIZED, flags.HasFlag(WindowFlags.Maximized));
 
-			IntPtr shared = IntPtr.Zero;
-			if (App.graphics is IGraphicsOpenGL && windowPointers.Count > 0)
-				shared = windowPointers[0];
+			var shared = IntPtr.Zero;
+			if (App.graphics is IGraphicsOpenGL && _windowPointers.Count > 0)
+				shared = _windowPointers[0];
 
 			var monitor = IntPtr.Zero;
 			if (flags.HasFlag(WindowFlags.Fullscreen))
@@ -193,7 +192,7 @@ namespace MGE.GLFW
 				GLFW.GetError(out string error);
 				throw new Exception($"Unable to create a new Window: {error}");
 			}
-			windowPointers.Add(ptr);
+			_windowPointers.Add(ptr);
 
 			// create the Vulkan surface
 			if (App.graphics is IGraphicsVulkan vkGraphics)
@@ -201,10 +200,9 @@ namespace MGE.GLFW
 				var vkInstance = vkGraphics.GetVulkanInstancePointer();
 				var result = GLFW.CreateWindowSurface(vkInstance, ptr, IntPtr.Zero, out var surface);
 
-				if (result != GLFW_VkResult.Success)
-					throw new Exception($"Unable to create a Vulkan Surface, {result}");
+				if (result != GLFW_VkResult.Success) throw new Exception($"Unable to create a Vulkan Surface, {result}");
 
-				vkSurfaces.Add(ptr, surface);
+				_vkSurfaces.Add(ptr, surface);
 			}
 
 			// show window
@@ -228,13 +226,13 @@ namespace MGE.GLFW
 
 			var ptr = CreateGlfwWindow("hidden-context", 128, 128, WindowFlags.Hidden);
 			var context = new GLFW_GLContext(ptr);
-			glContexts.Add(ptr, context);
+			_glContexts.Add(ptr, context);
 			return context;
 		}
 
 		public ISystemOpenGL.Context GetWindowGLContext(Window window)
 		{
-			return glContexts[((GLFW_Window)window.implementation)._pointer];
+			return _glContexts[((GLFW_Window)window.implementation)._pointer];
 		}
 
 		public ISystemOpenGL.Context? GetCurrentGLContext()
@@ -242,14 +240,14 @@ namespace MGE.GLFW
 			var ptr = GLFW.GetCurrentContext();
 
 			if (ptr != IntPtr.Zero)
-				return glContexts[ptr];
+				return _glContexts[ptr];
 
 			return null;
 		}
 
 		public void SetCurrentGLContext(ISystemOpenGL.Context? context)
 		{
-			if (context is GLFW_GLContext ctx && ctx != null)
+			if (context is GLFW_GLContext ctx && ctx is not null)
 				GLFW.MakeContextCurrent(ctx.window);
 			else
 				GLFW.MakeContextCurrent(IntPtr.Zero);
@@ -275,7 +273,7 @@ namespace MGE.GLFW
 
 		public IntPtr GetVKSurface(Window window)
 		{
-			return vkSurfaces[((GLFW_Window)window.implementation)._pointer];
+			return _vkSurfaces[((GLFW_Window)window.implementation)._pointer];
 		}
 
 		public List<string> GetVKExtensions()
@@ -288,7 +286,7 @@ namespace MGE.GLFW
 				for (int i = 0; i < count; i++)
 				{
 					var str = Marshal.PtrToStringAnsi(new IntPtr(ptr[i]));
-					if (str != null)
+					if (str is not null)
 						list.Add(str);
 				}
 

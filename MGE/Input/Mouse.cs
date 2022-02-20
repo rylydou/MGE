@@ -17,7 +17,7 @@ public enum MouseButtons
 
 public static class MouseButtonsExt
 {
-	public static IEnumerable<MouseButtons> All
+	public static IEnumerable<MouseButtons> all
 	{
 		get
 		{
@@ -38,71 +38,68 @@ public enum Cursors
 	Crosshair,
 	Hand,
 	HorizontalResize,
-	VerticalResize
+	VerticalResize,
 }
-
 
 /// <summary>
 /// Stores a Mouse State
 /// </summary>
 public class Mouse
 {
-	public const int MaxButtons = 5;
+	public const int MAX_BUTTONS = 5;
 
-	internal readonly bool[] pressed = new bool[MaxButtons];
-	internal readonly bool[] down = new bool[MaxButtons];
-	internal readonly bool[] released = new bool[MaxButtons];
-	internal readonly long[] timestamp = new long[MaxButtons];
-	internal Vector2 wheelValue;
+	internal readonly bool[] _pressed = new bool[MAX_BUTTONS];
+	internal readonly bool[] _down = new bool[MAX_BUTTONS];
+	internal readonly bool[] _released = new bool[MAX_BUTTONS];
+	internal readonly long[] _timestamp = new long[MAX_BUTTONS];
+	internal Vector2 _wheelValue;
 
-	public bool Pressed(MouseButtons button) => pressed[(int)button];
-	public bool Down(MouseButtons button) => down[(int)button];
-	public bool Released(MouseButtons button) => released[(int)button];
+	public bool Pressed(MouseButtons button) => _pressed[(int)button];
+	public bool Down(MouseButtons button) => _down[(int)button];
+	public bool Released(MouseButtons button) => _released[(int)button];
 
 	public long Timestamp(MouseButtons button)
 	{
-		return timestamp[(int)button];
+		return _timestamp[(int)button];
 	}
 
 	public bool Repeated(MouseButtons button, float delay, float interval)
 	{
-		if (Pressed(button))
-			return true;
+		if (Pressed(button)) return true;
 
-		var time = timestamp[(int)button] / (float)TimeSpan.TicksPerSecond;
+		var time = _timestamp[(int)button] / (float)TimeSpan.TicksPerSecond;
 
 		return Down(button) && (Time.duration.TotalSeconds - time) > delay && Time.OnInterval(interval, time);
 	}
 
-	public bool LeftPressed => pressed[(int)MouseButtons.Left];
-	public bool LeftDown => down[(int)MouseButtons.Left];
-	public bool LeftReleased => released[(int)MouseButtons.Left];
+	public bool leftPressed => _pressed[(int)MouseButtons.Left];
+	public bool leftDown => _down[(int)MouseButtons.Left];
+	public bool leftReleased => _released[(int)MouseButtons.Left];
 
-	public bool RightPressed => pressed[(int)MouseButtons.Right];
-	public bool RightDown => down[(int)MouseButtons.Right];
-	public bool RightReleased => released[(int)MouseButtons.Right];
+	public bool rightPressed => _pressed[(int)MouseButtons.Right];
+	public bool rightDown => _down[(int)MouseButtons.Right];
+	public bool rightReleased => _released[(int)MouseButtons.Right];
 
-	public bool MiddlePressed => pressed[(int)MouseButtons.Middle];
-	public bool MiddleDown => down[(int)MouseButtons.Middle];
-	public bool MiddleReleased => released[(int)MouseButtons.Middle];
+	public bool middlePressed => _pressed[(int)MouseButtons.Middle];
+	public bool middleDown => _down[(int)MouseButtons.Middle];
+	public bool middleReleased => _released[(int)MouseButtons.Middle];
 
-	public Vector2 Wheel => wheelValue;
+	public Vector2 wheel => _wheelValue;
 
 	internal void Copy(Mouse other)
 	{
-		Array.Copy(other.pressed, 0, pressed, 0, MaxButtons);
-		Array.Copy(other.down, 0, down, 0, MaxButtons);
-		Array.Copy(other.released, 0, released, 0, MaxButtons);
-		Array.Copy(other.timestamp, 0, timestamp, 0, MaxButtons);
+		Array.Copy(other._pressed, 0, _pressed, 0, MAX_BUTTONS);
+		Array.Copy(other._down, 0, _down, 0, MAX_BUTTONS);
+		Array.Copy(other._released, 0, _released, 0, MAX_BUTTONS);
+		Array.Copy(other._timestamp, 0, _timestamp, 0, MAX_BUTTONS);
 
-		wheelValue = other.wheelValue;
+		_wheelValue = other._wheelValue;
 	}
 
 	internal void Step()
 	{
-		Array.Fill(pressed, false);
-		Array.Fill(released, false);
-		wheelValue = Vector2.zero;
+		Array.Fill(_pressed, false);
+		Array.Fill(_released, false);
+		_wheelValue = Vector2.zero;
 	}
-
 }

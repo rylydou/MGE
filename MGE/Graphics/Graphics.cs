@@ -6,13 +6,23 @@ public enum Renderer
 {
 	None = 0,
 	Unknown = 1,
+
+	// Graphics
+
 	OpenGLES,
 	OpenGL,
+
 	Vulkan,
+
 	Direct3D9,
 	Direct3D11,
 	Direct3D12,
+
 	Metal,
+
+	// Audio
+
+	OpenAL,
 }
 
 public abstract class Graphics : AppModule
@@ -54,7 +64,7 @@ public abstract class Graphics : AppModule
 
 	protected internal override void Startup()
 	{
-		Log.Info($"{apiName} {apiVersion} ({deviceName})");
+		Log.System($"{apiName} {apiVersion} ({deviceName})");
 	}
 
 	/// <summary>
@@ -98,19 +108,19 @@ public abstract class Graphics : AppModule
 		if (!(pass.target is FrameBuffer) && !(pass.target is Window))
 			throw new Exception("RenderTarget must be a Render Texture or a Window");
 
-		if (pass.mesh == null)
+		if (pass.mesh is null)
 			throw new Exception("Mesh cannot be null when drawing");
 
-		if (pass.material == null)
+		if (pass.material is null)
 			throw new Exception("Material cannot be null when drawing");
 
-		if (pass.mesh.instanceCount > 0 && (pass.mesh.instanceFormat == null || (pass.mesh.instanceCount < pass.mesh.instanceCount)))
+		if (pass.mesh.instanceCount > 0 && (pass.mesh.instanceFormat is null || (pass.mesh.instanceCount < pass.mesh.instanceCount)))
 			throw new Exception("Trying to draw more Instances than exist in the Mesh");
 
 		if (pass.mesh.indexCount < pass.meshIndexStart + pass.meshIndexCount)
 			throw new Exception("Trying to draw more Indices than exist in the Mesh");
 
-		if (pass.viewport != null)
+		if (pass.viewport is not null)
 		{
 			var bounds = new RectInt(0, 0, pass.target.renderWidth, pass.target.renderHeight);
 			pass.viewport = RectInt.Intersect(pass.viewport.Value, bounds);

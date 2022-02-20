@@ -35,11 +35,11 @@ namespace MGE.SDL2
 			int index = cursors switch
 			{
 				Cursors.Default => (int)SDL.SDL_SystemCursor.SDL_SYSTEM_CURSOR_ARROW,
+				Cursors.IBeam => (int)SDL.SDL_SystemCursor.SDL_SYSTEM_CURSOR_IBEAM,
 				Cursors.Crosshair => (int)SDL.SDL_SystemCursor.SDL_SYSTEM_CURSOR_CROSSHAIR,
 				Cursors.Hand => (int)SDL.SDL_SystemCursor.SDL_SYSTEM_CURSOR_HAND,
 				Cursors.HorizontalResize => (int)SDL.SDL_SystemCursor.SDL_SYSTEM_CURSOR_SIZEWE,
 				Cursors.VerticalResize => (int)SDL.SDL_SystemCursor.SDL_SYSTEM_CURSOR_SIZENS,
-				Cursors.IBeam => (int)SDL.SDL_SystemCursor.SDL_SYSTEM_CURSOR_IBEAM,
 				_ => throw new NotImplementedException()
 			};
 

@@ -157,20 +157,20 @@ namespace MGE
 
 			// link textures
 			var output = packer.Pack();
-			if (output != null)
+			if (output is not null)
 			{
-				for (int i = 0; i < output.Pages.Count; i++)
+				for (int i = 0; i < output.pages.Count; i++)
 				{
-					var texture = new Texture(output.Pages[i]);
-					texture.Filter = filter;
+					var texture = new Texture(output.pages[i]);
+					texture.filter = filter;
 
-					foreach (var entry in output.Entries.Values)
+					foreach (var entry in output.entries.Values)
 					{
-						if (entry.Page != i)
+						if (entry.page != i)
 							continue;
 
-						if (charset.TryGetValue(entry.Name[0], out var character))
-							character.image.Reset(texture, entry.Source, entry.Frame);
+						if (charset.TryGetValue(entry.name[0], out var character))
+							character.image.Reset(texture, entry.source, entry.frame);
 					}
 
 				}

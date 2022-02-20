@@ -102,8 +102,7 @@ namespace MGE
 
 		public FontSize(Font font, int size, string charset)
 		{
-			if (font.disposed)
-				throw new Exception("Cannot get Font data as it is disposed");
+			if (font.disposed) throw new Exception("Cannot get Font data as it is disposed");
 
 			this.font = font;
 			this.size = size;
@@ -175,7 +174,7 @@ namespace MGE
 			{
 				var bitmap = new Bitmap(ch.width, ch.height);
 
-				Render(unicode, new Span<Color>(bitmap.Pixels), out _, out _);
+				Render(unicode, new Span<Color>(bitmap.pixels), out _, out _);
 
 				return bitmap;
 			}

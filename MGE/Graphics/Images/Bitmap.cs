@@ -11,17 +11,17 @@ public class Bitmap
 	/// <summary>
 	/// The Pixel array of the Bitmap
 	/// </summary>
-	public readonly Color[] Pixels;
+	public readonly Color[] pixels;
 
 	/// <summary>
 	/// The Width of the Bitmap, in Pixels
 	/// </summary>
-	public readonly int Width;
+	public readonly int width;
 
 	/// <summary>
 	/// The Height of the Bitmap, in Pixels
 	/// </summary>
-	public readonly int Height;
+	public readonly int height;
 
 	public Bitmap(int width, int height) : this(width, height, new Color[width * height])
 	{
@@ -34,25 +34,25 @@ public class Bitmap
 		if (pixels.Length < width * height)
 			throw new Exception("Pixels array doesn't fit the Bitmap size");
 
-		Pixels = pixels;
-		Width = width;
-		Height = height;
+		this.pixels = pixels;
+		this.width = width;
+		this.height = height;
 	}
 
-	public Bitmap(Stream stream)
+	public Bitmap(Stream stream, string format)
 	{
-		if (Images.Read(stream, out Width, out Height, out var pixels) && pixels != null)
-			Pixels = pixels;
+		if (Image.Read(stream, format, out width, out height, out var pixels) && pixels is not null)
+			this.pixels = pixels;
 		else
 			throw new NotSupportedException("Stream is either an invalid or not supported image format");
 	}
 
-	public Bitmap(string path)
+	public Bitmap(File file)
 	{
-		using var stream = File.OpenRead(path);
+		using var stream = file.OpenRead();
 
-		if (Images.Read(stream, out Width, out Height, out var pixels) && pixels != null)
-			Pixels = pixels;
+		if (Image.Read(stream, file.extension, out width, out height, out var pixels) && pixels is not null)
+			this.pixels = pixels;
 		else
 			throw new NotSupportedException("Stream is either an invalid or not supported image format");
 
@@ -66,11 +66,11 @@ public class Bitmap
 	{
 		unsafe
 		{
-			fixed (void* ptr = Pixels)
+			fixed (void* ptr = pixels)
 			{
 				byte* rgba = (byte*)ptr;
 
-				for (int i = 0, len = Pixels.Length * 4; i < len; i += 4)
+				for (int i = 0, len = pixels.Length * 4; i < len; i += 4)
 				{
 					rgba[i + 0] = (byte)(rgba[i + 0] * rgba[i + 3] / 255);
 					rgba[i + 1] = (byte)(rgba[i + 1] * rgba[i + 3] / 255);
@@ -85,7 +85,7 @@ public class Bitmap
 	/// </summary>
 	public void SetPixels(Memory<Color> source)
 	{
-		source.Span.CopyTo(Pixels);
+		source.Span.CopyTo(pixels);
 	}
 
 	/// <summary>
@@ -96,12 +96,12 @@ public class Bitmap
 		// TODO: perform bounds checking?
 
 		var src = source.Span;
-		var dst = new Span<Color>(Pixels);
+		var dst = new Span<Color>(pixels);
 
 		for (int y = 0; y < destination.height; y++)
 		{
 			var from = src.Slice(y * destination.width, destination.width);
-			var to = dst.Slice(destination.x + (destination.y + y) * Width, destination.width);
+			var to = dst.Slice(destination.x + (destination.y + y) * width, destination.width);
 
 			from.CopyTo(to);
 		}
@@ -109,19 +109,19 @@ public class Bitmap
 
 	public void GetPixels(Memory<Color> destination)
 	{
-		Pixels.CopyTo(destination);
+		pixels.CopyTo(destination);
 	}
 
 	public void GetPixels(Memory<Color> dest, Vector2Int destPosition, Vector2Int destSize, RectInt sourceRect)
 	{
-		var src = new Span<Color>(Pixels);
+		var src = new Span<Color>(pixels);
 		var dst = dest.Span;
 
 		// can't be outside of the source image
 		if (sourceRect.left < 0) sourceRect.left = 0;
 		if (sourceRect.top < 0) sourceRect.top = 0;
-		if (sourceRect.right > Width) sourceRect.right = Width;
-		if (sourceRect.bottom > Height) sourceRect.bottom = Height;
+		if (sourceRect.right > width) sourceRect.right = width;
+		if (sourceRect.bottom > height) sourceRect.bottom = height;
 
 		// can't be larger than our destination
 		if (sourceRect.width > destSize.x - destPosition.x)
@@ -131,7 +131,7 @@ public class Bitmap
 
 		for (int y = 0; y < sourceRect.height; y++)
 		{
-			var from = src.Slice(sourceRect.x + (sourceRect.y + y) * Width, sourceRect.width);
+			var from = src.Slice(sourceRect.x + (sourceRect.y + y) * width, sourceRect.width);
 			var to = dst.Slice(destPosition.x + (destPosition.y + y) * destSize.x, sourceRect.width);
 
 			from.CopyTo(to);
@@ -141,29 +141,30 @@ public class Bitmap
 	public Bitmap GetSubBitmap(RectInt source)
 	{
 		var bmp = new Bitmap(source.width, source.height);
-		GetPixels(bmp.Pixels, Vector2Int.zero, source.size, source);
+		GetPixels(bmp.pixels, Vector2Int.zero, source.size, source);
 		return bmp;
 	}
 
-	public void SavePng(string path)
+	public void SavePng(File file)
 	{
-		using var stream = File.Create(path);
-		PNG.Write(stream, Width, Height, Pixels);
+		using var stream = file.Create();
+		Image.WritePNG(stream, width, height, pixels);
 	}
 
 	public void SavePng(Stream stream)
 	{
-		PNG.Write(stream, Width, Height, Pixels);
+		Image.WritePNG(stream, width, height, pixels);
 	}
 
-	public void SaveJpg(string path)
+	public void SaveJpg(File file, int quality = 90)
 	{
-		throw new NotImplementedException();
+		using var stream = file.Create();
+		Image.WriteJPG(stream, width, height, pixels, quality);
 	}
 
-	public void SaveJpg(Stream stream)
+	public void SaveJpg(Stream stream, int quality = 90)
 	{
-		throw new NotImplementedException();
+		Image.WriteJPG(stream, width, height, pixels, quality);
 	}
 
 	/// <summary>
@@ -171,6 +172,6 @@ public class Bitmap
 	/// </summary>
 	public Bitmap Clone()
 	{
-		return new Bitmap(Width, Height, new Memory<Color>(Pixels).ToArray());
+		return new Bitmap(width, height, new Memory<Color>(pixels).ToArray());
 	}
 }

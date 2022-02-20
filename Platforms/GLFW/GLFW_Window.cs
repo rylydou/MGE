@@ -256,7 +256,7 @@ namespace MGE.GLFW
 			if (App.graphics is IGraphicsOpenGL)
 			{
 				var context = _system.GetCurrentGLContext();
-				if (context == null || (context is GLFW_GLContext ctx && ctx.window != _pointer))
+				if (context is null || (context is GLFW_GLContext ctx && ctx.window != _pointer))
 					_system.SetCurrentGLContext(_pointer);
 
 				GLFW.SwapInterval(vsync ? 1 : 0);

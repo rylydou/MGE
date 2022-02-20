@@ -12,12 +12,12 @@ public abstract class Input
 	/// <summary>
 	/// The Current Input State
 	/// </summary>
-	public readonly InputState State;
+	public readonly InputState state;
 
 	/// <summary>
 	/// The Input State of the previous frame
 	/// </summary>
-	public readonly InputState LastState;
+	public readonly InputState lastState;
 
 	/// <summary>
 	/// The Input State of the next frame
@@ -27,41 +27,41 @@ public abstract class Input
 	/// <summary>
 	/// The Keyboard of the current State
 	/// </summary>
-	public Keyboard Keyboard => State.Keyboard;
+	public Keyboard keyboard => state.keyboard;
 
 	/// <summary>
 	/// The Mouse of the Current State
 	/// </summary>
-	public Mouse Mouse => State.Mouse;
+	public Mouse mouse => state.mouse;
 
 	/// <summary>
 	/// The Controllers of the Current State
 	/// </summary>
-	public ReadOnlyCollection<Controller> Controllers => State.Controllers;
+	public ReadOnlyCollection<Controller> controllers => state.controllers;
 
 	/// <summary>
 	/// Default delay before a key or button starts repeating
 	/// </summary>
-	public float RepeatDelay = 0.4f;
+	public float repeatDelay = 0.4f;
 
 	/// <summary>
 	/// Default interval that the repeat is triggered, in seconds
 	/// </summary>
-	public float RepeatInterval = 0.03f;
+	public float repeatInterval = 0.03f;
 
 	internal List<WeakReference<VirtualButton>> virtualButtons = new List<WeakReference<VirtualButton>>();
 
 	protected Input()
 	{
-		State = new InputState(this);
-		LastState = new InputState(this);
+		state = new InputState(this);
+		lastState = new InputState(this);
 		nextState = new InputState(this);
 	}
 
 	internal void Step()
 	{
-		LastState.Copy(State);
-		State.Copy(nextState);
+		lastState.Copy(state);
+		state.Copy(nextState);
 		nextState.Step();
 
 		for (int i = virtualButtons.Count - 1; i >= 0; i--)
@@ -89,144 +89,144 @@ public abstract class Input
 	/// </summary>
 	public abstract void SetClipboardString(string value);
 
-	public delegate void TextInputHandler(char value);
+	public delegate void textInputHandler(char value);
 
-	public event TextInputHandler? OnTextEvent;
+	public event textInputHandler? onTextEvent;
 
 	protected void OnText(char value)
 	{
-		OnTextEvent?.Invoke(value);
-		nextState.Keyboard.Text.Append(value);
+		onTextEvent?.Invoke(value);
+		nextState.keyboard.text.Append(value);
 	}
 
 	protected void OnKeyDown(Keys key)
 	{
-		uint id = (uint)key;
-		if (id >= Keyboard.MaxKeys)
+		var id = (uint)key;
+		if (id >= Keyboard.MAX_KEYS)
 			throw new ArgumentOutOfRangeException(nameof(key), "Value is out of Range for supported keys");
 
-		nextState.Keyboard.down[id] = true;
-		nextState.Keyboard.pressed[id] = true;
-		nextState.Keyboard.timestamp[id] = Time.duration.Ticks;
+		nextState.keyboard._down[id] = true;
+		nextState.keyboard._pressed[id] = true;
+		nextState.keyboard._timestamp[id] = Time.duration.Ticks;
 	}
 
 	protected void OnKeyUp(Keys key)
 	{
-		uint id = (uint)key;
-		if (id >= Keyboard.MaxKeys)
+		var id = (uint)key;
+		if (id >= Keyboard.MAX_KEYS)
 			throw new ArgumentOutOfRangeException(nameof(key), "Value is out of Range for supported keys");
 
-		nextState.Keyboard.down[id] = false;
-		nextState.Keyboard.released[id] = true;
+		nextState.keyboard._down[id] = false;
+		nextState.keyboard._released[id] = true;
 	}
 
 	protected void OnMouseDown(MouseButtons button)
 	{
-		nextState.Mouse.down[(int)button] = true;
-		nextState.Mouse.pressed[(int)button] = true;
-		nextState.Mouse.timestamp[(int)button] = Time.duration.Ticks;
+		nextState.mouse._down[(int)button] = true;
+		nextState.mouse._pressed[(int)button] = true;
+		nextState.mouse._timestamp[(int)button] = Time.duration.Ticks;
 	}
 
 	protected void OnMouseUp(MouseButtons button)
 	{
-		nextState.Mouse.down[(int)button] = false;
-		nextState.Mouse.released[(int)button] = true;
+		nextState.mouse._down[(int)button] = false;
+		nextState.mouse._released[(int)button] = true;
 	}
 
 	protected void OnMouseWheel(float offsetX, float offsetY)
 	{
-		nextState.Mouse.wheelValue = new Vector2(offsetX, offsetY);
+		nextState.mouse._wheelValue = new Vector2(offsetX, offsetY);
 	}
 
 	protected void OnJoystickConnect(uint index, string name, uint buttonCount, uint axisCount, bool isGamepad)
 	{
-		if (index < InputState.MaxControllers)
-			nextState.Controllers[(int)index].Connect(name, buttonCount, axisCount, isGamepad);
+		if (index < InputState.maxControllers)
+			nextState.controllers[(int)index].Connect(name, buttonCount, axisCount, isGamepad);
 	}
 
 	protected void OnJoystickDisconnect(uint index)
 	{
-		if (index < InputState.MaxControllers)
-			nextState.Controllers[(int)index].Disconnect();
+		if (index < InputState.maxControllers)
+			nextState.controllers[(int)index].Disconnect();
 	}
 
 	protected void OnJoystickButtonDown(uint index, uint button)
 	{
-		if (index < InputState.MaxControllers && button < Controller.MaxButtons)
+		if (index < InputState.maxControllers && button < Controller.MAX_BUTTONS)
 		{
-			nextState.Controllers[(int)index].down[button] = true;
-			nextState.Controllers[(int)index].pressed[button] = true;
-			nextState.Controllers[(int)index].timestamp[button] = Time.duration.Ticks;
+			nextState.controllers[(int)index]._down[button] = true;
+			nextState.controllers[(int)index]._pressed[button] = true;
+			nextState.controllers[(int)index]._timestamp[button] = Time.duration.Ticks;
 		}
 	}
 
 	protected void OnJoystickButtonUp(uint index, uint button)
 	{
-		if (index < InputState.MaxControllers && button < Controller.MaxButtons)
+		if (index < InputState.maxControllers && button < Controller.MAX_BUTTONS)
 		{
-			nextState.Controllers[(int)index].down[button] = false;
-			nextState.Controllers[(int)index].released[button] = true;
+			nextState.controllers[(int)index]._down[button] = false;
+			nextState.controllers[(int)index]._released[button] = true;
 		}
 	}
 
 	protected void OnGamepadButtonDown(uint index, Buttons button)
 	{
-		if (index < InputState.MaxControllers && button != Buttons.None)
+		if (index < InputState.maxControllers && button != Buttons.None)
 		{
-			nextState.Controllers[(int)index].down[(int)button] = true;
-			nextState.Controllers[(int)index].pressed[(int)button] = true;
-			nextState.Controllers[(int)index].timestamp[(int)button] = Time.duration.Ticks;
+			nextState.controllers[(int)index]._down[(int)button] = true;
+			nextState.controllers[(int)index]._pressed[(int)button] = true;
+			nextState.controllers[(int)index]._timestamp[(int)button] = Time.duration.Ticks;
 		}
 	}
 
 	protected void OnGamepadButtonUp(uint index, Buttons button)
 	{
-		if (index < InputState.MaxControllers && button != Buttons.None)
+		if (index < InputState.maxControllers && button != Buttons.None)
 		{
-			nextState.Controllers[(int)index].down[(int)button] = false;
-			nextState.Controllers[(int)index].released[(int)button] = true;
+			nextState.controllers[(int)index]._down[(int)button] = false;
+			nextState.controllers[(int)index]._released[(int)button] = true;
 		}
 	}
 
 	protected bool IsJoystickButtonDown(uint index, uint button)
 	{
-		return (index < InputState.MaxControllers && button < Controller.MaxButtons && nextState.Controllers[(int)index].down[button]);
+		return (index < InputState.maxControllers && button < Controller.MAX_BUTTONS && nextState.controllers[(int)index]._down[button]);
 	}
 
 	protected bool IsGamepadButtonDown(uint index, Buttons button)
 	{
-		return (index < InputState.MaxControllers && button != Buttons.None && nextState.Controllers[(int)index].down[(int)button]);
+		return (index < InputState.maxControllers && button != Buttons.None && nextState.controllers[(int)index]._down[(int)button]);
 	}
 
 	protected void OnJoystickAxis(uint index, uint axis, float value)
 	{
-		if (index < InputState.MaxControllers && axis < Controller.MaxAxis)
+		if (index < InputState.maxControllers && axis < Controller.MAX_AXIS)
 		{
-			nextState.Controllers[(int)index].axis[axis] = value;
-			nextState.Controllers[(int)index].axisTimestamp[axis] = Time.duration.Ticks;
+			nextState.controllers[(int)index]._axis[axis] = value;
+			nextState.controllers[(int)index]._axisTimestamp[axis] = Time.duration.Ticks;
 		}
 	}
 
 	protected float GetJoystickAxis(uint index, uint axis)
 	{
-		if (index < InputState.MaxControllers && axis < Controller.MaxAxis)
-			return nextState.Controllers[(int)index].axis[axis];
+		if (index < InputState.maxControllers && axis < Controller.MAX_AXIS)
+			return nextState.controllers[(int)index]._axis[axis];
 		return 0;
 	}
 
 	protected void OnGamepadAxis(uint index, Axes axis, float value)
 	{
-		if (index < InputState.MaxControllers && axis != Axes.None)
+		if (index < InputState.maxControllers && axis != Axes.None)
 		{
-			nextState.Controllers[(int)index].axis[(int)axis] = value;
-			nextState.Controllers[(int)index].axisTimestamp[(int)axis] = Time.duration.Ticks;
+			nextState.controllers[(int)index]._axis[(int)axis] = value;
+			nextState.controllers[(int)index]._axisTimestamp[(int)axis] = Time.duration.Ticks;
 		}
 	}
 
 	protected float GetGamepadAxis(uint index, Axes axis)
 	{
-		if (index < InputState.MaxControllers && axis != Axes.None)
-			return nextState.Controllers[(int)index].axis[(int)axis];
+		if (index < InputState.maxControllers && axis != Axes.None)
+			return nextState.controllers[(int)index]._axis[(int)axis];
 		return 0;
 	}
 }
@@ -239,67 +239,67 @@ public class InputState
 	/// <summary>
 	/// The Maximum number of Controllers
 	/// </summary>
-	public const int MaxControllers = 32;
+	public const int maxControllers = 32;
 
 	/// <summary>
 	/// Our Input Module
 	/// </summary>
-	public readonly Input Input;
+	public readonly Input input;
 
 	/// <summary>
 	/// The Keyboard State
 	/// </summary>
-	public readonly Keyboard Keyboard;
+	public readonly Keyboard keyboard;
 
 	/// <summary>
 	/// The Mouse State
 	/// </summary>
-	public readonly Mouse Mouse;
+	public readonly Mouse mouse;
 
 	/// <summary>
 	/// A list of all the Controllers
 	/// </summary>
-	readonly Controller[] controllers;
+	readonly Controller[] _controllers;
 
 	/// <summary>
 	/// A Read-Only Collection of the Controllers
 	/// Note that they aren't necessarily connected
 	/// </summary>
-	public readonly ReadOnlyCollection<Controller> Controllers;
+	public readonly ReadOnlyCollection<Controller> controllers;
 
 	public InputState(Input input)
 	{
-		Input = input;
+		this.input = input;
 
-		controllers = new Controller[MaxControllers];
-		for (int i = 0; i < controllers.Length; i++)
-			controllers[i] = new Controller(input);
+		_controllers = new Controller[maxControllers];
+		for (int i = 0; i < _controllers.Length; i++)
+			_controllers[i] = new Controller(input);
 
-		Controllers = new ReadOnlyCollection<Controller>(controllers);
-		Keyboard = new Keyboard(input);
-		Mouse = new Mouse();
+		controllers = new ReadOnlyCollection<Controller>(_controllers);
+		keyboard = new Keyboard(input);
+		mouse = new Mouse();
 	}
 
 	internal void Step()
 	{
-		for (int i = 0; i < Controllers.Count; i++)
+		for (int i = 0; i < controllers.Count; i++)
 		{
-			if (Controllers[i].Connected)
-				Controllers[i].Step();
+			if (controllers[i].connected)
+				controllers[i].Step();
 		}
-		Keyboard.Step();
-		Mouse.Step();
+		keyboard.Step();
+		mouse.Step();
 	}
 
 	internal void Copy(InputState other)
 	{
-		for (int i = 0; i < Controllers.Count; i++)
+		for (int i = 0; i < controllers.Count; i++)
 		{
-			if (other.Controllers[i].Connected || (Controllers[i].Connected != other.Controllers[i].Connected))
-				Controllers[i].Copy(other.Controllers[i]);
+			if (other.controllers[i].connected || (controllers[i].connected != other.controllers[i].connected))
+				controllers[i].Copy(other.controllers[i]);
 		}
 
-		Keyboard.Copy(other.Keyboard);
-		Mouse.Copy(other.Mouse);
+		keyboard.Copy(other.keyboard);
+		mouse.Copy(other.mouse);
 	}
 }

@@ -1,7 +1,7 @@
 #version 450
 
 layout(binding = 0) uniform WorldUniform {
-    mat4 u_matrix;
+	mat4 u_matrix;
 } world;
 
 layout(location = 0) in vec2 a_position;
@@ -15,9 +15,9 @@ layout(location = 2) out vec3 v_type;
 
 void main()
 {
-    gl_Position = world.u_matrix * vec4(a_position, 0.0, 1.0);
+	gl_Position = world.u_matrix * vec4(a_position, 0.0, 1.0);
 
-    v_tex = a_tex;
-    v_col = a_color;
+	v_tex = a_tex;
+	v_col = a_color;
 	v_type = a_type;
 }

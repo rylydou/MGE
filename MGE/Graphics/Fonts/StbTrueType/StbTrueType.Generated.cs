@@ -567,13 +567,13 @@ namespace StbTrueTypeSharp
 				int g = (int)(stbtt__GetGlyfOffset(info, (int)(glyph_index)));
 				if ((g) < (0))
 					return (int)(0);
-				if ((x0) != null)
+				if ((x0) is not null)
 					*x0 = (int)(ttSHORT(info.data + g + 2));
-				if ((y0) != null)
+				if ((y0) is not null)
 					*y0 = (int)(ttSHORT(info.data + g + 4));
-				if ((x1) != null)
+				if ((x1) is not null)
 					*x1 = (int)(ttSHORT(info.data + g + 6));
-				if ((y1) != null)
+				if ((y1) is not null)
 					*y1 = (int)(ttSHORT(info.data + g + 8));
 			}
 
@@ -891,11 +891,11 @@ namespace StbTrueTypeSharp
 
 						tmp = (stbtt_vertex*)(CRuntime.malloc(
 								(ulong)((num_vertices + comp_num_verts) * sizeof(stbtt_vertex))));
-						if (tmp == null)
+						if (tmp is null)
 						{
-							if ((vertices) != null)
+							if ((vertices) is not null)
 								CRuntime.free(vertices);
-							if ((comp_verts) != null)
+							if ((comp_verts) is not null)
 								CRuntime.free(comp_verts);
 							return (int)(0);
 						}
@@ -904,7 +904,7 @@ namespace StbTrueTypeSharp
 							CRuntime.memcpy(tmp, vertices, (ulong)(num_vertices * sizeof(stbtt_vertex)));
 						CRuntime.memcpy(tmp + num_vertices, comp_verts,
 								(ulong)(comp_num_verts * sizeof(stbtt_vertex)));
-						if ((vertices) != null)
+						if ((vertices) is not null)
 							CRuntime.free(vertices);
 						vertices = tmp;
 						CRuntime.free(comp_verts);
@@ -1411,13 +1411,13 @@ namespace StbTrueTypeSharp
 			stbtt__csctx c = new stbtt__csctx();
 			c.bounds = (int)(1);
 			int r = (int)(stbtt__run_charstring(info, (int)(glyph_index), &c));
-			if ((x0) != null)
+			if ((x0) is not null)
 				*x0 = (int)((r) != 0 ? c.min_x : 0);
-			if ((y0) != null)
+			if ((y0) is not null)
 				*y0 = (int)((r) != 0 ? c.min_y : 0);
-			if ((x1) != null)
+			if ((x1) is not null)
 				*x1 = (int)((r) != 0 ? c.max_x : 0);
-			if ((y1) != null)
+			if ((y1) is not null)
 				*y1 = (int)((r) != 0 ? c.max_y : 0);
 			return (int)((r) != 0 ? c.num_vertices : 0);
 		}
@@ -1436,16 +1436,16 @@ namespace StbTrueTypeSharp
 			ushort numOfLongHorMetrics = (ushort)(ttUSHORT(info.data + info.hhea + 34));
 			if ((glyph_index) < (numOfLongHorMetrics))
 			{
-				if ((advanceWidth) != null)
+				if ((advanceWidth) is not null)
 					*advanceWidth = (int)(ttSHORT(info.data + info.hmtx + 4 * glyph_index));
-				if ((leftSideBearing) != null)
+				if ((leftSideBearing) is not null)
 					*leftSideBearing = (int)(ttSHORT(info.data + info.hmtx + 4 * glyph_index + 2));
 			}
 			else
 			{
-				if ((advanceWidth) != null)
+				if ((advanceWidth) is not null)
 					*advanceWidth = (int)(ttSHORT(info.data + info.hmtx + 4 * (numOfLongHorMetrics - 1)));
-				if ((leftSideBearing) != null)
+				if ((leftSideBearing) is not null)
 					*leftSideBearing = (int)(ttSHORT(info.data + info.hmtx + 4 * numOfLongHorMetrics +
 																						2 * (glyph_index - numOfLongHorMetrics)));
 			}
@@ -1756,11 +1756,11 @@ namespace StbTrueTypeSharp
 
 		public static void stbtt_GetFontVMetrics(stbtt_fontinfo info, int* ascent, int* descent, int* lineGap)
 		{
-			if ((ascent) != null)
+			if ((ascent) is not null)
 				*ascent = (int)(ttSHORT(info.data + info.hhea + 4));
-			if ((descent) != null)
+			if ((descent) is not null)
 				*descent = (int)(ttSHORT(info.data + info.hhea + 6));
-			if ((lineGap) != null)
+			if ((lineGap) is not null)
 				*lineGap = (int)(ttSHORT(info.data + info.hhea + 8));
 		}
 
@@ -1770,11 +1770,11 @@ namespace StbTrueTypeSharp
 			int tab = (int)(stbtt__find_table(info.data, (uint)(info.fontstart), "OS/2"));
 			if (tab == 0)
 				return (int)(0);
-			if ((typoAscent) != null)
+			if ((typoAscent) is not null)
 				*typoAscent = (int)(ttSHORT(info.data + tab + 68));
-			if ((typoDescent) != null)
+			if ((typoDescent) is not null)
 				*typoDescent = (int)(ttSHORT(info.data + tab + 70));
-			if ((typoLineGap) != null)
+			if ((typoLineGap) is not null)
 				*typoLineGap = (int)(ttSHORT(info.data + tab + 72));
 			return (int)(1);
 		}
@@ -1813,24 +1813,24 @@ namespace StbTrueTypeSharp
 			int y1 = 0;
 			if (stbtt_GetGlyphBox(font, (int)(glyph), &x0, &y0, &x1, &y1) == 0)
 			{
-				if ((ix0) != null)
+				if ((ix0) is not null)
 					*ix0 = (int)(0);
-				if ((iy0) != null)
+				if ((iy0) is not null)
 					*iy0 = (int)(0);
-				if ((ix1) != null)
+				if ((ix1) is not null)
 					*ix1 = (int)(0);
-				if ((iy1) != null)
+				if ((iy1) is not null)
 					*iy1 = (int)(0);
 			}
 			else
 			{
-				if ((ix0) != null)
+				if ((ix0) is not null)
 					*ix0 = ((int)(CRuntime.floor((double)(x0 * scale_x + shift_x))));
-				if ((iy0) != null)
+				if ((iy0) is not null)
 					*iy0 = ((int)(CRuntime.floor((double)(-y1 * scale_y + shift_y))));
-				if ((ix1) != null)
+				if ((ix1) is not null)
 					*ix1 = ((int)(CRuntime.ceil((double)(x1 * scale_x + shift_x))));
-				if ((iy1) != null)
+				if ((iy1) is not null)
 					*iy1 = ((int)(CRuntime.ceil((double)(-y0 * scale_y + shift_y))));
 			}
 		}
@@ -1858,7 +1858,7 @@ namespace StbTrueTypeSharp
 
 		public static void* stbtt__hheap_alloc(stbtt__hheap* hh, ulong size)
 		{
-			if ((hh->first_free) != null)
+			if ((hh->first_free) is not null)
 			{
 				void* p = hh->first_free;
 				hh->first_free = *(void**)(p);
@@ -1894,7 +1894,7 @@ namespace StbTrueTypeSharp
 		public static void stbtt__hheap_cleanup(stbtt__hheap* hh)
 		{
 			stbtt__hheap_chunk* c = hh->head;
-			while ((c) != null)
+			while ((c) is not null)
 			{
 				stbtt__hheap_chunk* n = c->next;
 				CRuntime.free(c);
@@ -1908,7 +1908,7 @@ namespace StbTrueTypeSharp
 			stbtt__active_edge* z =
 					(stbtt__active_edge*)(stbtt__hheap_alloc(hh, (ulong)(sizeof(stbtt__active_edge))));
 			float dxdy = (float)((e->x1 - e->x0) / (e->y1 - e->y0));
-			if (z == null)
+			if (z is null)
 				return z;
 			z->fdx = (float)(dxdy);
 			z->fdy = (float)(dxdy != 0.0f ? (1.0f / dxdy) : 0.0f);
@@ -1975,7 +1975,7 @@ namespace StbTrueTypeSharp
 				stbtt__active_edge* e, float y_top)
 		{
 			float y_bottom = (float)(y_top + 1);
-			while ((e) != null)
+			while ((e) is not null)
 			{
 				if ((e->fdx) == (0))
 				{
@@ -2180,7 +2180,7 @@ namespace StbTrueTypeSharp
 				stbtt__active_edge** step = &active;
 				CRuntime.memset(scanline, (int)(0), (ulong)(result->w * sizeof(float)));
 				CRuntime.memset(scanline2, (int)(0), (ulong)((result->w + 1) * sizeof(float)));
-				while ((*step) != null)
+				while ((*step) is not null)
 				{
 					stbtt__active_edge* z = *step;
 					if (z->ey <= scan_y_top)
@@ -2218,7 +2218,7 @@ namespace StbTrueTypeSharp
 					++e;
 				}
 
-				if ((active) != null)
+				if ((active) is not null)
 					stbtt__fill_active_edges_new(scanline, scanline2 + 1, (int)(result->w), active,
 							(float)(scan_y_top));
 				{
@@ -2237,7 +2237,7 @@ namespace StbTrueTypeSharp
 					}
 				}
 				step = &active;
-				while ((*step) != null)
+				while ((*step) is not null)
 				{
 					stbtt__active_edge* z = *step;
 					z->fx += (float)(z->fdx);
@@ -2405,7 +2405,7 @@ namespace StbTrueTypeSharp
 
 		public static void stbtt__add_point(stbtt__point* points, int n, float x, float y)
 		{
-			if (points == null)
+			if (points is null)
 				return;
 			points[n].x = (float)(x);
 			points[n].y = (float)(y);
@@ -2579,7 +2579,7 @@ namespace StbTrueTypeSharp
 			int* winding_lengths = (null);
 			stbtt__point* windings = stbtt_FlattenCurves(vertices, (int)(num_verts),
 					(float)(flatness_in_pixels / scale), &winding_lengths, &winding_count);
-			if ((windings) != null)
+			if ((windings) is not null)
 			{
 				stbtt__rasterize(result, windings, winding_lengths, (int)(winding_count), (float)(scale_x),
 						(float)(scale_y), (float)(shift_x), (float)(shift_y), (int)(x_off), (int)(y_off),
@@ -2622,18 +2622,18 @@ namespace StbTrueTypeSharp
 			gbm.w = (int)(ix1 - ix0);
 			gbm.h = (int)(iy1 - iy0);
 			gbm.pixels = (null);
-			if ((width) != null)
+			if ((width) is not null)
 				*width = (int)(gbm.w);
-			if ((height) != null)
+			if ((height) is not null)
 				*height = (int)(gbm.h);
-			if ((xoff) != null)
+			if ((xoff) is not null)
 				*xoff = (int)(ix0);
-			if ((yoff) != null)
+			if ((yoff) is not null)
 				*yoff = (int)(iy0);
 			if (((gbm.w) != 0) && ((gbm.h) != 0))
 			{
 				gbm.pixels = (byte*)(CRuntime.malloc((ulong)(gbm.w * gbm.h)));
-				if ((gbm.pixels) != null)
+				if ((gbm.pixels) is not null)
 				{
 					gbm.stride = (int)(gbm.w);
 					stbtt_Rasterize(&gbm, (float)(0.35f), vertices, (int)(num_verts), (float)(scale_x),
@@ -2855,7 +2855,7 @@ namespace StbTrueTypeSharp
 			spc.v_oversample = (uint)(1);
 			spc.skip_missing = (int)(0);
 			stbrp_init_target(context, (int)(pw - padding), (int)(ph - padding), nodes, (int)(num_nodes));
-			if ((pixels) != null)
+			if ((pixels) is not null)
 				CRuntime.memset(pixels, (int)(0), (ulong)(pw * ph));
 			return (int)(1);
 		}
@@ -3503,13 +3503,13 @@ namespace StbTrueTypeSharp
 			iy1 += (int)(padding);
 			w = (int)(ix1 - ix0);
 			h = (int)(iy1 - iy0);
-			if ((width) != null)
+			if ((width) is not null)
 				*width = (int)(w);
-			if ((height) != null)
+			if ((height) is not null)
 				*height = (int)(h);
-			if ((xoff) != null)
+			if ((xoff) is not null)
 				*xoff = (int)(ix0);
-			if ((yoff) != null)
+			if ((yoff) is not null)
 				*yoff = (int)(iy0);
 			scale_y = (float)(-scale_y);
 			{

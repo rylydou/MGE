@@ -67,7 +67,7 @@ public abstract class System : AppModule
 
 	protected internal override void Startup()
 	{
-		Log.Info($"{apiName} {apiVersion}");
+		Log.System($"{apiName} {apiVersion}");
 	}
 
 	/// <summary>
@@ -85,8 +85,7 @@ public abstract class System : AppModule
 			if (!string.IsNullOrEmpty(result))
 				return Path.Combine(result, "Library", "Application Support", applicationName);
 		}
-		else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
-						 RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
+		else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
 		{
 			var result = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
 			if (!string.IsNullOrEmpty(result))

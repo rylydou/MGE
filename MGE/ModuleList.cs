@@ -56,7 +56,7 @@ public class ModuleList : IEnumerable<Module>
 			if (!modulesByType.ContainsKey(type))
 				modulesByType[type] = module;
 
-			if (type.BaseType == null)
+			if (type.BaseType is null)
 				break;
 
 			type = type.BaseType;
@@ -95,7 +95,7 @@ public class ModuleList : IEnumerable<Module>
 			if (modulesByType[type] == module)
 				modulesByType.Remove(type);
 
-			if (type.BaseType == null)
+			if (type.BaseType is null)
 				break;
 
 			type = type.BaseType;
@@ -228,7 +228,7 @@ public class ModuleList : IEnumerable<Module>
 
 	static void StartupModule(Module? module, bool callAppMethods)
 	{
-		if (module != null && !module.isStarted)
+		if (module is not null && !module.isStarted)
 		{
 			module.isStarted = true;
 
@@ -313,7 +313,7 @@ public class ModuleList : IEnumerable<Module>
 		for (int i = 0; i < modules.Count; i++)
 		{
 			var module = modules[i];
-			if (module != null)
+			if (module is not null)
 				yield return module;
 		}
 	}
@@ -323,7 +323,7 @@ public class ModuleList : IEnumerable<Module>
 		for (int i = 0; i < modules.Count; i++)
 		{
 			var module = modules[i];
-			if (module != null)
+			if (module is not null)
 				yield return module;
 		}
 	}

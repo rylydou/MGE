@@ -43,7 +43,7 @@ namespace MGE.OpenGL
 				Span<uint> shaders = stackalloc uint[2];
 
 				// vertex shader
-				if (source.vertex != null)
+				if (source.vertex is not null)
 				{
 					uint shaderId = GL.CreateShader(GLEnum.VERTEX_SHADER);
 					shaders[0] = shaderId;
@@ -61,7 +61,7 @@ namespace MGE.OpenGL
 				}
 
 				// fragment shader
-				if (source.fragment != null)
+				if (source.fragment is not null)
 				{
 					uint shaderId = GL.CreateShader(GLEnum.FRAGMENT_SHADER);
 					shaders[1] = shaderId;

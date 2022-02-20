@@ -47,7 +47,7 @@ namespace SDL2
 
 		internal static byte[] UTF8_ToNative(string s)
 		{
-			if (s == null)
+			if (s is null)
 			{
 				return null;
 			}
@@ -1052,7 +1052,7 @@ string result = new string(
 				};
 			}
 
-			if (messageboxdata.colorScheme != null)
+			if (messageboxdata.colorScheme is not null)
 			{
 				data.colorScheme = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(SDL_MessageBoxColorScheme)));
 				Marshal.StructureToPtr(messageboxdata.colorScheme.Value, data.colorScheme, false);

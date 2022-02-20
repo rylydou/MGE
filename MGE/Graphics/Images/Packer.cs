@@ -18,29 +18,29 @@ namespace MGE
 			/// <summary>
 			/// The Name of the Entry
 			/// </summary>
-			public readonly string Name;
+			public readonly string name;
 
 			/// <summary>
 			/// The corresponding image page of the Entry
 			/// </summary>
-			public readonly int Page;
+			public readonly int page;
 
 			/// <summary>
 			/// The Source Rectangle
 			/// </summary>
-			public readonly RectInt Source;
+			public readonly RectInt source;
 
 			/// <summary>
 			/// The Frame Rectangle. This is the size of the image before it was packed
 			/// </summary>
-			public readonly RectInt Frame;
+			public readonly RectInt frame;
 
 			public Entry(string name, int page, RectInt source, RectInt frame)
 			{
-				Name = name;
-				Page = page;
-				Source = source;
-				Frame = frame;
+				this.name = name;
+				this.page = page;
+				this.source = source;
+				this.frame = frame;
 			}
 		}
 
@@ -49,96 +49,96 @@ namespace MGE
 		/// </summary>
 		public class Output
 		{
-			public readonly List<Bitmap> Pages = new List<Bitmap>();
-			public readonly Dictionary<string, Entry> Entries = new Dictionary<string, Entry>();
+			public readonly List<Bitmap> pages = new List<Bitmap>();
+			public readonly Dictionary<string, Entry> entries = new Dictionary<string, Entry>();
 		}
 
 		/// <summary>
 		/// The Packed Output
 		/// This is null if the Packer has not yet been packed
 		/// </summary>
-		public Output Packed { get; set; } = new Output();
+		public Output packed { get; set; } = new Output();
 
 		/// <summary>
 		/// Whether the Packer has unpacked source data
 		/// </summary>
-		public bool HasUnpackedData { get; set; }
+		public bool hasUnpackedData { get; set; }
 
 		/// <summary>
 		/// Whether to trim transparency from the source images
 		/// </summary>
-		public bool Trim = true;
+		public bool trim = true;
 
 		/// <summary>
 		/// Maximum Texture Size. If the packed data is too large it will be split into multiple pages
 		/// </summary>
-		public int MaxSize = 8192;
+		public int maxSize = 8192;
 
 		/// <summary>
 		/// Image Padding
 		/// </summary>
-		public int Padding = 1;
+		public int padding = 1;
 
 		/// <summary>
 		/// Power of Two
 		/// </summary>
-		public bool PowerOfTwo = false;
+		public bool powerOfTwo = false;
 
 		/// <summary>
 		/// This will check each image to see if it's a duplicate of an already packed image.
 		/// It will still add the entry, but not the duplicate image data.
 		/// </summary>
-		public bool CombineDuplicates = false;
+		public bool combineDuplicates = false;
 
 		/// <summary>
 		/// The total number of source images
 		/// </summary>
-		public int SourceImageCount => sources.Count;
+		public int sourceImageCount => _sources.Count;
 
 		class Source
 		{
-			public string Name;
-			public RectInt Packed;
-			public RectInt Frame;
-			public Color[]? Buffer;
-			public Source? DuplicateOf;
-			public bool Empty => Packed.width <= 0 || Packed.height <= 0;
+			public string name;
+			public RectInt packed;
+			public RectInt frame;
+			public Color[]? buffer;
+			public Source? duplicateOf;
+			public bool empty => packed.width <= 0 || packed.height <= 0;
 
 			public Source(string name)
 			{
-				Name = name;
+				this.name = name;
 			}
 		}
 
-		readonly List<Source> sources = new List<Source>();
-		readonly Dictionary<int, Source> duplicateLookup = new Dictionary<int, Source>();
+		readonly List<Source> _sources = new List<Source>();
+		readonly Dictionary<int, Source> _duplicateLookup = new Dictionary<int, Source>();
 
 		public void AddBitmap(string name, Bitmap bitmap)
 		{
-			if (bitmap != null)
-				AddPixels(name, bitmap.Width, bitmap.Height, new ReadOnlySpan<Color>(bitmap.Pixels));
+			if (bitmap is not null)
+				AddPixels(name, bitmap.width, bitmap.height, new ReadOnlySpan<Color>(bitmap.pixels));
 		}
 
-		public void AddFile(string name, string path)
+		public void AddFile(string name, File file)
 		{
-			using var stream = File.OpenRead(path);
-			AddBitmap(name, new Bitmap(stream));
+			using var stream = file.OpenRead();
+			AddBitmap(name, new Bitmap(stream, file.extension));
 		}
 
 		public void AddPixels(string name, int width, int height, ReadOnlySpan<Color> pixels)
 		{
-			HasUnpackedData = true;
+			hasUnpackedData = true;
 
 			var source = new Source(name);
 			int top = 0, left = 0, right = width, bottom = height;
 
 			// trim
-			if (Trim)
+			if (trim)
 			{
 				// TOP:
 				for (int y = 0; y < height; y++)
 					for (int x = 0, s = y * width; x < width; x++, s++)
-						if (pixels[s].A > 0)
+						if (pixels[s].a > 0)
 						{
 							top = y;
 							goto LEFT;
@@ -146,7 +146,7 @@ namespace MGE
 					LEFT:
 				for (int x = 0; x < width; x++)
 					for (int y = top, s = x + y * width; y < height; y++, s += width)
-						if (pixels[s].A > 0)
+						if (pixels[s].a > 0)
 						{
 							left = x;
 							goto RIGHT;
@@ -154,7 +154,7 @@ namespace MGE
 					RIGHT:
 				for (int x = width - 1; x >= left; x--)
 					for (int y = top, s = x + y * width; y < height; y++, s += width)
-						if (pixels[s].A > 0)
+						if (pixels[s].a > 0)
 						{
 							right = x + 1;
 							goto BOTTOM;
@@ -162,7 +162,7 @@ namespace MGE
 					BOTTOM:
 				for (int y = height - 1; y >= top; y--)
 					for (int x = left, s = x + y * width; x < right; x++, s++)
-						if (pixels[s].A > 0)
+						if (pixels[s].a > 0)
 						{
 							bottom = y + 1;
 							goto END;
@@ -176,37 +176,37 @@ namespace MGE
 			{
 				var isDuplicate = false;
 
-				if (CombineDuplicates)
+				if (combineDuplicates)
 				{
 					var hash = 0;
 					for (int x = left; x < right; x++)
 						for (int y = top; y < bottom; y++)
-							hash = ((hash << 5) + hash) + (int)pixels[x + y * width].ABGR;
+							hash = ((hash << 5) + hash) + (int)pixels[x + y * width].abgr;
 
-					if (duplicateLookup.TryGetValue(hash, out var duplicate))
+					if (_duplicateLookup.TryGetValue(hash, out var duplicate))
 					{
-						source.DuplicateOf = duplicate;
+						source.duplicateOf = duplicate;
 						isDuplicate = true;
 					}
 					else
 					{
-						duplicateLookup.Add(hash, source);
+						_duplicateLookup.Add(hash, source);
 					}
 				}
 
-				source.Packed = new RectInt(0, 0, right - left, bottom - top);
-				source.Frame = new RectInt(-left, -top, width, height);
+				source.packed = new RectInt(0, 0, right - left, bottom - top);
+				source.frame = new RectInt(-left, -top, width, height);
 
 				if (!isDuplicate)
 				{
-					source.Buffer = new Color[source.Packed.width * source.Packed.height];
+					source.buffer = new Color[source.packed.width * source.packed.height];
 
 					// copy our trimmed pixel data to the main buffer
-					for (int i = 0; i < source.Packed.height; i++)
+					for (int i = 0; i < source.packed.height; i++)
 					{
-						var run = source.Packed.width;
+						var run = source.packed.width;
 						var from = pixels.Slice(left + (top + i) * width, run);
-						var to = new Span<Color>(source.Buffer, i * run, run);
+						var to = new Span<Color>(source.buffer, i * run, run);
 
 						from.CopyTo(to);
 					}
@@ -214,59 +214,59 @@ namespace MGE
 			}
 			else
 			{
-				source.Packed = new RectInt();
-				source.Frame = new RectInt(0, 0, width, height);
+				source.packed = new RectInt();
+				source.frame = new RectInt(0, 0, width, height);
 			}
 
-			sources.Add(source);
+			_sources.Add(source);
 		}
 
 		struct PackingNode
 		{
-			public bool Used;
-			public RectInt Rect;
-			public unsafe PackingNode* Right;
-			public unsafe PackingNode* Down;
+			public bool used;
+			public RectInt rect;
+			public unsafe PackingNode* right;
+			public unsafe PackingNode* down;
 		};
 
 		public unsafe Output Pack()
 		{
 			// Already been packed
-			if (!HasUnpackedData)
-				return Packed;
+			if (!hasUnpackedData)
+				return packed;
 
 			// Reset
-			Packed = new Output();
-			HasUnpackedData = false;
+			packed = new Output();
+			hasUnpackedData = false;
 
 			// Nothing to pack
-			if (sources.Count <= 0)
-				return Packed;
+			if (_sources.Count <= 0)
+				return packed;
 
 			// sort the sources by size
-			sources.Sort((a, b) => b.Packed.width * b.Packed.height - a.Packed.width * a.Packed.height);
+			_sources.Sort((a, b) => b.packed.width * b.packed.height - a.packed.width * a.packed.height);
 
 			// make sure the largest isn't too large
-			if (sources[0].Packed.width > MaxSize || sources[0].Packed.height > MaxSize)
+			if (_sources[0].packed.width > maxSize || _sources[0].packed.height > maxSize)
 				throw new Exception("Source image is larger than max atlas size");
 
 			// TODO: why do we sometimes need more than source images * 3?
 			// for safety I've just made it 4 ... but it should really only be 3?
 
-			int nodeCount = sources.Count * 4;
+			int nodeCount = _sources.Count * 4;
 			Span<PackingNode> buffer = (nodeCount <= 2000 ?
 					stackalloc PackingNode[nodeCount] :
 					new PackingNode[nodeCount]);
 
-			var padding = Math.Max(0, Padding);
+			var padding = Math.Max(0, this.padding);
 
 			// using pointer operations here was faster
 			fixed (PackingNode* nodes = buffer)
 			{
 				int packed = 0, page = 0;
-				while (packed < sources.Count)
+				while (packed < _sources.Count)
 				{
-					if (sources[packed].Empty)
+					if (_sources[packed].empty)
 					{
 						packed++;
 						continue;
@@ -274,100 +274,100 @@ namespace MGE
 
 					var from = packed;
 					var nodePtr = nodes;
-					var rootPtr = ResetNode(nodePtr++, 0, 0, sources[from].Packed.width + padding, sources[from].Packed.height + padding);
+					var rootPtr = ResetNode(nodePtr++, 0, 0, _sources[from].packed.width + padding, _sources[from].packed.height + padding);
 
-					while (packed < sources.Count)
+					while (packed < _sources.Count)
 					{
-						if (sources[packed].Empty || sources[packed].DuplicateOf != null)
+						if (_sources[packed].empty || _sources[packed].duplicateOf is not null)
 						{
 							packed++;
 							continue;
 						}
 
-						int w = sources[packed].Packed.width + padding;
-						int h = sources[packed].Packed.height + padding;
+						int w = _sources[packed].packed.width + padding;
+						int h = _sources[packed].packed.height + padding;
 						var node = FindNode(rootPtr, w, h);
 
 						// try to expand
-						if (node == null)
+						if (node is null)
 						{
-							bool canGrowDown = (w <= rootPtr->Rect.width) && (rootPtr->Rect.height + h < MaxSize);
-							bool canGrowRight = (h <= rootPtr->Rect.height) && (rootPtr->Rect.width + w < MaxSize);
-							bool shouldGrowRight = canGrowRight && (rootPtr->Rect.height >= (rootPtr->Rect.width + w));
-							bool shouldGrowDown = canGrowDown && (rootPtr->Rect.width >= (rootPtr->Rect.height + h));
+							bool canGrowDown = (w <= rootPtr->rect.width) && (rootPtr->rect.height + h < maxSize);
+							bool canGrowRight = (h <= rootPtr->rect.height) && (rootPtr->rect.width + w < maxSize);
+							bool shouldGrowRight = canGrowRight && (rootPtr->rect.height >= (rootPtr->rect.width + w));
+							bool shouldGrowDown = canGrowDown && (rootPtr->rect.width >= (rootPtr->rect.height + h));
 
 							if (canGrowDown || canGrowRight)
 							{
 								// grow right
 								if (shouldGrowRight || (!shouldGrowDown && canGrowRight))
 								{
-									var next = ResetNode(nodePtr++, 0, 0, rootPtr->Rect.width + w, rootPtr->Rect.height);
-									next->Used = true;
-									next->Down = rootPtr;
-									next->Right = node = ResetNode(nodePtr++, rootPtr->Rect.width, 0, w, rootPtr->Rect.height);
+									var next = ResetNode(nodePtr++, 0, 0, rootPtr->rect.width + w, rootPtr->rect.height);
+									next->used = true;
+									next->down = rootPtr;
+									next->right = node = ResetNode(nodePtr++, rootPtr->rect.width, 0, w, rootPtr->rect.height);
 									rootPtr = next;
 								}
 								// grow down
 								else
 								{
-									var next = ResetNode(nodePtr++, 0, 0, rootPtr->Rect.width, rootPtr->Rect.height + h);
-									next->Used = true;
-									next->Down = node = ResetNode(nodePtr++, 0, rootPtr->Rect.height, rootPtr->Rect.width, h);
-									next->Right = rootPtr;
+									var next = ResetNode(nodePtr++, 0, 0, rootPtr->rect.width, rootPtr->rect.height + h);
+									next->used = true;
+									next->down = node = ResetNode(nodePtr++, 0, rootPtr->rect.height, rootPtr->rect.width, h);
+									next->right = rootPtr;
 									rootPtr = next;
 								}
 							}
 						}
 
 						// doesn't fit in this page
-						if (node == null)
+						if (node is null)
 							break;
 
 						// add
-						node->Used = true;
-						node->Down = ResetNode(nodePtr++, node->Rect.x, node->Rect.y + h, node->Rect.width, node->Rect.height - h);
-						node->Right = ResetNode(nodePtr++, node->Rect.x + w, node->Rect.y, node->Rect.width - w, h);
+						node->used = true;
+						node->down = ResetNode(nodePtr++, node->rect.x, node->rect.y + h, node->rect.width, node->rect.height - h);
+						node->right = ResetNode(nodePtr++, node->rect.x + w, node->rect.y, node->rect.width - w, h);
 
-						sources[packed].Packed.x = node->Rect.x;
-						sources[packed].Packed.y = node->Rect.y;
+						_sources[packed].packed.x = node->rect.x;
+						_sources[packed].packed.y = node->rect.y;
 
 						packed++;
 					}
 
 					// get page size
 					int pageWidth, pageHeight;
-					if (PowerOfTwo)
+					if (powerOfTwo)
 					{
 						pageWidth = 2;
 						pageHeight = 2;
-						while (pageWidth < rootPtr->Rect.width)
+						while (pageWidth < rootPtr->rect.width)
 							pageWidth *= 2;
-						while (pageHeight < rootPtr->Rect.height)
+						while (pageHeight < rootPtr->rect.height)
 							pageHeight *= 2;
 					}
 					else
 					{
-						pageWidth = rootPtr->Rect.width;
-						pageHeight = rootPtr->Rect.height;
+						pageWidth = rootPtr->rect.width;
+						pageHeight = rootPtr->rect.height;
 					}
 
 					// create each page
 					{
 						var bmp = new Bitmap(pageWidth, pageHeight);
-						Packed.Pages.Add(bmp);
+						this.packed.pages.Add(bmp);
 
 						// create each entry for this page and copy its image data
 						for (int i = from; i < packed; i++)
 						{
-							var source = sources[i];
+							var source = _sources[i];
 
 							// do not pack duplicate entries yet
-							if (source.DuplicateOf == null)
+							if (source.duplicateOf is null)
 							{
-								Packed.Entries[source.Name] = new Entry(source.Name, page, source.Packed, source.Frame);
+								this.packed.entries[source.name] = new Entry(source.name, page, source.packed, source.frame);
 
-								if (!source.Empty)
-									bmp.SetPixels(source.Packed, source.Buffer);
+								if (!source.empty)
+									bmp.SetPixels(source.packed, source.buffer);
 							}
 						}
 					}
@@ -378,28 +378,28 @@ namespace MGE
 			}
 
 			// make sure duplicates have entries
-			if (CombineDuplicates)
+			if (combineDuplicates)
 			{
-				foreach (var source in sources)
+				foreach (var source in _sources)
 				{
-					if (source.DuplicateOf != null)
+					if (source.duplicateOf is not null)
 					{
-						var entry = Packed.Entries[source.DuplicateOf.Name];
-						Packed.Entries[source.Name] = new Entry(source.Name, entry.Page, entry.Source, entry.Frame);
+						var entry = packed.entries[source.duplicateOf.name];
+						packed.entries[source.name] = new Entry(source.name, entry.page, entry.source, entry.frame);
 					}
 				}
 			}
 
-			return Packed;
+			return packed;
 
 			static unsafe PackingNode* FindNode(PackingNode* root, int w, int h)
 			{
-				if (root->Used)
+				if (root->used)
 				{
-					var r = FindNode(root->Right, w, h);
-					return (r != null ? r : FindNode(root->Down, w, h));
+					var r = FindNode(root->right, w, h);
+					return (r is not null ? r : FindNode(root->down, w, h));
 				}
-				else if (w <= root->Rect.width && h <= root->Rect.height)
+				else if (w <= root->rect.width && h <= root->rect.height)
 				{
 					return root;
 				}
@@ -409,10 +409,10 @@ namespace MGE
 
 			static unsafe PackingNode* ResetNode(PackingNode* node, int x, int y, int w, int h)
 			{
-				node->Used = false;
-				node->Rect = new RectInt(x, y, w, h);
-				node->Right = null;
-				node->Down = null;
+				node->used = false;
+				node->rect = new RectInt(x, y, w, h);
+				node->right = null;
+				node->down = null;
 				return node;
 			}
 		}
@@ -422,10 +422,10 @@ namespace MGE
 		/// </summary>
 		public void Clear()
 		{
-			sources.Clear();
-			duplicateLookup.Clear();
-			Packed = new Output();
-			HasUnpackedData = false;
+			_sources.Clear();
+			_duplicateLookup.Clear();
+			packed = new Output();
+			hasUnpackedData = false;
 		}
 	}
 }

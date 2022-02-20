@@ -9,7 +9,8 @@
       "program": "${workspaceFolder}/Demo/bin/Debug/Demo.dll",
       "args": [],
       "env": {
-        "data-dir": "${workspaceFolder}/Data"
+        "appdata": "${workspaceFolder}/Demo/appdata",
+        "content": "${workspaceFolder}/Demo/Content"
       },
       "cwd": "${workspaceFolder}/Demo",
       "console": "internalConsole",

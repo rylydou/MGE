@@ -8,7 +8,6 @@ namespace MGE;
 /// </summary>
 public static class Time
 {
-
 	/// <summary>
 	/// The Target Framerate of a Fixed Timestep update
 	/// </summary>
@@ -117,8 +116,8 @@ public static class Time
 	/// </summary>
 	public static float SineWave(float from, float to, float duration, float offsetPercent)
 	{
-		float total = (float)Time.duration.TotalSeconds;
-		float range = (to - from) * 0.5f;
+		var total = (float)Time.duration.TotalSeconds;
+		var range = (to - from) * 0.5f;
 		return from + range + MathF.Sin(((total + duration * offsetPercent) / duration) * MathF.Tau) * range;
 	}
 }

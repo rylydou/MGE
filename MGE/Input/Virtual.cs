@@ -20,120 +20,120 @@ public class VirtualAxis
 	public interface INode
 	{
 		float Value(bool deadzone);
-		double Timestamp { get; }
+		double timestamp { get; }
 	}
 
 	public class KeyNode : INode
 	{
-		public Input Input;
-		public Keys Key;
-		public bool Positive;
+		public Input input;
+		public Keys key;
+		public bool positive;
 
-		public float Value(bool deadzone) => (Input.Keyboard.Down(Key) ? (Positive ? 1 : -1) : 0);
-		public double Timestamp => Input.Keyboard.Timestamp(Key);
+		public float Value(bool deadzone) => (input.keyboard.Down(key) ? (positive ? 1 : -1) : 0);
+		public double timestamp => input.keyboard.Timestamp(key);
 
 		public KeyNode(Input input, Keys key, bool positive)
 		{
-			Input = input;
-			Key = key;
-			Positive = positive;
+			this.input = input;
+			this.key = key;
+			this.positive = positive;
 		}
 	}
 
 	public class ButtonNode : INode
 	{
-		public Input Input;
-		public int Index;
-		public Buttons Button;
-		public bool Positive;
+		public Input input;
+		public int index;
+		public Buttons button;
+		public bool positive;
 
-		public float Value(bool deadzone) => (Input.Controllers[Index].Down(Button) ? (Positive ? 1 : -1) : 0);
-		public double Timestamp => Input.Controllers[Index].Timestamp(Button);
+		public float Value(bool deadzone) => (input.controllers[index].Down(button) ? (positive ? 1 : -1) : 0);
+		public double timestamp => input.controllers[index].Timestamp(button);
 
 		public ButtonNode(Input input, int controller, Buttons button, bool positive)
 		{
-			Input = input;
-			Index = controller;
-			Button = button;
-			Positive = positive;
+			this.input = input;
+			index = controller;
+			this.button = button;
+			this.positive = positive;
 		}
 	}
 
 	public class AxisNode : INode
 	{
-		public Input Input;
-		public int Index;
-		public Axes Axis;
-		public bool Positive;
-		public float Deadzone;
+		public Input input;
+		public int index;
+		public Axes axis;
+		public bool positive;
+		public float deadzone;
 
 		public float Value(bool deadzone)
 		{
-			if (!deadzone || Math.Abs(Input.Controllers[Index].Axis(Axis)) >= Deadzone)
-				return Input.Controllers[Index].Axis(Axis) * (Positive ? 1 : -1);
+			if (!deadzone || Math.Abs(input.controllers[index].Axis(axis)) >= this.deadzone)
+				return input.controllers[index].Axis(axis) * (positive ? 1 : -1);
 			return 0f;
 		}
 
-		public double Timestamp
+		public double timestamp
 		{
 			get
 			{
-				if (Math.Abs(Input.Controllers[Index].Axis(Axis)) < Deadzone)
+				if (Math.Abs(input.controllers[index].Axis(axis)) < deadzone)
 					return 0;
-				return Input.Controllers[Index].Timestamp(Axis);
+				return input.controllers[index].Timestamp(axis);
 			}
 		}
 
 		public AxisNode(Input input, int controller, Axes axis, float deadzone, bool positive)
 		{
-			Input = input;
-			Index = controller;
-			Axis = axis;
-			Deadzone = deadzone;
-			Positive = positive;
+			this.input = input;
+			index = controller;
+			this.axis = axis;
+			this.deadzone = deadzone;
+			this.positive = positive;
 		}
 	}
 
-	public float Value => GetValue(true);
-	public float ValueNoDeadzone => GetValue(false);
+	public float value => GetValue(true);
+	public float valueNoDeadzone => GetValue(false);
 
-	public int IntValue => SysMath.Sign(Value);
-	public int IntValueNoDeadzone => SysMath.Sign(ValueNoDeadzone);
+	public int intValue => SysMath.Sign(value);
+	public int intValueNoDeadzone => SysMath.Sign(valueNoDeadzone);
 
-	public readonly Input Input;
-	public readonly List<INode> Nodes = new List<INode>();
-	public Overlaps OverlapBehavior = Overlaps.CancelOut;
+	public readonly Input input;
+	public readonly List<INode> nodes = new List<INode>();
+	public Overlaps overlapBehavior = Overlaps.CancelOut;
 
 	const float EPSILON = 0.00001f;
 
 	public VirtualAxis(Input input)
 	{
-		Input = input;
+		this.input = input;
 	}
 
 	public VirtualAxis(Input input, Overlaps overlapBehavior)
 	{
-		Input = input;
-		OverlapBehavior = overlapBehavior;
+		this.input = input;
+		this.overlapBehavior = overlapBehavior;
 	}
 
 	float GetValue(bool deadzone)
 	{
 		var value = 0f;
 
-		if (OverlapBehavior == Overlaps.CancelOut)
+		if (overlapBehavior == Overlaps.CancelOut)
 		{
-			foreach (var input in Nodes)
+			foreach (var input in nodes)
 				value += input.Value(deadzone);
 			value = Math.ClampUnit(value);
 		}
-		else if (OverlapBehavior == Overlaps.TakeNewer)
+		else if (overlapBehavior == Overlaps.TakeNewer)
 		{
 			var timestamp = 0d;
-			for (int i = 0; i < Nodes.Count; i++)
+			for (int i = 0; i < nodes.Count; i++)
 			{
-				var time = Nodes[i].Timestamp;
-				var val = Nodes[i].Value(deadzone);
+				var time = nodes[i].timestamp;
+				var val = nodes[i].Value(deadzone);
 
 				if (time > 0 && Math.Abs(val) > EPSILON && time > timestamp)
 				{
@@ -142,13 +142,13 @@ public class VirtualAxis
 				}
 			}
 		}
-		else if (OverlapBehavior == Overlaps.TakeOlder)
+		else if (overlapBehavior == Overlaps.TakeOlder)
 		{
 			var timestamp = double.MaxValue;
-			for (int i = 0; i < Nodes.Count; i++)
+			for (int i = 0; i < nodes.Count; i++)
 			{
-				var time = Nodes[i].Timestamp;
-				var val = Nodes[i].Value(deadzone);
+				var time = nodes[i].timestamp;
+				var val = nodes[i].Value(deadzone);
 
 				if (time > 0 && Math.Abs(val) > EPSILON && time < timestamp)
 				{
@@ -163,45 +163,45 @@ public class VirtualAxis
 
 	public VirtualAxis Add(Keys negative, Keys positive)
 	{
-		Nodes.Add(new KeyNode(Input, negative, false));
-		Nodes.Add(new KeyNode(Input, positive, true));
+		nodes.Add(new KeyNode(input, negative, false));
+		nodes.Add(new KeyNode(input, positive, true));
 		return this;
 	}
 
 	public VirtualAxis Add(Keys key, bool isPositive)
 	{
-		Nodes.Add(new KeyNode(Input, key, isPositive));
+		nodes.Add(new KeyNode(input, key, isPositive));
 		return this;
 	}
 
 	public VirtualAxis Add(int controller, Buttons negative, Buttons positive)
 	{
-		Nodes.Add(new ButtonNode(Input, controller, negative, false));
-		Nodes.Add(new ButtonNode(Input, controller, positive, true));
+		nodes.Add(new ButtonNode(input, controller, negative, false));
+		nodes.Add(new ButtonNode(input, controller, positive, true));
 		return this;
 	}
 
 	public VirtualAxis Add(int controller, Buttons button, bool isPositive)
 	{
-		Nodes.Add(new ButtonNode(Input, controller, button, isPositive));
+		nodes.Add(new ButtonNode(input, controller, button, isPositive));
 		return this;
 	}
 
 	public VirtualAxis Add(int controller, Axes axis, float deadzone = 0f)
 	{
-		Nodes.Add(new AxisNode(Input, controller, axis, deadzone, true));
+		nodes.Add(new AxisNode(input, controller, axis, deadzone, true));
 		return this;
 	}
 
 	public VirtualAxis Add(int controller, Axes axis, bool inverse, float deadzone = 0f)
 	{
-		Nodes.Add(new AxisNode(Input, controller, axis, deadzone, !inverse));
+		nodes.Add(new AxisNode(input, controller, axis, deadzone, !inverse));
 		return this;
 	}
 
 	public void Clear()
 	{
-		Nodes.Clear();
+		nodes.Clear();
 	}
 }
 
@@ -213,23 +213,23 @@ public class VirtualButton
 	public interface INode
 	{
 		bool Pressed(float buffer, long lastBufferConsumedTime);
-		bool Down { get; }
-		bool Released { get; }
+		bool down { get; }
+		bool released { get; }
 		bool Repeated(float delay, float interval);
 		void Update();
 	}
 
 	public class KeyNode : INode
 	{
-		public Input Input;
-		public Keys Key;
+		public Input input;
+		public Keys key;
 
 		public bool Pressed(float buffer, long lastBufferConsumedTime)
 		{
-			if (Input.Keyboard.Pressed(Key))
+			if (input.keyboard.Pressed(key))
 				return true;
 
-			var timestamp = Input.Keyboard.Timestamp(Key);
+			var timestamp = input.keyboard.Timestamp(key);
 			var time = Time.duration.Ticks;
 
 			if (time - timestamp <= TimeSpan.FromSeconds(buffer).Ticks && timestamp > lastBufferConsumedTime)
@@ -238,29 +238,29 @@ public class VirtualButton
 			return false;
 		}
 
-		public bool Down => Input.Keyboard.Down(Key);
-		public bool Released => Input.Keyboard.Released(Key);
-		public bool Repeated(float delay, float interval) => Input.Keyboard.Repeated(Key, delay, interval);
+		public bool down => input.keyboard.Down(key);
+		public bool released => input.keyboard.Released(key);
+		public bool Repeated(float delay, float interval) => input.keyboard.Repeated(key, delay, interval);
 		public void Update() { }
 
 		public KeyNode(Input input, Keys key)
 		{
-			Input = input;
-			Key = key;
+			this.input = input;
+			this.key = key;
 		}
 	}
 
 	public class MouseButtonNode : INode
 	{
-		public Input Input;
-		public MouseButtons MouseButton;
+		public Input input;
+		public MouseButtons mouseButton;
 
 		public bool Pressed(float buffer, long lastBufferConsumedTime)
 		{
-			if (Input.Mouse.Pressed(MouseButton))
+			if (input.mouse.Pressed(mouseButton))
 				return true;
 
-			var timestamp = Input.Mouse.Timestamp(MouseButton);
+			var timestamp = input.mouse.Timestamp(mouseButton);
 			var time = Time.duration.Ticks;
 
 			if (time - timestamp <= TimeSpan.FromSeconds(buffer).Ticks && timestamp > lastBufferConsumedTime)
@@ -269,30 +269,30 @@ public class VirtualButton
 			return false;
 		}
 
-		public bool Down => Input.Mouse.Down(MouseButton);
-		public bool Released => Input.Mouse.Released(MouseButton);
-		public bool Repeated(float delay, float interval) => Input.Mouse.Repeated(MouseButton, delay, interval);
+		public bool down => input.mouse.Down(mouseButton);
+		public bool released => input.mouse.Released(mouseButton);
+		public bool Repeated(float delay, float interval) => input.mouse.Repeated(mouseButton, delay, interval);
 		public void Update() { }
 
 		public MouseButtonNode(Input input, MouseButtons mouseButton)
 		{
-			Input = input;
-			MouseButton = mouseButton;
+			this.input = input;
+			this.mouseButton = mouseButton;
 		}
 	}
 
 	public class ButtonNode : INode
 	{
-		public Input Input;
-		public int Index;
-		public Buttons Button;
+		public Input input;
+		public int index;
+		public Buttons button;
 
 		public bool Pressed(float buffer, long lastBufferConsumedTime)
 		{
-			if (Input.Controllers[Index].Pressed(Button))
+			if (input.controllers[index].Pressed(button))
 				return true;
 
-			var timestamp = Input.Controllers[Index].Timestamp(Button);
+			var timestamp = input.controllers[index].Timestamp(button);
 			var time = Time.duration.Ticks;
 
 			if (time - timestamp <= TimeSpan.FromSeconds(buffer).Ticks && timestamp > lastBufferConsumedTime)
@@ -301,27 +301,27 @@ public class VirtualButton
 			return false;
 		}
 
-		public bool Down => Input.Controllers[Index].Down(Button);
-		public bool Released => Input.Controllers[Index].Released(Button);
-		public bool Repeated(float delay, float interval) => Input.Controllers[Index].Repeated(Button, delay, interval);
+		public bool down => input.controllers[index].Down(button);
+		public bool released => input.controllers[index].Released(button);
+		public bool Repeated(float delay, float interval) => input.controllers[index].Repeated(button, delay, interval);
 		public void Update() { }
 
 		public ButtonNode(Input input, int controller, Buttons button)
 		{
-			Input = input;
-			Index = controller;
-			Button = button;
+			this.input = input;
+			index = controller;
+			this.button = button;
 		}
 	}
 
 	public class AxisNode : INode
 	{
-		public Input Input;
-		public int Index;
-		public Axes Axis;
-		public float Threshold;
+		public Input input;
+		public int index;
+		public Axes axis;
+		public float threshold;
 
-		float pressedTimestamp;
+		float _pressedTimestamp;
 		const float AXIS_EPSILON = 0.00001f;
 
 		public bool Pressed(float buffer, long lastBufferConsumedTime)
@@ -331,37 +331,37 @@ public class VirtualButton
 
 			var time = Time.duration.Ticks;
 
-			if (time - pressedTimestamp <= TimeSpan.FromSeconds(buffer).Ticks && pressedTimestamp > lastBufferConsumedTime)
+			if (time - _pressedTimestamp <= TimeSpan.FromSeconds(buffer).Ticks && _pressedTimestamp > lastBufferConsumedTime)
 				return true;
 
 			return false;
 		}
 
-		public bool Down
+		public bool down
 		{
 			get
 			{
-				if (Math.Abs(Threshold) <= AXIS_EPSILON)
-					return Math.Abs(Input.Controllers[Index].Axis(Axis)) > AXIS_EPSILON;
+				if (Math.Abs(threshold) <= AXIS_EPSILON)
+					return Math.Abs(input.controllers[index].Axis(axis)) > AXIS_EPSILON;
 
-				if (Threshold < 0)
-					return Input.Controllers[Index].Axis(Axis) <= Threshold;
+				if (threshold < 0)
+					return input.controllers[index].Axis(axis) <= threshold;
 
-				return Input.Controllers[Index].Axis(Axis) >= Threshold;
+				return input.controllers[index].Axis(axis) >= threshold;
 			}
 		}
 
-		public bool Released
+		public bool released
 		{
 			get
 			{
-				if (Math.Abs(Threshold) <= AXIS_EPSILON)
-					return Math.Abs(Input.LastState.Controllers[Index].Axis(Axis)) > AXIS_EPSILON && Math.Abs(Input.Controllers[Index].Axis(Axis)) < AXIS_EPSILON;
+				if (Math.Abs(threshold) <= AXIS_EPSILON)
+					return Math.Abs(input.lastState.controllers[index].Axis(axis)) > AXIS_EPSILON && Math.Abs(input.controllers[index].Axis(axis)) < AXIS_EPSILON;
 
-				if (Threshold < 0)
-					return Input.LastState.Controllers[Index].Axis(Axis) <= Threshold && Input.Controllers[Index].Axis(Axis) > Threshold;
+				if (threshold < 0)
+					return input.lastState.controllers[index].Axis(axis) <= threshold && input.controllers[index].Axis(axis) > threshold;
 
-				return Input.LastState.Controllers[Index].Axis(Axis) >= Threshold && Input.Controllers[Index].Axis(Axis) < Threshold;
+				return input.lastState.controllers[index].Axis(axis) >= threshold && input.controllers[index].Axis(axis) < threshold;
 			}
 		}
 
@@ -372,80 +372,80 @@ public class VirtualButton
 
 		bool Pressed()
 		{
-			if (Math.Abs(Threshold) <= AXIS_EPSILON)
-				return (Math.Abs(Input.LastState.Controllers[Index].Axis(Axis)) < AXIS_EPSILON && Math.Abs(Input.Controllers[Index].Axis(Axis)) > AXIS_EPSILON);
+			if (Math.Abs(threshold) <= AXIS_EPSILON)
+				return (Math.Abs(input.lastState.controllers[index].Axis(axis)) < AXIS_EPSILON && Math.Abs(input.controllers[index].Axis(axis)) > AXIS_EPSILON);
 
-			if (Threshold < 0)
-				return (Input.LastState.Controllers[Index].Axis(Axis) > Threshold && Input.Controllers[Index].Axis(Axis) <= Threshold);
+			if (threshold < 0)
+				return (input.lastState.controllers[index].Axis(axis) > threshold && input.controllers[index].Axis(axis) <= threshold);
 
-			return (Input.LastState.Controllers[Index].Axis(Axis) < Threshold && Input.Controllers[Index].Axis(Axis) >= Threshold);
+			return (input.lastState.controllers[index].Axis(axis) < threshold && input.controllers[index].Axis(axis) >= threshold);
 		}
 
 		public void Update()
 		{
 			if (Pressed())
-				pressedTimestamp = Input.Controllers[Index].Timestamp(Axis);
+				_pressedTimestamp = input.controllers[index].Timestamp(axis);
 		}
 
 		public AxisNode(Input input, int controller, Axes axis, float threshold)
 		{
-			Input = input;
-			Index = controller;
-			Axis = axis;
-			Threshold = threshold;
+			this.input = input;
+			index = controller;
+			this.axis = axis;
+			this.threshold = threshold;
 		}
 	}
 
-	public readonly Input Input;
-	public readonly List<INode> Nodes = new List<INode>();
-	public float RepeatDelay;
-	public float RepeatInterval;
-	public float Buffer;
+	public readonly Input input;
+	public readonly List<INode> nodes = new List<INode>();
+	public float repeatDelay;
+	public float repeatInterval;
+	public float buffer;
 
-	long lastBufferConsumeTime;
+	long _lastBufferConsumeTime;
 
-	public bool Pressed
+	public bool pressed
 	{
 		get
 		{
-			for (int i = 0; i < Nodes.Count; i++)
-				if (Nodes[i].Pressed(Buffer, lastBufferConsumeTime))
+			for (int i = 0; i < nodes.Count; i++)
+				if (nodes[i].Pressed(buffer, _lastBufferConsumeTime))
 					return true;
 
 			return false;
 		}
 	}
 
-	public bool Down
+	public bool down
 	{
 		get
 		{
-			for (int i = 0; i < Nodes.Count; i++)
-				if (Nodes[i].Down)
+			for (int i = 0; i < nodes.Count; i++)
+				if (nodes[i].down)
 					return true;
 
 			return false;
 		}
 	}
 
-	public bool Released
+	public bool released
 	{
 		get
 		{
-			for (int i = 0; i < Nodes.Count; i++)
-				if (Nodes[i].Released)
+			for (int i = 0; i < nodes.Count; i++)
+				if (nodes[i].released)
 					return true;
 
 			return false;
 		}
 	}
 
-	public bool Repeated
+	public bool repeated
 	{
 		get
 		{
-			for (int i = 0; i < Nodes.Count; i++)
-				if (Nodes[i].Pressed(Buffer, lastBufferConsumeTime) || Nodes[i].Repeated(RepeatDelay, RepeatInterval))
+			for (int i = 0; i < nodes.Count; i++)
+				if (nodes[i].Pressed(buffer, _lastBufferConsumeTime) || nodes[i].Repeated(repeatDelay, repeatInterval))
 					return true;
 
 			return false;
@@ -454,60 +454,60 @@ public class VirtualButton
 
 	public VirtualButton(Input input, float buffer = 0f)
 	{
-		Input = input;
+		this.input = input;
 
 		// Using a Weak Reference to subscribe this object to Updates
 		// This way it's automatically collected if the user is no longer
 		// using it, and we don't require the user to call a Dispose or
 		// Unsubscribe callback
-		Input.virtualButtons.Add(new WeakReference<VirtualButton>(this));
+		this.input.virtualButtons.Add(new WeakReference<VirtualButton>(this));
 
-		RepeatDelay = Input.RepeatDelay;
-		RepeatInterval = Input.RepeatInterval;
-		Buffer = buffer;
+		repeatDelay = this.input.repeatDelay;
+		repeatInterval = this.input.repeatInterval;
+		this.buffer = buffer;
 	}
 
 	public void ConsumeBuffer()
 	{
-		lastBufferConsumeTime = Time.duration.Ticks;
+		_lastBufferConsumeTime = Time.duration.Ticks;
 	}
 
 	public VirtualButton Add(params Keys[] keys)
 	{
 		foreach (var key in keys)
-			Nodes.Add(new KeyNode(Input, key));
+			nodes.Add(new KeyNode(input, key));
 		return this;
 	}
 
 	public VirtualButton Add(params MouseButtons[] buttons)
 	{
 		foreach (var button in buttons)
-			Nodes.Add(new MouseButtonNode(Input, button));
+			nodes.Add(new MouseButtonNode(input, button));
 		return this;
 	}
 
 	public VirtualButton Add(int controller, params Buttons[] buttons)
 	{
 		foreach (var button in buttons)
-			Nodes.Add(new ButtonNode(Input, controller, button));
+			nodes.Add(new ButtonNode(input, controller, button));
 		return this;
 	}
 
 	public VirtualButton Add(int controller, Axes axis, float threshold)
 	{
-		Nodes.Add(new AxisNode(Input, controller, axis, threshold));
+		nodes.Add(new AxisNode(input, controller, axis, threshold));
 		return this;
 	}
 
 	public void Clear()
 	{
-		Nodes.Clear();
+		nodes.Clear();
 	}
 
 	internal void Update()
 	{
-		for (int i = 0; i < Nodes.Count; i++)
-			Nodes[i].Update();
+		for (int i = 0; i < nodes.Count; i++)
+			nodes[i].Update();
 	}
 }
 
@@ -519,27 +519,27 @@ public class VirtualStick
 	/// <summary>
 	/// The Horizontal Axis
 	/// </summary>
-	public VirtualAxis Horizontal;
+	public VirtualAxis horizontal;
 
 	/// <summary>
 	/// The Vertical Axis
 	/// </summary>
-	public VirtualAxis Vertical;
+	public VirtualAxis vertical;
 
 	/// <summary>
 	/// This Deadzone is applied to the Length of the combined Horizontal and Vertical axis values
 	/// </summary>
-	public float CircularDeadzone = 0f;
+	public float circularDeadzone = 0f;
 
 	/// <summary>
 	/// Gets the current Virtual Stick value
 	/// </summary>
-	public Vector2 Value
+	public Vector2 value
 	{
 		get
 		{
-			var result = new Vector2(Horizontal.Value, Vertical.Value);
-			if (CircularDeadzone != 0 && result.length < CircularDeadzone)
+			var result = new Vector2(horizontal.value, vertical.value);
+			if (circularDeadzone != 0 && result.length < circularDeadzone)
 				return Vector2.zero;
 			return result;
 		}
@@ -548,16 +548,16 @@ public class VirtualStick
 	/// <summary>
 	/// Gets the current Virtual Stick value, ignoring Deadzones
 	/// </summary>
-	public Vector2 ValueNoDeadzone => new Vector2(Horizontal.ValueNoDeadzone, Vertical.ValueNoDeadzone);
+	public Vector2 valueNoDeadzone => new Vector2(horizontal.valueNoDeadzone, vertical.valueNoDeadzone);
 
 	/// <summary>
 	/// Gets the current Virtual Stick value, clamping to Integer Values
 	/// </summary>
-	public Vector2Int IntValue
+	public Vector2Int intValue
 	{
 		get
 		{
-			var result = Value;
+			var result = value;
 			return new Vector2Int(MathF.Sign(result.x), MathF.Sign(result.y));
 		}
 	}
@@ -565,60 +565,60 @@ public class VirtualStick
 	/// <summary>
 	/// Gets the current Virtual Stick value, clamping to Integer values and Ignoring Deadzones
 	/// </summary>
-	public Vector2Int IntValueNoDeadzone => new Vector2Int(Horizontal.IntValueNoDeadzone, Vertical.IntValueNoDeadzone);
+	public Vector2Int intValueNoDeadzone => new Vector2Int(horizontal.intValueNoDeadzone, vertical.intValueNoDeadzone);
 
 	public VirtualStick(Input input, float circularDeadzone = 0f)
 	{
-		Horizontal = new VirtualAxis(input);
-		Vertical = new VirtualAxis(input);
-		CircularDeadzone = circularDeadzone;
+		horizontal = new VirtualAxis(input);
+		vertical = new VirtualAxis(input);
+		this.circularDeadzone = circularDeadzone;
 	}
 
 	public VirtualStick(Input input, VirtualAxis.Overlaps overlapBehavior, float circularDeadzone = 0f)
 	{
-		Horizontal = new VirtualAxis(input, overlapBehavior);
-		Vertical = new VirtualAxis(input, overlapBehavior);
-		CircularDeadzone = circularDeadzone;
+		horizontal = new VirtualAxis(input, overlapBehavior);
+		vertical = new VirtualAxis(input, overlapBehavior);
+		this.circularDeadzone = circularDeadzone;
 	}
 
 	public VirtualStick Add(Keys left, Keys right, Keys up, Keys down)
 	{
-		Horizontal.Add(left, right);
-		Vertical.Add(up, down);
+		horizontal.Add(left, right);
+		vertical.Add(up, down);
 		return this;
 	}
 
 	public VirtualStick Add(int controller, Buttons left, Buttons right, Buttons up, Buttons down)
 	{
-		Horizontal.Add(controller, left, right);
-		Vertical.Add(controller, up, down);
+		horizontal.Add(controller, left, right);
+		vertical.Add(controller, up, down);
 		return this;
 	}
 
 	public VirtualStick Add(int controller, Axes horizontal, Axes vertical, float deadzoneHorizontal = 0f, float deadzoneVertical = 0f)
 	{
-		Horizontal.Add(controller, horizontal, deadzoneHorizontal);
-		Vertical.Add(controller, vertical, deadzoneVertical);
+		this.horizontal.Add(controller, horizontal, deadzoneHorizontal);
+		this.vertical.Add(controller, vertical, deadzoneVertical);
 		return this;
 	}
 
 	public VirtualStick AddLeftJoystick(int controller, float deadzoneHorizontal = 0, float deadzoneVertical = 0)
 	{
-		Horizontal.Add(controller, Axes.LeftX, deadzoneHorizontal);
-		Vertical.Add(controller, Axes.LeftY, deadzoneVertical);
+		horizontal.Add(controller, Axes.LeftX, deadzoneHorizontal);
+		vertical.Add(controller, Axes.LeftY, deadzoneVertical);
 		return this;
 	}
 
 	public VirtualStick AddRightJoystick(int controller, float deadzoneHorizontal = 0, float deadzoneVertical = 0)
 	{
-		Horizontal.Add(controller, Axes.RightX, deadzoneHorizontal);
-		Vertical.Add(controller, Axes.RightY, deadzoneVertical);
+		horizontal.Add(controller, Axes.RightX, deadzoneHorizontal);
+		vertical.Add(controller, Axes.RightY, deadzoneVertical);
 		return this;
 	}
 
 	public void Clear()
 	{
-		Horizontal.Clear();
-		Vertical.Clear();
+		horizontal.Clear();
+		vertical.Clear();
 	}
 }

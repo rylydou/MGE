@@ -145,7 +145,7 @@ namespace MGE
 			drawCoords[3].x = -_frame.x;
 			drawCoords[3].y = -_frame.y + _source.height;
 
-			if (_texture != null)
+			if (_texture is not null)
 			{
 				var tx0 = _source.x / _texture.width;
 				var ty0 = _source.y / _texture.height;

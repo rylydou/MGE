@@ -160,19 +160,19 @@ public class ShaderSource
 
 	public ShaderSource(Stream vertexSource, Stream fragmentSource, Stream? geomSource = null)
 	{
-		if (vertexSource != null)
+		if (vertexSource is not null)
 		{
 			vertex = new byte[vertexSource.Length];
 			vertexSource.Read(vertex, 0, vertex.Length);
 		}
 
-		if (fragmentSource != null)
+		if (fragmentSource is not null)
 		{
 			fragment = new byte[fragmentSource.Length];
 			fragmentSource.Read(fragment, 0, fragment.Length);
 		}
 
-		if (geomSource != null)
+		if (geomSource is not null)
 		{
 			geometry = new byte[geomSource.Length];
 			geomSource.Read(geometry, 0, geometry.Length);

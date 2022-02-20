@@ -30,9 +30,9 @@ namespace MGE
 		public Atlas(Packer packer, bool premultiply = false)
 		{
 			var output = packer.Pack();
-			if (output != null)
+			if (output is not null)
 			{
-				foreach (var page in output.Pages)
+				foreach (var page in output.pages)
 				{
 					if (premultiply)
 						page.Premultiply();
@@ -40,12 +40,12 @@ namespace MGE
 					pages.Add(new Texture(page));
 				}
 
-				foreach (var entry in output.Entries.Values)
+				foreach (var entry in output.entries.Values)
 				{
-					var texture = pages[entry.Page];
-					var subtexture = new Subtexture(texture, entry.Source, entry.Frame);
+					var texture = pages[entry.page];
+					var subtexture = new Subtexture(texture, entry.source, entry.frame);
 
-					subtextures.Add(entry.Name, subtexture);
+					subtextures.Add(entry.name, subtexture);
 				}
 			}
 		}
@@ -63,7 +63,7 @@ namespace MGE
 			}
 			set
 			{
-				if (value != null)
+				if (value is not null)
 					subtextures[name] = value;
 			}
 		}

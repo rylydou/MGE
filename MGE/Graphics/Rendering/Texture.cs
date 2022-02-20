@@ -141,34 +141,34 @@ public class Texture : IDisposable
 	/// <summary>
 	/// The Texture Filter to be used while drawing
 	/// </summary>
-	public TextureFilter Filter
+	public TextureFilter filter
 	{
-		get => filter;
-		set => implementation.SetFilter(filter = value);
+		get => _filter;
+		set => implementation.SetFilter(_filter = value);
 	}
 
 	/// <summary>
 	/// The Horizontal Wrapping mode
 	/// </summary>
-	public TextureWrap WrapX
+	public TextureWrap wrapX
 	{
-		get => wrapX;
-		set => implementation.SetWrap(wrapX = value, wrapY);
+		get => _wrapX;
+		set => implementation.SetWrap(_wrapX = value, _wrapY);
 	}
 
 	/// <summary>
 	/// The Vertical Wrapping mode
 	/// </summary>
-	public TextureWrap WrapY
+	public TextureWrap wrapY
 	{
-		get => wrapY;
-		set => implementation.SetWrap(wrapX, wrapY = value);
+		get => _wrapY;
+		set => implementation.SetWrap(_wrapX, _wrapY = value);
 	}
 
-	readonly Graphics graphics;
-	TextureFilter filter = TextureFilter.Linear;
-	TextureWrap wrapX = TextureWrap.Clamp;
-	TextureWrap wrapY = TextureWrap.Clamp;
+	readonly Graphics _graphics;
+	TextureFilter _filter = TextureFilter.Linear;
+	TextureWrap _wrapX = TextureWrap.Clamp;
+	TextureWrap _wrapY = TextureWrap.Clamp;
 
 	public Texture(Graphics graphics, int width, int height, TextureFormat format = TextureFormat.Color)
 	{
@@ -176,7 +176,7 @@ public class Texture : IDisposable
 
 		if (width <= 0 || height <= 0) throw new Exception("Texture must have a size larger than 0");
 
-		this.graphics = graphics;
+		this._graphics = graphics;
 		this.width = width;
 		this.height = height;
 		this.format = format;
@@ -184,28 +184,19 @@ public class Texture : IDisposable
 		implementation = graphics.CreateTexture(this.width, this.height, this.format);
 		implementation.Init(this);
 
-		Filter = defaultTextureFilter;
+		filter = defaultTextureFilter;
 	}
 
-	public Texture(int width, int height, TextureFormat format = TextureFormat.Color) : this(App.graphics, width, height, format)
+	public Texture(int width, int height, TextureFormat format = TextureFormat.Color) : this(App.graphics, width, height, format) { }
+
+	public Texture(Bitmap bitmap) : this(App.graphics, bitmap.width, bitmap.height, TextureFormat.Color)
 	{
-
+		implementation.SetData<Color>(bitmap.pixels);
 	}
 
-	public Texture(Bitmap bitmap) : this(App.graphics, bitmap.Width, bitmap.Height, TextureFormat.Color)
-	{
-		implementation.SetData<Color>(bitmap.Pixels);
-	}
+	public Texture(string path) : this(new Bitmap(path)) { }
 
-	public Texture(string path) : this(new Bitmap(path))
-	{
-
-	}
-
-	public Texture(Stream stream) : this(new Bitmap(stream))
-	{
-
-	}
+	public Texture(Stream stream, string format) : this(new Bitmap(stream, format)) { }
 
 	public void Resize(int width, int height)
 	{
@@ -227,7 +218,7 @@ public class Texture : IDisposable
 	public Bitmap AsBitmap()
 	{
 		var bitmap = new Bitmap(width, height);
-		GetData<Color>(new Memory<Color>(bitmap.Pixels));
+		GetData<Color>(new Memory<Color>(bitmap.pixels));
 		return bitmap;
 	}
 
@@ -261,9 +252,9 @@ public class Texture : IDisposable
 		implementation.GetData(buffer);
 	}
 
-	public void SavePng(string path)
+	public void SavePng(File file)
 	{
-		using var stream = File.OpenWrite(path);
+		using var stream = file.OpenWrite();
 		SavePng(stream);
 	}
 
@@ -287,27 +278,27 @@ public class Texture : IDisposable
 			{
 				for (int i = 0; i < buffer.Length; i++)
 				{
-					color[i].R = buffer[i];
-					color[i].A = 255;
+					color[i].r = buffer[i];
+					color[i].a = 255;
 				}
 			}
 			else if (format == TextureFormat.RG)
 			{
 				for (int i = 0; i < buffer.Length; i += 2)
 				{
-					color[i].R = buffer[i + 0];
-					color[i].G = buffer[i + 1];
-					color[i].A = 255;
+					color[i].r = buffer[i + 0];
+					color[i].g = buffer[i + 1];
+					color[i].a = 255;
 				}
 			}
 			else if (format == TextureFormat.RGB)
 			{
 				for (int i = 0; i < buffer.Length; i += 3)
 				{
-					color[i].R = buffer[i + 0];
-					color[i].G = buffer[i + 1];
-					color[i].B = buffer[i + 2];
-					color[i].A = 255;
+					color[i].r = buffer[i + 0];
+					color[i].g = buffer[i + 1];
+					color[i].b = buffer[i + 2];
+					color[i].a = 255;
 				}
 			}
 			else
@@ -318,7 +309,7 @@ public class Texture : IDisposable
 
 		// We may need to flip our buffer.
 		// This is due to some rendering APIs drawing from the bottom left (OpenGL).
-		if (isFrameBuffer && graphics.originBottomLeft)
+		if (isFrameBuffer && _graphics.originBottomLeft)
 		{
 			for (int y = 0; y < height / 2; y++)
 			{
@@ -334,7 +325,7 @@ public class Texture : IDisposable
 			}
 		}
 
-		PNG.Write(stream, width, height, color);
+		Image.WritePNG(stream, width, height, color);
 	}
 
 	public void SaveJpg(string path)

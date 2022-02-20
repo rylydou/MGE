@@ -97,10 +97,10 @@ namespace MGE.OpenGL
 				GL.BindTexture(GLEnum.TEXTURE_2D, ID);
 
 				GL.TexImage2D(GLEnum.TEXTURE_2D, 0, glInternalFormat, texture.width, texture.height, 0, glFormat, glType, new IntPtr(0));
-				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_MIN_FILTER, (int)(texture.Filter == TextureFilter.Nearest ? GLEnum.NEAREST : GLEnum.LINEAR));
-				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_MAG_FILTER, (int)(texture.Filter == TextureFilter.Nearest ? GLEnum.NEAREST : GLEnum.LINEAR));
-				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_S, (int)(texture.WrapX == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT));
-				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_T, (int)(texture.WrapY == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT));
+				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_MIN_FILTER, (int)(texture.filter == TextureFilter.Nearest ? GLEnum.NEAREST : GLEnum.LINEAR));
+				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_MAG_FILTER, (int)(texture.filter == TextureFilter.Nearest ? GLEnum.NEAREST : GLEnum.LINEAR));
+				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_S, (int)(texture.wrapX == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT));
+				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_T, (int)(texture.wrapY == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT));
 			}
 		}
 

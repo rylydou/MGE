@@ -14,7 +14,7 @@ namespace MGE;
 /// </summary>
 public class Batch2D
 {
-	public static readonly VertexFormat VertexFormat = new VertexFormat(
+	public static readonly VertexFormat vertexFormat = new VertexFormat(
 		new VertexAttribute("a_position", VertexAttrib.Position, VertexType.Float, VertexComponents.Two, false),
 		new VertexAttribute("a_tex", VertexAttrib.TexCoord0, VertexType.Float, VertexComponents.Two, false),
 		new VertexAttribute("a_color", VertexAttrib.Color0, VertexType.Byte, VertexComponents.Four, true),
@@ -40,11 +40,11 @@ public class Batch2D
 			this.fill = (byte)fill;
 		}
 
-		public VertexFormat format => VertexFormat;
+		public VertexFormat format => vertexFormat;
 
 		public override string ToString()
 		{
-			return $"{{Pos:{pos}, Tex:{tex}, Col:{col}, Mult:{mult}, Wash:{wash}, Fill:{fill}}}";
+			return $"{{pos:{pos}, tex:{tex}, col:{col}, mult:{mult}, wash:{wash}, fill:{fill}}}";
 		}
 	}
 
@@ -110,7 +110,7 @@ public class Batch2D
 	{
 		this.graphics = graphics;
 
-		if (defaultBatchShader == null)
+		if (defaultBatchShader is null)
 			defaultBatchShader = new Shader(graphics, graphics.CreateShaderSourceBatch2D());
 
 		defaultShader = defaultBatchShader;
@@ -152,7 +152,7 @@ public class Batch2D
 
 	public void Render(RenderTarget target, Matrix4x4 matrix, RectInt? viewport = null, Color? clearColor = null)
 	{
-		if (clearColor != null)
+		if (clearColor is not null)
 			App.graphics.Clear(target, clearColor.Value);
 
 		_pass = new RenderPass(target, mesh, defaultMaterial);
@@ -286,7 +286,7 @@ public class Batch2D
 
 	public void SetTexture(Texture? texture)
 	{
-		if (_currentBatch.texture == null || _currentBatch.elements == 0)
+		if (_currentBatch.texture is null || _currentBatch.elements == 0)
 		{
 			_currentBatch.texture = texture;
 		}
@@ -1146,7 +1146,7 @@ public class Batch2D
 		var tx1 = 0f;
 		var ty1 = 0f;
 
-		if (tex != null)
+		if (tex is not null)
 		{
 			tx0 = source.left / tex.width;
 			ty0 = source.top / tex.height;
@@ -1188,7 +1188,7 @@ public class Batch2D
 			if (!font.charset.TryGetValue(text[i], out var ch))
 				continue;
 
-			if (ch.image != null)
+			if (ch.image is not null)
 			{
 				var at = position + ch.offset;
 
@@ -1333,7 +1333,7 @@ public class Batch2D
 			for (float x = bounds.left; x < bounds.right; x += cellWidth)
 			{
 				var color = (odd ? a : b);
-				if (color.A > 0)
+				if (color.a > 0)
 					Rect(x, y, Math.Min(bounds.right - x, cellWidth), Math.Min(bounds.bottom - y, cellHeight), color);
 
 				odd = !odd;

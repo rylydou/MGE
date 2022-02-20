@@ -45,12 +45,12 @@ public static class App
 	/// <summary>
 	/// Gets the Audio Module
 	/// </summary>
-	// public static Audio audio => modules.Get<Audio>();
+	public static Audio audio => modules.Get<Audio>();
 
 	/// <summary>
 	/// Gets the System Input
 	/// </summary>
-	// public static Input input => system.Input;
+	public static Input input => system.input;
 
 	/// <summary>
 	/// Gets the Primary Window
@@ -78,37 +78,33 @@ public static class App
 	/// </summary>
 	public static void Start(string title, int width, int height, WindowFlags flags = WindowFlags.ScaleToMonitor, Action? callback = null)
 	{
-		if (running)
-			throw new Exception("App is already running");
+		if (running) throw new Exception("App is already running");
+		if (exiting) throw new Exception("App is still exiting");
 
-		if (exiting)
-			throw new Exception("App is still exiting");
+		if (string.IsNullOrWhiteSpace(name)) name = title;
 
-		if (string.IsNullOrWhiteSpace(name))
-			name = title;
-
-		Log.Info($"Version: {version}");
-		Log.Info($"Platform: {RuntimeInformation.OSDescription} ({RuntimeInformation.OSArchitecture})");
-		Log.Info($"MGE: {RuntimeInformation.FrameworkDescription}");
+		Log.System($"Version: {version}");
+		Log.System($"Platform: {RuntimeInformation.OSDescription} ({RuntimeInformation.OSArchitecture})");
+		Log.System($"MGE: {RuntimeInformation.FrameworkDescription}");
 
 #if DEBUG
 		Launch();
 #else
-            try
-            {
-                Launch();
-            }
-            catch (Exception e)
-            {
-                var path = System.DefaultUserDirectory(Name);
-                if (Modules.Has<System>())
-                    path = Modules.Get<System>().UserDirectory(Name);
+		try
+		{
+			Launch();
+		}
+		catch (Exception e)
+		{
+			var path = System.DefaultUserDirectory(name);
+			if (modules.Has<System>())
+				path = modules.Get<System>().UserDirectory(name);
 
-                Log.Error(e.Message);
-                // TODO - this call was broken with the logging updates!
-                //Log.AppendToFile(Name, Path.Combine(path, "ErrorLog.txt"));
-                throw;
-            }
+			Log.Error(e.Message);
+			// TODO - this call was broken with the logging updates!
+			//Log.AppendToFile(Name, Path.Combine(path, "ErrorLog.txt"));
+			throw;
+		}
 #endif
 		void Launch()
 		{
@@ -227,7 +223,7 @@ public static class App
 			modules.FrameEnd();
 
 			// Check if the Primary Window has been closed
-			if (primaryWindow == null || !primaryWindow.opened)
+			if (primaryWindow is null || !primaryWindow.opened)
 				Exit();
 
 			// render

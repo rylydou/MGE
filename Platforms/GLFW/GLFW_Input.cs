@@ -48,9 +48,9 @@ namespace MGE.GLFW
 		{
 			windows.Add(window);
 
-			ignoreMouseUp[0] = Mouse.LeftDown;
-			ignoreMouseUp[1] = Mouse.MiddleDown;
-			ignoreMouseUp[2] = Mouse.RightDown;
+			ignoreMouseUp[0] = mouse.leftDown;
+			ignoreMouseUp[1] = mouse.middleDown;
+			ignoreMouseUp[2] = mouse.rightDown;
 
 			GLFW.SetKeyCallback(window, TrackDelegate<GLFW.KeyFunc>(window, OnKeyCallback));
 			GLFW.SetCharCallback(window, TrackDelegate<GLFW.CharFunc>(window, OnCharCallback));
@@ -110,24 +110,12 @@ namespace MGE.GLFW
 				switch (MGECursor)
 				{
 					default:
-					case Cursors.Default:
-						cursor = GLFW_Enum.ARROW_CURSOR;
-						break;
-					case Cursors.IBeam:
-						cursor = GLFW_Enum.IBEAM_CURSOR;
-						break;
-					case Cursors.Crosshair:
-						cursor = GLFW_Enum.CROSSHAIR_CURSOR;
-						break;
-					case Cursors.Hand:
-						cursor = GLFW_Enum.HAND_CURSOR;
-						break;
-					case Cursors.HorizontalResize:
-						cursor = GLFW_Enum.HRESIZE_CURSOR;
-						break;
-					case Cursors.VerticalResize:
-						cursor = GLFW_Enum.VRESIZE_CURSOR;
-						break;
+					case Cursors.Default: cursor = GLFW_Enum.ARROW_CURSOR; break;
+					case Cursors.IBeam: cursor = GLFW_Enum.IBEAM_CURSOR; break;
+					case Cursors.Crosshair: cursor = GLFW_Enum.CROSSHAIR_CURSOR; break;
+					case Cursors.Hand: cursor = GLFW_Enum.HAND_CURSOR; break;
+					case Cursors.HorizontalResize: cursor = GLFW_Enum.HRESIZE_CURSOR; break;
+					case Cursors.VerticalResize: cursor = GLFW_Enum.VRESIZE_CURSOR; break;
 				}
 
 				cursors.Add(MGECursor, ptr = GLFW.CreateStandardCursor((int)cursor));
@@ -188,7 +176,7 @@ namespace MGE.GLFW
 
 		void OnKeyCallback(IntPtr window, int key, int scancode, int action, int mods)
 		{
-			if (key >= 0 && key < Keyboard.MaxKeys)
+			if (key >= 0 && key < Keyboard.MAX_KEYS)
 			{
 				if (action == 1)
 				{

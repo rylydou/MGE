@@ -410,11 +410,11 @@ public static class Calc
 		return adler;
 	}
 
-	public static uint Adler32(uint adler, string path)
+	public static uint Adler32(uint adler, File file)
 	{
-		if (File.Exists(path))
+		if (file.exists)
 		{
-			using var stream = File.OpenRead(path);
+			using var stream = file.OpenRead();
 			return Adler32(adler, stream);
 		}
 
@@ -659,7 +659,7 @@ public static class Calc
 		var path = fullname.Replace('/', '.').Replace('\\', '.');
 
 		var stream = assembly.GetManifestResourceStream(path);
-		if (stream == null)
+		if (stream is null)
 			throw new Exception($"Embedded Resource '{resourceName}' doesn't exist");
 
 		return stream;

@@ -122,7 +122,7 @@ namespace MGE.OpenGL
 				GL.BindVertexArray(id);
 
 				// we will need to change attribute pointers probably
-				if (lastMaterial != null && lastMaterial.shader != material.shader)
+				if (lastMaterial is not null && lastMaterial.shader != material.shader)
 					bindedArrays.Clear();
 				lastMaterial = material;
 
@@ -134,7 +134,7 @@ namespace MGE.OpenGL
 					// bind buffers and determine what attributes are on
 					foreach (var attribute in material.shader.Attributes.Values)
 					{
-						if (lastVertexFormat != null)
+						if (lastVertexFormat is not null)
 						{
 							GL.BindBuffer(GLEnum.ARRAY_BUFFER, vertexBuffer);
 
@@ -142,7 +142,7 @@ namespace MGE.OpenGL
 								continue;
 						}
 
-						if (lastInstanceFormat != null)
+						if (lastInstanceFormat is not null)
 						{
 							GL.BindBuffer(GLEnum.ARRAY_BUFFER, instanceBuffer);
 

@@ -44,85 +44,85 @@ public enum Buttons
 /// </summary>
 public class Controller
 {
-	public const int MaxButtons = 64;
-	public const int MaxAxis = 64;
+	public const int MAX_BUTTONS = 64;
+	public const int MAX_AXIS = 64;
 
-	public readonly Input Input;
+	public readonly Input input;
 
-	public string Name { get; set; } = "Unknown";
-	public bool Connected { get; set; } = false;
-	public bool IsGamepad { get; set; } = false;
-	public int Buttons { get; set; } = 0;
-	public int Axes { get; set; } = 0;
+	public string name { get; set; } = "Unknown";
+	public bool connected { get; set; } = false;
+	public bool isGamepad { get; set; } = false;
+	public int buttons { get; set; } = 0;
+	public int axes { get; set; } = 0;
 
-	internal readonly bool[] pressed = new bool[MaxButtons];
-	internal readonly bool[] down = new bool[MaxButtons];
-	internal readonly bool[] released = new bool[MaxButtons];
-	internal readonly long[] timestamp = new long[MaxButtons];
-	internal readonly float[] axis = new float[MaxAxis];
-	internal readonly long[] axisTimestamp = new long[MaxAxis];
+	internal readonly bool[] _pressed = new bool[MAX_BUTTONS];
+	internal readonly bool[] _down = new bool[MAX_BUTTONS];
+	internal readonly bool[] _released = new bool[MAX_BUTTONS];
+	internal readonly long[] _timestamp = new long[MAX_BUTTONS];
+	internal readonly float[] _axis = new float[MAX_AXIS];
+	internal readonly long[] _axisTimestamp = new long[MAX_AXIS];
 
 	internal void Connect(string name, uint buttonCount, uint axisCount, bool isGamepad)
 	{
-		Name = name;
-		Buttons = (int)Math.Min(buttonCount, MaxButtons);
-		Axes = (int)Math.Min(axisCount, MaxAxis);
-		IsGamepad = isGamepad;
-		Connected = true;
+		this.name = name;
+		buttons = (int)Math.Min(buttonCount, MAX_BUTTONS);
+		axes = (int)Math.Min(axisCount, MAX_AXIS);
+		this.isGamepad = isGamepad;
+		connected = true;
 	}
 
 	internal void Disconnect()
 	{
-		Name = "Unknown";
-		Connected = false;
-		IsGamepad = false;
-		Buttons = 0;
-		Axes = 0;
+		name = "Unknown";
+		connected = false;
+		isGamepad = false;
+		buttons = 0;
+		axes = 0;
 
-		Array.Fill(pressed, false);
-		Array.Fill(down, false);
-		Array.Fill(released, false);
-		Array.Fill(timestamp, 0L);
-		Array.Fill(axis, 0);
-		Array.Fill(axisTimestamp, 0L);
+		Array.Fill(_pressed, false);
+		Array.Fill(_down, false);
+		Array.Fill(_released, false);
+		Array.Fill(_timestamp, 0L);
+		Array.Fill(_axis, 0);
+		Array.Fill(_axisTimestamp, 0L);
 	}
 
 	internal void Step()
 	{
-		Array.Fill(pressed, false);
-		Array.Fill(released, false);
+		Array.Fill(_pressed, false);
+		Array.Fill(_released, false);
 	}
 
 	internal void Copy(Controller other)
 	{
-		Name = other.Name;
-		Connected = other.Connected;
-		IsGamepad = other.IsGamepad;
-		Buttons = other.Buttons;
-		Axes = other.Axes;
+		name = other.name;
+		connected = other.connected;
+		isGamepad = other.isGamepad;
+		buttons = other.buttons;
+		axes = other.axes;
 
-		Array.Copy(other.pressed, 0, pressed, 0, pressed.Length);
-		Array.Copy(other.down, 0, down, 0, pressed.Length);
-		Array.Copy(other.released, 0, released, 0, pressed.Length);
-		Array.Copy(other.timestamp, 0, timestamp, 0, pressed.Length);
-		Array.Copy(other.axis, 0, axis, 0, axis.Length);
-		Array.Copy(other.axisTimestamp, 0, axisTimestamp, 0, axis.Length);
+		Array.Copy(other._pressed, 0, _pressed, 0, _pressed.Length);
+		Array.Copy(other._down, 0, _down, 0, _pressed.Length);
+		Array.Copy(other._released, 0, _released, 0, _pressed.Length);
+		Array.Copy(other._timestamp, 0, _timestamp, 0, _pressed.Length);
+		Array.Copy(other._axis, 0, _axis, 0, _axis.Length);
+		Array.Copy(other._axisTimestamp, 0, _axisTimestamp, 0, _axis.Length);
 	}
 
-	public bool Pressed(int buttonIndex) => buttonIndex >= 0 && buttonIndex < MaxButtons && pressed[buttonIndex];
+	public bool Pressed(int buttonIndex) => buttonIndex >= 0 && buttonIndex < MAX_BUTTONS && _pressed[buttonIndex];
 	public bool Pressed(Buttons button) => Pressed((int)button);
 
-	public long Timestamp(int buttonIndex) => buttonIndex >= 0 && buttonIndex < MaxButtons ? timestamp[buttonIndex] : 0;
+	public long Timestamp(int buttonIndex) => buttonIndex >= 0 && buttonIndex < MAX_BUTTONS ? _timestamp[buttonIndex] : 0;
 	public long Timestamp(Buttons button) => Timestamp((int)button);
-	public long Timestamp(Axes axis) => axisTimestamp[(int)axis];
+	public long Timestamp(Axes axis) => _axisTimestamp[(int)axis];
 
-	public bool Down(int buttonIndex) => buttonIndex >= 0 && buttonIndex < MaxButtons && down[buttonIndex];
+	public bool Down(int buttonIndex) => buttonIndex >= 0 && buttonIndex < MAX_BUTTONS && _down[buttonIndex];
 	public bool Down(Buttons button) => Down((int)button);
 
-	public bool Released(int buttonIndex) => buttonIndex >= 0 && buttonIndex < MaxButtons && released[buttonIndex];
+	public bool Released(int buttonIndex) => buttonIndex >= 0 && buttonIndex < MAX_BUTTONS && _released[buttonIndex];
 	public bool Released(Buttons button) => Released((int)button);
 
-	public float Axis(int axisIndex) => (axisIndex >= 0 && axisIndex < MaxAxis) ? axis[axisIndex] : 0f;
+	public float Axis(int axisIndex) => (axisIndex >= 0 && axisIndex < MAX_AXIS) ? _axis[axisIndex] : 0f;
 	public float Axis(Axes axis) => Axis((int)axis);
 
 	public Vector2 Axis(int axisX, int axisY) => new Vector2(Axis(axisX), Axis(axisY));
@@ -133,7 +133,7 @@ public class Controller
 
 	public bool Repeated(Buttons button)
 	{
-		return Repeated(button, Input.RepeatDelay, Input.RepeatInterval);
+		return Repeated(button, input.repeatDelay, input.repeatInterval);
 	}
 
 	public bool Repeated(Buttons button, float delay, float interval)
@@ -152,6 +152,6 @@ public class Controller
 
 	public Controller(Input input)
 	{
-		Input = input;
+		this.input = input;
 	}
 }

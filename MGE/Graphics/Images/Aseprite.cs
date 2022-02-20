@@ -49,9 +49,9 @@ namespace MGE
 		public readonly List<Tag> tags = new List<Tag>();
 		public readonly List<Slice> slices = new List<Slice>();
 
-		public Aseprite(string file)
+		public Aseprite(File file)
 		{
-			using var stream = File.Open(file, FileMode.Open);
+			using var stream = file.OpenRead();
 			Parse(stream);
 		}
 
@@ -67,7 +67,7 @@ namespace MGE
 			public Aseprite sprite;
 			public int duration;
 			public Bitmap bitmap;
-			public Color[] pixels => bitmap.Pixels;
+			public Color[] pixels => bitmap.pixels;
 			public List<Cel> cels;
 
 			public Frame(Aseprite sprite)
@@ -369,7 +369,7 @@ namespace MGE
 					// USERDATA
 					else if (chunkType == Chunks.UserData)
 					{
-						if (last != null)
+						if (last is not null)
 						{
 							var flags = (int)DWORD();
 
@@ -461,21 +461,21 @@ namespace MGE
             // 0 - NORMAL
             (ref Color dest, Color src, byte opacity) =>
 						{
-								if (src.A != 0)
+								if (src.a != 0)
 								{
-										if (dest.A == 0)
+										if (dest.a == 0)
 										{
 												dest = src;
 										}
 										else
 										{
-												var sa = MUL_UN8(src.A, opacity);
-												var ra = dest.A + sa - MUL_UN8(dest.A, sa);
+												var sa = MUL_UN8(src.a, opacity);
+												var ra = dest.a + sa - MUL_UN8(dest.a, sa);
 
-												dest.R = (byte)(dest.R + (src.R - dest.R) * sa / ra);
-												dest.G = (byte)(dest.G + (src.G - dest.G) * sa / ra);
-												dest.B = (byte)(dest.B + (src.B - dest.B) * sa / ra);
-												dest.A = (byte)ra;
+												dest.r = (byte)(dest.r + (src.r - dest.r) * sa / ra);
+												dest.g = (byte)(dest.g + (src.g - dest.g) * sa / ra);
+												dest.b = (byte)(dest.b + (src.b - dest.b) * sa / ra);
+												dest.a = (byte)ra;
 										}
 
 								}
@@ -503,18 +503,18 @@ namespace MGE
 			{
 				for (int p = 0, b = 0; p < len; p++, b += 4)
 				{
-					pixels[p].R = (byte)(bytes[b + 0] * bytes[b + 3] / 255);
-					pixels[p].G = (byte)(bytes[b + 1] * bytes[b + 3] / 255);
-					pixels[p].B = (byte)(bytes[b + 2] * bytes[b + 3] / 255);
-					pixels[p].A = bytes[b + 3];
+					pixels[p].r = (byte)(bytes[b + 0] * bytes[b + 3] / 255);
+					pixels[p].g = (byte)(bytes[b + 1] * bytes[b + 3] / 255);
+					pixels[p].b = (byte)(bytes[b + 2] * bytes[b + 3] / 255);
+					pixels[p].a = bytes[b + 3];
 				}
 			}
 			else if (mode == Modes.Grayscale)
 			{
 				for (int p = 0, b = 0; p < len; p++, b += 2)
 				{
-					pixels[p].R = pixels[p].G = pixels[p].B = (byte)(bytes[b + 0] * bytes[b + 1] / 255);
-					pixels[p].A = bytes[b + 1];
+					pixels[p].r = pixels[p].g = pixels[p].b = (byte)(bytes[b + 0] * bytes[b + 1] / 255);
+					pixels[p].a = bytes[b + 1];
 				}
 			}
 			else if (mode == Modes.Indexed)
@@ -530,7 +530,7 @@ namespace MGE
 		void CelToFrame(Frame frame, Cel cel)
 		{
 			var opacity = (byte)((cel.alpha * cel.layer.alpha) * 255);
-			var pxLen = frame.bitmap.Pixels.Length;
+			var pxLen = frame.bitmap.pixels.Length;
 
 			var blend = BlendModes[0];
 			if (cel.layer.blendMode < BlendModes.Length)
@@ -544,7 +544,7 @@ namespace MGE
 				for (int sy = Math.Max(0, -cel.y), bottom = Math.Min(cel.height, frame.sprite.height - cel.y); sy < bottom; sy++, dy += frame.sprite.width)
 				{
 					if (dx + dy >= 0 && dx + dy < pxLen)
-						blend(ref frame.bitmap.Pixels[dx + dy], cel.pixels[sx + sy * cel.width], opacity);
+						blend(ref frame.bitmap.pixels[dx + dy], cel.pixels[sx + sy * cel.width], opacity);
 				}
 			}
 		}
@@ -561,7 +561,7 @@ namespace MGE
 			foreach (var frame in frames)
 			{
 				var name = string.Format(namingFormat, frameIndex);
-				packer.AddPixels(name, width, height, frame.bitmap.Pixels);
+				packer.AddPixels(name, width, height, frame.bitmap.pixels);
 
 				frameIndex++;
 			}

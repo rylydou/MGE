@@ -22,47 +22,47 @@ public struct Color : IEquatable<Color>
 	/// <summary>
 	/// The Color Value in a ABGR 32-bit unsigned integer
 	/// </summary>
-	public uint ABGR;
+	public uint abgr;
 
 	/// <summary>
 	/// Gets the Color Value in a RGBA 32-bit unsigned integer
 	/// </summary>
-	public uint RGBA => new Color(A, B, G, R).ABGR;
+	public uint rgba => new Color(a, b, g, r).abgr;
 
 	/// <summary>
 	/// The Red Component
 	/// </summary>
-	public byte R
+	public byte r
 	{
-		get => (byte)ABGR;
-		set => ABGR = (ABGR & 0xffffff00) | value;
+		get => (byte)abgr;
+		set => abgr = (abgr & 0xffffff00) | value;
 	}
 
 	/// <summary>
 	/// The Green Component
 	/// </summary>
-	public byte G
+	public byte g
 	{
-		get => (byte)(ABGR >> 8);
-		set => ABGR = (ABGR & 0xffff00ff) | ((uint)value << 8);
+		get => (byte)(abgr >> 8);
+		set => abgr = (abgr & 0xffff00ff) | ((uint)value << 8);
 	}
 
 	/// <summary>
 	/// The Blue Component
 	/// </summary>
-	public byte B
+	public byte b
 	{
-		get => (byte)(ABGR >> 16);
-		set => ABGR = (ABGR & 0xff00ffff) | ((uint)value << 16);
+		get => (byte)(abgr >> 16);
+		set => abgr = (abgr & 0xff00ffff) | ((uint)value << 16);
 	}
 
 	/// <summary>
 	/// The Alpha Component
 	/// </summary>
-	public byte A
+	public byte a
 	{
-		get => (byte)(ABGR >> 24);
-		set => ABGR = (ABGR & 0x00ffffff) | ((uint)value << 24);
+		get => (byte)(abgr >> 24);
+		set => abgr = (abgr & 0x00ffffff) | ((uint)value << 24);
 	}
 
 	/// <summary>
@@ -70,22 +70,22 @@ public struct Color : IEquatable<Color>
 	/// </summary>
 	public Color(int rgb, byte alpha = 255)
 	{
-		ABGR = 0;
+		abgr = 0;
 
-		R = (byte)(rgb >> 16);
-		G = (byte)(rgb >> 08);
-		B = (byte)(rgb);
-		A = alpha;
+		r = (byte)(rgb >> 16);
+		g = (byte)(rgb >> 08);
+		b = (byte)(rgb);
+		a = alpha;
 	}
 
 	public Color(int rgb, float alpha)
 	{
-		ABGR = 0;
+		abgr = 0;
 
-		R = (byte)((rgb >> 16) * alpha);
-		G = (byte)((rgb >> 08) * alpha);
-		B = (byte)(rgb * alpha);
-		A = (byte)(255 * alpha);
+		r = (byte)((rgb >> 16) * alpha);
+		g = (byte)((rgb >> 08) * alpha);
+		b = (byte)(rgb * alpha);
+		a = (byte)(255 * alpha);
 	}
 
 	/// <summary>
@@ -93,39 +93,39 @@ public struct Color : IEquatable<Color>
 	/// </summary>
 	public Color(uint rgba)
 	{
-		ABGR = 0;
+		abgr = 0;
 
-		R = (byte)(rgba >> 24);
-		G = (byte)(rgba >> 16);
-		B = (byte)(rgba >> 08);
-		A = (byte)(rgba);
+		r = (byte)(rgba >> 24);
+		g = (byte)(rgba >> 16);
+		b = (byte)(rgba >> 08);
+		a = (byte)(rgba);
 	}
 
 	public Color(byte r, byte g, byte b, byte a)
 	{
-		ABGR = 0;
-		R = r;
-		G = g;
-		B = b;
-		A = a;
+		abgr = 0;
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.a = a;
 	}
 
 	public Color(int r, int g, int b, int a)
 	{
-		ABGR = 0;
-		R = (byte)r;
-		G = (byte)g;
-		B = (byte)b;
-		A = (byte)a;
+		abgr = 0;
+		this.r = (byte)r;
+		this.g = (byte)g;
+		this.b = (byte)b;
+		this.a = (byte)a;
 	}
 
 	public Color(float r, float g, float b, float a)
 	{
-		ABGR = 0;
-		R = (byte)(r * 255);
-		G = (byte)(g * 255);
-		B = (byte)(b * 255);
-		A = (byte)(a * 255);
+		abgr = 0;
+		this.r = (byte)(r * 255);
+		this.g = (byte)(g * 255);
+		this.b = (byte)(b * 255);
+		this.a = (byte)(a * 255);
 	}
 
 	/// <summary>
@@ -134,26 +134,26 @@ public struct Color : IEquatable<Color>
 	/// <returns></returns>
 	public Color Premultiply()
 	{
-		byte a = A;
-		return new Color((byte)(R * a / 255), (byte)(G * a / 255), (byte)(B * a / 255), a);
+		var a = this.a;
+		return new Color((byte)(r * a / 255), (byte)(g * a / 255), (byte)(b * a / 255), a);
 	}
 
 	/// <summary>
 	/// Converts the Color to a Vector4
 	/// </summary>
-	public Vector4 ToVector4() => new Vector4(R / 255f, G / 255f, B / 255f, A / 255f);
+	public Vector4 ToVector4() => new Vector4(r / 255f, g / 255f, b / 255f, a / 255f);
 
 	/// <summary>
 	/// Converts the Color to a Vector3
 	/// </summary>
-	public Vector3 ToVector3() => new Vector3(R / 255f, G / 255f, B / 255f);
+	public Vector3 ToVector3() => new Vector3(r / 255f, g / 255f, b / 255f);
 
 	public override bool Equals(object? obj) => obj is Color color && Equals(color);
 	public bool Equals(Color other) => this == other;
 
-	public override int GetHashCode() => (int)ABGR;
+	public override int GetHashCode() => (int)abgr;
 
-	public override string ToString() => ($"[{R}, {G}, {B}, {A}]");
+	public override string ToString() => ($"[{r}, {g}, {b}, {a}]");
 
 	/// <summary>
 	/// Returns a Hex String representation of the Color's given components
@@ -171,23 +171,23 @@ public struct Color : IEquatable<Color>
 			{
 				case 'R':
 				case 'r':
-					result[i * 2 + 0] = HEX[(R & 0xf0) >> 4];
-					result[i * 2 + 1] = HEX[(R & 0x0f)];
+					result[i * 2 + 0] = HEX[(r & 0xf0) >> 4];
+					result[i * 2 + 1] = HEX[(r & 0x0f)];
 					break;
 				case 'G':
 				case 'g':
-					result[i * 2 + 0] = HEX[(G & 0xf0) >> 4];
-					result[i * 2 + 1] = HEX[(G & 0x0f)];
+					result[i * 2 + 0] = HEX[(g & 0xf0) >> 4];
+					result[i * 2 + 1] = HEX[(g & 0x0f)];
 					break;
 				case 'B':
 				case 'b':
-					result[i * 2 + 0] = HEX[(B & 0xf0) >> 4];
-					result[i * 2 + 1] = HEX[(B & 0x0f)];
+					result[i * 2 + 0] = HEX[(b & 0xf0) >> 4];
+					result[i * 2 + 1] = HEX[(b & 0x0f)];
 					break;
 				case 'A':
 				case 'a':
-					result[i * 2 + 0] = HEX[(A & 0xf0) >> 4];
-					result[i * 2 + 1] = HEX[(A & 0x0f)];
+					result[i * 2 + 0] = HEX[(a & 0xf0) >> 4];
+					result[i * 2 + 1] = HEX[(a & 0x0f)];
 					break;
 			}
 		}
@@ -228,22 +228,22 @@ public struct Color : IEquatable<Color>
 				case 'R':
 				case 'r':
 					if (byte.TryParse(value.Slice(i * 2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var r))
-						color.R = r;
+						color.r = r;
 					break;
 				case 'G':
 				case 'g':
 					if (byte.TryParse(value.Slice(i * 2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var g))
-						color.G = g;
+						color.g = g;
 					break;
 				case 'B':
 				case 'b':
 					if (byte.TryParse(value.Slice(i * 2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var b))
-						color.B = b;
+						color.b = b;
 					break;
 				case 'A':
 				case 'a':
 					if (byte.TryParse(value.Slice(i * 2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var a))
-						color.A = a;
+						color.a = a;
 					break;
 			}
 		}
@@ -274,10 +274,10 @@ public struct Color : IEquatable<Color>
 		amount = Math.Max(0, Math.Min(1, amount));
 
 		return new Color(
-			(int)(a.R + (b.R - a.R) * amount),
-			(int)(a.G + (b.G - a.G) * amount),
-			(int)(a.B + (b.B - a.B) * amount),
-			(int)(a.A + (b.A - a.A) * amount)
+			(int)(a.r + (b.r - a.r) * amount),
+			(int)(a.g + (b.g - a.g) * amount),
+			(int)(a.b + (b.b - a.b) * amount),
+			(int)(a.a + (b.a - a.a) * amount)
 		);
 	}
 	/// <summary>
@@ -299,16 +299,16 @@ public struct Color : IEquatable<Color>
 	public static Color operator *(Color value, float scaler)
 	{
 		return new Color(
-			(int)(value.R * scaler),
-			(int)(value.G * scaler),
-			(int)(value.B * scaler),
-			(int)(value.A * scaler)
+			(int)(value.r * scaler),
+			(int)(value.g * scaler),
+			(int)(value.b * scaler),
+			(int)(value.a * scaler)
 		);
 	}
 
-	public static bool operator ==(Color a, Color b) => a.ABGR == b.ABGR;
+	public static bool operator ==(Color a, Color b) => a.abgr == b.abgr;
 
-	public static bool operator !=(Color a, Color b) => a.ABGR != b.ABGR;
+	public static bool operator !=(Color a, Color b) => a.abgr != b.abgr;
 
 	static public implicit operator Color(Vector4 vec) => new Color(vec.X, vec.Y, vec.Z, vec.W);
 

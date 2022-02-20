@@ -41,7 +41,7 @@ namespace MGE.OpenGL
 			GetIntegerv((GLEnum)0x0D33, out MaxTextureSize);
 
 #if DEBUG
-			if (bindings.glDebugMessageCallback != null)
+			if (bindings.glDebugMessageCallback is not null)
 			{
 				Enable(GLEnum.DEBUG_OUTPUT);
 				Enable(GLEnum.DEBUG_OUTPUT_SYNCHRONOUS);

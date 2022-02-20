@@ -86,18 +86,12 @@ namespace MGE
 		/// <summary>
 		/// Loads a Font from the specified Path
 		/// </summary>
-		public Font(string path) : this(File.ReadAllBytes(path))
-		{
-
-		}
+		public Font(File file) : this(file.ReadBytes()) { }
 
 		/// <summary>
 		/// Loads a Font from the specified Stream
 		/// </summary>
-		public Font(Stream stream) : this(ReadAllBytes(stream))
-		{
-
-		}
+		public Font(Stream stream) : this(ReadAllBytes(stream)) { }
 
 		/// <summary>
 		/// Loads a Font from the byte array. The Font will use this buffer until it is disposed.

@@ -195,7 +195,7 @@ namespace MGE.OpenGL
 				else
 				{
 					var context = system.GetCurrentGLContext();
-					if (context == null)
+					if (context is null)
 					{
 						context = system.GetWindowGLContext(App.window);
 						system.SetCurrentGLContext(context);
@@ -232,7 +232,7 @@ namespace MGE.OpenGL
 
 				if (flags.HasFlag(MGE.Clear.Color))
 				{
-					GL.ClearColor(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
+					GL.ClearColor(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f);
 					mask |= GLEnum.COLOR_BUFFER_BIT;
 				}
 
@@ -280,7 +280,7 @@ namespace MGE.OpenGL
 			else
 			{
 				var context = system.GetCurrentGLContext();
-				if (context == null)
+				if (context is null)
 				{
 					context = system.GetWindowGLContext(App.window);
 					system.SetCurrentGLContext(context);
@@ -299,7 +299,7 @@ namespace MGE.OpenGL
 				// get the previous state
 				var updateAll = false;
 				var contextMeta = graphics.GetContextMeta(context);
-				if (contextMeta.LastRenderState == null)
+				if (contextMeta.LastRenderState is null)
 				{
 					updateAll = true;
 					lastPass = pass;
@@ -371,10 +371,10 @@ namespace MGE.OpenGL
 					if (updateAll || lastPass.blendMode.color != pass.blendMode.color)
 					{
 						GL.BlendColor(
-								pass.blendMode.color.R / 255f,
-								pass.blendMode.color.G / 255f,
-								pass.blendMode.color.B / 255f,
-								pass.blendMode.color.A / 255f);
+								pass.blendMode.color.r / 255f,
+								pass.blendMode.color.g / 255f,
+								pass.blendMode.color.b / 255f,
+								pass.blendMode.color.a / 255f);
 					}
 				}
 
@@ -463,7 +463,7 @@ namespace MGE.OpenGL
 
 					if (updateAll || lastPass.scissor != scissor || contextMeta.ForceScissorUpdate)
 					{
-						if (pass.scissor == null)
+						if (pass.scissor is null)
 						{
 							GL.Disable(GLEnum.SCISSOR_TEST);
 						}

@@ -89,7 +89,7 @@ namespace MGE.SDL2
 								}
 							}
 
-							if (window == null)
+							if (window is null)
 								continue;
 
 							switch (e.window.windowEvent)
@@ -130,6 +130,7 @@ namespace MGE.SDL2
 					case SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN:
 					case SDL.SDL_EventType.SDL_MOUSEBUTTONUP:
 					case SDL.SDL_EventType.SDL_MOUSEWHEEL:
+					case SDL.SDL_EventType.SDL_MOUSEMOTION:
 					case SDL.SDL_EventType.SDL_JOYAXISMOTION:
 					case SDL.SDL_EventType.SDL_JOYBALLMOTION:
 					case SDL.SDL_EventType.SDL_JOYHATMOTION:
@@ -187,7 +188,7 @@ namespace MGE.SDL2
 
 		public void SetCurrentGLContext(ISystemOpenGL.Context? context)
 		{
-			if (context is SDL_GLContext ctx && ctx != null)
+			if (context is SDL_GLContext ctx && ctx is not null)
 				SDL.SDL_GL_MakeCurrent(ctx.window, ctx.context);
 			else
 				SDL.SDL_GL_MakeCurrent(IntPtr.Zero, IntPtr.Zero);
