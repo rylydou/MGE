@@ -1,0 +1,9 @@
+{
+	loader: {
+		!spritesheet
+		slicing: {
+			offset: [ 0 0 ]
+			size: [ 16 16]
+		}
+	}
+}

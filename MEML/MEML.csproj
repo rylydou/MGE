@@ -4,8 +4,6 @@
 
 		<TargetFramework>net6.0</TargetFramework>
 
-		<RootNamespace>MGE</RootNamespace>
-
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>false</ImplicitUsings>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -14,14 +12,5 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 
 	</PropertyGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="../MEML/MEML.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="StbImageSharp" Version="2.27.8" />
-		<PackageReference Include="StbImageWriteSharp" Version="1.13.5" />
-	</ItemGroup>
 
 </Project>

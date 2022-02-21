@@ -15,6 +15,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="../MGE/MGE.csproj" />
+		<ProjectReference Include="../MEML/MEML.csproj" />
 		<ProjectReference Include="../Platforms/GLFW/MGE.GLFW.csproj" />
 		<ProjectReference Include="../Platforms/SDL2/MGE.SDL2.csproj" />
 		<ProjectReference Include="../Platforms/OpenGL/MGE.OpenGL.csproj" />
