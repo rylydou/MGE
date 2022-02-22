@@ -1,8 +1,9 @@
-﻿using Demo;
+﻿using System.Linq;
+using System.Reflection;
+using Demo;
 using MGE;
 using MGE.GLFW;
 using MGE.OpenGL;
-using MGE.SDL2;
 
 // // System Module (this is Mandatory)
 // App.modules.Register<GLFW_System>();
@@ -16,7 +17,12 @@ using MGE.SDL2;
 // // Start the Application with a single 1280x720 Window
 // App.Start("My Application", 1280, 720);
 
-MemlValue obj = MemlValue.FromObject(new TestObject());
+var serilizer = new MemlSerializer()
+{
+	getMembers = (type) => MemlSerializer.DefualtGetMembers(type).Where(m => m.GetCustomAttribute<SaveAttribute>() is not null),
+};
+
+var obj = serilizer.ValueFromObject(new TestObject());
 
 // var file = Folder.data.GetFile("in.meml");
 // if (file.exists)
@@ -29,9 +35,10 @@ Folder.data.GetFile("out.dat").WriteBytes(obj.ToBytes());
 
 class TestObject
 {
-	public string text = "Hello world";
-	public int id = 1337;
+	[Save] public string text = "Hello world";
+	[Save] public int id = 1337;
 	public float number = 69.420f;
+	[Save]
 	public object[] items = new object[]
 	{
 		"Hello world",
@@ -43,7 +50,7 @@ class TestObject
 
 class Thing
 {
-	public string name;
+	[Save] public string name;
 
 	public Thing(string name)
 	{
