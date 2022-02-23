@@ -23,6 +23,23 @@ var serilizer = new MemlSerializer()
 };
 
 var obj = serilizer.ObjectFromMeml<TestObject>(MemlValue.FromFile(Folder.data.GetFile("in.meml")));
+// var obj = new TestObject()
+// {
+// 	text = "Hello world",
+// 	id = 123,
+// 	number = 123.456f,
+// 	items = new object[] {
+// 		123,
+// 		123.456f,
+// 		123.456d,
+// 		new Test()
+// 		{
+// 			name = "Joe Mama",
+// 			id = 123,
+// 			number = 654.321f
+// 		},
+// 	},
+// };
 
 var meml = serilizer.MemlFromObject(obj);
 
@@ -31,6 +48,7 @@ meml.ToFile(Folder.data.GetFile("out.meml"));
 class TestObject
 {
 	[Save] public string text = "";
+	[Save] public bool enabled = false;
 	[Save] public int id = 0;
 	[Save] public float number = 0;
 	[Save] public object[] items = new object[0];

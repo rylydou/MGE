@@ -98,54 +98,30 @@ namespace MGE
 		{
 			switch (token)
 			{
-				case MemlToken.Null:
-					return new MemlNull();
+				case MemlToken.Null: return new MemlNull();
 
-				case MemlToken.Boolean:
-					if (value is bool Bool)
-						return Bool;
-					break;
+				case MemlToken.Bool: return (bool)(value!);
+				case MemlToken.String: return (string)(value!);
 
-				case MemlToken.Number:
-					if (value is byte Byte)
-						return Byte;
-					if (value is char Char)
-						return Char;
-					if (value is short Short)
-						return Short;
-					if (value is ushort UShort)
-						return UShort;
-					if (value is int Int)
-						return Int;
-					if (value is uint UInt)
-						return UInt;
-					if (value is long Long)
-						return Long;
-					if (value is ulong ULong)
-						return ULong;
-					if (value is decimal Decimal)
-						return Decimal;
-					if (value is float Float)
-						return Float;
-					if (value is double Double)
-						return Double;
-					break;
+				case MemlToken.Byte: return (byte)(value!);
+				case MemlToken.SByte: return (sbyte)(value!);
+				case MemlToken.Char: return (char)(value!);
+				case MemlToken.Short: return (short)(value!);
+				case MemlToken.UShort: return (ushort)(value!);
+				case MemlToken.Int: return (int)(value!);
+				case MemlToken.UInt: return (uint)(value!);
+				case MemlToken.Long: return (long)(value!);
+				case MemlToken.ULong: return (ulong)(value!);
 
-				case MemlToken.String:
-					if (value is string String)
-						return String;
-					break;
+				case MemlToken.Float: return (float)(value!);
+				case MemlToken.Double: return (double)(value!);
+				case MemlToken.Decimal: return (decimal)(value!);
 
-				case MemlToken.Binary:
-					if (value is byte[] Bytes)
-						return Bytes;
-					break;
+				case MemlToken.Binary: return (byte[])(value!);
 
-				case MemlToken.ObjectStart:
-					return ReadObject();
+				case MemlToken.ObjectStart: return ReadObject();
 
-				case MemlToken.ArrayStart:
-					return ReadArray();
+				case MemlToken.ArrayStart: return ReadArray();
 
 				case MemlToken.ObjectKey:
 				case MemlToken.ObjectEnd:

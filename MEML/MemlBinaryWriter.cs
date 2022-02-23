@@ -37,36 +37,36 @@ namespace MGE
 			Binary = 255,
 		}
 
-		readonly BinaryWriter writer;
-		readonly Stack<long> containerPositionStack = new();
+		readonly BinaryWriter _writer;
+		readonly Stack<long> _containerPositionStack = new();
 
 		public MemlBinaryWriter(string path)
 		{
-			writer = new BinaryWriter(File.Create(path), Encoding.UTF8);
+			_writer = new BinaryWriter(File.Create(path), Encoding.UTF8);
 		}
 
 		public MemlBinaryWriter(Stream stream)
 		{
-			writer = new BinaryWriter(stream, Encoding.UTF8);
+			_writer = new BinaryWriter(stream, Encoding.UTF8);
 		}
 
 		void ContainerBegin(BinaryTokens token)
 		{
-			writer.Write((byte)token);
-			containerPositionStack.Push(writer.BaseStream.Position);
-			writer.Write((uint)0); // byte size
+			_writer.Write((byte)token);
+			_containerPositionStack.Push(_writer.BaseStream.Position);
+			_writer.Write((uint)0); // byte size
 		}
 
 		void ContainerEnd(BinaryTokens token)
 		{
-			writer.Write((byte)token);
+			_writer.Write((byte)token);
 
-			var current = writer.BaseStream.Position;
-			var offset = containerPositionStack.Pop();
+			var current = _writer.BaseStream.Position;
+			var offset = _containerPositionStack.Pop();
 
-			writer.BaseStream.Seek(offset, SeekOrigin.Begin);
-			writer.Write((uint)(current - offset - 4)); // byte size (minus 4 since we want to skip the actual byte size value)
-			writer.BaseStream.Seek(current, SeekOrigin.Begin);
+			_writer.BaseStream.Seek(offset, SeekOrigin.Begin);
+			_writer.Write((uint)(current - offset - 4)); // byte size (minus 4 since we want to skip the actual byte size value)
+			_writer.BaseStream.Seek(current, SeekOrigin.Begin);
 		}
 
 		public override void ObjectBegin()
@@ -94,109 +94,109 @@ namespace MGE
 			if (string.IsNullOrEmpty(name))
 				throw new Exception("Object Key cannot be empty");
 
-			writer.Write((byte)BinaryTokens.ObjectKey);
-			writer.Write(name);
+			_writer.Write((byte)BinaryTokens.ObjectKey);
+			_writer.Write(name);
 		}
 
 		public override void Null()
 		{
-			writer.Write((byte)BinaryTokens.Null);
+			_writer.Write((byte)BinaryTokens.Null);
 		}
 
 		public override void Value(bool value)
 		{
-			writer.Write((byte)BinaryTokens.Boolean);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.Boolean);
+			_writer.Write(value);
 		}
 
 		public override void Value(byte value)
 		{
-			writer.Write((byte)BinaryTokens.Byte);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.Byte);
+			_writer.Write(value);
 		}
 
 		public override void Value(sbyte value)
 		{
-			writer.Write((byte)BinaryTokens.SByte);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.SByte);
+			_writer.Write(value);
 		}
 
 		public override void Value(char value)
 		{
-			writer.Write((byte)BinaryTokens.Char);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.Char);
+			_writer.Write(value);
 		}
 
 		public override void Value(short value)
 		{
-			writer.Write((byte)BinaryTokens.Short);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.Short);
+			_writer.Write(value);
 		}
 
 		public override void Value(ushort value)
 		{
-			writer.Write((byte)BinaryTokens.UShort);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.UShort);
+			_writer.Write(value);
 		}
 
 		public override void Value(int value)
 		{
-			writer.Write((byte)BinaryTokens.Int);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.Int);
+			_writer.Write(value);
 		}
 
 		public override void Value(uint value)
 		{
-			writer.Write((byte)BinaryTokens.UInt);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.UInt);
+			_writer.Write(value);
 		}
 
 		public override void Value(long value)
 		{
-			writer.Write((byte)BinaryTokens.Long);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.Long);
+			_writer.Write(value);
 		}
 
 		public override void Value(ulong value)
 		{
-			writer.Write((byte)BinaryTokens.ULong);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.ULong);
+			_writer.Write(value);
 		}
 
 		public override void Value(decimal value)
 		{
-			writer.Write((byte)BinaryTokens.Decimal);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.Decimal);
+			_writer.Write(value);
 		}
 
 		public override void Value(float value)
 		{
-			writer.Write((byte)BinaryTokens.Float);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.Float);
+			_writer.Write(value);
 		}
 
 		public override void Value(double value)
 		{
-			writer.Write((byte)BinaryTokens.Double);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.Double);
+			_writer.Write(value);
 		}
 
 		public override void Value(string value)
 		{
-			writer.Write((byte)BinaryTokens.String);
-			writer.Write(value ?? "");
+			_writer.Write((byte)BinaryTokens.String);
+			_writer.Write(value ?? "");
 		}
 
 		public override void Value(ReadOnlySpan<byte> value)
 		{
-			writer.Write((byte)BinaryTokens.Binary);
-			writer.Write(value.Length);
-			writer.Write(value);
+			_writer.Write((byte)BinaryTokens.Binary);
+			_writer.Write(value.Length);
+			_writer.Write(value);
 		}
 
 		public void Dispose()
 		{
-			writer.Dispose();
+			_writer.Dispose();
 		}
 	}
 }

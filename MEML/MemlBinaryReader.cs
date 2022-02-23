@@ -57,7 +57,7 @@ namespace MGE
 						break;
 					case MemlBinaryWriter.BinaryTokens.Boolean:
 						value = _reader.ReadBoolean();
-						base.token = MemlToken.Boolean;
+						base.token = MemlToken.Bool;
 						break;
 					case MemlBinaryWriter.BinaryTokens.String:
 						value = _reader.ReadString();
@@ -65,47 +65,51 @@ namespace MGE
 						break;
 					case MemlBinaryWriter.BinaryTokens.Byte:
 						value = _reader.ReadByte();
-						base.token = MemlToken.Number;
+						base.token = MemlToken.Byte;
+						break;
+					case MemlBinaryWriter.BinaryTokens.SByte:
+						value = _reader.ReadSByte();
+						base.token = MemlToken.SByte;
 						break;
 					case MemlBinaryWriter.BinaryTokens.Char:
 						value = _reader.ReadChar();
-						base.token = MemlToken.Number;
+						base.token = MemlToken.Char;
 						break;
 					case MemlBinaryWriter.BinaryTokens.Short:
 						value = _reader.ReadInt16();
-						base.token = MemlToken.Number;
+						base.token = MemlToken.Short;
 						break;
 					case MemlBinaryWriter.BinaryTokens.UShort:
 						value = _reader.ReadUInt16();
-						base.token = MemlToken.Number;
+						base.token = MemlToken.UShort;
 						break;
 					case MemlBinaryWriter.BinaryTokens.Int:
 						value = _reader.ReadInt32();
-						base.token = MemlToken.Number;
+						base.token = MemlToken.Int;
 						break;
 					case MemlBinaryWriter.BinaryTokens.UInt:
 						value = _reader.ReadUInt32();
-						base.token = MemlToken.Number;
+						base.token = MemlToken.UInt;
 						break;
 					case MemlBinaryWriter.BinaryTokens.Long:
 						value = _reader.ReadInt64();
-						base.token = MemlToken.Number;
+						base.token = MemlToken.Long;
 						break;
 					case MemlBinaryWriter.BinaryTokens.ULong:
 						value = _reader.ReadUInt64();
-						base.token = MemlToken.Number;
+						base.token = MemlToken.ULong;
 						break;
 					case MemlBinaryWriter.BinaryTokens.Decimal:
 						value = _reader.ReadDecimal();
-						base.token = MemlToken.Number;
+						base.token = MemlToken.Decimal;
 						break;
 					case MemlBinaryWriter.BinaryTokens.Float:
 						value = _reader.ReadSingle();
-						base.token = MemlToken.Number;
+						base.token = MemlToken.Float;
 						break;
 					case MemlBinaryWriter.BinaryTokens.Double:
 						value = _reader.ReadDouble();
-						base.token = MemlToken.Number;
+						base.token = MemlToken.Double;
 						break;
 					case MemlBinaryWriter.BinaryTokens.Binary:
 						{

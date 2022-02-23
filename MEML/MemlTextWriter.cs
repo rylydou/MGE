@@ -81,8 +81,7 @@ namespace MGE
 			Next(isKey: true);
 
 			_writer.Write(name);
-			_writer.Write(":");
-			_writer.Write(" ");
+			_writer.Write(": ");
 		}
 
 		public override void ObjectBegin()
@@ -134,7 +133,8 @@ namespace MGE
 		public override void Value(char value)
 		{
 			Next(isValue: true);
-			_writer.Write(value);
+			_writer.Write((short)value);
+			_writer.Write('c');
 		}
 
 		public override void Value(short value)
@@ -208,8 +208,8 @@ namespace MGE
 			{
 				switch (value[i])
 				{
-					case '\r': _writer.Write(@"\r"); break;
 					case '\n': _writer.Write(@"\n"); break;
+					case '\r': _writer.Write(@"\r"); break;
 					case '\t': _writer.Write(@"\t"); break;
 					case '\v': _writer.Write(@"\v"); break;
 					case '\'': _writer.Write(@"\'"); break;

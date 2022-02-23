@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace MGE
@@ -55,95 +56,77 @@ namespace MGE
 
 			while (StepChar(out var next))
 			{
-				// skip whitespace and characters we don't care about
-				if (char.IsWhiteSpace(next) || next == ':' || next == ',')
-					continue;
+				// Skip whitespace and characters we don't care about
+				if (char.IsWhiteSpace(next) || next == ':') continue;
 
 				// a comment
-				if (next == '#' || (next == '/' && (PeekChar(out var p) && p == '/')))
+				if (next == '#')
 				{
-					while (StepChar(out next) && next != '\n' && next != '\r')
-						continue;
+					while (StepChar(out next) && next != '\n' && next != '\r') continue;
 					continue;
 				}
 
-				var isEncapsulated = false;
-
 				switch (next)
 				{
-					// object
+					// Object
 					case '{':
 						token = MemlToken.ObjectStart;
 						return true;
-
 					case '}':
-
-						// if we found an object-end after a key
-						// set the value of that last key to null, and store this value for next time
-						if (lastToken == MemlToken.ObjectKey)
-						{
-							_storedNext = true;
-							_storedToken = MemlToken.ObjectEnd;
-							_storedString = null;
-
-							value = null;
-							token = MemlToken.Null;
-							return true;
-						}
-
+						if (lastToken == MemlToken.ObjectKey) throw new Exception($"Empty value @{position}");
 						token = MemlToken.ObjectEnd;
 						return true;
 
-					// array
+					// Array
 					case '[':
+						if (lastToken == MemlToken.ObjectKey) throw new Exception($"Empty value @{position}");
 						token = MemlToken.ArrayStart;
 						return true;
+					case ']': token = MemlToken.ArrayEnd; return true;
 
-					case ']':
-
-						// if we found an array-end after a key
-						// set the value of that last key to null, and store this value for next time
-						if (lastToken == MemlToken.ObjectKey)
+					case '*':
 						{
-							_storedNext = true;
-							_storedToken = MemlToken.ArrayEnd;
-							_storedString = null;
+							while (StepChar(out next) && next != '*')
+							{
+								_builder.Append(next);
+							}
 
-							value = null;
-							token = MemlToken.Null;
+							token = MemlToken.Binary;
+							value = Convert.FromBase64String(_builder.ToString(1, _builder.Length - 1));
 							return true;
 						}
 
-						token = MemlToken.ArrayEnd;
-						return true;
-
-					// an encapsulated string
+					// A string
 					case '\'':
 						{
 							_builder.Clear();
-
 							while (StepChar(out next) && next != '\'')
 							{
 								if (next == '\\')
 								{
 									StepChar(out next);
-									if (next == 'n')
-										_builder.Append('\n');
-									else if (next == 'r')
-										_builder.Append('\r');
-									else
-										_builder.Append(next);
+									_builder.Append(next switch
+									{
+										'n' => _builder.Append('\n'),
+										'r' => _builder.Append('\r'),
+										't' => _builder.Append('\t'),
+										'v' => _builder.Append('\v'),
+										'\'' => _builder.Append('\''),
+										'\\' => _builder.Append('\\'),
+										_ => throw new Exception($"'\\{next}' is not a valid escape sequence @{position}"),
+									});
 									continue;
 								}
 
 								_builder.Append(next);
 							}
 
-							isEncapsulated = true;
-							break;
+							token = MemlToken.String;
+							value = _builder.ToString();
+							return true;
 						}
 
-					// other value
+					// Other value
 					default:
 						{
 							_builder.Clear();
@@ -159,8 +142,8 @@ namespace MGE
 						}
 				}
 
-				// check if this entry is a KEY
-				bool isKey = false;
+				// Check if this entry is a KEY
+				var isKey = false;
 				{
 					if (char.IsWhiteSpace(next))
 					{
@@ -172,48 +155,19 @@ namespace MGE
 						isKey = true;
 				}
 
-				// is a key
+				var str = _builder.ToString();
+
+				// Is a key
 				if (isKey)
 				{
-					// if we found an key after a key
-					// set the value of that last key to null, and store this value for next time
-					if (lastToken == MemlToken.ObjectKey)
-					{
-						_storedNext = true;
-						_storedToken = MemlToken.ObjectKey;
-						_storedString = _builder.ToString();
-
-						value = null;
-						token = MemlToken.Null;
-						return true;
-					}
+					if (lastToken == MemlToken.ObjectKey) throw new Exception($"Empty value @{position}");
 
 					token = MemlToken.ObjectKey;
-					value = _builder.ToString();
+					value = str;
 					return true;
-				}
-				// is an ecnapsulated string
-				else if (isEncapsulated)
-				{
-					var str = _builder.ToString();
-
-					if (str.StartsWith("bin::"))
-					{
-						token = MemlToken.Binary;
-						value = Convert.FromBase64String(str.Substring(5));
-						return true;
-					}
-					else
-					{
-						token = MemlToken.String;
-						value = str;
-						return true;
-					}
 				}
 				else
 				{
-					var str = _builder.ToString();
-
 					// null value
 					if (str.Length <= 0 || str.Equals("null", StringComparison.OrdinalIgnoreCase))
 					{
@@ -223,60 +177,54 @@ namespace MGE
 					// true value
 					else if (str.Equals("true", StringComparison.OrdinalIgnoreCase))
 					{
-						token = MemlToken.Boolean;
+						token = MemlToken.Bool;
 						value = true;
 						return true;
 					}
 					// false value
 					else if (str.Equals("false", StringComparison.OrdinalIgnoreCase))
 					{
-						token = MemlToken.Boolean;
+						token = MemlToken.Bool;
 						value = false;
 						return true;
 					}
-					// could be a number value ...
-					// this is kinda ugly ... but we just try to fit it into the smallest number type it can be
+					// Number: 123.456f or (int) 123456
 					else if ((str[0] >= '0' && str[0] <= '9') || str[0] == '-' || str[0] == '+' || str[0] == '.')
 					{
-						token = MemlToken.Number;
+						switch (str.Last())
+						{
+							case 'b': token = MemlToken.SByte; value = sbyte.Parse(str.Substring(0, str.Length - 1)); break;
+							case 'B': token = MemlToken.Byte; value = byte.Parse(str.Substring(0, str.Length - 1)); break;
 
-						// decimal, float, double
-						if (str.Contains('.'))
-						{
-							if (float.TryParse(str, out float floatValue))
-							{
-								value = floatValue;
-								return true;
-							}
-							else if (double.TryParse(str, out double doubleValue))
-							{
-								value = doubleValue;
-								return true;
-							}
+							case 'c': token = MemlToken.Char; value = char.Parse(str.Substring(0, str.Length - 1)); break;
+							case 's': token = MemlToken.Short; value = short.Parse(str.Substring(0, str.Length - 1)); break;
+							case 'S': token = MemlToken.UShort; value = ushort.Parse(str.Substring(0, str.Length - 1)); break;
+							case 'I': token = MemlToken.UInt; value = uint.Parse(str.Substring(0, str.Length - 1)); break;
+							case 'l': token = MemlToken.Long; value = long.Parse(str.Substring(0, str.Length - 1)); break;
+							case 'L': token = MemlToken.ULong; value = ulong.Parse(str.Substring(0, str.Length - 1)); break;
+
+							case 'd': token = MemlToken.Double; value = double.Parse(str.Substring(0, str.Length - 1)); break;
+							case 'm': token = MemlToken.Decimal; value = decimal.Parse(str.Substring(0, str.Length - 1)); break;
+
+							default:
+								if (str.Contains('.'))
+								{
+									token = MemlToken.Float;
+									value = float.Parse(str);
+								}
+								else
+								{
+									token = MemlToken.Int;
+									value = int.Parse(str);
+								}
+								break;
 						}
-						else if (int.TryParse(str, out int intValue))
-						{
-							value = intValue;
-							return true;
-						}
-						else if (long.TryParse(str, out long longValue))
-						{
-							value = longValue;
-							return true;
-						}
-						else if (ulong.TryParse(str, out ulong ulongValue))
-						{
-							value = ulongValue;
-							return true;
-						}
+
+						return true;
 					}
 
-					// fallback to string
-					token = MemlToken.String;
-					value = str;
-					return true;
+					throw new Exception($"Invalid value @{position}\nmight be an unquoeted string");
 				}
-
 			}
 
 			return false;
