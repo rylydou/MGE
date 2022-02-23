@@ -12,11 +12,11 @@ namespace MGE
 		public abstract void ObjectEnd();
 		public abstract void ArrayBegin();
 		public abstract void ArrayEnd();
-		public abstract void Comment(string text);
 
 		public abstract void Null();
 		public abstract void Value(bool value);
 		public abstract void Value(byte value);
+		public abstract void Value(sbyte value);
 		public abstract void Value(char value);
 		public abstract void Value(short value);
 		public abstract void Value(ushort value);
@@ -24,11 +24,10 @@ namespace MGE
 		public abstract void Value(uint value);
 		public abstract void Value(long value);
 		public abstract void Value(ulong value);
-		public abstract void Value(decimal value);
 		public abstract void Value(float value);
 		public abstract void Value(double value);
+		public abstract void Value(decimal value);
 		public abstract void Value(string value);
-
 
 		public void Value(byte[] value) => Value(value.AsSpan());
 		public abstract void Value(ReadOnlySpan<byte> value);
@@ -40,29 +39,21 @@ namespace MGE
 				switch (value.type)
 				{
 					case MemlType.Object:
-						if (value.IsObject)
+						ObjectBegin();
+						foreach (var pair in value.pairs)
 						{
-							ObjectBegin();
-							foreach (var pair in value.Pairs)
-							{
-								Key(pair.Key);
-								Meml(pair.Value);
-							}
-							ObjectEnd();
-							return;
+							Key(pair.Key);
+							Meml(pair.Value);
 						}
-						break;
+						ObjectEnd();
+						return;
 
 					case MemlType.Array:
-						if (value.IsArray)
-						{
-							ArrayBegin();
-							foreach (var item in value.Values)
-								Meml(item);
-							ArrayEnd();
-							return;
-						}
-						break;
+						ArrayBegin();
+						foreach (var item in value.values)
+							Meml(item);
+						ArrayEnd();
+						return;
 
 					case MemlType.Bool:
 						Value(value.Bool);
@@ -72,7 +63,7 @@ namespace MGE
 						Value(value.String);
 						return;
 
-					case MemlType.Number:
+					default:
 						{
 							if (value is MemlValue<bool> Bool)
 							{

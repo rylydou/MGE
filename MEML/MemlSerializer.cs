@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 
 namespace MGE;
@@ -26,6 +28,9 @@ public class ObjectVarible
 
 public class MemlSerializer
 {
+	public delegate void OnUnusedValue(string name);
+	public OnUnusedValue onUnusedValue = (name) => Trace.TraceWarning($"Unused value: {name}");
+
 	public delegate IEnumerable<MemberInfo> GetMembers(Type type);
 	public GetMembers getMembers = DefualtGetMembers;
 	public static IEnumerable<MemberInfo> DefualtGetMembers(Type type)
@@ -41,8 +46,8 @@ public class MemlSerializer
 		);
 	}
 
-	public delegate IEnumerable<ObjectVarible> GetVaribles(IEnumerable<MemberInfo> members);
-	public GetVaribles getVaribles = DefualtGetVaribles;
+	public delegate IEnumerable<ObjectVarible> VaribleFinder(IEnumerable<MemberInfo> members);
+	public VaribleFinder varibleFinder = DefualtGetVaribles;
 	public static IEnumerable<ObjectVarible> DefualtGetVaribles(IEnumerable<MemberInfo> members)
 	{
 		foreach (var memberInfo in members)
@@ -64,7 +69,20 @@ public class MemlSerializer
 		yield break;
 	}
 
-	public MemlValue ValueFromObject(object? obj, Type? impliedType = null)
+	public delegate Type? TypeFinder(string asmName, string fullTypeName);
+	public TypeFinder typeFinder = (asmName, fullTypeName) =>
+	{
+		var asm =
+			AppDomain.CurrentDomain.GetAssemblies()
+			.SingleOrDefault(assembly => assembly.GetName().Name == asmName) ??
+			throw new Exception($"Assembly '{asmName}' not found");
+
+		return
+			asm.GetType(fullTypeName) ??
+			throw new Exception($"Type '{fullTypeName}' not found in '{asmName}'");
+	};
+
+	public MemlValue MemlFromObject(object? obj, Type? impliedType = null)
 	{
 		if (obj is null) return new MemlNull();
 
@@ -72,18 +90,18 @@ public class MemlSerializer
 
 		if (type.IsPrimitive)
 		{
-			if (obj is float @float) return new MemlValue<float>(MemlType.Number, @float);
-			if (obj is double @double) return new MemlValue<double>(MemlType.Number, @double);
-			if (obj is byte @byte) return new MemlValue<byte>(MemlType.Number, @byte);
-			if (obj is char @char) return new MemlValue<char>(MemlType.Number, @char);
-			if (obj is short @short) return new MemlValue<short>(MemlType.Number, @short);
-			if (obj is ushort @ushort) return new MemlValue<ushort>(MemlType.Number, @ushort);
-			if (obj is int @int) return new MemlValue<int>(MemlType.Number, @int);
-			if (obj is uint @uint) return new MemlValue<uint>(MemlType.Number, @uint);
-			if (obj is long @long) return new MemlValue<long>(MemlType.Number, @long);
-			if (obj is ulong @ulong) return new MemlValue<ulong>(MemlType.Number, @ulong);
-
 			if (obj is bool @bool) return new MemlValue<bool>(MemlType.Bool, @bool);
+
+			if (obj is float @float) return new MemlValue<float>(MemlType.Float, @float);
+			if (obj is double @double) return new MemlValue<double>(MemlType.Double, @double);
+			if (obj is int @int) return new MemlValue<int>(MemlType.Int, @int);
+			if (obj is uint @uint) return new MemlValue<uint>(MemlType.UInt, @uint);
+			if (obj is byte @byte) return new MemlValue<byte>(MemlType.Byte, @byte);
+			if (obj is char @char) return new MemlValue<char>(MemlType.Char, @char);
+			if (obj is short @short) return new MemlValue<short>(MemlType.Short, @short);
+			if (obj is ushort @ushort) return new MemlValue<ushort>(MemlType.UShort, @ushort);
+			if (obj is long @long) return new MemlValue<long>(MemlType.Long, @long);
+			if (obj is ulong @ulong) return new MemlValue<ulong>(MemlType.ULong, @ulong);
 		}
 
 		if (obj is string @string) return new MemlValue<string>(MemlType.String, @string);
@@ -98,7 +116,7 @@ public class MemlSerializer
 
 			foreach (var item in collection)
 			{
-				memlArray.Add(ValueFromObject(item, contentType));
+				memlArray.Add(MemlFromObject(item, contentType));
 			}
 
 			return memlArray;
@@ -109,13 +127,13 @@ public class MemlSerializer
 
 		if (type != impliedType)
 		{
-			memlObject["!"] = type.FullName;
+			memlObject[$"!{type.Assembly.GetName().Name}"] = type.FullName ?? throw new Exception();
 		}
 
-		foreach (var getter in getVaribles(getMembers(type)))
+		foreach (var getter in varibleFinder(getMembers(type)))
 		{
 			var value = getter.getValue(obj);
-			var memlValue = ValueFromObject(value, getter.type);
+			var memlValue = MemlFromObject(value, getter.type);
 			memlObject[getter.name] = memlValue;
 		}
 
@@ -124,7 +142,7 @@ public class MemlSerializer
 
 	static Type? GetCollectionElementType(Type type)
 	{
-		var etype = typeof(ICollection<>);
+		var etype = typeof(IList<>);
 
 		foreach (var bt in type.GetInterfaces())
 		{
@@ -135,5 +153,77 @@ public class MemlSerializer
 		}
 
 		return null;
+	}
+
+	public T ObjectFromMeml<T>(MemlValue value)
+	{
+		return (T)ObjectFromMeml(value, typeof(T))!;
+	}
+	public object? ObjectFromMeml(MemlValue memlValue, Type? impliedType = null)
+	{
+		if (memlValue.type == MemlType.Object)
+		{
+			Type type;
+
+			var firstPair = memlValue.pairs.First();
+			if (firstPair.Key[0] == '!')
+			{
+				var asmName = firstPair.Key.Remove(0, 1);
+				var fullTypeName = firstPair.Value.String;
+
+				type = typeFinder(asmName, fullTypeName) ??
+					throw new Exception($"Connot find type '{fullTypeName}' from '{asmName}'");
+			}
+			else
+			{
+				type = impliedType ??
+					throw new Exception("Meml object doesn't define its type");
+			}
+
+			var obj = Activator.CreateInstance(type);
+			var varibles = varibleFinder(getMembers(type));
+			foreach (var item in memlValue.pairs)
+			{
+				if (item.Key[0] == '!') continue;
+
+				var varible = varibles.FirstOrDefault(v => v.name == item.Key);
+
+				if (varible is null)
+				{
+					onUnusedValue(item.Key);
+					continue;
+				}
+
+				var value = ObjectFromMeml(item.Value, varible.type);
+				varible.setValue(obj, value);
+			}
+
+			return obj;
+		}
+
+		if (memlValue.type == MemlType.Array)
+		{
+			if (impliedType is null) throw new NotSupportedException();
+
+			var collectionType = GetCollectionElementType(impliedType);
+
+			if (impliedType.IsArray)
+			{
+				return memlValue.values.Select(item => ObjectFromMeml(item, collectionType)).ToArray();
+			}
+
+			var list = (IList)Activator.CreateInstance(impliedType)!;
+
+			foreach (var item in memlValue.values)
+			{
+				list.Add(ObjectFromMeml(item));
+			}
+
+			return list;
+
+			// var array = ;
+		}
+
+		return memlValue.underlyingValue;
 	}
 }

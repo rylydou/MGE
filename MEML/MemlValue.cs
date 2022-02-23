@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace MGE
 {
@@ -49,46 +47,11 @@ namespace MGE
 		/// <summary>
 		/// Creates a Meml Value from a String
 		/// </summary>
-		public static MemlValue FromString(string jsonString)
+		public static MemlValue FromString(string memlString)
 		{
-			using var reader = new MemlTextReader(new StringReader(jsonString));
+			using var reader = new MemlTextReader(new StringReader(memlString));
 			return reader.ReadObject();
 		}
-
-		/// <summary>
-		/// Returns true if the Meml value is Null
-		/// </summary>
-		public bool IsNull => type == MemlType.Null;
-
-		/// <summary>
-		/// Returns true if the Meml Value is a Bool
-		/// </summary>
-		public bool IsBool => type == MemlType.Bool;
-
-		/// <summary>
-		/// Returns true if the Meml Value is a Number
-		/// </summary>
-		public bool IsNumber => type == MemlType.Number;
-
-		/// <summary>
-		/// Returns true if the Meml Value is a String
-		/// </summary>
-		public bool IsString => type == MemlType.String;
-
-		/// <summary>
-		/// Returns true if the Meml Value is an Object
-		/// </summary>
-		public bool IsObject => type == MemlType.Object;
-
-		/// <summary>
-		/// Returns true if the Meml Value is an Array
-		/// </summary>
-		public bool IsArray => type == MemlType.Array;
-
-		/// <summary>
-		/// Returns true if the Meml Value is a Binary Data
-		/// </summary>
-		public bool IsBinary => type == MemlType.Binary;
 
 		/// <summary>
 		/// Returns the bool value of the Meml Value
@@ -96,9 +59,19 @@ namespace MGE
 		public abstract bool Bool { get; }
 
 		/// <summary>
+		/// Returns the string value of the Meml Value
+		/// </summary>
+		public abstract string String { get; }
+
+		/// <summary>
 		/// Returns the byte value of the Meml Value
 		/// </summary>
 		public abstract byte Byte { get; }
+
+		/// <summary>
+		/// Returns the sbyte value of the Meml Value
+		/// </summary>
+		public abstract sbyte SByte { get; }
 
 		/// <summary>
 		/// Returns the char value of the Meml Value
@@ -136,11 +109,6 @@ namespace MGE
 		public abstract ulong ULong { get; }
 
 		/// <summary>
-		/// Returns the decimal value of the Meml Value
-		/// </summary>
-		public abstract decimal Decimal { get; }
-
-		/// <summary>
 		/// Returns the float value of the Meml Value
 		/// </summary>
 		public abstract float Float { get; }
@@ -151,9 +119,9 @@ namespace MGE
 		public abstract double Double { get; }
 
 		/// <summary>
-		/// Returns the string value of the Meml Value
+		/// Returns the decimal value of the Meml Value
 		/// </summary>
-		public abstract string String { get; }
+		public abstract decimal Decimal { get; }
 
 		/// <summary>
 		/// Returns the bytes value of the Meml Value
@@ -169,71 +137,6 @@ namespace MGE
 				return value;
 			return defaultValue;
 		}
-
-		/// <summary>
-		/// Returns the bool value, or a default value if it isn't one
-		/// </summary>
-		public bool BoolOrDefault(bool defaultValue) => IsBool ? Bool : defaultValue;
-
-		/// <summary>
-		/// Returns the byte value, or a default value if it isn't one
-		/// </summary>
-		public byte ByteOrDefault(byte defaultValue) => IsNumber ? Byte : defaultValue;
-
-		/// <summary>
-		/// Returns the char value, or a default value if it isn't one
-		/// </summary>
-		public char CharOrDefault(char defaultValue) => IsNumber ? Char : defaultValue;
-
-		/// <summary>
-		/// Returns the short value, or a default value if it isn't one
-		/// </summary>
-		public short ShortOrDefault(short defaultValue) => IsNumber ? Short : defaultValue;
-
-		/// <summary>
-		/// Returns the ushort value, or a default value if it isn't one
-		/// </summary>
-		public ushort UShortOrDefault(ushort defaultValue) => IsNumber ? UShort : defaultValue;
-
-		/// <summary>
-		/// Returns the int value, or a default value if it isn't one
-		/// </summary>
-		public int IntOrDefault(int defaultValue) => IsNumber ? Int : defaultValue;
-
-		/// <summary>
-		/// Returns the uint value, or a default value if it isn't one
-		/// </summary>
-		public uint UIntOrDefault(uint defaultValue) => IsNumber ? UInt : defaultValue;
-
-		/// <summary>
-		/// Returns the long value, or a default value if it isn't one
-		/// </summary>
-		public long LongOrDefault(long defaultValue) => IsNumber ? Long : defaultValue;
-
-		/// <summary>
-		/// Returns the ulong value, or a default value if it isn't one
-		/// </summary>
-		public ulong ULongOrDefault(ulong defaultValue) => IsNumber ? ULong : defaultValue;
-
-		/// <summary>
-		/// Returns the decimal value, or a default value if it isn't one
-		/// </summary>
-		public decimal DecimalOrDefault(decimal defaultValue) => IsNumber ? Decimal : defaultValue;
-
-		/// <summary>
-		/// Returns the float value, or a default value if it isn't one
-		/// </summary>
-		public float FloatOrDefault(float defaultValue) => IsNumber ? Float : defaultValue;
-
-		/// <summary>
-		/// Returns the double value, or a default value if it isn't one
-		/// </summary>
-		public double DoubleOrDefault(double defaultValue) => IsNumber ? Double : defaultValue;
-
-		/// <summary>
-		/// Returns the string value, or a default value if it isn't one
-		/// </summary>
-		public string StringOrDefault(string defaultValue) => IsString ? String : defaultValue;
 
 		/// <summary>
 		/// Gets the Meml Value of the given Key, if this is an Object
@@ -262,27 +165,27 @@ namespace MGE
 		/// <summary>
 		/// Returns an Enumerable of all the Keys, or an empty list of this is not an Object
 		/// </summary>
-		public abstract IEnumerable<string> Keys { get; }
+		public abstract IEnumerable<string> keys { get; }
 
 		/// <summary>
 		/// Returns an Enumerable of all the Values, or an empty list of this is not an Object or Array
 		/// </summary>
-		public abstract IEnumerable<MemlValue> Values { get; }
+		public abstract IEnumerable<MemlValue> values { get; }
 
 		/// <summary>
 		/// Returns an Enumerable of all the Keys-Value pairs, or an empty list of this is not an Object
 		/// </summary>
-		public abstract IEnumerable<KeyValuePair<string, MemlValue>> Pairs { get; }
+		public abstract IEnumerable<KeyValuePair<string, MemlValue>> pairs { get; }
 
 		/// <summary>
 		/// Returns the total amount of Array Entries or Key-Value Pairs
 		/// </summary>
-		public abstract int Count { get; }
+		public abstract int count { get; }
 
 		/// <summary>
 		/// The underlying C# Object
 		/// </summary>
-		public abstract object? UnderlyingValue { get; }
+		public abstract object? underlyingValue { get; }
 
 		/// <summary>
 		/// Gets a unique hashed value based on the contents of the Meml Data
@@ -290,17 +193,11 @@ namespace MGE
 		// public abstract int GetHashedValue();
 
 		/// <summary>
-		/// Clones the Meml Value
-		/// </summary>
-		/// <returns></returns>
-		public abstract MemlValue Clone();
-
-		/// <summary>
 		/// Creates a new file with the contents of this Meml Value
 		/// </summary>
-		public void ToFile(string path, bool asJson = false)
+		public void ToFile(string path)
 		{
-			using var writer = new MemlTextWriter(File.Create(path), asJson);
+			using var writer = new MemlTextWriter(File.Create(path));
 			writer.Meml(this);
 		}
 
@@ -316,26 +213,31 @@ namespace MGE
 		}
 
 		public static implicit operator MemlValue(bool value) => new MemlValue<bool>(MemlType.Bool, value);
-		public static implicit operator MemlValue(decimal value) => new MemlValue<decimal>(MemlType.Number, value);
-		public static implicit operator MemlValue(float value) => new MemlValue<float>(MemlType.Number, value);
-		public static implicit operator MemlValue(double value) => new MemlValue<double>(MemlType.Number, value);
-		public static implicit operator MemlValue(byte value) => new MemlValue<byte>(MemlType.Number, value);
-		public static implicit operator MemlValue(char value) => new MemlValue<char>(MemlType.Number, value);
-		public static implicit operator MemlValue(short value) => new MemlValue<short>(MemlType.Number, value);
-		public static implicit operator MemlValue(ushort value) => new MemlValue<ushort>(MemlType.Number, value);
-		public static implicit operator MemlValue(int value) => new MemlValue<int>(MemlType.Number, value);
-		public static implicit operator MemlValue(uint value) => new MemlValue<uint>(MemlType.Number, value);
-		public static implicit operator MemlValue(long value) => new MemlValue<long>(MemlType.Number, value);
-		public static implicit operator MemlValue(ulong value) => new MemlValue<ulong>(MemlType.Number, value);
-		public static implicit operator MemlValue(string? value) => new MemlValue<string>(MemlType.String, value ?? "");
+		public static implicit operator MemlValue(string value) => new MemlValue<string>(MemlType.String, value ?? "");
+
+		public static implicit operator MemlValue(byte value) => new MemlValue<byte>(MemlType.Byte, value);
+		public static implicit operator MemlValue(sbyte value) => new MemlValue<sbyte>(MemlType.SByte, value);
+		public static implicit operator MemlValue(char value) => new MemlValue<char>(MemlType.Char, value);
+		public static implicit operator MemlValue(short value) => new MemlValue<short>(MemlType.Short, value);
+		public static implicit operator MemlValue(ushort value) => new MemlValue<ushort>(MemlType.UShort, value);
+		public static implicit operator MemlValue(int value) => new MemlValue<int>(MemlType.Int, value);
+		public static implicit operator MemlValue(uint value) => new MemlValue<uint>(MemlType.UInt, value);
+		public static implicit operator MemlValue(long value) => new MemlValue<long>(MemlType.Long, value);
+		public static implicit operator MemlValue(ulong value) => new MemlValue<ulong>(MemlType.ULong, value);
+
+		public static implicit operator MemlValue(float value) => new MemlValue<float>(MemlType.Float, value);
+		public static implicit operator MemlValue(double value) => new MemlValue<double>(MemlType.Double, value);
+		public static implicit operator MemlValue(decimal value) => new MemlValue<decimal>(MemlType.Decimal, value);
+
 		public static implicit operator MemlValue(List<string> value) => new MemlArray(value);
 		public static implicit operator MemlValue(string[] value) => new MemlArray(value);
 		public static implicit operator MemlValue(byte[] value) => new MemlValue<byte[]>(MemlType.Binary, value);
 
 		public static implicit operator bool(MemlValue value) => value.Bool;
-		public static implicit operator float(MemlValue value) => value.Float;
-		public static implicit operator double(MemlValue value) => value.Double;
+		public static implicit operator string(MemlValue value) => value.String;
+
 		public static implicit operator byte(MemlValue value) => value.Byte;
+		public static implicit operator sbyte(MemlValue value) => value.SByte;
 		public static implicit operator char(MemlValue value) => value.Char;
 		public static implicit operator short(MemlValue value) => value.Short;
 		public static implicit operator ushort(MemlValue value) => value.UShort;
@@ -343,7 +245,11 @@ namespace MGE
 		public static implicit operator uint(MemlValue value) => value.UInt;
 		public static implicit operator long(MemlValue value) => value.Long;
 		public static implicit operator ulong(MemlValue value) => value.ULong;
-		public static implicit operator string(MemlValue value) => value.String;
+
+		public static implicit operator float(MemlValue value) => value.Float;
+		public static implicit operator double(MemlValue value) => value.Double;
+		public static implicit operator decimal(MemlValue value) => value.Decimal;
+
 		public static implicit operator byte[](MemlValue value) => value.Bytes;
 
 	}
@@ -356,16 +262,13 @@ namespace MGE
 		internal static readonly MemlNull _null = new MemlNull();
 		internal static readonly byte[] _binary = new byte[0];
 
-		public MemlNull() : base(MemlType.Null)
-		{
-
-		}
+		public MemlNull() : base(MemlType.Null) { }
 
 		public override bool Bool => false;
-		public override decimal Decimal => 0;
-		public override float Float => 0;
-		public override double Double => 0;
+		public override string String => string.Empty;
+
 		public override byte Byte => 0;
+		public override sbyte SByte => 0;
 		public override char Char => (char)0;
 		public override short Short => 0;
 		public override ushort UShort => 0;
@@ -373,10 +276,14 @@ namespace MGE
 		public override uint UInt => 0;
 		public override long Long => 0;
 		public override ulong ULong => 0;
-		public override string String => string.Empty;
+
+		public override float Float => 0;
+		public override double Double => 0;
+		public override decimal Decimal => 0;
+
 		public override byte[] Bytes => _binary;
-		public override object? UnderlyingValue => null;
-		// public override int GetHashedValue() => 0;
+
+		public override object? underlyingValue => null;
 
 		public override void Add(MemlValue value)
 		{
@@ -400,15 +307,10 @@ namespace MGE
 			set => throw new InvalidOperationException();
 		}
 
-		public override MemlValue Clone()
-		{
-			return _null;
-		}
-
-		public override int Count => 0;
-		public override IEnumerable<string> Keys => Enumerable.Empty<string>();
-		public override IEnumerable<MemlValue> Values => Enumerable.Empty<MemlValue>();
-		public override IEnumerable<KeyValuePair<string, MemlValue>> Pairs => Enumerable.Empty<KeyValuePair<string, MemlValue>>();
+		public override int count => 0;
+		public override IEnumerable<string> keys => Enumerable.Empty<string>();
+		public override IEnumerable<MemlValue> values => Enumerable.Empty<MemlValue>();
+		public override IEnumerable<KeyValuePair<string, MemlValue>> pairs => Enumerable.Empty<KeyValuePair<string, MemlValue>>();
 	}
 
 	/// <summary>
@@ -424,215 +326,23 @@ namespace MGE
 		}
 
 		public override bool Bool => (Value is bool value ? value : false);
+		public override string String { get => (string)(underlyingValue ?? throw new Exception()); }
 
-		public override decimal Decimal
-		{
-			get
-			{
-				if (IsNumber)
-				{
-					if (Value is decimal value)
-						return value;
-					return Convert.ToDecimal(Value, NumberFormatInfo.InvariantInfo);
-				}
-				else if (IsString && Value is string value && decimal.TryParse(value, out var n))
-					return n;
+		public override float Float { get => (float)(underlyingValue ?? throw new Exception()); }
+		public override double Double { get => (double)(underlyingValue ?? throw new Exception()); }
+		public override decimal Decimal { get => (decimal)(underlyingValue ?? throw new Exception()); }
 
-				return 0;
-			}
-		}
+		public override byte Byte { get => (byte)(underlyingValue ?? throw new Exception()); }
+		public override sbyte SByte { get => (sbyte)(underlyingValue ?? throw new Exception()); }
+		public override char Char { get => (char)(underlyingValue ?? throw new Exception()); }
+		public override short Short { get => (short)(underlyingValue ?? throw new Exception()); }
+		public override ushort UShort { get => (ushort)(underlyingValue ?? throw new Exception()); }
+		public override int Int { get => (int)(underlyingValue ?? throw new Exception()); }
+		public override uint UInt { get => (uint)(underlyingValue ?? throw new Exception()); }
+		public override long Long { get => (long)(underlyingValue ?? throw new Exception()); }
+		public override ulong ULong { get => (ulong)(underlyingValue ?? throw new Exception()); }
 
-		public override float Float
-		{
-			get
-			{
-				if (IsNumber)
-				{
-					if (Value is float value)
-						return value;
-					return Convert.ToSingle(Value, NumberFormatInfo.InvariantInfo);
-				}
-				else if (IsString && Value is string value && float.TryParse(value, out var n))
-					return n;
-
-				return 0;
-			}
-		}
-
-		public override double Double
-		{
-			get
-			{
-				if (IsNumber)
-				{
-					if (Value is double value)
-						return value;
-					return Convert.ToDouble(Value, NumberFormatInfo.InvariantInfo);
-				}
-				else if (IsString && Value is string value && double.TryParse(value, out var n))
-					return n;
-
-				return 0;
-			}
-		}
-
-		public override short Short
-		{
-			get
-			{
-				if (IsNumber)
-				{
-					if (Value is short value)
-						return value;
-					return Convert.ToInt16(Value, NumberFormatInfo.InvariantInfo);
-				}
-				else if (IsString && Value is string value && short.TryParse(value, out var n))
-					return n;
-
-				return 0;
-			}
-		}
-
-		public override byte Byte
-		{
-			get
-			{
-				if (IsNumber)
-				{
-					if (Value is byte value)
-						return value;
-					return Convert.ToByte(Value, NumberFormatInfo.InvariantInfo);
-				}
-				else if (IsString && Value is string value && byte.TryParse(value, out var n))
-					return n;
-
-				return 0;
-			}
-		}
-
-		public override char Char
-		{
-			get
-			{
-				if (IsNumber)
-				{
-					if (Value is char value)
-						return value;
-					return Convert.ToChar(Value, NumberFormatInfo.InvariantInfo);
-				}
-				else if (IsString && Value is string value && char.TryParse(value, out var n))
-					return n;
-
-				return (char)0;
-			}
-		}
-
-		public override ushort UShort
-		{
-			get
-			{
-				if (IsNumber)
-				{
-					if (Value is ushort value)
-						return value;
-					return Convert.ToUInt16(Value, NumberFormatInfo.InvariantInfo);
-				}
-				else if (IsString && Value is string value && ushort.TryParse(value, out var n))
-					return n;
-
-				return 0;
-			}
-		}
-
-		public override int Int
-		{
-			get
-			{
-				if (IsNumber)
-				{
-					if (Value is int value)
-						return value;
-					return Convert.ToInt32(Value, NumberFormatInfo.InvariantInfo);
-				}
-				else if (IsString && Value is string value && int.TryParse(value, out var n))
-					return n;
-
-				return 0;
-			}
-		}
-
-		public override uint UInt
-		{
-			get
-			{
-				if (IsNumber)
-				{
-					if (Value is uint value)
-						return value;
-					return Convert.ToUInt32(Value, NumberFormatInfo.InvariantInfo);
-				}
-				else if (IsString && Value is string value && uint.TryParse(value, out var n))
-					return n;
-
-				return 0;
-			}
-		}
-
-		public override long Long
-		{
-			get
-			{
-				if (IsNumber)
-				{
-					if (Value is long value)
-						return value;
-					return Convert.ToInt64(Value, NumberFormatInfo.InvariantInfo);
-				}
-				else if (IsString && Value is string value && long.TryParse(value, out var n))
-					return n;
-
-				return 0;
-			}
-		}
-
-		public override ulong ULong
-		{
-			get
-			{
-				if (IsNumber)
-				{
-					if (Value is ulong value)
-						return value;
-					return Convert.ToUInt64(Value, NumberFormatInfo.InvariantInfo);
-				}
-				else if (IsString && Value is string value && ulong.TryParse(value, out var n))
-					return n;
-
-				return 0;
-			}
-		}
-
-		public override string String
-		{
-			get
-			{
-				if (IsString && Value is string str)
-					return str;
-				else if (Value != null)
-					return Value.ToString() ?? "";
-				return "";
-			}
-		}
-
-		public override byte[] Bytes
-		{
-			get
-			{
-				if (IsBinary && Value is byte[] bytes)
-					return bytes;
-				return MemlNull._binary;
-			}
-		}
+		public override byte[] Bytes { get => (byte[])(underlyingValue ?? throw new Exception()); }
 
 		public override void Add(MemlValue value)
 		{
@@ -644,71 +354,12 @@ namespace MGE
 			throw new InvalidOperationException();
 		}
 
-		public override int Count => 0;
-		public override IEnumerable<string> Keys => Enumerable.Empty<string>();
-		public override IEnumerable<MemlValue> Values => Enumerable.Empty<MemlValue>();
-		public override IEnumerable<KeyValuePair<string, MemlValue>> Pairs => Enumerable.Empty<KeyValuePair<string, MemlValue>>();
+		public override int count => 0;
+		public override IEnumerable<string> keys => Enumerable.Empty<string>();
+		public override IEnumerable<MemlValue> values => Enumerable.Empty<MemlValue>();
+		public override IEnumerable<KeyValuePair<string, MemlValue>> pairs => Enumerable.Empty<KeyValuePair<string, MemlValue>>();
 
-		public override object? UnderlyingValue => Value;
-
-		// public override int GetHashedValue()
-		// {
-		// 	if (IsString)
-		// 		return Calc.StaticStringHash(String);
-
-		// 	if (IsNumber)
-		// 		return Int;
-
-		// 	if (IsBool)
-		// 		return (Bool ? 1 : 0);
-
-		// 	if (IsBinary)
-		// 		return (int)Calc.Adler32(0, Bytes);
-
-		// 	return 0;
-		// }
-
-		public override MemlValue Clone()
-		{
-			if (IsString)
-				return String;
-
-			if (IsNumber)
-			{
-				if (Value is float Float)
-					return Float;
-				if (Value is double Double)
-					return Double;
-				if (Value is byte Byte)
-					return Byte;
-				if (Value is char Char)
-					return Char;
-				if (Value is short Short)
-					return Short;
-				if (Value is ushort UShort)
-					return UShort;
-				if (Value is int Int)
-					return Int;
-				if (Value is uint UInt)
-					return UInt;
-				if (Value is long Long)
-					return Long;
-				if (Value is ulong ULong)
-					return ULong;
-			}
-
-			if (IsBool)
-				return Bool;
-
-			if (IsBinary)
-			{
-				var bytes = new byte[Bytes.Length];
-				System.Array.Copy(Bytes, 0, bytes, 0, bytes.Length);
-				return bytes;
-			}
-
-			return MemlNull._null;
-		}
+		public override object? underlyingValue => Value;
 
 		public override MemlValue this[string key]
 		{

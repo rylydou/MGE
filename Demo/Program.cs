@@ -22,38 +22,23 @@ var serilizer = new MemlSerializer()
 	getMembers = (type) => MemlSerializer.DefualtGetMembers(type).Where(m => m.GetCustomAttribute<SaveAttribute>() is not null),
 };
 
-var obj = serilizer.ValueFromObject(new TestObject());
+var obj = serilizer.ObjectFromMeml<TestObject>(MemlValue.FromFile(Folder.data.GetFile("in.meml")));
 
-// var file = Folder.data.GetFile("in.meml");
-// if (file.exists)
-// {
-// 	obj = MemlValue.FromFile(file);
-// }
+var meml = serilizer.MemlFromObject(obj);
 
-obj.ToFile(Folder.data.GetFile("out.meml"));
-Folder.data.GetFile("out.dat").WriteBytes(obj.ToBytes());
+meml.ToFile(Folder.data.GetFile("out.meml"));
 
 class TestObject
 {
-	[Save] public string text = "Hello world";
-	[Save] public int id = 1337;
-	public float number = 69.420f;
-	[Save]
-	public object[] items = new object[]
-	{
-		"Hello world",
-		2048,
-		7.07,
-		new Thing("Joe"),
-	};
+	[Save] public string text = "";
+	[Save] public int id = 0;
+	[Save] public float number = 0;
+	[Save] public object[] items = new object[0];
 }
 
-class Thing
+class Test
 {
-	[Save] public string name;
-
-	public Thing(string name)
-	{
-		this.name = name;
-	}
+	[Save] public string name = "";
+	[Save] public int id = 0;
+	[Save] public float number = 0;
 }

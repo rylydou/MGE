@@ -7,33 +7,34 @@ namespace MGE
 {
 	public class MemlBinaryWriter : MemlWriter, IDisposable
 	{
-		public enum BinaryTokens
+		public enum BinaryTokens : byte
 		{
 			Null = 0,
+
 			ObjectStart = 1,
 			ObjectEnd = 2,
 			ObjectKey = 3,
+
 			ArrayStart = 4,
 			ArrayEnd = 5,
 
-			Boolean = 6,
-			String = 7,
-			Number = 8,
+			Boolean = 128,
+			String = 129,
 
-			Byte,
-			Char,
-			Short,
-			UShort,
-			Int,
-			UInt,
-			Long,
-			ULong,
-			Decimal,
-			Float,
-			Double,
+			Byte = 130,
+			SByte = 131,
+			Char = 132,
+			Short = 133,
+			UShort = 134,
+			Int = 135,
+			UInt = 136,
+			Long = 137,
+			ULong = 138,
+			Float = 139,
+			Double = 140,
+			Decimal = 141,
 
-			Binary = 32,
-			Comment = 64
+			Binary = 255,
 		}
 
 		readonly BinaryWriter writer;
@@ -88,12 +89,6 @@ namespace MGE
 			ContainerEnd(BinaryTokens.ArrayEnd);
 		}
 
-		public override void Comment(string text)
-		{
-			writer.Write((byte)BinaryTokens.Comment);
-			writer.Write(text);
-		}
-
 		public override void Key(string name)
 		{
 			if (string.IsNullOrEmpty(name))
@@ -117,6 +112,12 @@ namespace MGE
 		public override void Value(byte value)
 		{
 			writer.Write((byte)BinaryTokens.Byte);
+			writer.Write(value);
+		}
+
+		public override void Value(sbyte value)
+		{
+			writer.Write((byte)BinaryTokens.SByte);
 			writer.Write(value);
 		}
 

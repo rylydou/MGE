@@ -4,8 +4,6 @@
 
 		<TargetFramework>net6.0</TargetFramework>
 
-		<RootNamespace>MGE</RootNamespace>
-
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>false</ImplicitUsings>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>

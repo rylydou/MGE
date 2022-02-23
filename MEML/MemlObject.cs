@@ -31,10 +31,10 @@ namespace MGE
 			}
 		}
 
-		public override IEnumerable<string> Keys => Value.Keys;
-		public override IEnumerable<MemlValue> Values => Value.Values;
-		public override IEnumerable<KeyValuePair<string, MemlValue>> Pairs => Value;
-		public override int Count => Value.Count;
+		public override IEnumerable<string> keys => Value.Keys;
+		public override IEnumerable<MemlValue> values => Value.Values;
+		public override IEnumerable<KeyValuePair<string, MemlValue>> pairs => Value;
+		public override int count => Value.Count;
 
 		// public override int GetHashedValue()
 		// {
@@ -49,13 +49,5 @@ namespace MGE
 		// 		return hash;
 		// 	}
 		// }
-
-		public override MemlValue Clone()
-		{
-			var clone = new MemlObject();
-			foreach (var (key, value) in Value)
-				clone[key] = value.Clone();
-			return clone;
-		}
 	}
 }

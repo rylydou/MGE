@@ -18,44 +18,30 @@ namespace MGE
 		/// </summary>
 		public string tabString = "\t";
 
-		/// <summary>
-		/// Whether the output should be Verbose
-		/// </summary>
-		public bool verbose = true;
-
-		/// <summary>
-		/// Whether the output should be Strict (true) Meml or not
-		/// When false, the output will look more like hjson
-		/// </summary>
-		public bool asJson = false;
-
 		readonly TextWriter _writer;
 		int _depth = 0;
 		bool _wasValue;
 		bool _wasBracket;
 
-		public MemlTextWriter(string path, bool asJson = false) : this(File.Create(path), asJson)
+		public MemlTextWriter(string path) : this(File.Create(path))
 		{
 		}
 
-		public MemlTextWriter(Stream stream, bool asJson = false) : this(new StreamWriter(stream), asJson)
+		public MemlTextWriter(Stream stream) : this(new StreamWriter(stream))
 		{
 		}
 
-		public MemlTextWriter(TextWriter writer, bool asJson = false)
+		public MemlTextWriter(TextWriter writer)
 		{
 			this._writer = writer;
-			this.asJson = asJson;
 		}
 
 		void Next(bool isValue = false, bool isKey = false, bool isBracket = false)
 		{
-			if (_wasValue && (asJson || !verbose))
-				_writer.Write(",");
-			if ((_wasValue || (_wasBracket && !isBracket) || isKey) && verbose)
+			if ((_wasValue || (_wasBracket && !isBracket) || isKey))
 				Newline();
-			if (_wasBracket && isBracket && verbose)
-				_writer.Write(" ");
+			if (_wasBracket && isBracket)
+				_writer.Write(' ');
 
 			_wasValue = isValue;
 			_wasBracket = isBracket;
@@ -79,13 +65,10 @@ namespace MGE
 		{
 			_depth--;
 
-			if (verbose)
-			{
-				if (_wasBracket)
-					_writer.Write(" ");
-				else
-					Newline();
-			}
+			if (_wasBracket)
+				_writer.Write(' ');
+			else
+				Newline();
 
 			_writer.Write(id);
 
@@ -96,11 +79,10 @@ namespace MGE
 		public override void Key(string name)
 		{
 			Next(isKey: true);
-			EscapedString(name, true);
 
+			_writer.Write(name);
 			_writer.Write(":");
-			if (verbose)
-				_writer.Write(" ");
+			_writer.Write(" ");
 		}
 
 		public override void ObjectBegin()
@@ -123,26 +105,6 @@ namespace MGE
 			ContainerEnd(']');
 		}
 
-		public override void Comment(string text)
-		{
-			if (!asJson && verbose && text.Length > 0)
-			{
-				ReadOnlySpan<char> span = text;
-				int last = 0;
-				int next;
-				while ((next = text.IndexOf('\n', last)) >= 0)
-				{
-					_writer.Write("# ");
-					_writer.Write(span.Slice(last, next - last));
-					Newline();
-					last = next + 1;
-				}
-
-				_writer.Write("# ");
-				_writer.Write(span.Slice(last));
-			}
-		}
-
 		public override void Null()
 		{
 			Next(isValue: true);
@@ -159,6 +121,14 @@ namespace MGE
 		{
 			Next(isValue: true);
 			_writer.Write(value);
+			_writer.Write('B');
+		}
+
+		public override void Value(sbyte value)
+		{
+			Next(isValue: true);
+			_writer.Write(value);
+			_writer.Write('b');
 		}
 
 		public override void Value(char value)
@@ -171,12 +141,14 @@ namespace MGE
 		{
 			Next(isValue: true);
 			_writer.Write(value);
+			_writer.Write('s');
 		}
 
 		public override void Value(ushort value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
+			_writer.Write('S');
 		}
 
 		public override void Value(int value)
@@ -189,24 +161,21 @@ namespace MGE
 		{
 			Next(isValue: true);
 			_writer.Write(value);
+			_writer.Write('I');
 		}
 
 		public override void Value(long value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
+			_writer.Write('l');
 		}
 
 		public override void Value(ulong value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
-		}
-
-		public override void Value(decimal value)
-		{
-			Next(isValue: true);
-			_writer.Write(value);
+			_writer.Write('L');
 		}
 
 		public override void Value(float value)
@@ -219,62 +188,46 @@ namespace MGE
 		{
 			Next(isValue: true);
 			_writer.Write(value);
+			_writer.Write('d');
+		}
+
+		public override void Value(decimal value)
+		{
+			Next(isValue: true);
+			_writer.Write(value);
+			_writer.Write('m');
 		}
 
 		public override void Value(string value)
 		{
 			Next(isValue: true);
-			EscapedString(value, false);
+
+			_writer.Write('\'');
+
+			for (int i = 0; i < value.Length; i++)
+			{
+				switch (value[i])
+				{
+					case '\r': _writer.Write(@"\r"); break;
+					case '\n': _writer.Write(@"\n"); break;
+					case '\t': _writer.Write(@"\t"); break;
+					case '\v': _writer.Write(@"\v"); break;
+					case '\'': _writer.Write(@"\'"); break;
+					case '\\': _writer.Write(@"\"); break;
+
+					default: _writer.Write(value[i]); break;
+				}
+			}
+
+			_writer.Write('\'');
 		}
 
 		public override void Value(ReadOnlySpan<byte> value)
 		{
 			Next(isValue: true);
-			_writer.Write('"');
-			_writer.Write("bin::");
+			_writer.Write('*');
 			_writer.Write(Convert.ToBase64String(value, Base64FormattingOptions.None));
-			_writer.Write('"');
-		}
-
-		bool StringContainsAny(string value, string chars)
-		{
-			for (int i = 0; i < chars.Length; i++)
-				if (value.Contains(chars[i]))
-					return true;
-			return false;
-		}
-
-		void EscapedString(string value, bool isKey)
-		{
-			var encapsulate = asJson || !isKey || StringContainsAny(value, ":#{}[],\'\"\n\r") || (value.Length > 0 && char.IsWhiteSpace(value[0])) || value.Length <= 0;
-
-			if (encapsulate)
-			{
-				_writer.Write(asJson ? '"' : '\'');
-
-				for (int i = 0; i < value.Length; i++)
-				{
-					switch (value[i])
-					{
-						case '\n': _writer.Write(@"\n"); break;
-						case '\t': _writer.Write(@"\t"); break;
-						case '\r': _writer.Write(@"\r"); break;
-						case '\'': _writer.Write(@"\'"); break;
-						case '\"': _writer.Write(@"\"""); break;
-						case '\\': _writer.Write(@"\"); break;
-
-						default:
-							_writer.Write(value[i]);
-							break;
-					}
-				}
-
-				_writer.Write(asJson ? '"' : '\'');
-			}
-			else
-			{
-				_writer.Write(value);
-			}
+			_writer.Write('*');
 		}
 
 		public void Dispose()

@@ -39,8 +39,8 @@ namespace MGE
 			return Value.Contains(value);
 		}
 
-		public override int Count => Value.Count;
-		public override IEnumerable<MemlValue> Values => Value;
+		public override int count => Value.Count;
+		public override IEnumerable<MemlValue> values => Value;
 
 		// public override int GetHashedValue()
 		// {
@@ -52,14 +52,6 @@ namespace MGE
 		// 		return hash;
 		// 	}
 		// }
-
-		public override MemlValue Clone()
-		{
-			var clone = new MemlArray();
-			foreach (var value in Value)
-				clone.Add(value.Clone());
-			return clone;
-		}
 
 		public IEnumerator GetEnumerator()
 		{

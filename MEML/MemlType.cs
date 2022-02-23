@@ -6,11 +6,27 @@
 	public enum MemlType
 	{
 		Null,
-		Bool,
-		Number,
-		String,
+
 		Object,
 		Array,
-		Binary
+
+		Bool,
+		String,
+
+		Byte,
+		SByte,
+		Char,
+		Short,
+		UShort,
+		Int,
+		UInt,
+		Long,
+		ULong,
+		Decimal,
+
+		Float,
+		Double,
+
+		Binary,
 	}
 }
