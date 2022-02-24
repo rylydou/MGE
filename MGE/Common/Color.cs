@@ -9,15 +9,19 @@ namespace MGE;
 public struct Color : IEquatable<Color>
 {
 	public static readonly Color transparent = new Color(0, 0, 0, 0);
+
 	public static readonly Color white = new Color(0xffffff);
-	public static readonly Color black = new Color(0x000000);
 	public static readonly Color lightGray = new Color(0xc0c0c0);
 	public static readonly Color gray = new Color(0x808080);
 	public static readonly Color darkGray = new Color(0x404040);
+	public static readonly Color black = new Color(0x000000);
+
 	public static readonly Color red = new Color(0xff0000);
 	public static readonly Color green = new Color(0x00ff00);
 	public static readonly Color blue = new Color(0x0000ff);
 	public static readonly Color yellow = new Color(0xffff00);
+	public static readonly Color cyan = new Color(0x00ffff);
+	public static readonly Color magenta = new Color(0xff00ff);
 
 	/// <summary>
 	/// The Color Value in a ABGR 32-bit unsigned integer
@@ -64,6 +68,9 @@ public struct Color : IEquatable<Color>
 		get => (byte)(abgr >> 24);
 		set => abgr = (abgr & 0x00ffffff) | ((uint)value << 24);
 	}
+
+	public Color translucent => new(r, g, b, (byte)128);
+	public Color opaque => new(r, g, b, (byte)255);
 
 	/// <summary>
 	/// Creates a color given the int32 RGB data

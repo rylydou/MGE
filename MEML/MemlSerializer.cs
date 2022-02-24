@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace MGE;
 
-public class ObjectVarible
+public class ObjectVariable
 {
 	public delegate object? GetValue(object? obj);
 	public delegate void SetValue(object? obj, object? value);
@@ -17,7 +17,7 @@ public class ObjectVarible
 	public GetValue getValue;
 	public SetValue setValue;
 
-	public ObjectVarible(string name, Type type, GetValue getValue, SetValue setValue)
+	public ObjectVariable(string name, Type type, GetValue getValue, SetValue setValue)
 	{
 		this.name = name;
 		this.type = type;
@@ -31,42 +31,40 @@ public class MemlSerializer
 	public delegate void OnUnusedValue(string name);
 	public OnUnusedValue onUnusedValue = (name) => Trace.TraceWarning($"Unused value: {name}");
 
+	public const BindingFlags suggestedBindingFlags =
+		BindingFlags.Instance |
+		BindingFlags.NonPublic |
+		BindingFlags.Public |
+		BindingFlags.GetField |
+		BindingFlags.SetField |
+		BindingFlags.GetProperty |
+		BindingFlags.SetProperty;
+
 	public delegate IEnumerable<MemberInfo> GetMembers(Type type);
-	public GetMembers getMembers = DefualtGetMembers;
+	public GetMembers memberFinder = DefualtGetMembers;
 	public static IEnumerable<MemberInfo> DefualtGetMembers(Type type)
 	{
-		return type.GetMembers(
-			BindingFlags.Instance |
-			BindingFlags.NonPublic |
-			BindingFlags.Public |
-			BindingFlags.GetField |
-			BindingFlags.SetField |
-			BindingFlags.GetProperty |
-			BindingFlags.SetProperty
-		);
+		return type.GetMembers(suggestedBindingFlags);
 	}
 
-	public delegate IEnumerable<ObjectVarible> VaribleFinder(IEnumerable<MemberInfo> members);
-	public VaribleFinder varibleFinder = DefualtGetVaribles;
-	public static IEnumerable<ObjectVarible> DefualtGetVaribles(IEnumerable<MemberInfo> members)
+	public delegate ObjectVariable? VariableConverter(MemberInfo member);
+	public VariableConverter variableConverter = DefualtVariableConverter;
+	public static ObjectVariable? DefualtVariableConverter(MemberInfo member)
 	{
-		foreach (var memberInfo in members)
+		if (member is FieldInfo field)
 		{
-			if (memberInfo is FieldInfo fieldInfo)
-			{
-				if (fieldInfo.IsInitOnly | fieldInfo.IsLiteral) continue;
+			if (field.IsInitOnly | field.IsLiteral) return null;
 
-				yield return new(memberInfo.Name, fieldInfo.FieldType, (obj) => fieldInfo.GetValue(obj), (obj, value) => fieldInfo.SetValue(obj, value));
-			}
-			else if (memberInfo is PropertyInfo propInfo)
-			{
-				if (propInfo.GetMethod is null) continue;
-
-				yield return new(memberInfo.Name, propInfo.PropertyType, (obj) => propInfo.GetValue(obj), (obj, value) => propInfo.SetValue(obj, value));
-			}
-			else continue;
+			return new(member.Name, field.FieldType, (obj) => field.GetValue(obj), (obj, value) => field.SetValue(obj, value));
 		}
-		yield break;
+		else if (member is PropertyInfo property)
+		{
+			if (property.GetMethod is null) return null;
+
+			return new(member.Name, property.PropertyType, (obj) => property.GetValue(obj), (obj, value) => property.SetValue(obj, value));
+		}
+
+		return null;
 	}
 
 	public delegate Type? TypeFinder(string asmName, string fullTypeName);
@@ -130,7 +128,8 @@ public class MemlSerializer
 			memlObject[$"!{type.Assembly.GetName().Name}"] = type.FullName ?? throw new Exception();
 		}
 
-		foreach (var getter in varibleFinder(getMembers(type)))
+		IEnumerable<ObjectVariable> variables = memberFinder(type).Select(m => variableConverter(m)).Where(v => v is not null)!;
+		foreach (var getter in variables)
 		{
 			var value = getter.getValue(obj);
 			var memlValue = MemlFromObject(value, getter.type);
@@ -181,21 +180,22 @@ public class MemlSerializer
 			}
 
 			var obj = Activator.CreateInstance(type);
-			var varibles = varibleFinder(getMembers(type));
+			// var variables = variableFinder(memberFinder(type));
 			foreach (var item in memlValue.pairs)
 			{
 				if (item.Key[0] == '!') continue;
 
-				var varible = varibles.FirstOrDefault(v => v.name == item.Key);
-
-				if (varible is null)
+				var members = type.GetMember(item.Key, suggestedBindingFlags);
+				if (members.Length != 1)
 				{
 					onUnusedValue(item.Key);
 					continue;
 				}
 
-				var value = ObjectFromMeml(item.Value, varible.type);
-				varible.setValue(obj, value);
+				var variable = variableConverter(members[0]) ?? throw new Exception();
+
+				var value = ObjectFromMeml(item.Value, variable.type);
+				variable.setValue(obj, value);
 			}
 
 			return obj;
