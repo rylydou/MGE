@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using Demo;
 using MGE;
@@ -17,33 +18,28 @@ using MGE.OpenGL;
 // // Start the Application with a single 1280x720 Window
 // App.Start("My Application", 1280, 720);
 
+// System.Console.WriteLine(Convert.ToBase64String(new byte[] { 0, 1, 2, 3, 4, 5 }));
+
 var serilizer = new MemlSerializer()
 {
 	getMembers = (type) => MemlSerializer.DefualtGetMembers(type).Where(m => m.GetCustomAttribute<SaveAttribute>() is not null),
 };
 
-var obj = serilizer.ObjectFromMeml<TestObject>(MemlValue.FromFile(Folder.data.GetFile("in.meml")));
-// var obj = new TestObject()
-// {
-// 	text = "Hello world",
-// 	id = 123,
-// 	number = 123.456f,
-// 	items = new object[] {
-// 		123,
-// 		123.456f,
-// 		123.456d,
-// 		new Test()
-// 		{
-// 			name = "Joe Mama",
-// 			id = 123,
-// 			number = 654.321f
-// 		},
-// 	},
-// };
+Log.StartStopwatch("File to MEML");
+var meml = MemlValue.FromFile(Folder.data.GetFile("in.meml"));
+Log.EndStopwatch();
 
-var meml = serilizer.MemlFromObject(obj);
+Log.StartStopwatch("MEML to Object");
+var obj = serilizer.ObjectFromMeml<TestObject>(meml);
+Log.EndStopwatch();
 
+Log.StartStopwatch("Object to MEML");
+meml = serilizer.MemlFromObject(obj);
+Log.EndStopwatch();
+
+Log.StartStopwatch("MEML to File");
 meml.ToFile(Folder.data.GetFile("out.meml"));
+Log.EndStopwatch();
 
 class TestObject
 {
@@ -51,7 +47,9 @@ class TestObject
 	[Save] public bool enabled = false;
 	[Save] public int id = 0;
 	[Save] public float number = 0;
-	[Save] public object[] items = new object[0];
+	[Save]
+	public byte[] bin = { };
+	[Save] public object[] items = { };
 }
 
 class Test

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -87,10 +88,10 @@ public static class Log
 		}
 		else
 		{
-			_colorEnabled = false;
+			_colorEnabled = true;
 		}
 
-		Log.System($"Logging Enabled ({Enum.GetName(typeof(LogLevel), verbosity)})");
+		Log.System($"Logging Enabled ({Enum.GetName(typeof(LogLevel), verbosity)})" + (_colorEnabled ? " with color" : ""));
 	}
 
 	static void LogInternal(LogLevel logLevel, string message, string callerFilePath, int callerLineNumber)
@@ -104,11 +105,11 @@ public static class Log
 		{
 			Console.WriteLine(
 				_colorEnabled ?
-				$"\u001b[{LogColor.GRAY}m{DateTime.Now.ToString("HH:mm:ss")} \u001b[{logAttribute.color}m{logAttribute.name}\u001b[{LogColor.GRAY}m {callsite,-32} \u001b[{LogColor.WHITE}m{message}\u001b[0m" :
-				$"{DateTime.Now.ToString("HH:mm:ss")} {logAttribute.name} {callsite,-16} {message}");
+				$"\u001b[{LogColor.DARK_GRAY}m{DateTime.Now.ToString("HH:mm:ss")} {callsite,-24} \u001b[{logAttribute.color}m{message}\u001b[0m" :
+				$"{DateTime.Now.ToString("HH:mm:ss")} {logAttribute.name} {callsite,-24} {message}");
 		}
 
-		_log.Append($"{DateTime.Now.ToString("HH:mm:ss")} {logAttribute.name} {callsite,-16} {message}");
+		_log.Append($"{DateTime.Now.ToString("HH:mm:ss")} {logAttribute.name} {callsite,-24} {message}");
 
 		if ((logLevel == LogLevel.Error) || (logLevel == LogLevel.Assert))
 		{
@@ -149,5 +150,20 @@ public static class Log
 	public static void System(string message, [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
 	{
 		LogInternal(LogLevel.System, message, callerFilePath, callerLineNumber);
+	}
+
+	static Stack<(string name, Stopwatch stopwatch)> _stopwatchStack = new();
+	public static void StartStopwatch(string name)
+	{
+		var stopwatch = new Stopwatch();
+		_stopwatchStack.Push(new(name, stopwatch));
+		stopwatch.Start();
+	}
+
+	public static void EndStopwatch()
+	{
+		var stopwatch = _stopwatchStack.Pop();
+		stopwatch.stopwatch.Stop();
+		Log.Info($"⏱ {stopwatch.name,-16} {stopwatch.stopwatch.ElapsedMilliseconds,5}ms");
 	}
 }
