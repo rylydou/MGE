@@ -5,19 +5,16 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
-namespace MGE
+namespace MEML
 {
-	/// <summary>
-	/// A data structure encapsulating a Meml Object
-	/// </summary>
-	public class MemlObject : MemlValue<Dictionary<string, MemlValue>>
+	public class StructureObject : MemlValue<Dictionary<string, StructureValue>>
 	{
-		public MemlObject() : base(MemlType.Object, new Dictionary<string, MemlValue>())
+		public StructureObject() : base(StructureType.Object, new Dictionary<string, StructureValue>())
 		{
 
 		}
 
-		public override MemlValue this[string key]
+		public override StructureValue this[string key]
 		{
 			get
 			{
@@ -32,8 +29,8 @@ namespace MGE
 		}
 
 		public override IEnumerable<string> keys => Value.Keys;
-		public override IEnumerable<MemlValue> values => Value.Values;
-		public override IEnumerable<KeyValuePair<string, MemlValue>> pairs => Value;
+		public override IEnumerable<StructureValue> values => Value.Values;
+		public override IEnumerable<KeyValuePair<string, StructureValue>> pairs => Value;
 		public override int count => Value.Count;
 
 		// public override int GetHashedValue()

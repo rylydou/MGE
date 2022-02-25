@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 
-namespace MGE
+namespace MEML
 {
 	/// <summary>
 	/// Writes Meml to a string format
 	/// </summary>
-	public class MemlTextWriter : MemlWriter, IDisposable
+	public class MemlTextWriter : IDataWriter, IDisposable
 	{
 		/// <summary>
 		/// The New Line character to use
@@ -76,7 +76,7 @@ namespace MGE
 			_wasBracket = false;
 		}
 
-		public override void Key(string name)
+		public void Key(string name)
 		{
 			Next(isKey: true);
 
@@ -84,121 +84,121 @@ namespace MGE
 			_writer.Write(": ");
 		}
 
-		public override void ObjectBegin()
+		public void ObjectBegin()
 		{
 			ContainerBegin('{');
 		}
 
-		public override void ObjectEnd()
+		public void ObjectEnd()
 		{
 			ContainerEnd('}');
 		}
 
-		public override void ArrayBegin()
+		public void ArrayBegin()
 		{
 			ContainerBegin('[');
 		}
 
-		public override void ArrayEnd()
+		public void ArrayEnd()
 		{
 			ContainerEnd(']');
 		}
 
-		public override void Null()
+		public void Null()
 		{
 			Next(isValue: true);
 			_writer.Write("null");
 		}
 
-		public override void Value(bool value)
+		public void Value(bool value)
 		{
 			Next(isValue: true);
 			_writer.Write(value ? "true" : "false");
 		}
 
-		public override void Value(byte value)
+		public void Value(byte value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
 			_writer.Write('B');
 		}
 
-		public override void Value(sbyte value)
+		public void Value(sbyte value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
 			_writer.Write('b');
 		}
 
-		public override void Value(char value)
+		public void Value(char value)
 		{
 			Next(isValue: true);
 			_writer.Write((short)value);
 			_writer.Write('c');
 		}
 
-		public override void Value(short value)
+		public void Value(short value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
 			_writer.Write('s');
 		}
 
-		public override void Value(ushort value)
+		public void Value(ushort value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
 			_writer.Write('S');
 		}
 
-		public override void Value(int value)
+		public void Value(int value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
 		}
 
-		public override void Value(uint value)
+		public void Value(uint value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
 			_writer.Write('I');
 		}
 
-		public override void Value(long value)
+		public void Value(long value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
 			_writer.Write('l');
 		}
 
-		public override void Value(ulong value)
+		public void Value(ulong value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
 			_writer.Write('L');
 		}
 
-		public override void Value(float value)
+		public void Value(float value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
 		}
 
-		public override void Value(double value)
+		public void Value(double value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
 			_writer.Write('d');
 		}
 
-		public override void Value(decimal value)
+		public void Value(decimal value)
 		{
 			Next(isValue: true);
 			_writer.Write(value);
 			_writer.Write('m');
 		}
 
-		public override void Value(string value)
+		public void Value(string value)
 		{
 			Next(isValue: true);
 
@@ -222,7 +222,7 @@ namespace MGE
 			_writer.Write('\'');
 		}
 
-		public override void Value(ReadOnlySpan<byte> value)
+		public void Value(ReadOnlySpan<byte> value)
 		{
 			Next(isValue: true);
 			_writer.Write('*');

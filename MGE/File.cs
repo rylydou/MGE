@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using MEML;
 using FileIO = System.IO.File;
 
 namespace MGE;
@@ -48,33 +49,27 @@ public struct File : IEquatable<File>
 	public string[] ReadLines() => FileIO.ReadAllLines(path);
 	public byte[] ReadBytes() => FileIO.ReadAllBytes(path);
 
-	static MemlSerializer memlSerializer = new MemlSerializer()
+	static ObjectConverter memlSerializer = new ObjectConverter()
 	{
-		memberFinder = (type) => type.GetMembers(MemlSerializer.suggestedBindingFlags).Where(m => m.GetCustomAttribute<SaveAttribute>() is not null)
+		memberFinder = (type) => type.GetMembers(ObjectConverter.suggestedBindingFlags).Where(m => m.GetCustomAttribute<SaveAttribute>() is not null)
 	};
 
-	public object? ReadMeml()
+	public T ReadObjectAsMeml<T>()
 	{
-		var memlTextReader = new MemlTextReader(OpenReadText());
-		return memlSerializer.ObjectFromMeml(memlTextReader.ReadObject());
+		var type = typeof(T);
+		var value = ReadObjectAsMeml(type);
+		return (T)(value ?? throw new NotImplementedException());
 	}
+	public object? ReadObjectAsMeml(Type? impliedType = null) => memlSerializer.ObjectFromMeml(new MemlTextReader(OpenReadText()).ReadObject(), impliedType);
 
 	public void WriteText(string? text) => FileIO.WriteAllText(path, text);
 	public void WriteLines(string[] lines) => FileIO.WriteAllLines(path, lines);
 	public void WriteBytes(byte[] bytes) => FileIO.WriteAllBytes(path, bytes);
 
-	// public void WriteMeml(object? object)
-	// {
-	// 	var memlTextWriter = new MemlTextWriter(OpenWrite());
-	// }
+	public void WriteObjectAsMeml(object? obj, Type? impliedType = null) => new MemlTextWriter(OpenWrite()).Write(memlSerializer.ObjectToStructure(obj, impliedType));
 
 	public void AppendText(string? text) => FileIO.AppendAllText(path, text);
 	public void AppendLines(string[] lines) => FileIO.AppendAllLines(path, lines);
-
-	// public T ReadObject<T>() => Serializer.Deserialize<T>(ReadText()) ?? throw new MGEException("Value is null, how?");
-	// public object? ReadObject(Type type) => Serializer.Deserialize(ReadText(), type);
-
-	// public void WriteObject(object obj) => WriteText(Serializer.Serialize(obj));
 
 	public FileStream Create() => FileIO.Create(path);
 

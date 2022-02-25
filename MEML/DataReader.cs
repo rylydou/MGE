@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace MGE
+namespace MEML
 {
-	/// <summary>
-	/// Reads JSON from a Stream or Path
-	/// </summary>
-	public abstract class MemlReader
+	// Make an interface
+	public abstract class DataReader
 	{
 		/// <summary>
 		/// The current Token
 		/// </summary>
-		public MemlToken token { get; protected set; }
+		public StructureToken token { get; protected set; }
 
 		/// <summary>
 		/// The current Value
@@ -19,28 +17,23 @@ namespace MGE
 		public object? value { get; protected set; }
 
 		/// <summary>
-		/// The current Position in the Stream
-		/// </summary>
-		public abstract long position { get; }
-
-		/// <summary>
 		/// Reads an Meml Object from the Stream and returns it
 		/// </summary>
 		/// <param name="into">An optional object to read into. If null, it creates a new JsonObject</param>
-		public MemlValue ReadObject()
+		public StructureValue ReadObject()
 		{
-			var result = new MemlObject();
+			var result = new StructureObject();
 			var opened = false;
 
-			while (Read() && token != MemlToken.ObjectEnd)
+			while (Read() && token != StructureToken.ObjectEnd)
 			{
-				if (!opened && token == MemlToken.ObjectStart)
+				if (!opened && token == StructureToken.ObjectStart)
 				{
 					opened = true;
 					continue;
 				}
 
-				if (token != MemlToken.ObjectKey)
+				if (token != StructureToken.ObjectKey)
 					throw new Exception($"Expected Object Key");
 
 				var key = value as string;
@@ -56,7 +49,7 @@ namespace MGE
 		/// <summary>
 		/// Tries to read a JsonObject from the Stream
 		/// </summary>
-		public bool TryReadObject([MaybeNullWhen(false)] out MemlValue obj)
+		public bool TryReadObject([MaybeNullWhen(false)] out StructureValue obj)
 		{
 			try
 			{
@@ -77,10 +70,10 @@ namespace MGE
 		/// <summary>
 		/// Reads a JsonArray from the Stream
 		/// </summary>
-		public MemlValue ReadArray()
+		public StructureValue ReadArray()
 		{
-			var arr = new MemlArray();
-			while (Read() && token != MemlToken.ArrayEnd)
+			var arr = new StructureArray();
+			while (Read() && token != StructureToken.ArrayEnd)
 				arr.Add(CurrentValue());
 			return arr;
 		}
@@ -88,44 +81,44 @@ namespace MGE
 		/// <summary>
 		/// Reads a JsonValue from the Stream
 		/// </summary>
-		public MemlValue ReadValue()
+		public StructureValue ReadValue()
 		{
 			Read();
 			return CurrentValue();
 		}
 
-		MemlValue CurrentValue()
+		StructureValue CurrentValue()
 		{
 			switch (token)
 			{
-				case MemlToken.Null: return new MemlNull();
+				case StructureToken.Null: return new MemlNull();
 
-				case MemlToken.Bool: return (bool)(value!);
-				case MemlToken.String: return (string)(value!);
+				case StructureToken.Bool: return (bool)(value!);
+				case StructureToken.String: return (string)(value!);
 
-				case MemlToken.Byte: return (byte)(value!);
-				case MemlToken.SByte: return (sbyte)(value!);
-				case MemlToken.Char: return (char)(value!);
-				case MemlToken.Short: return (short)(value!);
-				case MemlToken.UShort: return (ushort)(value!);
-				case MemlToken.Int: return (int)(value!);
-				case MemlToken.UInt: return (uint)(value!);
-				case MemlToken.Long: return (long)(value!);
-				case MemlToken.ULong: return (ulong)(value!);
+				case StructureToken.Byte: return (byte)(value!);
+				case StructureToken.SByte: return (sbyte)(value!);
+				case StructureToken.Char: return (char)(value!);
+				case StructureToken.Short: return (short)(value!);
+				case StructureToken.UShort: return (ushort)(value!);
+				case StructureToken.Int: return (int)(value!);
+				case StructureToken.UInt: return (uint)(value!);
+				case StructureToken.Long: return (long)(value!);
+				case StructureToken.ULong: return (ulong)(value!);
 
-				case MemlToken.Float: return (float)(value!);
-				case MemlToken.Double: return (double)(value!);
-				case MemlToken.Decimal: return (decimal)(value!);
+				case StructureToken.Float: return (float)(value!);
+				case StructureToken.Double: return (double)(value!);
+				case StructureToken.Decimal: return (decimal)(value!);
 
-				case MemlToken.Binary: return (byte[])(value!);
+				case StructureToken.Binary: return (byte[])(value!);
 
-				case MemlToken.ObjectStart: return ReadObject();
+				case StructureToken.ObjectStart: return ReadObject();
 
-				case MemlToken.ArrayStart: return ReadArray();
+				case StructureToken.ArrayStart: return ReadArray();
 
-				case MemlToken.ObjectKey:
-				case MemlToken.ObjectEnd:
-				case MemlToken.ArrayEnd:
+				case StructureToken.ObjectKey:
+				case StructureToken.ObjectEnd:
+				case StructureToken.ArrayEnd:
 					throw new Exception($"Unexpected {token}");
 			}
 

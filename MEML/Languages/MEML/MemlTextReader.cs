@@ -3,12 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace MGE
+namespace MEML
 {
 	/// <summary>
 	/// Reads JSON from a Stream or Path
 	/// </summary>
-	public class MemlTextReader : MemlReader, IDisposable
+	public class MemlTextReader : DataReader, IDisposable
 	{
 		readonly TextReader _reader;
 		readonly StringBuilder _builder = new();
@@ -33,8 +33,6 @@ namespace MGE
 			this._disposeStream = disposeStream;
 			_position = 0;
 		}
-
-		public override long position => _position;
 
 		public override bool Read()
 		{
@@ -63,20 +61,20 @@ namespace MGE
 				{
 					// Object
 					case '{':
-						token = MemlToken.ObjectStart;
+						token = StructureToken.ObjectStart;
 						return true;
 					case '}':
-						if (lastToken == MemlToken.ObjectKey) throw new Exception($"Empty value @{_position}");
-						token = MemlToken.ObjectEnd;
+						if (lastToken == StructureToken.ObjectKey) throw new Exception($"Empty value @{_position}");
+						token = StructureToken.ObjectEnd;
 						return true;
 
 					// Array
 					case '[':
-						token = MemlToken.ArrayStart;
+						token = StructureToken.ArrayStart;
 						return true;
 					case ']':
-						if (lastToken == MemlToken.ObjectKey) throw new Exception($"Empty value @{_position}");
-						token = MemlToken.ArrayEnd;
+						if (lastToken == StructureToken.ObjectKey) throw new Exception($"Empty value @{_position}");
+						token = StructureToken.ArrayEnd;
 						return true;
 
 					// Binary
@@ -87,7 +85,7 @@ namespace MGE
 							_builder.Append(next);
 						}
 
-						token = MemlToken.Binary;
+						token = StructureToken.Binary;
 						value = Convert.FromBase64String(_builder.ToString());
 						return true;
 
@@ -115,7 +113,7 @@ namespace MGE
 							_builder.Append(next);
 						}
 
-						token = MemlToken.String;
+						token = StructureToken.String;
 						value = _builder.ToString();
 						return true;
 
@@ -149,9 +147,9 @@ namespace MGE
 				// Key
 				if (isKey)
 				{
-					if (lastToken == MemlToken.ObjectKey) throw new Exception($"Empty value @{_position}");
+					if (lastToken == StructureToken.ObjectKey) throw new Exception($"Empty value @{_position}");
 
-					token = MemlToken.ObjectKey;
+					token = StructureToken.ObjectKey;
 					value = str;
 					return true;
 				}
@@ -159,35 +157,35 @@ namespace MGE
 				{
 					switch (str)
 					{
-						case "null": token = MemlToken.Null; value = null; return true;
-						case "true": token = MemlToken.Bool; value = true; return true;
-						case "false": token = MemlToken.Bool; value = false; return true;
+						case "null": token = StructureToken.Null; value = null; return true;
+						case "true": token = StructureToken.Bool; value = true; return true;
+						case "false": token = StructureToken.Bool; value = false; return true;
 						default:
 							// Number
 							switch (str.Last())
 							{
-								case 'b': token = MemlToken.SByte; value = sbyte.Parse(str.Substring(0, str.Length - 1)); break;
-								case 'B': token = MemlToken.Byte; value = byte.Parse(str.Substring(0, str.Length - 1)); break;
+								case 'b': token = StructureToken.SByte; value = sbyte.Parse(str.Substring(0, str.Length - 1)); break;
+								case 'B': token = StructureToken.Byte; value = byte.Parse(str.Substring(0, str.Length - 1)); break;
 
-								case 'c': token = MemlToken.Char; value = char.Parse(str.Substring(0, str.Length - 1)); break;
-								case 's': token = MemlToken.Short; value = short.Parse(str.Substring(0, str.Length - 1)); break;
-								case 'S': token = MemlToken.UShort; value = ushort.Parse(str.Substring(0, str.Length - 1)); break;
-								case 'I': token = MemlToken.UInt; value = uint.Parse(str.Substring(0, str.Length - 1)); break;
-								case 'l': token = MemlToken.Long; value = long.Parse(str.Substring(0, str.Length - 1)); break;
-								case 'L': token = MemlToken.ULong; value = ulong.Parse(str.Substring(0, str.Length - 1)); break;
+								case 'c': token = StructureToken.Char; value = char.Parse(str.Substring(0, str.Length - 1)); break;
+								case 's': token = StructureToken.Short; value = short.Parse(str.Substring(0, str.Length - 1)); break;
+								case 'S': token = StructureToken.UShort; value = ushort.Parse(str.Substring(0, str.Length - 1)); break;
+								case 'I': token = StructureToken.UInt; value = uint.Parse(str.Substring(0, str.Length - 1)); break;
+								case 'l': token = StructureToken.Long; value = long.Parse(str.Substring(0, str.Length - 1)); break;
+								case 'L': token = StructureToken.ULong; value = ulong.Parse(str.Substring(0, str.Length - 1)); break;
 
-								case 'd': token = MemlToken.Double; value = double.Parse(str.Substring(0, str.Length - 1)); break;
-								case 'm': token = MemlToken.Decimal; value = decimal.Parse(str.Substring(0, str.Length - 1)); break;
+								case 'd': token = StructureToken.Double; value = double.Parse(str.Substring(0, str.Length - 1)); break;
+								case 'm': token = StructureToken.Decimal; value = decimal.Parse(str.Substring(0, str.Length - 1)); break;
 
 								default:
 									if (str.Contains('.'))
 									{
-										token = MemlToken.Float;
+										token = StructureToken.Float;
 										value = float.Parse(str);
 									}
 									else
 									{
-										token = MemlToken.Int;
+										token = StructureToken.Int;
 										value = int.Parse(str);
 									}
 									break;

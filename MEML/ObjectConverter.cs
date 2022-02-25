@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
-namespace MGE;
+namespace MEML;
 
 public class ObjectVariable
 {
@@ -26,7 +26,7 @@ public class ObjectVariable
 	}
 }
 
-public class MemlSerializer
+public class ObjectConverter
 {
 	public delegate void OnUnusedValue(string name);
 	public OnUnusedValue onUnusedValue = (name) => Trace.TraceWarning($"Unused value: {name}");
@@ -80,7 +80,7 @@ public class MemlSerializer
 			throw new Exception($"Type '{fullTypeName}' not found in '{asmName}'");
 	};
 
-	public MemlValue MemlFromObject(object? obj, Type? impliedType = null)
+	public StructureValue ObjectToStructure(object? obj, Type? impliedType = null)
 	{
 		if (obj is null) return new MemlNull();
 
@@ -88,40 +88,40 @@ public class MemlSerializer
 
 		if (type.IsPrimitive)
 		{
-			if (obj is bool @bool) return new MemlValue<bool>(MemlType.Bool, @bool);
+			if (obj is bool @bool) return new MemlValue<bool>(StructureType.Bool, @bool);
 
-			if (obj is float @float) return new MemlValue<float>(MemlType.Float, @float);
-			if (obj is double @double) return new MemlValue<double>(MemlType.Double, @double);
-			if (obj is int @int) return new MemlValue<int>(MemlType.Int, @int);
-			if (obj is uint @uint) return new MemlValue<uint>(MemlType.UInt, @uint);
-			if (obj is byte @byte) return new MemlValue<byte>(MemlType.Byte, @byte);
-			if (obj is char @char) return new MemlValue<char>(MemlType.Char, @char);
-			if (obj is short @short) return new MemlValue<short>(MemlType.Short, @short);
-			if (obj is ushort @ushort) return new MemlValue<ushort>(MemlType.UShort, @ushort);
-			if (obj is long @long) return new MemlValue<long>(MemlType.Long, @long);
-			if (obj is ulong @ulong) return new MemlValue<ulong>(MemlType.ULong, @ulong);
+			if (obj is float @float) return new MemlValue<float>(StructureType.Float, @float);
+			if (obj is double @double) return new MemlValue<double>(StructureType.Double, @double);
+			if (obj is int @int) return new MemlValue<int>(StructureType.Int, @int);
+			if (obj is uint @uint) return new MemlValue<uint>(StructureType.UInt, @uint);
+			if (obj is byte @byte) return new MemlValue<byte>(StructureType.Byte, @byte);
+			if (obj is char @char) return new MemlValue<char>(StructureType.Char, @char);
+			if (obj is short @short) return new MemlValue<short>(StructureType.Short, @short);
+			if (obj is ushort @ushort) return new MemlValue<ushort>(StructureType.UShort, @ushort);
+			if (obj is long @long) return new MemlValue<long>(StructureType.Long, @long);
+			if (obj is ulong @ulong) return new MemlValue<ulong>(StructureType.ULong, @ulong);
 		}
 
-		if (obj is string @string) return new MemlValue<string>(MemlType.String, @string);
+		if (obj is string @string) return new MemlValue<string>(StructureType.String, @string);
 
-		if (obj is byte[] binary) return new MemlValue<byte[]>(MemlType.Binary, binary);
+		if (obj is byte[] binary) return new MemlValue<byte[]>(StructureType.Binary, binary);
 
 		// Array
 		if (obj is ICollection collection)
 		{
-			var memlArray = new MemlArray();
+			var memlArray = new StructureArray();
 			var contentType = type.IsArray ? type.GetElementType() : GetCollectionElementType(type);
 
 			foreach (var item in collection)
 			{
-				memlArray.Add(MemlFromObject(item, contentType));
+				memlArray.Add(ObjectToStructure(item, contentType));
 			}
 
 			return memlArray;
 		}
 
 		// Object
-		var memlObject = new MemlObject();
+		var memlObject = new StructureObject();
 
 		if (type != impliedType)
 		{
@@ -132,7 +132,7 @@ public class MemlSerializer
 		foreach (var getter in variables)
 		{
 			var value = getter.getValue(obj);
-			var memlValue = MemlFromObject(value, getter.type);
+			var memlValue = ObjectToStructure(value, getter.type);
 			memlObject[getter.name] = memlValue;
 		}
 
@@ -154,13 +154,13 @@ public class MemlSerializer
 		return null;
 	}
 
-	public T ObjectFromMeml<T>(MemlValue value)
+	public T StructureToObject<T>(StructureValue value)
 	{
 		return (T)ObjectFromMeml(value, typeof(T))!;
 	}
-	public object? ObjectFromMeml(MemlValue memlValue, Type? impliedType = null)
+	public object? ObjectFromMeml(StructureValue memlValue, Type? impliedType = null)
 	{
-		if (memlValue.type == MemlType.Object)
+		if (memlValue.type == StructureType.Object)
 		{
 			Type type;
 
@@ -201,7 +201,7 @@ public class MemlSerializer
 			return obj;
 		}
 
-		if (memlValue.type == MemlType.Array)
+		if (memlValue.type == StructureType.Array)
 		{
 			if (impliedType is null) throw new NotSupportedException();
 

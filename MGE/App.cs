@@ -10,7 +10,7 @@ public static class App
 	/// <summary>
 	/// The Application Name
 	/// </summary>
-	public static string name = "";
+	public static string name = "MGE Game";
 
 	/// <summary>
 	/// MGE Version Number

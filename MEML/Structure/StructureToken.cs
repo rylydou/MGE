@@ -1,9 +1,6 @@
-﻿namespace MGE
+﻿namespace MEML
 {
-	/// <summary>
-	/// A Meml Token
-	/// </summary>
-	public enum MemlToken : byte
+	public enum StructureToken : byte
 	{
 		Null = 0,
 

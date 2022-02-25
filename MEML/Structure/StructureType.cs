@@ -1,9 +1,6 @@
-﻿namespace MGE
+﻿namespace MEML
 {
-	/// <summary>
-	/// A Meml Value Type
-	/// </summary>
-	public enum MemlType
+	public enum StructureType
 	{
 		Null,
 

@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace MGE;
@@ -15,21 +14,53 @@ public struct Folder : IEquatable<Folder>
 		root = "";
 		user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-		data = Environment.GetEnvironmentVariable("appdata") ?? new Folder(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)) / "MGE Game";
-		here = Assembly.GetEntryAssembly()!.Location;
+		data = Environment.GetEnvironmentVariable("MGE_APPDATA") ?? new Folder(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)) / App.name;
+		here = Environment.ProcessPath ?? throw new Exception();
 
-		content = Environment.GetEnvironmentVariable("content") ?? here / "Content";
-		contentPacks = data / "Content Packs";
+		content = Environment.GetEnvironmentVariable("MGE_CONTENT") ?? here / "Content";
 	}
 
+	/// <summary>
+	/// A folder with an empty path.
+	/// </summary>
+	/// <remarks>
+	/// Does not include the drive letter if on Windows.
+	/// </remarks>
 	public static readonly Folder root;
+	/// <summary>
+	/// The user folder.
+	/// </summary>
 	public static readonly Folder user;
 
+	///	<summary>
+	/// The folder where user related app data should be stored.
+	/// </summary>
+	/// <remarks>
+	/// <list type="table">
+	///		<listheader>
+	///			<term>Platform</term>
+	///			<description>Location</description>
+	///		</listheader>
+	///		<item>
+	///			<term>Windows</term>
+	///			<description><c>%USERPROFILE%\AppData\Roaming\Application_Name</c></description>
+	///		</item>
+	///		<item>
+	///			<term>Linux and MacOS</term>
+	///			<description><c>~/.config/Application_Name</c></description>
+	///		</item>
+	///	</list>
+	/// </remarks>
 	public static readonly Folder data;
+	/// <summary>
+	/// The folder where the application is located.
+	/// </summary>
 	public static readonly Folder here;
 
+	/// <summary>
+	/// Where the game's base content is stored.
+	/// </summary>
 	public static readonly Folder content;
-	public static readonly Folder contentPacks;
 
 	#endregion
 
@@ -45,17 +76,17 @@ public struct Folder : IEquatable<Folder>
 	public static string CleanPath(string path) => path.Replace('\\', '/');
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public string GetAbsolutePath(string path) => $"{this.path}/{CleanPath(path)}";
+	public string GetAbsolutePath(string relitivePath) => $"{this.path}/{CleanPath(relitivePath)}";
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public string GetRelativePath(string path)
+	public string GetRelativePath(string absolutePath)
 	{
-		path = CleanPath(path);
-		if (path.StartsWith(this.path))
+		absolutePath = CleanPath(absolutePath);
+		if (absolutePath.StartsWith(this.path))
 		{
-			return path.Remove(0, this.path.Length);
+			return absolutePath.Remove(0, this.path.Length);
 		}
-		return path;
+		return absolutePath;
 	}
 
 	#region File
@@ -67,11 +98,16 @@ public struct Folder : IEquatable<Folder>
 	public File[] GetFiles(string search = "*") => Directory.GetFiles(path, search).Select(f => new File(f)).ToArray();
 
 	static readonly EnumerationOptions recursiveEnumeration = new() { RecurseSubdirectories = true, };
+	/// <summary>
+	///
+	/// </summary>
+	/// <param name="search">
+	/// The search string to match against the names in path. This
+	///	parameter can contain a combination of valid literal and wildcard characters,
+	///	but it doesn't support regular expressions.
+	/// </param>
+	/// <returns></returns>
 	public File[] GetFilesRecursive(string search = "*") => Directory.GetFiles(path, search, recursiveEnumeration).Select(f => new File(f)).ToArray();
-
-	// public FileStream FileOpenRead(string path) => new FileStream(GetAbsolutePath(path), FileMode.Open, FileAccess.Read, FileShare.Read);
-
-	// public FileStream FileOpenWrite(string path) => new FileStream(GetAbsolutePath(path), FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
 
 	#endregion
 
@@ -85,15 +121,15 @@ public struct Folder : IEquatable<Folder>
 
 	#endregion
 
-	public static Folder operator +(Folder folder, string extention) => folder.FolderOpen(extention);
+	public static Folder operator +(Folder folder, string relitivePath) => folder.FolderOpen(relitivePath);
 
 	/// <summary>
-	/// Appends the paths and creates the folder.
+	/// Appends the paths and creates the folder on disk.
 	/// </summary>
 	/// <param name="folder"></param>
-	/// <param name="extention"></param>
+	/// <param name="relitivePath"></param>
 	/// <returns></returns>
-	public static Folder operator /(Folder folder, string extention) => folder.FolderCreate(extention);
+	public static Folder operator /(Folder folder, string relitivePath) => folder.FolderCreate(relitivePath);
 
 	public static bool operator ==(Folder left, Folder right) => left.path == right.path;
 	public static bool operator !=(Folder left, Folder right) => left.path != right.path;

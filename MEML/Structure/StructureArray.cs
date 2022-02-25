@@ -1,46 +1,46 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace MGE
+namespace MEML
 {
 	/// <summary>
 	/// A data structure encapsulating a Meml Array
 	/// </summary>
-	public class MemlArray : MemlValue<List<MemlValue>>, IEnumerable
+	public class StructureArray : MemlValue<List<StructureValue>>, IEnumerable
 	{
-		public MemlArray() : base(MemlType.Array, new List<MemlValue>())
+		public StructureArray() : base(StructureType.Array, new List<StructureValue>())
 		{
 		}
 
-		public MemlArray(IList<string> list) : base(MemlType.Array, new List<MemlValue>())
+		public StructureArray(IList<string> list) : base(StructureType.Array, new List<StructureValue>())
 		{
 			for (int i = 0; i < list.Count; i++)
 				Value.Add(list[i]);
 		}
 
-		public override MemlValue this[int index]
+		public override StructureValue this[int index]
 		{
 			get => Value[index];
 			set => Value[index] = value;
 		}
 
-		public override void Add(MemlValue value)
+		public override void Add(StructureValue value)
 		{
 			Value.Add(value);
 		}
 
-		public override void Remove(MemlValue value)
+		public override void Remove(StructureValue value)
 		{
 			Value.Remove(value);
 		}
 
-		public bool Contains(MemlValue value)
+		public bool Contains(StructureValue value)
 		{
 			return Value.Contains(value);
 		}
 
 		public override int count => Value.Count;
-		public override IEnumerable<MemlValue> values => Value;
+		public override IEnumerable<StructureValue> values => Value;
 
 		// public override int GetHashedValue()
 		// {

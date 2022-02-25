@@ -9,8 +9,8 @@
       "program": "${workspaceFolder}/Demo/bin/Debug/Demo.dll",
       "args": [],
       "env": {
-        "appdata": "${workspaceFolder}/Demo/appdata",
-        "content": "${workspaceFolder}/Demo/Content"
+        "MGE_APPDATA": "${workspaceFolder}/Demo/appdata",
+        "MGE_CONTENT": "${workspaceFolder}/Demo/Content"
       },
       "cwd": "${workspaceFolder}/Demo",
       "console": "internalConsole",
