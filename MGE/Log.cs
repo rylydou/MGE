@@ -105,11 +105,11 @@ public static class Log
 		{
 			Console.WriteLine(
 				_colorEnabled ?
-				$"\u001b[{LogColor.DARK_GRAY}m{DateTime.Now.ToString("HH:mm:ss")} {callsite,-24} \u001b[{logAttribute.color}m{message}\u001b[0m" :
-				$"{DateTime.Now.ToString("HH:mm:ss")} {logAttribute.name} {callsite,-24} {message}");
+				$"\u001b[{LogColor.DARK_GRAY}m{DateTime.Now.ToString("HH:mm:ss")} {callsite,-18} \u001b[{logAttribute.color}m{message}\u001b[0m" :
+				$"{DateTime.Now.ToString("HH:mm:ss")} {logAttribute.name} {callsite,-18} {message}");
 		}
 
-		_log.Append($"{DateTime.Now.ToString("HH:mm:ss")} {logAttribute.name} {callsite,-24} {message}");
+		_log.Append($"{DateTime.Now.ToString("HH:mm:ss")} {logAttribute.name} {callsite,-18} {message}");
 
 		if ((logLevel == LogLevel.Error) || (logLevel == LogLevel.Assert))
 		{

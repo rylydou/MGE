@@ -145,6 +145,11 @@ public struct Color : IEquatable<Color>
 		return new Color((byte)(r * a / 255), (byte)(g * a / 255), (byte)(b * a / 255), a);
 	}
 
+	public Color WithAlpha(byte alpha)
+	{
+		return new(r, g, b, alpha);
+	}
+
 	/// <summary>
 	/// Converts the Color to a Vector4
 	/// </summary>
@@ -278,9 +283,22 @@ public struct Color : IEquatable<Color>
 	/// <returns></returns>
 	public static Color Lerp(Color a, Color b, float amount)
 	{
-		amount = Math.Max(0, Math.Min(1, amount));
+		return new(
+			(int)(a.r + (b.r - a.r) * amount),
+			(int)(a.g + (b.g - a.g) * amount),
+			(int)(a.b + (b.b - a.b) * amount),
+			(int)(a.a + (b.a - a.a) * amount)
+		);
+	}
+	/// <summary>
+	/// Linearly interpolates between two colors
+	/// </summary>
+	/// <returns></returns>
+	public static Color LerpClamped(Color a, Color b, float amount)
+	{
+		amount = Math.Clamp01(amount);
 
-		return new Color(
+		return new(
 			(int)(a.r + (b.r - a.r) * amount),
 			(int)(a.g + (b.g - a.g) * amount),
 			(int)(a.b + (b.b - a.b) * amount),
