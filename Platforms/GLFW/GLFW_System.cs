@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace MGE.GLFW
 {
@@ -25,6 +24,7 @@ namespace MGE.GLFW
 
 			apiName = "GLFW";
 			apiVersion = new Version(major, minor, rev);
+
 		}
 
 		protected override void ApplicationStarted()
@@ -147,7 +147,7 @@ namespace MGE.GLFW
 
 		protected override Window.Platform CreateWindow(string title, int width, int height, WindowFlags flags = WindowFlags.None)
 		{
-			if (Thread.CurrentThread.ManagedThreadId != mainThreadId) throw new Exception("Creating a Window must be called from the Main Thread");
+			if (Environment.CurrentManagedThreadId != mainThreadId) throw new Exception("Creating a Window must be called from the Main Thread");
 
 			// create GLFW Window
 			var ptr = CreateGlfwWindow(title, width, height, flags);

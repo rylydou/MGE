@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Numerics;
 using System.Runtime.InteropServices;
-using MGE;
 
 namespace MGE.GLFW
 {
@@ -198,7 +196,41 @@ namespace MGE.GLFW
 					return GLFW.GetWin32Window(_pointer);
 				else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
 					return GLFW.GetCocoaWindow(_pointer);
+				else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+					return GLFW.GetX11Window(_pointer); // TODO Support wayland
 				return IntPtr.Zero;
+			}
+		}
+
+		protected override Monitor monitor
+		{
+			get
+			{
+				// // GLFW only returns the monitor if the window is fullscreen
+				// if (_isFullscreen)
+				// {
+				// 	var fullscreenMonitor = GLFW.GetWindowMonitor(_pointer);
+				// 	if (fullscreenMonitor != IntPtr.Zero)
+				// 	{
+				// 		return new GLFW_Monitor(fullscreenMonitor);
+				// 	}
+				// }
+
+				var windowArea = new RectInt(position, size);
+
+				var bestMonitor = _system.primaryMonitor;
+				var bestArea = -1;
+				foreach (var monitor in _system.monitors)
+				{
+					var area = RectInt.Intersect(monitor.bounds, windowArea).area;
+					if (area > bestArea)
+					{
+						bestMonitor = monitor;
+						bestArea = area;
+					}
+				}
+
+				return bestMonitor;
 			}
 		}
 
@@ -278,6 +310,46 @@ namespace MGE.GLFW
 		internal void InvokeCloseWindowCallback()
 		{
 			onClose?.Invoke();
+		}
+
+		Vector2Int minSize;
+		protected override void SetMinSize(Vector2Int? minSize)
+		{
+			if (minSize.HasValue)
+			{
+				this.minSize = minSize.Value;
+			}
+			else
+			{
+				this.minSize = new((int)GLFW_Enum.GLFW_DONT_CARE);
+			}
+
+			UpdateWindowLimits();
+		}
+
+		Vector2Int maxSize;
+		protected override void SetMaxSize(Vector2Int? maxSize)
+		{
+			if (maxSize.HasValue)
+			{
+				this.maxSize = maxSize.Value;
+			}
+			else
+			{
+				this.maxSize = new((int)GLFW_Enum.GLFW_DONT_CARE);
+			}
+
+			UpdateWindowLimits();
+		}
+
+		void UpdateWindowLimits()
+		{
+			GLFW.SetWindowSizeLimits(_pointer, minSize.x, minSize.y, maxSize.x, maxSize.y);
+		}
+
+		protected override void SetAspectRatio(Vector2Int? aspectRatio)
+		{
+			GLFW.SetWindowAspectRatio(_pointer, size.x, size.y);
 		}
 	}
 }

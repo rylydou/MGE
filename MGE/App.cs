@@ -123,7 +123,6 @@ public static class App
 			modules.Startup();
 			callback?.Invoke();
 			Run();
-
 		}
 	}
 

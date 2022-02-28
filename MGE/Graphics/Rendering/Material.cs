@@ -336,7 +336,7 @@ public class Material
 				return new Color(values[offset + 0], values[offset + 1], values[offset + 2], values[offset + 3]);
 			}
 
-			return Color.transparent;
+			return Color.clear;
 		}
 	}
 

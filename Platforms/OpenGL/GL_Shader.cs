@@ -19,7 +19,7 @@ namespace MGE.OpenGL
 		{
 			this.graphics = graphics;
 
-			if (graphics.mainThreadId != Thread.CurrentThread.ManagedThreadId)
+			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 			{
 				lock (graphics.BackgroundContext)
 				{

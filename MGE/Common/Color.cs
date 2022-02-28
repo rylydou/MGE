@@ -8,7 +8,7 @@ namespace MGE;
 [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 4)]
 public struct Color : IEquatable<Color>
 {
-	public static readonly Color transparent = new Color(0, 0, 0, 0);
+	public static readonly Color clear = new Color(0, 0, 0, 0);
 
 	public static readonly Color white = new Color(0xffffff);
 	public static readonly Color lightGray = new Color(0xc0c0c0);

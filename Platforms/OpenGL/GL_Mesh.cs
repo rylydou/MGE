@@ -64,7 +64,7 @@ namespace MGE.OpenGL
 
 		unsafe void UploadBuffer<T>(ref uint id, GLEnum type, ReadOnlySequence<T> data, ref long currentBufferSize)
 		{
-			if (graphics.mainThreadId != Thread.CurrentThread.ManagedThreadId)
+			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 			{
 				lock (graphics.BackgroundContext)
 				{

@@ -31,7 +31,7 @@ namespace MGE.SDL2
 			SDL.SDL_GetDisplayBounds(index, out var rect);
 			_bounds = new RectInt(rect.x, rect.y, rect.w, rect.h);
 
-			float hidpiRes = 72f;
+			var hidpiRes = 72f;
 			if (Environment.OSVersion.Platform == PlatformID.Win32NT)
 				hidpiRes = 96;
 			SDL.SDL_GetDisplayDPI(index, out float ddpi, out _, out _);

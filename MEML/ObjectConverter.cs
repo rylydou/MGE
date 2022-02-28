@@ -80,9 +80,9 @@ public class ObjectConverter
 			throw new Exception($"Type '{fullTypeName}' not found in '{asmName}'");
 	};
 
-	public StructureValue ObjectToStructure(object? obj, Type? impliedType = null)
+	public StructureValue CreateStructureFromObject(object? obj, Type? impliedType = null)
 	{
-		if (obj is null) return new MemlNull();
+		if (obj is null) return new StructureValueNull();
 
 		var type = obj.GetType();
 
@@ -114,7 +114,7 @@ public class ObjectConverter
 
 			foreach (var item in collection)
 			{
-				memlArray.Add(ObjectToStructure(item, contentType));
+				memlArray.Add(CreateStructureFromObject(item, contentType));
 			}
 
 			return memlArray;
@@ -132,7 +132,7 @@ public class ObjectConverter
 		foreach (var getter in variables)
 		{
 			var value = getter.getValue(obj);
-			var memlValue = ObjectToStructure(value, getter.type);
+			var memlValue = CreateStructureFromObject(value, getter.type);
 			memlObject[getter.name] = memlValue;
 		}
 
@@ -154,11 +154,11 @@ public class ObjectConverter
 		return null;
 	}
 
-	public T StructureToObject<T>(StructureValue value)
+	public T CreateObjectFromStructure<T>(StructureValue value)
 	{
-		return (T)ObjectFromMeml(value, typeof(T))!;
+		return (T)CreateObjectFromStructure(value, typeof(T))!;
 	}
-	public object? ObjectFromMeml(StructureValue memlValue, Type? impliedType = null)
+	public object? CreateObjectFromStructure(StructureValue memlValue, Type? impliedType = null)
 	{
 		if (memlValue.type == StructureType.Object)
 		{
@@ -180,7 +180,6 @@ public class ObjectConverter
 			}
 
 			var obj = Activator.CreateInstance(type);
-			// var variables = variableFinder(memberFinder(type));
 			foreach (var item in memlValue.pairs)
 			{
 				if (item.Key[0] == '!') continue;
@@ -194,7 +193,7 @@ public class ObjectConverter
 
 				var variable = variableConverter(members[0]) ?? throw new Exception();
 
-				var value = ObjectFromMeml(item.Value, variable.type);
+				var value = CreateObjectFromStructure(item.Value, variable.type);
 				variable.setValue(obj, value);
 			}
 
@@ -209,14 +208,14 @@ public class ObjectConverter
 
 			if (impliedType.IsArray)
 			{
-				return memlValue.values.Select(item => ObjectFromMeml(item, collectionType)).ToArray();
+				return memlValue.values.Select(item => CreateObjectFromStructure(item, collectionType)).ToArray();
 			}
 
 			var list = (IList)Activator.CreateInstance(impliedType)!;
 
 			foreach (var item in memlValue.values)
 			{
-				list.Add(ObjectFromMeml(item));
+				list.Add(CreateObjectFromStructure(item));
 			}
 
 			return list;
@@ -225,5 +224,27 @@ public class ObjectConverter
 		}
 
 		return memlValue.underlyingValue;
+	}
+
+	public void PopulateObjectFromStructure(ref object obj, in StructureValue value)
+	{
+		var type = obj.GetType();
+
+		foreach (var item in value.pairs)
+		{
+			if (item.Key[0] == '!') continue;
+
+			var members = type.GetMember(item.Key, suggestedBindingFlags);
+			if (members.Length != 1)
+			{
+				onUnusedValue(item.Key);
+				continue;
+			}
+
+			var variable = variableConverter(members[0]) ?? throw new Exception();
+
+			var memberValue = CreateObjectFromStructure(item.Value, variable.type);
+			variable.setValue(obj, memberValue);
+		}
 	}
 }

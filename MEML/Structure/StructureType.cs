@@ -1,29 +1,28 @@
-﻿namespace MEML
+﻿namespace MEML;
+
+public enum StructureType
 {
-	public enum StructureType
-	{
-		Null,
+	Null,
 
-		Object,
-		Array,
+	Object,
+	Array,
 
-		Bool,
-		String,
+	Bool,
+	String,
 
-		Byte,
-		SByte,
-		Char,
-		Short,
-		UShort,
-		Int,
-		UInt,
-		Long,
-		ULong,
-		Decimal,
+	Byte,
+	SByte,
+	Char,
+	Short,
+	UShort,
+	Int,
+	UInt,
+	Long,
+	ULong,
+	Decimal,
 
-		Float,
-		Double,
+	Float,
+	Double,
 
-		Binary,
-	}
+	Binary,
 }

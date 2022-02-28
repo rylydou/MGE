@@ -73,7 +73,7 @@ namespace MGE.OpenGL
 
 		void Initialize()
 		{
-			if (graphics.mainThreadId != Thread.CurrentThread.ManagedThreadId)
+			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 			{
 				lock (graphics.BackgroundContext)
 				{
@@ -114,7 +114,7 @@ namespace MGE.OpenGL
 		{
 			GLEnum f = (filter == TextureFilter.Nearest ? GLEnum.NEAREST : GLEnum.LINEAR);
 
-			if (graphics.mainThreadId != Thread.CurrentThread.ManagedThreadId)
+			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 			{
 				lock (graphics.BackgroundContext)
 				{
@@ -145,7 +145,7 @@ namespace MGE.OpenGL
 			GLEnum s = (x == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT);
 			GLEnum t = (y == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT);
 
-			if (graphics.mainThreadId != Thread.CurrentThread.ManagedThreadId)
+			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 			{
 				lock (graphics.BackgroundContext)
 				{
@@ -175,7 +175,7 @@ namespace MGE.OpenGL
 		{
 			using MemoryHandle handle = buffer.Pin();
 
-			if (graphics.mainThreadId != Thread.CurrentThread.ManagedThreadId)
+			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 			{
 				lock (graphics.BackgroundContext)
 				{
@@ -204,7 +204,7 @@ namespace MGE.OpenGL
 		{
 			using var handle = buffer.Pin();
 
-			if (graphics.mainThreadId != Thread.CurrentThread.ManagedThreadId)
+			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 			{
 				lock (graphics.BackgroundContext)
 				{

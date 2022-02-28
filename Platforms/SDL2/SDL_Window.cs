@@ -218,6 +218,8 @@ namespace MGE.SDL2
 			get => (SDL.SDL_GetWindowFlags(SDLWindowPtr) & (uint)SDL.SDL_WindowFlags.SDL_WINDOW_MOUSE_FOCUS) > 0;
 		}
 
+		protected override Monitor monitor { get => new SDL_Monitor(SDL.SDL_GetWindowDisplayIndex(SDLWindowPtr)); }
+
 		public SDL_Window(SDL_System system, string title, int width, int height, WindowFlags flags)
 		{
 			this._system = system;
@@ -340,6 +342,39 @@ namespace MGE.SDL2
 		public void Restored()
 		{
 			_isVisible = true;
+		}
+
+		protected override void SetMinSize(Vector2Int? minSize)
+		{
+			if (minSize.HasValue)
+			{
+				SDL.SDL_SetWindowMinimumSize(SDLWindowPtr, minSize.Value.x, minSize.Value.y);
+			}
+			else
+			{
+				SDL.SDL_SetWindowMinimumSize(SDLWindowPtr, -1, -1);
+			}
+		}
+
+		protected override void SetMaxSize(Vector2Int? maxSize)
+		{
+			if (maxSize.HasValue)
+			{
+				SDL.SDL_SetWindowMaximumSize(SDLWindowPtr, maxSize.Value.x, maxSize.Value.y);
+			}
+			else
+			{
+				SDL.SDL_SetWindowMaximumSize(SDLWindowPtr, -1, -1);
+			}
+		}
+
+		// TODO SDL doesn't support setting the window aspect ratio yet.
+		// Issue: https://github.com/libsdl-org/SDL/issues/1573
+		protected override void SetAspectRatio(Vector2Int? aspectRatio)
+		{
+#if !MGE_IGNORE_UNSUPPORTED
+			throw new NotImplementedException("SDL doesn't support setting the window aspect ratio yet.\nIssue: https://github.com/libsdl-org/SDL/issues/1573");
+#endif
 		}
 	}
 }

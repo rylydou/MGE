@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -107,7 +108,7 @@ public struct Folder : IEquatable<Folder>
 	///	but it doesn't support regular expressions.
 	/// </param>
 	/// <returns></returns>
-	public File[] GetFilesRecursive(string search = "*") => Directory.GetFiles(path, search, recursiveEnumeration).Select(f => new File(f)).ToArray();
+	public IEnumerable<File> GetFilesRecursive(string search = "*") => Directory.GetFiles(path, search, recursiveEnumeration).Select(f => new File(f));
 
 	#endregion
 
@@ -118,6 +119,8 @@ public struct Folder : IEquatable<Folder>
 	public Folder FolderCreate(string path) => new(Directory.CreateDirectory(GetAbsolutePath(path)).FullName);
 
 	public Folder FolderOpen(string path) => new(GetAbsolutePath(path));
+
+	public IEnumerable<Folder> GetFolders() => Directory.GetDirectories(path).Select(f => new Folder(f));
 
 	#endregion
 

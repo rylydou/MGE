@@ -70,7 +70,7 @@ public class ModuleList : IEnumerable<Module>
 
 		// registered
 		module.isRegistered = true;
-		module.mainThreadId = Thread.CurrentThread.ManagedThreadId;
+		module.mainThreadId = Environment.CurrentManagedThreadId;
 		return module;
 	}
 

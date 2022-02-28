@@ -178,7 +178,7 @@ namespace MGE.OpenGL
 			else if (target is FrameBuffer rt && rt.implementation is GL_FrameBuffer renderTexture)
 			{
 				// if we're off the main thread, clear using the Background Context
-				if (mainThreadId != Thread.CurrentThread.ManagedThreadId)
+				if (mainThreadId != Environment.CurrentManagedThreadId)
 				{
 					lock (BackgroundContext)
 					{
@@ -265,7 +265,7 @@ namespace MGE.OpenGL
 					Draw(this, ref pass, context);
 				}
 			}
-			else if (mainThreadId != Thread.CurrentThread.ManagedThreadId)
+			else if (mainThreadId != Environment.CurrentManagedThreadId)
 			{
 				lock (BackgroundContext)
 				{

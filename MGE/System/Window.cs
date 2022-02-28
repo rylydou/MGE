@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace MGE;
 
@@ -67,6 +68,8 @@ public class Window : RenderTarget
 		protected internal abstract Vector2 screenMouse { get; }
 		protected internal abstract bool mouseOver { get; }
 
+		protected internal abstract Monitor monitor { get; }
+
 		protected internal abstract void Focus();
 		protected internal abstract void Present();
 		protected internal abstract void Close();
@@ -75,6 +78,10 @@ public class Window : RenderTarget
 		protected internal Action? onResize;
 		protected internal Action? onClose;
 		protected internal Action? onCloseRequested;
+
+		protected internal abstract void SetMinSize(Vector2Int? minSize);
+		protected internal abstract void SetMaxSize(Vector2Int? maxSize);
+		protected internal abstract void SetAspectRatio(Vector2Int? aspectRatio);
 	}
 
 	/// <summary>
@@ -316,6 +323,11 @@ public class Window : RenderTarget
 	/// </summary>
 	public bool mouseOver => implementation.mouseOver;
 
+	/// <summary>
+	/// The Monitor the Window is on
+	/// </summary>
+	public Monitor monitor => implementation.monitor;
+
 	public Window(string title, int width, int height, WindowFlags flags = WindowFlags.ScaleToMonitor) : this(App.system, title, width, height, flags)
 	{
 
@@ -379,4 +391,13 @@ public class Window : RenderTarget
 	{
 		implementation.Close();
 	}
+
+	public void Center()
+	{
+		position = (monitor.bounds.size - size) / 2;
+	}
+
+	public void SetMinSize(Vector2Int? minSize) => implementation.SetMinSize(minSize);
+	public void SetMaxSize(Vector2Int? maxSize) => implementation.SetMaxSize(maxSize);
+	public void SetAspectRatio(Vector2Int? aspectRatio) => implementation.SetAspectRatio(aspectRatio);
 }

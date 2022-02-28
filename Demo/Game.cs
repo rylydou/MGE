@@ -21,6 +21,9 @@ public class Game : Module
 		_font = new(Folder.content.GetFile("Fonts/Inter/Regular.ttf"));
 		_spriteFont = new(_font, 18, @" !""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~", TextureFilter.Nearest);
 		_sprite = new(Folder.content.GetFile("Tree.png"));
+
+		App.window.SetAspectRatio(new(320, 180));
+		App.window.SetMinSize(new(320, 180));
 	}
 
 	// This is called when the Application is shutting down, or when the Module is removed
@@ -47,6 +50,17 @@ public class Game : Module
 
 		// Set the position
 		position += input.normalized * 128 * Time.delta;
+
+		if (kb.Pressed(Keys.F11))
+		{
+			App.window.fullscreen = !App.window.fullscreen;
+		}
+
+		if (kb.Pressed(Keys.Space))
+		{
+			// Log.Info(App.window.monitor.name);
+			App.window.Center();
+		}
 	}
 
 	void Render(Window window)
@@ -62,7 +76,7 @@ public class Game : Module
 		batch.Text(_spriteFont!, $"{Time.fps}fps ({Time.rawDelta:F4}ms)", window.renderMouse + new Vector2(0, -18), Color.white);
 
 		// Clear the Window
-		App.graphics.Clear(window, Color.black);
+		// App.graphics.Clear(window, Color.black);
 
 		// Draw the batcher to the Window
 		batch.Render(window);

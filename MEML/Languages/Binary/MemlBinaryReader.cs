@@ -1,142 +1,144 @@
 ﻿using System;
 using System.IO;
 
-namespace MEML
+namespace MEML;
+
+public class MemlBinaryReader : IDataReader, IDisposable
 {
-	public class MemlBinaryReader : DataReader, IDisposable
+	readonly BinaryReader _reader;
+	readonly bool _disposeStream = true;
+	uint _objectSize;
+
+	public StructureToken token { get; private set; }
+	public object? value { get; private set; }
+
+	public MemlBinaryReader(string path) : this(File.OpenRead(path), true) { }
+
+	public MemlBinaryReader(Stream stream, bool disposeStream = true) : this(new BinaryReader(stream), disposeStream) { }
+
+	public MemlBinaryReader(BinaryReader reader, bool disposeStream = true)
 	{
-		readonly BinaryReader _reader;
-		readonly bool _disposeStream = true;
-		uint _objectSize;
+		this._reader = reader;
+		this._disposeStream = disposeStream;
+	}
 
-		public MemlBinaryReader(string path) : this(File.OpenRead(path), true) { }
-
-		public MemlBinaryReader(Stream stream, bool disposeStream = true) : this(new BinaryReader(stream), disposeStream) { }
-
-		public MemlBinaryReader(BinaryReader reader, bool disposeStream = true)
+	public bool Read()
+	{
+		if (_reader.BaseStream.Position < _reader.BaseStream.Length)
 		{
-			this._reader = reader;
-			this._disposeStream = disposeStream;
-		}
+			var token = (StructureToken)_reader.ReadByte();
 
-		public override bool Read()
-		{
-			if (_reader.BaseStream.Position < _reader.BaseStream.Length)
+			switch (token)
 			{
-				var token = (MemlBinaryWriter.BinaryTokens)_reader.ReadByte();
-
-				switch (token)
-				{
-					case MemlBinaryWriter.BinaryTokens.Null:
-						value = null;
-						base.token = StructureToken.Null;
+				case StructureToken.Null:
+					value = null;
+					token = StructureToken.Null;
+					break;
+				case StructureToken.ObjectStart:
+					_objectSize = _reader.ReadUInt32(); // skip byte size
+					value = null;
+					token = StructureToken.ObjectStart;
+					break;
+				case StructureToken.ObjectEnd:
+					value = null;
+					token = StructureToken.ObjectEnd;
+					break;
+				case StructureToken.ObjectKey:
+					value = _reader.ReadString();
+					token = StructureToken.ObjectKey;
+					break;
+				case StructureToken.ArrayStart:
+					_objectSize = _reader.ReadUInt32(); // skip byte size
+					value = null;
+					token = StructureToken.ArrayStart;
+					break;
+				case StructureToken.ArrayEnd:
+					value = null;
+					token = StructureToken.ArrayEnd;
+					break;
+				case StructureToken.Bool:
+					value = _reader.ReadBoolean();
+					token = StructureToken.Bool;
+					break;
+				case StructureToken.String:
+					value = _reader.ReadString();
+					token = StructureToken.String;
+					break;
+				case StructureToken.Byte:
+					value = _reader.ReadByte();
+					token = StructureToken.Byte;
+					break;
+				case StructureToken.SByte:
+					value = _reader.ReadSByte();
+					token = StructureToken.SByte;
+					break;
+				case StructureToken.Char:
+					value = _reader.ReadChar();
+					token = StructureToken.Char;
+					break;
+				case StructureToken.Short:
+					value = _reader.ReadInt16();
+					token = StructureToken.Short;
+					break;
+				case StructureToken.UShort:
+					value = _reader.ReadUInt16();
+					token = StructureToken.UShort;
+					break;
+				case StructureToken.Int:
+					value = _reader.ReadInt32();
+					token = StructureToken.Int;
+					break;
+				case StructureToken.UInt:
+					value = _reader.ReadUInt32();
+					token = StructureToken.UInt;
+					break;
+				case StructureToken.Long:
+					value = _reader.ReadInt64();
+					token = StructureToken.Long;
+					break;
+				case StructureToken.ULong:
+					value = _reader.ReadUInt64();
+					token = StructureToken.ULong;
+					break;
+				case StructureToken.Decimal:
+					value = _reader.ReadDecimal();
+					token = StructureToken.Decimal;
+					break;
+				case StructureToken.Float:
+					value = _reader.ReadSingle();
+					token = StructureToken.Float;
+					break;
+				case StructureToken.Double:
+					value = _reader.ReadDouble();
+					token = StructureToken.Double;
+					break;
+				case StructureToken.Binary:
+					{
+						var len = _reader.ReadInt32();
+						value = _reader.ReadBytes(len);
+						token = StructureToken.Binary;
 						break;
-					case MemlBinaryWriter.BinaryTokens.ObjectStart:
-						_objectSize = _reader.ReadUInt32(); // skip byte size
-						value = null;
-						base.token = StructureToken.ObjectStart;
-						break;
-					case MemlBinaryWriter.BinaryTokens.ObjectEnd:
-						value = null;
-						base.token = StructureToken.ObjectEnd;
-						break;
-					case MemlBinaryWriter.BinaryTokens.ObjectKey:
-						value = _reader.ReadString();
-						base.token = StructureToken.ObjectKey;
-						break;
-					case MemlBinaryWriter.BinaryTokens.ArrayStart:
-						_objectSize = _reader.ReadUInt32(); // skip byte size
-						value = null;
-						base.token = StructureToken.ArrayStart;
-						break;
-					case MemlBinaryWriter.BinaryTokens.ArrayEnd:
-						value = null;
-						base.token = StructureToken.ArrayEnd;
-						break;
-					case MemlBinaryWriter.BinaryTokens.Boolean:
-						value = _reader.ReadBoolean();
-						base.token = StructureToken.Bool;
-						break;
-					case MemlBinaryWriter.BinaryTokens.String:
-						value = _reader.ReadString();
-						base.token = StructureToken.String;
-						break;
-					case MemlBinaryWriter.BinaryTokens.Byte:
-						value = _reader.ReadByte();
-						base.token = StructureToken.Byte;
-						break;
-					case MemlBinaryWriter.BinaryTokens.SByte:
-						value = _reader.ReadSByte();
-						base.token = StructureToken.SByte;
-						break;
-					case MemlBinaryWriter.BinaryTokens.Char:
-						value = _reader.ReadChar();
-						base.token = StructureToken.Char;
-						break;
-					case MemlBinaryWriter.BinaryTokens.Short:
-						value = _reader.ReadInt16();
-						base.token = StructureToken.Short;
-						break;
-					case MemlBinaryWriter.BinaryTokens.UShort:
-						value = _reader.ReadUInt16();
-						base.token = StructureToken.UShort;
-						break;
-					case MemlBinaryWriter.BinaryTokens.Int:
-						value = _reader.ReadInt32();
-						base.token = StructureToken.Int;
-						break;
-					case MemlBinaryWriter.BinaryTokens.UInt:
-						value = _reader.ReadUInt32();
-						base.token = StructureToken.UInt;
-						break;
-					case MemlBinaryWriter.BinaryTokens.Long:
-						value = _reader.ReadInt64();
-						base.token = StructureToken.Long;
-						break;
-					case MemlBinaryWriter.BinaryTokens.ULong:
-						value = _reader.ReadUInt64();
-						base.token = StructureToken.ULong;
-						break;
-					case MemlBinaryWriter.BinaryTokens.Decimal:
-						value = _reader.ReadDecimal();
-						base.token = StructureToken.Decimal;
-						break;
-					case MemlBinaryWriter.BinaryTokens.Float:
-						value = _reader.ReadSingle();
-						base.token = StructureToken.Float;
-						break;
-					case MemlBinaryWriter.BinaryTokens.Double:
-						value = _reader.ReadDouble();
-						base.token = StructureToken.Double;
-						break;
-					case MemlBinaryWriter.BinaryTokens.Binary:
-						{
-							var len = _reader.ReadInt32();
-							value = _reader.ReadBytes(len);
-							base.token = StructureToken.Binary;
-							break;
-						}
-				}
-
-				return true;
+					}
 			}
 
-			return false;
+			return true;
 		}
 
-		public override void SkipValue()
-		{
-			if (Read())
-			{
-				if (token == StructureToken.ObjectStart || token == StructureToken.ObjectEnd)
-					_reader.BaseStream.Seek(_objectSize, SeekOrigin.Current);
-			}
-		}
+		return false;
+	}
 
-		public void Dispose()
+	public void SkipValue()
+	{
+		if (Read())
 		{
-			if (_disposeStream)
-				_reader.Dispose();
+			if (token == StructureToken.ObjectStart || token == StructureToken.ObjectEnd)
+				_reader.BaseStream.Seek(_objectSize, SeekOrigin.Current);
 		}
+	}
+
+	public void Dispose()
+	{
+		if (_disposeStream)
+			_reader.Dispose();
 	}
 }

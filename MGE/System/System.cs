@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace MGE;
@@ -32,6 +33,11 @@ public abstract class System : AppModule
 	/// A list of active Monitors
 	/// </summary>
 	public readonly ReadOnlyCollection<Monitor> monitors;
+
+	/// <summary>
+	/// The Primary Monitor
+	/// </summary>
+	public Monitor primaryMonitor => monitors.First(m => m.isPrimary);
 
 	/// <summary>
 	/// System Input

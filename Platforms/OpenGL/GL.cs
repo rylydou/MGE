@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using MGE;
 
 namespace MGE.OpenGL
 {
 	internal static class GL
 	{
-
 		public static int MajorVersion;
 		public static int MinorVersion;
 		public static int MaxColorAttachments;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using Demo;
+﻿using Demo;
 using MGE;
 using MGE.GLFW;
 using MGE.OpenGL;

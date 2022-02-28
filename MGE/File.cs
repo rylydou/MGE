@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -60,13 +59,13 @@ public struct File : IEquatable<File>
 		var value = ReadObjectAsMeml(type);
 		return (T)(value ?? throw new NotImplementedException());
 	}
-	public object? ReadObjectAsMeml(Type? impliedType = null) => memlSerializer.ObjectFromMeml(new MemlTextReader(OpenReadText()).ReadObject(), impliedType);
+	public object? ReadObjectAsMeml(Type? impliedType = null) => memlSerializer.CreateObjectFromStructure(new MemlTextReader(OpenReadText()).ReadObject(), impliedType);
 
 	public void WriteText(string? text) => FileIO.WriteAllText(path, text);
 	public void WriteLines(string[] lines) => FileIO.WriteAllLines(path, lines);
 	public void WriteBytes(byte[] bytes) => FileIO.WriteAllBytes(path, bytes);
 
-	public void WriteObjectAsMeml(object? obj, Type? impliedType = null) => new MemlTextWriter(OpenWrite()).Write(memlSerializer.ObjectToStructure(obj, impliedType));
+	public void WriteObjectAsMeml(object? obj, Type? impliedType = null) => new MemlTextWriter(OpenWrite()).Write(memlSerializer.CreateStructureFromObject(obj, impliedType));
 
 	public void AppendText(string? text) => FileIO.AppendAllText(path, text);
 	public void AppendLines(string[] lines) => FileIO.AppendAllLines(path, lines);
