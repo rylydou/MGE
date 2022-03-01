@@ -2,7 +2,7 @@ using System;
 
 namespace MEML;
 
-public abstract class DataConverter
+public abstract class StructureFormatter
 {
 	public abstract Type type { get; }
 
@@ -11,7 +11,7 @@ public abstract class DataConverter
 	public abstract StructureValue WriteObj(object? obj, StructureConverter converter);
 }
 
-public abstract class DataConverter<T> : DataConverter where T : notnull
+public abstract class StructureFormatter<T> : StructureFormatter where T : notnull
 {
 	public sealed override Type type => typeof(T);
 
