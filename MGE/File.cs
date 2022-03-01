@@ -48,9 +48,9 @@ public struct File : IEquatable<File>
 	public string[] ReadLines() => FileIO.ReadAllLines(path);
 	public byte[] ReadBytes() => FileIO.ReadAllBytes(path);
 
-	static ObjectConverter memlSerializer = new ObjectConverter()
+	static StructureConverter memlSerializer = new StructureConverter()
 	{
-		memberFinder = (type) => type.GetMembers(ObjectConverter.suggestedBindingFlags).Where(m => m.GetCustomAttribute<SaveAttribute>() is not null)
+		memberFinder = (type) => type.GetMembers(StructureConverter.suggestedBindingFlags).Where(m => m.GetCustomAttribute<SaveAttribute>() is not null)
 	};
 
 	public T ReadObjectAsMeml<T>()

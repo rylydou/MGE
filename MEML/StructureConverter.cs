@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace MEML;
 
-public class ObjectVariable
+public class StructureVariable
 {
 	public delegate object? GetValue(object? obj);
 	public delegate void SetValue(object? obj, object? value);
@@ -17,7 +17,7 @@ public class ObjectVariable
 	public GetValue getValue;
 	public SetValue setValue;
 
-	public ObjectVariable(string name, Type type, GetValue getValue, SetValue setValue)
+	public StructureVariable(string name, Type type, GetValue getValue, SetValue setValue)
 	{
 		this.name = name;
 		this.type = type;
@@ -26,7 +26,7 @@ public class ObjectVariable
 	}
 }
 
-public class ObjectConverter
+public class StructureConverter
 {
 	public delegate void OnUnusedValue(string name);
 	public OnUnusedValue onUnusedValue = (name) => Trace.TraceWarning($"Unused value: {name}");
@@ -47,9 +47,9 @@ public class ObjectConverter
 		return type.GetMembers(suggestedBindingFlags);
 	}
 
-	public delegate ObjectVariable? VariableConverter(MemberInfo member);
+	public delegate StructureVariable? VariableConverter(MemberInfo member);
 	public VariableConverter variableConverter = DefualtVariableConverter;
-	public static ObjectVariable? DefualtVariableConverter(MemberInfo member)
+	public static StructureVariable? DefualtVariableConverter(MemberInfo member)
 	{
 		if (member is FieldInfo field)
 		{
@@ -128,7 +128,7 @@ public class ObjectConverter
 			memlObject[$"!{type.Assembly.GetName().Name}"] = type.FullName ?? throw new Exception();
 		}
 
-		IEnumerable<ObjectVariable> variables = memberFinder(type).Select(m => variableConverter(m)).Where(v => v is not null)!;
+		IEnumerable<StructureVariable> variables = memberFinder(type).Select(m => variableConverter(m)).Where(v => v is not null)!;
 		foreach (var getter in variables)
 		{
 			var value = getter.getValue(obj);
@@ -219,8 +219,6 @@ public class ObjectConverter
 			}
 
 			return list;
-
-			// var array = ;
 		}
 
 		return memlValue.underlyingValue;

@@ -6,30 +6,30 @@ public abstract class DataConverter
 {
 	public abstract Type type { get; }
 
-	public abstract StructureValue Write(object? obj);
+	public abstract object? ReadStructure(StructureValue value, StructureConverter converter);
 
-	public abstract object? Read(StructureValue value, object? existingValue);
+	public abstract StructureValue WriteObj(object? obj, StructureConverter converter);
 }
 
 public abstract class DataConverter<T> : DataConverter where T : notnull
 {
 	public sealed override Type type => typeof(T);
 
-	public sealed override StructureValue Write(object? obj)
-	{
-		if (obj is null) return new StructureValueNull();
-
-		return Write((T)obj);
-	}
-
-	public abstract StructureValue Write(T obj);
-
-	public sealed override object? Read(StructureValue value, object? existingValue)
+	public sealed override object? ReadStructure(StructureValue value, StructureConverter converter)
 	{
 		if (value is StructureValueNull) return null;
 
-		return Read(value, existingValue);
+		return Read(value, converter);
 	}
 
-	public abstract T Read(StructureValue value, T? existingValue);
+	public abstract T Read(StructureValue value, StructureConverter converter);
+
+	public sealed override StructureValue WriteObj(object? obj, StructureConverter converter)
+	{
+		if (obj is null) return new StructureValueNull();
+
+		return Write((T)obj, converter);
+	}
+
+	public abstract StructureValue Write(T obj, StructureConverter converter);
 }

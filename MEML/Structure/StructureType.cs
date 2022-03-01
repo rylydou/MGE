@@ -19,10 +19,10 @@ public enum StructureType
 	UInt,
 	Long,
 	ULong,
-	Decimal,
 
 	Float,
 	Double,
+	Decimal,
 
 	Binary,
 }
