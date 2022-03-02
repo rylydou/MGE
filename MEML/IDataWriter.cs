@@ -5,6 +5,7 @@ namespace MEML;
 public interface IDataWriter
 {
 	void Key(string name);
+
 	void ObjectBegin();
 	void ObjectEnd();
 	void ArrayBegin();
@@ -12,6 +13,8 @@ public interface IDataWriter
 
 	void Null();
 	void Value(bool value);
+	void Value(string value);
+
 	void Value(byte value);
 	void Value(sbyte value);
 	void Value(char value);
@@ -21,10 +24,10 @@ public interface IDataWriter
 	void Value(uint value);
 	void Value(long value);
 	void Value(ulong value);
+
 	void Value(float value);
 	void Value(double value);
 	void Value(decimal value);
-	void Value(string value);
 
 	void Value(byte[] value) => Value(value.AsSpan());
 	void Value(ReadOnlySpan<byte> value);

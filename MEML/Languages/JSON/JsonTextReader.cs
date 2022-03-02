@@ -83,6 +83,7 @@ public class JsonTextReader : IDataReader, IDisposable
 				// String
 				case '"':
 					_builder.Clear();
+
 					while (StepChar(out next) && next != '"')
 					{
 						if (next == '\\')
@@ -104,8 +105,33 @@ public class JsonTextReader : IDataReader, IDisposable
 						_builder.Append(next);
 					}
 
+					var str = _builder.ToString();
+
+					if (char.IsWhiteSpace(next))
+					{
+						while (PeekChar(out next) && char.IsWhiteSpace(next))
+							SkipChar();
+					}
+
+					// Is key
+					if (PeekChar(out next) && next == ':')
+					{
+						if (lastToken == StructureToken.ObjectKey) throw new Exception($"Empty value @{_position}");
+
+						token = StructureToken.ObjectKey;
+						value = str;
+						return true;
+					}
+
+					if (str.StartsWith("bin::"))
+					{
+						token = StructureToken.Binary;
+						value = Convert.FromBase64String(str.Substring(5));
+						return true;
+					}
+
 					token = StructureToken.String;
-					value = _builder.ToString();
+					value = str;
 					return true;
 
 				// Other
@@ -122,71 +148,57 @@ public class JsonTextReader : IDataReader, IDisposable
 					break;
 			}
 
-			// Check if this entry is a KEY
-			var isKey = false;
-			if (char.IsWhiteSpace(next))
+			var s = _builder.ToString();
+
+			switch (s)
 			{
-				while (PeekChar(out next) && char.IsWhiteSpace(next))
-					SkipChar();
+				case "null": token = StructureToken.Null; value = null; return true;
+				case "true": token = StructureToken.Bool; value = true; return true;
+				case "false": token = StructureToken.Bool; value = false; return true;
 			}
 
-			if (PeekChar(out next) && next == ':')
-				isKey = true;
-
-			var str = _builder.ToString();
-
-			// Key
-			if (isKey)
+			if ((s[0] >= '0' && s[0] <= '9') || s[0] == '-' || s[0] == '+' || s[0] == '.')
 			{
-				if (lastToken == StructureToken.ObjectKey) throw new Exception($"Empty value @{_position}");
-
-				token = StructureToken.ObjectKey;
-				value = str;
-				return true;
-			}
-			else
-			{
-				switch (str)
+				if (s.Contains('.'))
 				{
-					case "null": token = StructureToken.Null; value = null; return true;
-					case "true": token = StructureToken.Bool; value = true; return true;
-					case "false": token = StructureToken.Bool; value = false; return true;
-					default:
-						// Number
-						switch (str.Last())
-						{
-							case 'b': token = StructureToken.SByte; value = sbyte.Parse(str.Substring(0, str.Length - 1)); break;
-							case 'B': token = StructureToken.Byte; value = byte.Parse(str.Substring(0, str.Length - 1)); break;
-
-							case 'c': token = StructureToken.Char; value = char.Parse(str.Substring(0, str.Length - 1)); break;
-							case 's': token = StructureToken.Short; value = short.Parse(str.Substring(0, str.Length - 1)); break;
-							case 'S': token = StructureToken.UShort; value = ushort.Parse(str.Substring(0, str.Length - 1)); break;
-							case 'I': token = StructureToken.UInt; value = uint.Parse(str.Substring(0, str.Length - 1)); break;
-							case 'l': token = StructureToken.Long; value = long.Parse(str.Substring(0, str.Length - 1)); break;
-							case 'L': token = StructureToken.ULong; value = ulong.Parse(str.Substring(0, str.Length - 1)); break;
-
-							case 'd': token = StructureToken.Double; value = double.Parse(str.Substring(0, str.Length - 1)); break;
-							case 'm': token = StructureToken.Decimal; value = decimal.Parse(str.Substring(0, str.Length - 1)); break;
-
-							default:
-								if (str.Contains('.'))
-								{
-									token = StructureToken.Float;
-									value = float.Parse(str);
-								}
-								else
-								{
-									token = StructureToken.Int;
-									value = int.Parse(str);
-								}
-								break;
-						}
-
+					if (float.TryParse(s, out float floatValue))
+					{
+						token = StructureToken.Float;
+						value = floatValue;
 						return true;
+					}
+
+					if (double.TryParse(s, out double doubleValue))
+					{
+						token = StructureToken.Double;
+						value = doubleValue;
+						return true;
+					}
 				}
 
-				throw new Exception($"Invalid value @{_position}\n	This might be an unquoeted string");
+				if (int.TryParse(s, out int intValue))
+				{
+					token = StructureToken.Int;
+					value = intValue;
+					return true;
+				}
+
+				if (long.TryParse(s, out long longValue))
+				{
+					token = StructureToken.Long;
+					value = longValue;
+					return true;
+				}
+
+				if (ulong.TryParse(s, out ulong ulongValue))
+				{
+					token = StructureToken.ULong;
+					value = ulongValue;
+					return true;
+				}
 			}
+
+			throw new Exception($"Invalid value @{_position}\n\tThis might be an unquoeted string");
 		}
 
 		return false;

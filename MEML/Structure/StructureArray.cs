@@ -10,6 +10,14 @@ public class StructureArray : MemlValue<List<StructureValue>>, IEnumerable
 {
 	public StructureArray() : base(StructureType.Array, new List<StructureValue>()) { }
 
+	public StructureArray(params StructureValue[] items) : base(StructureType.Array, new List<StructureValue>())
+	{
+		foreach (var item in items)
+		{
+			Value.Add(item);
+		}
+	}
+
 	public StructureArray(IList<string> list) : base(StructureType.Array, new List<StructureValue>())
 	{
 		for (int i = 0; i < list.Count; i++)

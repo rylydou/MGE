@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MEML;
 
-public static class MEMLFunctions
+public static class DataReaderAndWriterFunctions
 {
 	/// <summary>
 	/// Reads an Meml Object from the Stream and returns it

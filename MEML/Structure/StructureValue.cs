@@ -139,8 +139,6 @@ public abstract class StructureValue
 	public static implicit operator StructureValue(double value) => new MemlValue<double>(StructureType.Double, value);
 	public static implicit operator StructureValue(decimal value) => new MemlValue<decimal>(StructureType.Decimal, value);
 
-	public static implicit operator StructureValue(List<string> value) => new StructureArray(value);
-	public static implicit operator StructureValue(string[] value) => new StructureArray(value);
 	public static implicit operator StructureValue(byte[] value) => new MemlValue<byte[]>(StructureType.Binary, value);
 
 	public static implicit operator bool(StructureValue value) => value.Bool;

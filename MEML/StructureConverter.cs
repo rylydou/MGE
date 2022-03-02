@@ -80,11 +80,17 @@ public class StructureConverter
 			throw new Exception($"Type '{fullTypeName}' not found in '{asmName}'");
 	};
 
-	Dictionary<Type, StructureFormatter> _converters = new();
+	public delegate object? StructureToObject(StructureValue value);
+	public delegate StructureValue ObjectToStructure(object obj);
 
-	public void RegisterConverter(StructureFormatter converter)
+	Dictionary<Type, (StructureToObject structureToObject, ObjectToStructure objectToStructure)> _converters = new();
+
+	// Dictionary<Type, StructureFormatter> _converters = new();
+
+	public void RegisterConverter<T>(StructureToObject structureToObject, ObjectToStructure objectToStructure)
 	{
-		_converters.Add(converter.type, converter);
+		_converters.Add(typeof(T), (structureToObject, objectToStructure));
+		_converters.Add(typeof(T), (structureToObject, objectToStructure));
 	}
 
 	public StructureValue CreateStructureFromObject(object? obj, Type? impliedType = null)
@@ -95,7 +101,7 @@ public class StructureConverter
 
 		if (_converters.TryGetValue(type, out var converter))
 		{
-			converter.WriteObj(obj, this);
+			return converter.objectToStructure.Invoke(obj);
 		}
 
 		if (type.IsPrimitive)
@@ -176,7 +182,7 @@ public class StructureConverter
 		{
 			if (_converters.TryGetValue(impliedType, out var converter))
 			{
-				converter.ReadStructure(value, this);
+				return converter.structureToObject.Invoke(value);
 			}
 		}
 

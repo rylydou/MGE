@@ -221,7 +221,7 @@ public class JsonTextWriter : IDataWriter, IDisposable
 	public void Value(ReadOnlySpan<byte> value)
 	{
 		Next(isValue: true);
-		// An unusual enough pattern to block any text containing it
+		// An unusual enough pattern to block any text starting with it
 		_writer.Write("\"bin::");
 		_writer.Write(Convert.ToBase64String(value, Base64FormattingOptions.None));
 		_writer.Write('"');

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -117,11 +118,13 @@ public static class Log
 		}
 	}
 
+	[Conditional("TRACE")]
 	public static void Trace(string message, [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
 	{
 		LogInternal(LogLevel.Trace, message, callerFilePath, callerLineNumber);
 	}
 
+	[Conditional("DEBUG")]
 	public static void Debug(string message, [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
 	{
 		LogInternal(LogLevel.Debug, message, callerFilePath, callerLineNumber);
