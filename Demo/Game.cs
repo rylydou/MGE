@@ -1,3 +1,4 @@
+using System;
 using MGE;
 
 namespace Demo;
@@ -39,6 +40,13 @@ public class Game : Module
 		// Get the keyboard
 		var kb = App.input.keyboard;
 
+		// Toggle fullscreen
+		if (kb.Pressed(Keys.F11) || (kb.Pressed(Keys.RightAlt) && kb.Pressed(Keys.Enter)))
+		{
+			App.window.fullscreen = !App.window.fullscreen;
+			return;
+		}
+
 		// Get input
 		var input = Vector2.zero;
 
@@ -50,17 +58,6 @@ public class Game : Module
 
 		// Set the position
 		position += input.normalized * 128 * Time.delta;
-
-		if (kb.Pressed(Keys.F11))
-		{
-			App.window.fullscreen = !App.window.fullscreen;
-		}
-
-		if (kb.Pressed(Keys.Space))
-		{
-			// Log.Info(App.window.monitor.name);
-			App.window.Center();
-		}
 	}
 
 	void Render(Window window)

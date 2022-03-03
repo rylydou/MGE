@@ -1,23 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MGE;
 
 public class Content : AppModule
 {
-	public delegate T Load<T>(T obj, File file, string path);
+	public delegate T Load<T>(T obj, File file, string location);
 
 	abstract class ContentLoader
 	{
-		public abstract Type loaderFor { get; }
-
 		public abstract object Load(object obj, File file, string path);
 	}
 
 	sealed class ContentLoader<T> : ContentLoader where T : class
 	{
-		public override Type loaderFor => typeof(T);
-
 		public readonly Load<T> load;
 
 		public ContentLoader(Load<T> load)
@@ -25,16 +22,17 @@ public class Content : AppModule
 			this.load = load;
 		}
 
-		public override object Load(object obj, File file, string path)
+		public sealed override object Load(object obj, File file, string location)
 		{
-			return load((T)obj, file, path);
+			return load((T)obj, file, location);
 		}
 	}
 
 	public readonly Folder contentFolder = new Folder(Environment.CurrentDirectory) / "Content";
 	public readonly Folder contentPacksFolder = Folder.data / "Content Packs";
 
-	readonly Dictionary<string, string> contentIndex = new();
+	// Location to file
+	readonly Dictionary<string, File> contentIndex = new();
 
 	readonly Dictionary<string, object?> preloadedAssets = new();
 	readonly Dictionary<string, object?> unloadedAssets = new();
@@ -52,17 +50,17 @@ public class Content : AppModule
 
 		contentIndex.Clear();
 
-		IndexContent(contentFolder, contentIndex);
+		IndexContent(contentFolder);
 
 		var contentPacks = contentPacksFolder.GetFolders();
 		foreach (var contentPack in contentPacks)
 		{
-			IndexContent(contentPack, contentIndex);
+			IndexContent(contentPack);
 		}
 
 		Log.EndStopwatch();
 
-		void IndexContent(Folder folder, Dictionary<string, string> contentIndex)
+		void IndexContent(Folder folder)
 		{
 			var files = folder.GetFilesRecursive();
 			foreach (var file in files)
@@ -81,9 +79,29 @@ public class Content : AppModule
 
 		foreach (var item in contentIndex)
 		{
+			if (item.Value.path.EndsWith(".load"))
+			{
 
+			}
 		}
 
 		Log.EndStopwatch();
+	}
+
+	public T Get<T>(string location) where T : class
+	{
+		return (T)(preloadedAssets[location] ?? throw new Exception());
+	}
+
+	public bool Get<T>(string location, [MaybeNullWhen(false)] out T asset) where T : class
+	{
+		if (!preloadedAssets.TryGetValue(location, out var obj))
+		{
+			asset = null;
+			return false;
+		}
+
+		asset = (T)(obj ?? throw new Exception());
+		return true;
 	}
 }
