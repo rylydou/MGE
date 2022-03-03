@@ -52,6 +52,8 @@ public static class App
 	/// </summary>
 	public static Input input => system.input;
 
+	public static Content content => // TODO
+
 	/// <summary>
 	/// Gets the Primary Window
 	/// </summary>

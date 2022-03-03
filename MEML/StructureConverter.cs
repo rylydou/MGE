@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace MEML;
 
-public class StructureVariable
+public class ObjectMember
 {
 	public delegate object? GetValue(object? obj);
 	public delegate void SetValue(object? obj, object? value);
@@ -17,7 +17,7 @@ public class StructureVariable
 	public GetValue getValue;
 	public SetValue setValue;
 
-	public StructureVariable(string name, Type type, GetValue getValue, SetValue setValue)
+	public ObjectMember(string name, Type type, GetValue getValue, SetValue setValue)
 	{
 		this.name = name;
 		this.type = type;
@@ -47,9 +47,9 @@ public class StructureConverter
 		return type.GetMembers(suggestedBindingFlags);
 	}
 
-	public delegate StructureVariable? VariableConverter(MemberInfo member);
-	public VariableConverter variableConverter = DefualtVariableConverter;
-	public static StructureVariable? DefualtVariableConverter(MemberInfo member)
+	public delegate ObjectMember? MemberConverter(MemberInfo member);
+	public MemberConverter memberConverter = DefualtMemberConverter;
+	public static ObjectMember? DefualtMemberConverter(MemberInfo member)
 	{
 		if (member is FieldInfo field)
 		{
@@ -80,17 +80,20 @@ public class StructureConverter
 			throw new Exception($"Type '{fullTypeName}' not found in '{asmName}'");
 	};
 
-	public delegate object? StructureToObject(StructureValue value);
-	public delegate StructureValue ObjectToStructure(object obj);
+	public delegate StructureValue ToStructureHandler<T>(T obj);
+	delegate StructureValue ToStructureHandler(object obj);
 
-	Dictionary<Type, (StructureToObject structureToObject, ObjectToStructure objectToStructure)> _converters = new();
+	public delegate T ToObjectHandler<T>(StructureValue value);
+	delegate object ToObjectHandler(StructureValue value);
 
-	// Dictionary<Type, StructureFormatter> _converters = new();
+	Dictionary<Type, (ToStructureHandler toStructure, ToObjectHandler toObject)> _converters = new();
 
-	public void RegisterConverter<T>(StructureToObject structureToObject, ObjectToStructure objectToStructure)
+	public void RegisterConverter<T>(ToStructureHandler<T> toStructure, ToObjectHandler<T> toObject) where T : notnull
 	{
-		_converters.Add(typeof(T), (structureToObject, objectToStructure));
-		_converters.Add(typeof(T), (structureToObject, objectToStructure));
+		StructureValue ToStructure(object obj) => toStructure.Invoke((T)obj);
+		object ToObject(StructureValue value) => toObject.Invoke(value);
+
+		_converters.Add(typeof(T), (ToStructure, ToObject));
 	}
 
 	public StructureValue CreateStructureFromObject(object? obj, Type? impliedType = null)
@@ -101,7 +104,7 @@ public class StructureConverter
 
 		if (_converters.TryGetValue(type, out var converter))
 		{
-			return converter.objectToStructure.Invoke(obj);
+			return converter.toStructure.Invoke(obj);
 		}
 
 		if (type.IsPrimitive)
@@ -146,7 +149,7 @@ public class StructureConverter
 			memlObject[$"!{type.Assembly.GetName().Name}"] = type.FullName ?? throw new Exception();
 		}
 
-		IEnumerable<StructureVariable> variables = memberFinder(type).Select(m => variableConverter(m)).Where(v => v is not null)!;
+		IEnumerable<ObjectMember> variables = memberFinder(type).Select(m => memberConverter(m)).Where(v => v is not null)!;
 		foreach (var getter in variables)
 		{
 			var value = getter.getValue(obj);
@@ -182,7 +185,7 @@ public class StructureConverter
 		{
 			if (_converters.TryGetValue(impliedType, out var converter))
 			{
-				return converter.structureToObject.Invoke(value);
+				return converter.toObject.Invoke(value);
 			}
 		}
 
@@ -213,7 +216,7 @@ public class StructureConverter
 					continue;
 				}
 
-				var variable = variableConverter(members[0]) ?? throw new Exception();
+				var variable = memberConverter(members[0]) ?? throw new Exception();
 
 				var memberValue = CreateObjectFromStructure(item.Value, variable.type);
 				variable.setValue(obj, memberValue);
@@ -261,7 +264,7 @@ public class StructureConverter
 				continue;
 			}
 
-			var variable = variableConverter(members[0]) ?? throw new Exception();
+			var variable = memberConverter(members[0]) ?? throw new Exception();
 
 			var memberValue = CreateObjectFromStructure(item.Value, variable.type);
 			variable.setValue(obj, memberValue);

@@ -18,7 +18,7 @@ public class Game : Module
 		// Add a Callback to the primary window's Render loop
 		App.window.onRender += Render;
 
-		_font = new(Folder.content.GetFile("Fonts/Inter/Regular.ttf"));
+		_font = App.content.Get<Font>("Fonts/Inter/Regular.ttf");
 		_spriteFont = new(_font, 18, @" !""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~", TextureFilter.Nearest);
 		_sprite = new(Folder.content.GetFile("Tree.png"));
 
