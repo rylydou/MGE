@@ -194,7 +194,7 @@ public class Texture : IDisposable
 		implementation.SetData<Color>(bitmap.pixels);
 	}
 
-	public Texture(string path) : this(new Bitmap(path)) { }
+	public Texture(File file) : this(new Bitmap(file)) { }
 
 	public Texture(Stream stream, string format) : this(new Bitmap(stream, format)) { }
 

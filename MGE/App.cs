@@ -48,11 +48,14 @@ public static class App
 	public static Audio audio => modules.Get<Audio>();
 
 	/// <summary>
+	/// Get the Content Module
+	/// </summary>
+	public static Content content => modules.Get<Content>();
+
+	/// <summary>
 	/// Gets the System Input
 	/// </summary>
 	public static Input input => system.input;
-
-	public static Content content => // TODO
 
 	/// <summary>
 	/// Gets the Primary Window

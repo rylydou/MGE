@@ -4,29 +4,14 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MGE;
 
+public interface IContentLoader
+{
+	object Load(File file, string path);
+}
+
 public class Content : AppModule
 {
-	public delegate T Load<T>(T obj, File file, string location);
-
-	abstract class ContentLoader
-	{
-		public abstract object Load(object obj, File file, string path);
-	}
-
-	sealed class ContentLoader<T> : ContentLoader where T : class
-	{
-		public readonly Load<T> load;
-
-		public ContentLoader(Load<T> load)
-		{
-			this.load = load;
-		}
-
-		public sealed override object Load(object obj, File file, string location)
-		{
-			return load((T)obj, file, location);
-		}
-	}
+	public delegate T Load<T>(File file, string location);
 
 	public readonly Folder contentFolder = new Folder(Environment.CurrentDirectory) / "Content";
 	public readonly Folder contentPacksFolder = Folder.data / "Content Packs";
@@ -34,10 +19,13 @@ public class Content : AppModule
 	// Location to file
 	readonly Dictionary<string, File> contentIndex = new();
 
+	// Location to asset
 	readonly Dictionary<string, object?> preloadedAssets = new();
-	readonly Dictionary<string, object?> unloadedAssets = new();
 
-	protected internal override void ApplicationStarted()
+	// Location to file
+	readonly Dictionary<string, File> unloadedAssets = new();
+
+	protected internal override void Startup()
 	{
 		ScanContent();
 
@@ -75,14 +63,30 @@ public class Content : AppModule
 		Log.StartStopwatch("Load content");
 
 		preloadedAssets.Clear();
+
+		foreach (var item in preloadedAssets)
+		{
+			if (item.Value is IDisposable disposable)
+			{
+				disposable.Dispose();
+			}
+		}
+
 		unloadedAssets.Clear();
 
 		foreach (var item in contentIndex)
 		{
-			if (item.Value.path.EndsWith(".load"))
-			{
+			if (item.Value.path.EndsWith(".load")) continue;
 
-			}
+			var loadFile = new File(item.Value + ".load");
+
+			if (!loadFile.exists) continue;
+
+			var loader = loadFile.ReadObjectAsMeml<IContentLoader>();
+
+			preloadedAssets.Add(item.Key, loader.Load(item.Value, item.Key));
+
+			Log.Info($"Loaded '{item.Key}' with {loader.GetType().FullName}");
 		}
 
 		Log.EndStopwatch();

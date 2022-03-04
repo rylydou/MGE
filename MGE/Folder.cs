@@ -85,7 +85,7 @@ public struct Folder : IEquatable<Folder>
 		absolutePath = CleanPath(absolutePath);
 		if (absolutePath.StartsWith(this.path))
 		{
-			return absolutePath.Remove(0, this.path.Length);
+			return absolutePath.Remove(0, this.path.Length + 1);
 		}
 		return absolutePath;
 	}

@@ -100,7 +100,7 @@ namespace MGE
 			this.styleName = styleName ?? "Unknown";
 		}
 
-		public SpriteFont(string fontFile, int size, string charset, TextureFilter filter = TextureFilter.Linear) : this(new FontSize(new Font(fontFile), size, charset), filter)
+		public SpriteFont(File fontFile, int size, string charset, TextureFilter filter = TextureFilter.Linear) : this(new FontSize(new Font(fontFile), size, charset), filter)
 		{
 
 		}

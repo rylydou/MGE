@@ -1,4 +1,3 @@
-using System;
 using MGE;
 
 namespace Demo;
@@ -8,7 +7,6 @@ public class Game : Module
 	public readonly Batch2D batch = new Batch2D();
 	public Vector2 position;
 
-	Font? _font;
 	SpriteFont? _spriteFont;
 
 	Texture? _sprite;
@@ -19,9 +17,9 @@ public class Game : Module
 		// Add a Callback to the primary window's Render loop
 		App.window.onRender += Render;
 
-		_font = App.content.Get<Font>("Fonts/Inter/Regular.ttf");
-		_spriteFont = new(_font, 18, @" !""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~", TextureFilter.Nearest);
-		_sprite = new(Folder.content.GetFile("Tree.png"));
+		// Load Content
+		_sprite = App.content.Get<Texture>("Tree.png");
+		_spriteFont = App.content.Get<SpriteFont>("Fonts/Inter/Regular.ttf");
 
 		App.window.SetAspectRatio(new(320, 180));
 		App.window.SetMinSize(new(320, 180));
