@@ -41,6 +41,7 @@ namespace MGE.OpenGL
 			CreateDelegate(ref glBindRenderbuffer!, "glBindRenderbuffer");
 			CreateDelegate(ref glBindFramebuffer!, "glBindFramebuffer");
 			CreateDelegate(ref glTexImage2D!, "glTexImage2D");
+			CreateDelegate(ref glTexSubImage2D!, "glTexSubImage2D");
 			CreateDelegate(ref glFramebufferRenderbuffer!, "glFramebufferRenderbuffer");
 			CreateDelegate(ref glFramebufferTexture2D!, "glFramebufferTexture2D");
 			CreateDelegate(ref glTexParameteri!, "glTexParameteri");
@@ -240,7 +241,11 @@ namespace MGE.OpenGL
 		public TexImage2D glTexImage2D;
 
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
-		public delegate void FramebufferRenderbuffer(GLEnum target​, GLEnum attachment​, GLEnum renderbuffertarget​, uint renderbuffer​);
+		public delegate void TexSubImage2D(GLEnum target, Int32 level, Int32 xoffset, Int32 yoffset, Int32 width, Int32 height, GLEnum format, GLEnum type, IntPtr pixels);
+		public TexSubImage2D glTexSubImage2D;
+
+		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+		public delegate void FramebufferRenderbuffer(GLEnum target, GLEnum attachment, GLEnum renderbuffertarget, uint renderbuffer);
 		public FramebufferRenderbuffer glFramebufferRenderbuffer;
 
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -252,7 +257,7 @@ namespace MGE.OpenGL
 		public TexParameteri glTexParameteri;
 
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
-		public delegate void RenderbufferStorage(GLEnum target​, GLEnum internalformat​, int width​, int height​);
+		public delegate void RenderbufferStorage(GLEnum target, GLEnum internalformat, int width, int height);
 		public RenderbufferStorage glRenderbufferStorage;
 
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]

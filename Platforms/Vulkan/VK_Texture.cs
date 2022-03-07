@@ -53,5 +53,10 @@ namespace MGE.Vulkan
 		{
 
 		}
+
+		protected override void SetData<T>(RectInt rect, T[] pixels)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

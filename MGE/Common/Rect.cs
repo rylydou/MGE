@@ -1,25 +1,6 @@
 using System;
-using System.Drawing;
 
 namespace MGE;
-
-// public class RectJsonConverter : JsonConverter<Rect>
-// {
-// 	public override Rect ReadJson(JsonReader reader, Type objectType, Rect existingValue, bool hasExistingValue, JsonSerializer serializer)
-// 	{
-// 		var values = reader.ReadAsMultiDimensional<float>();
-
-// 		if (values.Length == 4)
-// 			return new Rect(values[0], values[1], values[2], values[3]);
-
-// 		throw new InvalidOperationException("Invalid Rect");
-// 	}
-
-// 	public override void WriteJson(JsonWriter writer, Rect rect, JsonSerializer serializer)
-// 	{
-// 		writer.WriteValue($"{rect.x} {rect.y} {rect.width} {rect.height}");
-// 	}
-// }
 
 public struct Rect : IEquatable<Rect>
 {
@@ -286,8 +267,8 @@ public struct Rect : IEquatable<Rect>
 
 	#region Thirdparty
 
-	public static implicit operator Rectangle(Rect rect) => new((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
-	public static implicit operator Rect(Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
+	public static implicit operator global::System.Drawing.Rectangle(Rect rect) => new((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	public static implicit operator Rect(global::System.Drawing.Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 
 	#endregion Thirdparty
 

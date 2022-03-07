@@ -1167,131 +1167,131 @@ public class Batch2D
 
 	#region Text
 
-	public void Text(SpriteFont font, string text, Color color)
-	{
-		Text(font, text.AsSpan(), color);
-	}
+	// public void Text(Font font, string text, Color color)
+	// {
+	// 	Text(font, text.AsSpan(), color);
+	// }
 
-	public void Text(SpriteFont font, ReadOnlySpan<char> text, Color color)
-	{
-		var position = new Vector2(0, font.ascent);
+	// public void Text(Font font, ReadOnlySpan<char> text, Color color)
+	// {
+	// 	var position = new Vector2(0, font.ascent);
 
-		for (int i = 0; i < text.Length; i++)
-		{
-			if (text[i] == '\n')
-			{
-				position.x = 0;
-				position.y += font.lineHeight;
-				continue;
-			}
+	// 	for (int i = 0; i < text.Length; i++)
+	// 	{
+	// 		if (text[i] == '\n')
+	// 		{
+	// 			position.x = 0;
+	// 			position.y += font.lineHeight;
+	// 			continue;
+	// 		}
 
-			if (!font.charset.TryGetValue(text[i], out var ch))
-				continue;
+	// 		if (!font.charset.TryGetValue(text[i], out var ch))
+	// 			continue;
 
-			if (ch.image is not null)
-			{
-				var at = position + ch.offset;
+	// 		if (ch.image is not null)
+	// 		{
+	// 			var at = position + ch.offset;
 
-				if (i < text.Length - 1 && text[i + 1] != '\n')
-				{
-					if (ch.kerning.TryGetValue(text[i + 1], out float kerning))
-						at.x += kerning;
-				}
+	// 			if (i < text.Length - 1 && text[i + 1] != '\n')
+	// 			{
+	// 				if (ch.kerning.TryGetValue(text[i + 1], out float kerning))
+	// 					at.x += kerning;
+	// 			}
 
-				Image(ch.image, at, color, true);
-			}
+	// 			Image(ch.image, at, color, true);
+	// 		}
 
-			position.x += ch.advance;
-		}
-	}
+	// 		position.x += ch.advance;
+	// 	}
+	// }
 
-	public void Text(SpriteFont font, string text, Vector2 position, Color color)
-	{
-		PushMatrix(position);
-		Text(font, text.AsSpan(), color);
-		PopMatrix();
-	}
+	// public void Text(SpriteFont font, string text, Vector2 position, Color color)
+	// {
+	// 	PushMatrix(position);
+	// 	Text(font, text.AsSpan(), color);
+	// 	PopMatrix();
+	// }
 
-	public void Text(SpriteFont font, ReadOnlySpan<char> text, Vector2 position, Color color)
-	{
-		PushMatrix(position);
-		Text(font, text, color);
-		PopMatrix();
-	}
+	// public void Text(SpriteFont font, ReadOnlySpan<char> text, Vector2 position, Color color)
+	// {
+	// 	PushMatrix(position);
+	// 	Text(font, text, color);
+	// 	PopMatrix();
+	// }
 
-	public void Text(SpriteFont font, string text, Vector2 position, Vector2 scale, Vector2 origin, float rotation, Color color)
-	{
-		PushMatrix(position, scale, origin, rotation);
-		Text(font, text.AsSpan(), color);
-		PopMatrix();
-	}
+	// public void Text(SpriteFont font, string text, Vector2 position, Vector2 scale, Vector2 origin, float rotation, Color color)
+	// {
+	// 	PushMatrix(position, scale, origin, rotation);
+	// 	Text(font, text.AsSpan(), color);
+	// 	PopMatrix();
+	// }
 
-	public void Text(SpriteFont font, ReadOnlySpan<char> text, Vector2 position, Vector2 scale, Vector2 origin, float rotation, Color color)
-	{
-		PushMatrix(position, scale, origin, rotation);
-		Text(font, text, color);
-		PopMatrix();
-	}
+	// public void Text(SpriteFont font, ReadOnlySpan<char> text, Vector2 position, Vector2 scale, Vector2 origin, float rotation, Color color)
+	// {
+	// 	PushMatrix(position, scale, origin, rotation);
+	// 	Text(font, text, color);
+	// 	PopMatrix();
+	// }
 
-	/// <summary>
-	/// Draw text on the baseline, scaled to match `size`.
-	/// For example: if the font was loaded at 10pt, and you set `size = 20`, the text will be scaled x2.
-	/// </summary>
-	public void Text(SpriteFont font, ReadOnlySpan<char> text, Vector2 position, int size, float rotation, Color color)
-	{
-		float s = size / (float)font.size;
-		var scale = new Vector2(s, s);
-		var origin = new Vector2(0f, font.ascent);
-		PushMatrix(position, scale, origin, rotation);
-		Text(font, text, color);
-		PopMatrix();
-	}
+	// /// <summary>
+	// /// Draw text on the baseline, scaled to match `size`.
+	// /// For example: if the font was loaded at 10pt, and you set `size = 20`, the text will be scaled x2.
+	// /// </summary>
+	// public void Text(SpriteFont font, ReadOnlySpan<char> text, Vector2 position, int size, float rotation, Color color)
+	// {
+	// 	float s = size / (float)font.size;
+	// 	var scale = new Vector2(s, s);
+	// 	var origin = new Vector2(0f, font.ascent);
+	// 	PushMatrix(position, scale, origin, rotation);
+	// 	Text(font, text, color);
+	// 	PopMatrix();
+	// }
 
-	/// <summary>
-	/// Draw text on the baseline, scaled to match `size`.
-	/// For example: if the font was loaded at 10pt, and you set `size = 20`, the text will be scaled x2.
-	/// </summary>
-	public void Text(SpriteFont font, string text, Vector2 position, int size, float rotation, Color color)
-	{
-		float s = size / (float)font.size;
-		var scale = new Vector2(s, s);
-		var origin = new Vector2(0f, font.ascent);
-		PushMatrix(position, scale, origin, rotation);
-		Text(font, text.AsSpan(), color);
-		PopMatrix();
-	}
+	// /// <summary>
+	// /// Draw text on the baseline, scaled to match `size`.
+	// /// For example: if the font was loaded at 10pt, and you set `size = 20`, the text will be scaled x2.
+	// /// </summary>
+	// public void Text(SpriteFont font, string text, Vector2 position, int size, float rotation, Color color)
+	// {
+	// 	float s = size / (float)font.size;
+	// 	var scale = new Vector2(s, s);
+	// 	var origin = new Vector2(0f, font.ascent);
+	// 	PushMatrix(position, scale, origin, rotation);
+	// 	Text(font, text.AsSpan(), color);
+	// 	PopMatrix();
+	// }
 
-	/// <summary>
-	/// Draws the text scaled to fit into the provided rectangle, never exceeding the max font size.
-	/// </summary>
-	public void TextFitted(SpriteFont font, string text, in Rect rect, float maxSize, Color color)
-	{
-		var textSpan = text.AsSpan();
-		var size = font.SizeOf(textSpan);
-		var sx = rect.width / size.x;
-		var sy = rect.height / font.size;
-		var scale = Math.Min(maxSize / font.size, Math.Min(sx, sy));
-		var pos = rect.size * 0.5f - size * scale * 0.5f;
-		PushMatrix(Matrix3x2.CreateScale(scale) * Matrix3x2.CreateTranslation(pos));
-		Text(font, textSpan, color);
-		PopMatrix();
-	}
+	// /// <summary>
+	// /// Draws the text scaled to fit into the provided rectangle, never exceeding the max font size.
+	// /// </summary>
+	// public void TextFitted(SpriteFont font, string text, in Rect rect, float maxSize, Color color)
+	// {
+	// 	var textSpan = text.AsSpan();
+	// 	var size = font.SizeOf(textSpan);
+	// 	var sx = rect.width / size.x;
+	// 	var sy = rect.height / font.size;
+	// 	var scale = Math.Min(maxSize / font.size, Math.Min(sx, sy));
+	// 	var pos = rect.size * 0.5f - size * scale * 0.5f;
+	// 	PushMatrix(Matrix3x2.CreateScale(scale) * Matrix3x2.CreateTranslation(pos));
+	// 	Text(font, textSpan, color);
+	// 	PopMatrix();
+	// }
 
-	/// <summary>
-	/// Draws the text scaled to fit into the provided rectangle.
-	/// </summary>
-	public void TextFitted(SpriteFont font, string text, in Rect rect, Color color)
-	{
-		var textSpan = text.AsSpan();
-		var size = font.SizeOf(textSpan);
-		var sx = rect.width / size.x;
-		var sy = rect.height / font.size;
-		var scale = Math.Min(sx, sy);
-		var pos = rect.size * 0.5f - size * scale * 0.5f;
-		PushMatrix(Matrix3x2.CreateScale(scale) * Matrix3x2.CreateTranslation(pos));
-		Text(font, textSpan, color);
-		PopMatrix();
-	}
+	// /// <summary>
+	// /// Draws the text scaled to fit into the provided rectangle.
+	// /// </summary>
+	// public void TextFitted(SpriteFont font, string text, in Rect rect, Color color)
+	// {
+	// 	var textSpan = text.AsSpan();
+	// 	var size = font.SizeOf(textSpan);
+	// 	var sx = rect.width / size.x;
+	// 	var sy = rect.height / font.size;
+	// 	var scale = Math.Min(sx, sy);
+	// 	var pos = rect.size * 0.5f - size * scale * 0.5f;
+	// 	PushMatrix(Matrix3x2.CreateScale(scale) * Matrix3x2.CreateTranslation(pos));
+	// 	Text(font, textSpan, color);
+	// 	PopMatrix();
+	// }
 
 	#endregion
 

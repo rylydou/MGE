@@ -172,13 +172,15 @@ namespace MGE.OpenGL
 
 		public static void TexImage2D(GLEnum target, int level, GLEnum internalFormat, int width, int height, int border, GLEnum format, GLEnum type, IntPtr data) => bindings.glTexImage2D(target, level, internalFormat, width, height, border, format, type, data);
 
-		public static void FramebufferRenderbuffer(GLEnum target​, GLEnum attachment​, GLEnum renderbuffertarget​, uint renderbuffer) => bindings.glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
+		public static void TexSubImage2D(GLEnum target, Int32 level, Int32 xoffset, Int32 yoffset, Int32 width, Int32 height, GLEnum format, GLEnum type, IntPtr pixels) => bindings.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+
+		public static void FramebufferRenderbuffer(GLEnum target, GLEnum attachment, GLEnum renderbuffertarget, uint renderbuffer) => bindings.glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
 
 		public static void FramebufferTexture2D(GLEnum target, GLEnum attachment, GLEnum textarget, uint texture, int level) => bindings.glFramebufferTexture2D(target, attachment, textarget, texture, level);
 
 		public static void TexParameteri(GLEnum target, GLEnum name, int param) => bindings.glTexParameteri(target, name, param);
 
-		public static void RenderbufferStorage(GLEnum target​, GLEnum internalformat​, int width​, int height​) => bindings.glRenderbufferStorage(target, internalformat, width, height);
+		public static void RenderbufferStorage(GLEnum target, GLEnum internalformat, int width, int height) => bindings.glRenderbufferStorage(target, internalformat, width, height);
 
 		public static void GetTexImage(GLEnum target, int level, GLEnum format, GLEnum type, IntPtr data) => bindings.glGetTexImage(target, level, format, type, data);
 

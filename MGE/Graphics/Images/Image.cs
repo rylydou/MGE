@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using StbImageSharp;
 using StbImageWriteSharp;
 
@@ -58,7 +56,7 @@ public static class Image
 
 		width = result.Width;
 		height = result.Height;
-		pixels = result.Data.ToRGBA();
+		pixels = result.Data.ToColorsFromRGBA();
 
 		return true;
 	}

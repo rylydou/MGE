@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Buffers;
-using System.Threading;
-using MGE;
+using System.Runtime.InteropServices;
 
 namespace MGE.OpenGL
 {
 	internal class GL_Texture : Texture.Platform
 	{
-
 		public uint ID { get; set; }
 
 		readonly GL_Graphics graphics;
@@ -168,6 +166,38 @@ namespace MGE.OpenGL
 				GL.BindTexture(GLEnum.TEXTURE_2D, id);
 				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_S, (int)s);
 				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_T, (int)t);
+			}
+		}
+
+		protected override void SetData<T>(RectInt rect, T[] pixels) where T : struct
+		{
+			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
+			{
+				lock (graphics.BackgroundContext)
+				{
+					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+
+					Upload();
+					GL.Flush();
+
+					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				}
+			}
+			else
+			{
+				Upload();
+			}
+
+			void Upload()
+			{
+				var handle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
+				var pointer = handle.AddrOfPinnedObject();
+
+				GL.ActiveTexture((uint)GLEnum.TEXTURE0);
+				GL.BindTexture(GLEnum.TEXTURE_2D, ID);
+				GL.TexSubImage2D(GLEnum.TEXTURE_2D, 0, rect.x, rect.y, rect.width, rect.height, glFormat, glType, pointer);
+
+				handle.Free();
 			}
 		}
 

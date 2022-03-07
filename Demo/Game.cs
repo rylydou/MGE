@@ -7,7 +7,7 @@ public class Game : Module
 	public readonly Batch2D batch = new Batch2D();
 	public Vector2 position;
 
-	SpriteFont? _spriteFont;
+	Font? _font;
 
 	Texture? _sprite;
 
@@ -19,10 +19,12 @@ public class Game : Module
 
 		// Load Content
 		_sprite = App.content.Get<Texture>("Tree.png");
-		_spriteFont = App.content.Get<SpriteFont>("Fonts/Inter/Regular.ttf");
+		_font = App.content.Get<Font>("Fonts/Inter/Regular.ttf");
 
 		App.window.SetAspectRatio(new(320, 180));
 		App.window.SetMinSize(new(320, 180));
+
+		App.window.Center();
 	}
 
 	// This is called when the Application is shutting down, or when the Module is removed
@@ -68,7 +70,7 @@ public class Game : Module
 		// Draw a rectangle
 		batch.Image(_sprite!, position, Color.white);
 
-		batch.Text(_spriteFont!, $"{Time.fps}fps ({Time.rawDelta:F4}ms)", window.renderMouse + new Vector2(0, -18), Color.white);
+		_font!.DrawString(batch, $"{Time.fps}fps ({Time.rawDelta:F4}ms)", window.renderMouse + new Vector2(0, -18), Color.white);
 
 		// Clear the Window
 		// App.graphics.Clear(window, Color.black);

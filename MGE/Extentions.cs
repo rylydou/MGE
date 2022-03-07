@@ -22,7 +22,7 @@ static class Extentions
 		return data;
 	}
 
-	public static Color[] ToRGBA(this byte[] data)
+	public static Color[] ToColorsFromRGBA(this byte[] data)
 	{
 		var dataLength = data.Length / 4;
 		var pixels = new Color[dataLength];

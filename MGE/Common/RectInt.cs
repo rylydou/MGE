@@ -2,24 +2,6 @@ using System;
 
 namespace MGE;
 
-// public class RectIntJsonConverter : JsonConverter<RectInt>
-// {
-// 	public override RectInt ReadJson(JsonReader reader, Type objectType, RectInt existingValue, bool hasExistingValue, JsonSerializer serializer)
-// 	{
-// 		var values = reader.ReadAsMultiDimensional<int>();
-
-// 		if (values.Length == 4)
-// 			return new RectInt(values[0], values[1], values[2], values[3]);
-
-// 		throw new InvalidOperationException("Invalid Rect");
-// 	}
-
-// 	public override void WriteJson(JsonWriter writer, RectInt rect, JsonSerializer serializer)
-// 	{
-// 		writer.WriteValue($"{rect.x} {rect.y} {rect.width} {rect.height}");
-// 	}
-// }
-
 public struct RectInt : IEquatable<RectInt>
 {
 	#region Static
@@ -273,8 +255,8 @@ public struct RectInt : IEquatable<RectInt>
 
 	#region Thirdparty
 
-	// public static implicit operator System.Drawing.Rectangle(RectInt rect) => new(rect.x, rect.y, rect.width, rect.height);
-	// public static implicit operator RectInt(System.Drawing.Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
+	public static implicit operator global::System.Drawing.Rectangle(RectInt rect) => new(rect.x, rect.y, rect.width, rect.height);
+	public static implicit operator RectInt(global::System.Drawing.Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 
 	#endregion Thirdparty
 

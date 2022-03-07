@@ -89,6 +89,7 @@ public class Texture : IDisposable
 		protected internal abstract void Resize(int width, int height);
 		protected internal abstract void SetFilter(TextureFilter filter);
 		protected internal abstract void SetWrap(TextureWrap x, TextureWrap y);
+		protected internal abstract void SetData<T>(RectInt rect, T[] pixels) where T : struct;
 		protected internal abstract void SetData<T>(ReadOnlyMemory<T> buffer);
 		protected internal abstract void GetData<T>(Memory<T> buffer);
 		protected internal abstract bool IsFrameBuffer();
@@ -231,6 +232,11 @@ public class Texture : IDisposable
 	/// Writes the Texture Color data to the given buffer
 	/// </summary>
 	public void GetColor(Memory<Color> buffer) => GetData<Color>(buffer);
+
+	public void SetData<T>(RectInt rect, T[] pixles) where T : struct
+	{
+		implementation.SetData<T>(rect, pixles);
+	}
 
 	/// <summary>
 	/// Sets the Texture data from the given buffer

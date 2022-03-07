@@ -342,4 +342,7 @@ public struct Color : IEquatable<Color>
 	static public implicit operator Vector4(Color col) => col.ToVector4();
 
 	static public implicit operator Vector3(Color col) => col.ToVector3();
+
+	public static implicit operator global::System.Drawing.Color(Color color) => global::System.Drawing.Color.FromArgb(color.a, color.r, color.g, color.b);
+	public static implicit operator Color(global::System.Drawing.Color color) => new(color.R, color.G, color.B, color.A);
 }

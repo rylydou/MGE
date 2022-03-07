@@ -2,24 +2,6 @@ using System;
 
 namespace MGE;
 
-// public class Vector2IntJsonConverter : JsonConverter<Vector2Int>
-// {
-// 	public override Vector2Int ReadJson(JsonReader reader, Type objectType, Vector2Int existingValue, bool hasExistingValue, JsonSerializer serializer)
-// 	{
-// 		var values = reader.ReadAsMultiDimensional<int>();
-
-// 		if (values.Length == 2)
-// 			return new Vector2(values[0], values[1]);
-
-// 		throw new InvalidOperationException("Invalid Vector2Int");
-// 	}
-
-// 	public override void WriteJson(JsonWriter writer, Vector2Int vector, JsonSerializer serializer)
-// 	{
-// 		writer.WriteValue($"{vector.x} {vector.y}");
-// 	}
-// }
-
 [Serializable]
 public struct Vector2Int : IEquatable<Vector2Int>
 {
@@ -159,14 +141,14 @@ public struct Vector2Int : IEquatable<Vector2Int>
 
 	public static implicit operator Vector2Int(Vector2 vector) => new((int)vector.x, (int)vector.y);
 
+	public static implicit operator global::System.Drawing.Point(Vector2Int vector) => new(vector.x, vector.y);
+	public static implicit operator Vector2Int(global::System.Drawing.Point vector) => new(vector.X, vector.Y);
+
 	public static implicit operator (int, int)(Vector2Int vector) => (vector.x, vector.y);
 	public static implicit operator Vector2Int((int, int) vector) => new(vector.Item1, vector.Item2);
 
 	// public static implicit operator OpenTK.Mathematics.Vector2i(Vector2Int vector) => new(vector.x, vector.y);
 	// public static implicit operator Vector2Int(OpenTK.Mathematics.Vector2i vector) => new(vector.X, vector.Y);
-
-	// public static implicit operator System.Drawing.Point(Vector2Int vector) => new(vector.x, vector.y);
-	// public static implicit operator Vector2Int(System.Drawing.Point vector) => new(vector.X, vector.Y);
 
 	////////////////////////////////////////////////////////////
 

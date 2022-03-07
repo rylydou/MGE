@@ -2,7 +2,6 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using SysVector2 = System.Numerics.Vector2;
 
 namespace MGE;
 
@@ -293,8 +292,8 @@ public struct Vector2 : IEquatable<Vector2>
 
 	#region Thirdparty
 
-	public static implicit operator SysVector2(Vector2 vector) => new(vector.x, vector.y);
-	public static implicit operator Vector2(SysVector2 vector) => new(vector.X, vector.Y);
+	public static implicit operator global::System.Numerics.Vector2(Vector2 vector) => new(vector.x, vector.y);
+	public static implicit operator Vector2(global::System.Numerics.Vector2 vector) => new(vector.X, vector.Y);
 
 	// public static implicit operator OpenTK.Mathematics.Vector2(Vector2 vector) => new(vector.x, vector.y);
 	// public static implicit operator Vector2(OpenTK.Mathematics.Vector2 vector) => new(vector.X, vector.Y);
