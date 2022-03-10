@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -76,6 +77,27 @@ public static class App
 	/// Reference to the Primary Window
 	/// </summary>
 	static Window? primaryWindow;
+
+	public static string shortEnvName
+	{
+		get
+		{
+			if (OperatingSystem.IsWindows()) return "win";
+			if (OperatingSystem.IsLinux()) return "linux";
+			if (OperatingSystem.IsMacOS()) return "osx";
+			return "unknown";
+		}
+	}
+
+	public static string libaryExtention
+	{
+		get
+		{
+			if (OperatingSystem.IsLinux()) return "so";
+			if (OperatingSystem.IsMacOS()) return "dylib";
+			return "dll";
+		}
+	}
 
 	/// <summary>
 	/// Starts running the Application
@@ -274,5 +296,15 @@ public static class App
 			running = false;
 			exiting = true;
 		}
+	}
+
+	internal static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+	{
+		return NativeLibrary.Load(GetLibrary(libraryName));
+	}
+
+	public static File GetLibrary(string libraryName)
+	{
+		return Folder.here.GetFile($"runtimes/{libraryName}/{App.shortEnvName}.{App.libaryExtention}");
 	}
 }

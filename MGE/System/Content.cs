@@ -13,8 +13,8 @@ public class Content : AppModule
 {
 	public delegate T Load<T>(File file, string location);
 
-	public readonly Folder contentFolder = new Folder(Environment.CurrentDirectory) / "Content";
-	public readonly Folder contentPacksFolder = Folder.data / "Content Packs";
+	public readonly Folder contentFolder;
+	public readonly Folder contentPacksFolder;
 
 	// Location to file
 	readonly Dictionary<string, File> contentIndex = new();
@@ -25,6 +25,12 @@ public class Content : AppModule
 	// Location to file
 	readonly Dictionary<string, File> unloadedAssets = new();
 
+	public Content()
+	{
+		contentFolder = Environment.GetEnvironmentVariable("MGE_CONTENT") ?? Folder.here / "Content";
+		contentPacksFolder = Folder.data / "Content Packs";
+	}
+
 	protected internal override void Startup()
 	{
 		ScanContent();
@@ -34,9 +40,9 @@ public class Content : AppModule
 
 	public void ScanContent()
 	{
-		Log.StartStopwatch("Scan content");
-
 		contentIndex.Clear();
+
+		Log.StartStopwatch("Scan content");
 
 		IndexContent(contentFolder);
 
@@ -60,10 +66,6 @@ public class Content : AppModule
 
 	public void LoadContent()
 	{
-		Log.StartStopwatch("Load content");
-
-		preloadedAssets.Clear();
-
 		foreach (var item in preloadedAssets)
 		{
 			if (item.Value is IDisposable disposable)
@@ -72,7 +74,10 @@ public class Content : AppModule
 			}
 		}
 
+		preloadedAssets.Clear();
 		unloadedAssets.Clear();
+
+		Log.StartStopwatch("Load content");
 
 		foreach (var item in contentIndex)
 		{
@@ -82,7 +87,7 @@ public class Content : AppModule
 
 			if (!loadFile.exists) continue;
 
-			var loader = loadFile.ReadObjectAsMeml<IContentLoader>();
+			var loader = loadFile.ReadMeml<IContentLoader>();
 
 			preloadedAssets.Add(item.Key, loader.Load(item.Value, item.Key));
 

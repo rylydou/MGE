@@ -30,23 +30,20 @@
 		<TargetOS>osx</TargetOS>
 	</PropertyGroup>
 
-	<!-- Copy glfw3.dll for Windows -->
 	<ItemGroup Condition="'$(TargetOS)'=='win'">
-		<None Update="glfw3.dll">
+		<None Update="runtimes/glfw3/win.dll">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 
-	<!-- Copy libSDL2 for Linux -->
 	<ItemGroup Condition="'$(TargetOS)'=='linux'">
-		<None Update="glfw3.so">
+		<None Update="runtimes/glfw3/linux.so">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 
-	<!-- Copy libglfw3.dylib for macOS -->
 	<ItemGroup Condition="'$(TargetOS)'=='osx'">
-		<None Update="libglfw3.dylib">
+		<None Update="runtimes/glfw3/osx.dylib">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

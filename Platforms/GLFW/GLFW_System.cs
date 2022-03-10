@@ -24,7 +24,6 @@ namespace MGE.GLFW
 
 			apiName = "GLFW";
 			apiVersion = new Version(major, minor, rev);
-
 		}
 
 		protected override void ApplicationStarted()

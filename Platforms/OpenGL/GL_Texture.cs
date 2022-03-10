@@ -2,270 +2,269 @@
 using System.Buffers;
 using System.Runtime.InteropServices;
 
-namespace MGE.OpenGL
+namespace MGE.OpenGL;
+
+internal class GL_Texture : Texture.Platform
 {
-	internal class GL_Texture : Texture.Platform
+	public uint ID { get; set; }
+
+	readonly GL_Graphics graphics;
+	internal bool isRenderTexture;
+
+	Texture texture;
+	GLEnum glInternalFormat;
+	GLEnum glFormat;
+	GLEnum glType;
+
+	internal GL_Texture(GL_Graphics graphics)
 	{
-		public uint ID { get; set; }
+		this.graphics = graphics;
+		texture = null!;
+	}
 
-		readonly GL_Graphics graphics;
-		internal bool isRenderTexture;
+	~GL_Texture()
+	{
+		Dispose();
+	}
 
-		Texture texture;
-		GLEnum glInternalFormat;
-		GLEnum glFormat;
-		GLEnum glType;
+	protected override bool IsFrameBuffer()
+	{
+		return isRenderTexture;
+	}
 
-		internal GL_Texture(GL_Graphics graphics)
+	protected override void Init(Texture texture)
+	{
+		this.texture = texture;
+
+		glInternalFormat = texture.format switch
 		{
-			this.graphics = graphics;
-			texture = null!;
-		}
+			TextureFormat.Red => GLEnum.RED,
+			TextureFormat.RG => GLEnum.RG,
+			TextureFormat.RGB => GLEnum.RGB,
+			TextureFormat.Color => GLEnum.RGBA,
+			TextureFormat.DepthStencil => GLEnum.DEPTH24_STENCIL8,
+			_ => throw new Exception("Invalid Texture Format"),
+		};
 
-		~GL_Texture()
+		glFormat = texture.format switch
 		{
-			Dispose();
-		}
+			TextureFormat.Red => GLEnum.RED,
+			TextureFormat.RG => GLEnum.RG,
+			TextureFormat.RGB => GLEnum.RGB,
+			TextureFormat.Color => GLEnum.RGBA,
+			TextureFormat.DepthStencil => GLEnum.DEPTH_STENCIL,
+			_ => throw new Exception("Invalid Texture Format"),
+		};
 
-		protected override bool IsFrameBuffer()
+		glType = texture.format switch
 		{
-			return isRenderTexture;
-		}
+			TextureFormat.Red => GLEnum.UNSIGNED_BYTE,
+			TextureFormat.RG => GLEnum.UNSIGNED_BYTE,
+			TextureFormat.RGB => GLEnum.UNSIGNED_BYTE,
+			TextureFormat.Color => GLEnum.UNSIGNED_BYTE,
+			TextureFormat.DepthStencil => GLEnum.UNSIGNED_INT_24_8,
+			_ => throw new Exception("Invalid Texture Format"),
+		};
 
-		protected override void Init(Texture texture)
+		Initialize();
+	}
+
+	void Initialize()
+	{
+		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 		{
-			this.texture = texture;
-
-			glInternalFormat = texture.format switch
+			lock (graphics.BackgroundContext)
 			{
-				TextureFormat.Red => GLEnum.RED,
-				TextureFormat.RG => GLEnum.RG,
-				TextureFormat.RGB => GLEnum.RGB,
-				TextureFormat.Color => GLEnum.RGBA,
-				TextureFormat.DepthStencil => GLEnum.DEPTH24_STENCIL8,
-				_ => throw new Exception("Invalid Texture Format"),
-			};
+				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
 
-			glFormat = texture.format switch
-			{
-				TextureFormat.Red => GLEnum.RED,
-				TextureFormat.RG => GLEnum.RG,
-				TextureFormat.RGB => GLEnum.RGB,
-				TextureFormat.Color => GLEnum.RGBA,
-				TextureFormat.DepthStencil => GLEnum.DEPTH_STENCIL,
-				_ => throw new Exception("Invalid Texture Format"),
-			};
-
-			glType = texture.format switch
-			{
-				TextureFormat.Red => GLEnum.UNSIGNED_BYTE,
-				TextureFormat.RG => GLEnum.UNSIGNED_BYTE,
-				TextureFormat.RGB => GLEnum.UNSIGNED_BYTE,
-				TextureFormat.Color => GLEnum.UNSIGNED_BYTE,
-				TextureFormat.DepthStencil => GLEnum.UNSIGNED_INT_24_8,
-				_ => throw new Exception("Invalid Texture Format"),
-			};
-
-			Initialize();
-		}
-
-		void Initialize()
-		{
-			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
-			{
-				lock (graphics.BackgroundContext)
-				{
-					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
-
-					Init();
-					GL.Flush();
-
-					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
-				}
-			}
-			else
-			{
 				Init();
-			}
+				GL.Flush();
 
-			void Init()
-			{
-				ID = GL.GenTexture();
-				GL.ActiveTexture((uint)GLEnum.TEXTURE0);
-				GL.BindTexture(GLEnum.TEXTURE_2D, ID);
-
-				GL.TexImage2D(GLEnum.TEXTURE_2D, 0, glInternalFormat, texture.width, texture.height, 0, glFormat, glType, new IntPtr(0));
-				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_MIN_FILTER, (int)(texture.filter == TextureFilter.Nearest ? GLEnum.NEAREST : GLEnum.LINEAR));
-				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_MAG_FILTER, (int)(texture.filter == TextureFilter.Nearest ? GLEnum.NEAREST : GLEnum.LINEAR));
-				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_S, (int)(texture.wrapX == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT));
-				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_T, (int)(texture.wrapY == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT));
+				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
 			}
 		}
-
-		protected override void Resize(int width, int height)
+		else
 		{
-			Dispose();
-			Initialize();
+			Init();
 		}
 
-		protected override void SetFilter(TextureFilter filter)
+		void Init()
 		{
-			GLEnum f = (filter == TextureFilter.Nearest ? GLEnum.NEAREST : GLEnum.LINEAR);
+			ID = GL.GenTexture();
+			GL.ActiveTexture((uint)GLEnum.TEXTURE0);
+			GL.BindTexture(GLEnum.TEXTURE_2D, ID);
 
-			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
+			GL.TexImage2D(GLEnum.TEXTURE_2D, 0, glInternalFormat, texture.width, texture.height, 0, glFormat, glType, new IntPtr(0));
+			GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_MIN_FILTER, (int)(texture.filter == TextureFilter.Nearest ? GLEnum.NEAREST : GLEnum.LINEAR));
+			GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_MAG_FILTER, (int)(texture.filter == TextureFilter.Nearest ? GLEnum.NEAREST : GLEnum.LINEAR));
+			GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_S, (int)(texture.wrapX == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT));
+			GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_T, (int)(texture.wrapY == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT));
+		}
+	}
+
+	protected override void Resize(int width, int height)
+	{
+		Dispose();
+		Initialize();
+	}
+
+	protected override void SetFilter(TextureFilter filter)
+	{
+		GLEnum f = (filter == TextureFilter.Nearest ? GLEnum.NEAREST : GLEnum.LINEAR);
+
+		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
+		{
+			lock (graphics.BackgroundContext)
 			{
-				lock (graphics.BackgroundContext)
-				{
-					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
 
-					SetFilter(ID, f);
-					GL.Flush();
-
-					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
-				}
-			}
-			else
-			{
 				SetFilter(ID, f);
-			}
+				GL.Flush();
 
-			static void SetFilter(uint id, GLEnum f)
-			{
-				GL.ActiveTexture((uint)GLEnum.TEXTURE0);
-				GL.BindTexture(GLEnum.TEXTURE_2D, id);
-				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_MIN_FILTER, (int)f);
-				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_MAG_FILTER, (int)f);
+				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
 			}
 		}
-
-		protected override void SetWrap(TextureWrap x, TextureWrap y)
+		else
 		{
-			GLEnum s = (x == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT);
-			GLEnum t = (y == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT);
+			SetFilter(ID, f);
+		}
 
-			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
+		static void SetFilter(uint id, GLEnum f)
+		{
+			GL.ActiveTexture((uint)GLEnum.TEXTURE0);
+			GL.BindTexture(GLEnum.TEXTURE_2D, id);
+			GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_MIN_FILTER, (int)f);
+			GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_MAG_FILTER, (int)f);
+		}
+	}
+
+	protected override void SetWrap(TextureWrap x, TextureWrap y)
+	{
+		GLEnum s = (x == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT);
+		GLEnum t = (y == TextureWrap.Clamp ? GLEnum.CLAMP_TO_EDGE : GLEnum.REPEAT);
+
+		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
+		{
+			lock (graphics.BackgroundContext)
 			{
-				lock (graphics.BackgroundContext)
-				{
-					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
 
-					SetFilter(ID, s, t);
-					GL.Flush();
-
-					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
-				}
-			}
-			else
-			{
 				SetFilter(ID, s, t);
-			}
+				GL.Flush();
 
-			static void SetFilter(uint id, GLEnum s, GLEnum t)
-			{
-				GL.ActiveTexture((uint)GLEnum.TEXTURE0);
-				GL.BindTexture(GLEnum.TEXTURE_2D, id);
-				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_S, (int)s);
-				GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_T, (int)t);
+				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
 			}
 		}
-
-		protected override void SetData<T>(RectInt rect, T[] pixels) where T : struct
+		else
 		{
-			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
-			{
-				lock (graphics.BackgroundContext)
-				{
-					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+			SetFilter(ID, s, t);
+		}
 
-					Upload();
-					GL.Flush();
+		static void SetFilter(uint id, GLEnum s, GLEnum t)
+		{
+			GL.ActiveTexture((uint)GLEnum.TEXTURE0);
+			GL.BindTexture(GLEnum.TEXTURE_2D, id);
+			GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_S, (int)s);
+			GL.TexParameteri(GLEnum.TEXTURE_2D, GLEnum.TEXTURE_WRAP_T, (int)t);
+		}
+	}
 
-					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
-				}
-			}
-			else
+	protected override void SetData<T>(RectInt rect, T[] pixels) where T : struct
+	{
+		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
+		{
+			lock (graphics.BackgroundContext)
 			{
+				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+
 				Upload();
-			}
+				GL.Flush();
 
-			void Upload()
-			{
-				var handle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
-				var pointer = handle.AddrOfPinnedObject();
-
-				GL.ActiveTexture((uint)GLEnum.TEXTURE0);
-				GL.BindTexture(GLEnum.TEXTURE_2D, ID);
-				GL.TexSubImage2D(GLEnum.TEXTURE_2D, 0, rect.x, rect.y, rect.width, rect.height, glFormat, glType, pointer);
-
-				handle.Free();
+				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
 			}
 		}
-
-		protected override unsafe void SetData<T>(ReadOnlyMemory<T> buffer)
+		else
 		{
-			using MemoryHandle handle = buffer.Pin();
+			Upload();
+		}
 
-			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
+		void Upload()
+		{
+			var handle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
+			var pointer = handle.AddrOfPinnedObject();
+
+			GL.ActiveTexture((uint)GLEnum.TEXTURE0);
+			GL.BindTexture(GLEnum.TEXTURE_2D, ID);
+			GL.TexSubImage2D(GLEnum.TEXTURE_2D, 0, rect.x, rect.y, rect.width, rect.height, glFormat, glType, pointer);
+
+			handle.Free();
+		}
+	}
+
+	protected override unsafe void SetData<T>(ReadOnlyMemory<T> buffer)
+	{
+		using MemoryHandle handle = buffer.Pin();
+
+		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
+		{
+			lock (graphics.BackgroundContext)
 			{
-				lock (graphics.BackgroundContext)
-				{
-					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
 
-					Upload();
-					GL.Flush();
-
-					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
-				}
-			}
-			else
-			{
 				Upload();
-			}
+				GL.Flush();
 
-			void Upload()
-			{
-				GL.ActiveTexture((uint)GLEnum.TEXTURE0);
-				GL.BindTexture(GLEnum.TEXTURE_2D, ID);
-				GL.TexImage2D(GLEnum.TEXTURE_2D, 0, glInternalFormat, texture.width, texture.height, 0, glFormat, glType, new IntPtr(handle.Pointer));
+				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
 			}
 		}
-
-		protected override unsafe void GetData<T>(Memory<T> buffer)
+		else
 		{
-			using var handle = buffer.Pin();
+			Upload();
+		}
 
-			if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
+		void Upload()
+		{
+			GL.ActiveTexture((uint)GLEnum.TEXTURE0);
+			GL.BindTexture(GLEnum.TEXTURE_2D, ID);
+			GL.TexImage2D(GLEnum.TEXTURE_2D, 0, glInternalFormat, texture.width, texture.height, 0, glFormat, glType, new IntPtr(handle.Pointer));
+		}
+	}
+
+	protected override unsafe void GetData<T>(Memory<T> buffer)
+	{
+		using var handle = buffer.Pin();
+
+		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
+		{
+			lock (graphics.BackgroundContext)
 			{
-				lock (graphics.BackgroundContext)
-				{
-					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
 
-					Download();
-					GL.Flush();
-
-					graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
-				}
-			}
-			else
-			{
 				Download();
-			}
+				GL.Flush();
 
-			void Download()
-			{
-				GL.ActiveTexture((uint)GLEnum.TEXTURE0);
-				GL.BindTexture(GLEnum.TEXTURE_2D, ID);
-				GL.GetTexImage(GLEnum.TEXTURE_2D, 0, glInternalFormat, glType, new IntPtr(handle.Pointer));
+				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
 			}
 		}
-
-		protected override void Dispose()
+		else
 		{
-			if (ID != 0)
-			{
-				graphics.TexturesToDelete.Add(ID);
-				ID = 0;
-			}
+			Download();
+		}
+
+		void Download()
+		{
+			GL.ActiveTexture((uint)GLEnum.TEXTURE0);
+			GL.BindTexture(GLEnum.TEXTURE_2D, ID);
+			GL.GetTexImage(GLEnum.TEXTURE_2D, 0, glInternalFormat, glType, new IntPtr(handle.Pointer));
+		}
+	}
+
+	protected override void Dispose()
+	{
+		if (ID != 0)
+		{
+			graphics.TexturesToDelete.Add(ID);
+			ID = 0;
 		}
 	}
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace MGE;
@@ -29,6 +31,8 @@ public class ModuleList : IEnumerable<Module>
 	/// </summary>
 	public void Register(Type type)
 	{
+		NativeLibrary.SetDllImportResolver(Assembly.GetAssembly(type)!, App.DllImportResolver);
+
 		if (immediateInit)
 		{
 			var module = Instantiate(type);

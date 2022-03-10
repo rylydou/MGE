@@ -1,4 +1,8 @@
-﻿using Demo;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using Demo;
 using MGE;
 using MGE.GLFW;
 using MGE.OpenGL;

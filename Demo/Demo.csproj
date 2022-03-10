@@ -6,10 +6,9 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<!-- <AnalysisLevel>latest-Recommended</AnalysisLevel> -->
 
-		<RootNamespace>Demo</RootNamespace>
-
-		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<ImplicitUsings>false</ImplicitUsings>
+		<!-- <AllowUnsafeBlocks>true</AllowUnsafeBlocks> -->
 
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
@@ -20,6 +19,7 @@
 		<ProjectReference Include="../MGE/MGE.csproj" />
 		<ProjectReference Include="../Platforms/GLFW/MGE.GLFW.csproj" />
 		<ProjectReference Include="../Platforms/OpenGL/MGE.OpenGL.csproj" />
+		<ProjectReference Include="../Platforms/OpenAL/MGE.OpenAL.csproj" />
 	</ItemGroup>
 
 </Project>
