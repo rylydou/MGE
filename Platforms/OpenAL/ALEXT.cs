@@ -35,7 +35,7 @@ namespace MGE.OpenAL;
 
 public static class ALEXT
 {
-	private const string nativeLibName = "openal";
+	private const string nativeLibName = "OpenAL";
 
 	/* TODO: All OpenAL Soft extensions! Complete as needed. */
 

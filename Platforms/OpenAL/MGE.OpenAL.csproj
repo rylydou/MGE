@@ -34,19 +34,19 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetOS)'=='win'">
-		<None Update="runtimes/openal/win.dll">
+		<None Update="Runtimes/OpenAL/win.dll">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetOS)'=='lunix'">
-		<None Update="runtimes/openal/linux.so">
+		<None Update="Runtimes/OpenAL/linux.so">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetOS)'=='osx'">
-		<None Update="runtimes/openal/osx.dylib">
+		<None Update="Runtimes/OpenAL/osx.dylib">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

@@ -91,7 +91,7 @@ public class Content : AppModule
 
 			preloadedAssets.Add(item.Key, loader.Load(item.Value, item.Key));
 
-			Log.Info($"Loaded {item.Key,-42} with {loader.GetType().FullName}");
+			Log.Info($"Loaded {item.Key,-42} ({loader.GetType().FullName})");
 		}
 
 		Log.EndStopwatch();

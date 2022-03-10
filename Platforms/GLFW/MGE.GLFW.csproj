@@ -31,19 +31,19 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetOS)'=='win'">
-		<None Update="runtimes/glfw3/win.dll">
+		<None Update="Runtimes/GLFW/win.dll">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetOS)'=='linux'">
-		<None Update="runtimes/glfw3/linux.so">
+		<None Update="Runtimes/GLFW/linux.so">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetOS)'=='osx'">
-		<None Update="runtimes/glfw3/osx.dylib">
+		<None Update="Runtimes/GLFW/osx.dylib">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

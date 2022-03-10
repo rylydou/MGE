@@ -72,13 +72,14 @@ public struct Folder : IEquatable<Folder>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static string CleanPath(string path)
 	{
-		return path.Replace('\\', '/');
-		// path = path.Replace('\\', '/');
+		// return path.Replace('\\', '/');
+		path = path.Replace('\\', '/');
 		// var startsWithSlash = path.StartsWith('/');
-		// var endsWithSlash = path.EndsWith('/');
-		// var start = startsWithSlash ? 1 : 0;
-		// var length = path.Length - (startsWithSlash ? 1 : 0) - (endsWithSlash ? 1 : 0);
-		// return path.Substring(start, length);
+		var startsWithSlash = false;
+		var endsWithSlash = path.EndsWith('/');
+		var start = startsWithSlash ? 1 : 0;
+		var length = path.Length - (startsWithSlash ? 1 : 0) - (endsWithSlash ? 1 : 0);
+		return path.Substring(start, length);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

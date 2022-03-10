@@ -51,14 +51,14 @@ public static class Log
 	const int STD_OUTPUT_HANDLE = -11;
 	const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
 
-	[DllImport("kernel32.dll")]
-	static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+	// [DllImport("kernel32.dll")]
+	// static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
 
-	[DllImport("kernel32.dll")]
-	static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+	// [DllImport("kernel32.dll")]
+	// static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
-	[DllImport("kernel32.dll", SetLastError = true)]
-	static extern IntPtr GetStdHandle(int nStdHandle);
+	// [DllImport("kernel32.dll", SetLastError = true)]
+	// static extern IntPtr GetStdHandle(int nStdHandle);
 
 	static readonly StringBuilder _log;
 	static readonly LogAttribute[] _logAttributes;
@@ -81,16 +81,18 @@ public static class Log
 			new LogAttribute { name = "TRACE ", color = LogColor.GRAY }
 		};
 
-		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-		{
-			var stdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+		// if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+		// {
+		// 	var stdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
-			_colorEnabled = GetConsoleMode(stdOut, out var outConsoleMode) && SetConsoleMode(stdOut, outConsoleMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
-		}
-		else
-		{
-			_colorEnabled = true;
-		}
+		// 	_colorEnabled = GetConsoleMode(stdOut, out var outConsoleMode) && SetConsoleMode(stdOut, outConsoleMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+		// }
+		// else
+		// {
+		// 	_colorEnabled = true;
+		// }
+
+		_colorEnabled = true;
 
 		Log.System($"Logging Enabled ({Enum.GetName(typeof(LogLevel), verbosity)})" + (_colorEnabled ? " with color" : ""));
 	}

@@ -35,7 +35,7 @@ namespace MGE.OpenAL;
 
 public static class EFX
 {
-	private const string nativeLibName = "openal";
+	private const string nativeLibName = "OpenAL";
 
 	/* typedef int ALenum; */
 	public const int AL_METERS_PER_UNIT = 0x20004;

@@ -35,7 +35,7 @@ namespace MGE.OpenAL;
 
 public static class AL10
 {
-	private const string nativeLibName = "openal";
+	private const string nativeLibName = "OpenAL";
 
 	/* typedef int ALenum; */
 	public const int AL_NONE = 0x0000;
