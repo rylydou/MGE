@@ -17,7 +17,6 @@
 		<ProjectReference Include="../../MGE/MGE.csproj" />
 	</ItemGroup>
 
-	<!-- Determine OS Platform -->
 	<PropertyGroup Condition="($([MSBuild]::IsOsPlatform(Windows)) and '$(RuntimeIdentifier)'=='') or '$(RuntimeIdentifier)'=='win-x64'">
 		<TargetOS>win</TargetOS>
 	</PropertyGroup>

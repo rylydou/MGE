@@ -1,3 +1,4 @@
+using System;
 using MGE;
 
 namespace Demo;
@@ -10,6 +11,7 @@ public class Game : Module
 	Font? _font;
 
 	Texture? _sprite;
+	SoundEffect? _soundEffect;
 
 	// This is called when the Application has Started
 	protected override void Startup()
@@ -19,7 +21,10 @@ public class Game : Module
 
 		// Load Content
 		_sprite = App.content.Get<Texture>("Tree.png");
-		_font = App.content.Get<Font>("Fonts/Inter/Regular.ttf");
+		// _font = App.content.Get<Font>("Fonts/Inter/Regular.ttf");
+		_font = App.content.Get<Font>("Fonts/Kenney Future/Regular.ttf");
+
+		_soundEffect = new SoundEffect(App.audio, new Folder(Environment.CurrentDirectory).GetFile("Sound.wav").OpenRead());
 
 		App.window.SetAspectRatio(new(320, 180));
 		App.window.SetMinSize(new(320, 180));
@@ -58,6 +63,11 @@ public class Game : Module
 
 		// Set the position
 		position += input.normalized * 128 * Time.delta;
+
+		if (kb.Pressed(Keys.Space))
+		{
+			_soundEffect!.Play(Random.Shared.NextSingle(), Random.Shared.NextSingle() * 2 - 1, Random.Shared.NextSingle() * 2 - 1);
+		}
 	}
 
 	void Render(Window window)

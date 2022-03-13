@@ -61,10 +61,7 @@ public static class ALC10
 
 	/* IntPtr refers to an ALCcontext*, device to an ALCdevice* */
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-	public static extern IntPtr alcCreateContext(
-		IntPtr device,
-		int[] attrList
-	);
+	public static extern IntPtr alcCreateContext(IntPtr device, int[] attrList);
 
 	/* context refers to an ALCcontext* */
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
@@ -84,10 +81,7 @@ public static class ALC10
 
 	/* IntPtr refers to an ALCdevice* */
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-	public static extern IntPtr alcOpenDevice(
-		[In()] [MarshalAs(UnmanagedType.LPStr)]
-				string devicename
-	);
+	public static extern IntPtr alcOpenDevice([In()][MarshalAs(UnmanagedType.LPStr)] string devicename);
 
 	/* device refers to an ALCdevice* */
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
@@ -95,7 +89,7 @@ public static class ALC10
 
 	/* device refers to an ALCdevice* */
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-	public static extern int alcGetError(IntPtr device);
+	public static extern ALCError alcGetError(IntPtr device);
 
 	/* IntPtr refers to a function pointer, device to an ALCdevice* */
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
@@ -114,8 +108,12 @@ public static class ALC10
 	);
 
 	/* device refers to an ALCdevice* */
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-	public static extern IntPtr alcGetString(IntPtr device, int param);
+	[DllImport(nativeLibName, EntryPoint = "alcGetString", CallingConvention = CallingConvention.Cdecl)]
+	private static extern IntPtr INTERNAL_alcGetString(IntPtr device, ALCGetString param);
+	public static string alcGetString(IntPtr device, ALCGetString param)
+	{
+		return Marshal.PtrToStringAnsi(INTERNAL_alcGetString(device, param)) ?? "";
+	}
 
 	/* device refers to an ALCdevice*, size to an ALCsizei */
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]

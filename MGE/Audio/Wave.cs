@@ -35,9 +35,9 @@ public static class Wave
 	private static short ReadSample32(byte[] buffer, int index)
 	{
 		var value = buffer[index] |
-								((uint)buffer[index + 1] << 8) |
-								((uint)buffer[index + 2] << 16) |
-								((uint)buffer[index + 3] << 24);
+			((uint)buffer[index + 1] << 8) |
+			((uint)buffer[index + 2] << 16) |
+			((uint)buffer[index + 3] << 24);
 
 		var normalized = value / (double)int.MaxValue;
 		return (short)(normalized * short.MaxValue);
@@ -46,13 +46,13 @@ public static class Wave
 	private static short ReadSample64(byte[] buffer, int index)
 	{
 		var value = buffer[index] |
-								((long)buffer[index + 1] << 8) |
-								((long)buffer[index + 2] << 16) |
-								((long)buffer[index + 3] << 24) |
-								((long)buffer[index + 4] << 32) |
-								((long)buffer[index + 5] << 40) |
-								((long)buffer[index + 6] << 48) |
-								((long)buffer[index + 7] << 56);
+			((long)buffer[index + 1] << 8) |
+			((long)buffer[index + 2] << 16) |
+			((long)buffer[index + 3] << 24) |
+			((long)buffer[index + 4] << 32) |
+			((long)buffer[index + 5] << 40) |
+			((long)buffer[index + 6] << 48) |
+			((long)buffer[index + 7] << 56);
 
 		var normalized = value / (double)long.MaxValue;
 		return (short)(normalized * short.MaxValue);
@@ -69,20 +69,20 @@ public static class Wave
 	}
 
 	public static bool TryLoad(
-			Stream stream,
-			out byte[] buffer,
-			out Format format,
-			out int frequency,
-			out AudioChannel channels,
-			out int blockAlignment,
-			out int bitsPerSample,
-			out int samplesPerBlock,
-			out int sampleCount)
+		Stream stream,
+		out byte[] buffer,
+		out Format format,
+		out int frequency,
+		out AudioChannel channels,
+		out int blockAlignment,
+		out int bitsPerSample,
+		out int samplesPerBlock,
+		out int sampleCount)
 	{
 		buffer = Array.Empty<byte>();
 		format = Format.None;
 		frequency = 0;
-		channels = AudioChannel.None;
+		channels = AudioChannel.Mono;
 		blockAlignment = 0;
 		bitsPerSample = 0;
 		samplesPerBlock = 0;

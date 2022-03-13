@@ -39,7 +39,7 @@
 		</None>
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetOS)'=='lunix'">
+	<ItemGroup Condition="'$(TargetOS)'=='linux'">
 		<None Update="Runtimes/OpenAL/linux.so">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

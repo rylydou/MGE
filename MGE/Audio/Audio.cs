@@ -7,24 +7,24 @@ namespace MGE;
 /// </summary>
 public abstract class Audio : AppModule
 {
-	public string ApiName { get; protected set; } = "Unknown";
-	public Version ApiVersion { get; protected set; } = new Version(0, 0, 0);
+	public string apiName { get; protected set; } = "Unknown";
+	public Version apiVersion { get; protected set; } = new Version(0, 0, 0);
 
-	internal readonly AudioSourcePool AudioSourcePool = new AudioSourcePool();
+	public abstract int maxSoundInstances { get; }
 
-	protected internal abstract AudioSource.Platform CreateAudioSource();
+	public abstract SoundEffect.Platform CreateSoundEffect();
+	public abstract SoundEffectInstance.Platform CreateSoundEffectInstance();
 
-	protected Audio() : base(400) { }
+	protected Audio() : base(400)
+	{
+	}
 
-	/// <summary>
-	/// The Renderer this Audio Module implements
-	/// </summary> <summary>
-	///
-	/// </summary>
-	/// <value></value>t Renderer Renderer { get; }
+	protected internal override void Startup()
+	{
+		Log.System($"{apiName} {apiVersion}");
+	}
 
 	protected internal sealed override void Update()
 	{
-		AudioSourcePool.Update();
 	}
 }

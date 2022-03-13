@@ -283,7 +283,7 @@ public static class App
 		primaryWindow = null;
 		exiting = false;
 
-		Log.Info("Exited");
+		Log.System("Exited");
 	}
 
 	/// <summary>

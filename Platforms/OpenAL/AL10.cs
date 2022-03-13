@@ -124,10 +124,10 @@ public static class AL10
 	public static extern bool alIsEnabled(int capability);
 
 	[DllImport(nativeLibName, EntryPoint = "alGetString", CallingConvention = CallingConvention.Cdecl)]
-	private static extern IntPtr INTERNAL_alGetString(int param);
-	public static string alGetString(int param)
+	private static extern IntPtr INTERNAL_alGetString(ALGetString param);
+	public static string alGetString(ALGetString param)
 	{
-		return Marshal.PtrToStringAnsi(INTERNAL_alGetString(param))!;
+		return Marshal.PtrToStringAnsi(INTERNAL_alGetString(param)) ?? "";
 	}
 
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
@@ -155,7 +155,7 @@ public static class AL10
 	public static extern double alGetDouble(int param);
 
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-	public static extern int alGetError();
+	public static extern ALError alGetError();
 
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 	public static extern bool alIsExtensionPresent(
@@ -278,14 +278,14 @@ public static class AL10
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 	public static extern void alSourcef(
 		uint source,
-		int param,
+		ALSourcef param,
 		float value
 	);
 
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 	public static extern void alSource3f(
 		uint source,
-		int param,
+		ALSource3f param,
 		float value1,
 		float value2,
 		float value3
@@ -301,7 +301,7 @@ public static class AL10
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 	public static extern void alSourcei(
 		uint source,
-		int param,
+		ALSourcei param,
 		int value
 	);
 
@@ -347,7 +347,7 @@ public static class AL10
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 	public static extern void alGetSourcei(
 		uint source,
-		int param,
+		ALGetSourcei param,
 		out int value
 	);
 
@@ -462,7 +462,7 @@ public static class AL10
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 	public static extern void alBufferData(
 		uint buffer,
-		int format,
+		ALFormat format,
 		IntPtr data,
 		int size,
 		int freq
@@ -472,7 +472,7 @@ public static class AL10
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 	public static extern void alBufferData(
 		uint buffer,
-		int format,
+		ALFormat format,
 		byte[] data,
 		int size,
 		int freq
@@ -482,7 +482,7 @@ public static class AL10
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 	public static extern void alBufferData(
 		uint buffer,
-		int format,
+		ALFormat format,
 		short[] data,
 		int size,
 		int freq
@@ -492,7 +492,7 @@ public static class AL10
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 	public static extern void alBufferData(
 		uint buffer,
-		int format,
+		ALFormat format,
 		float[] data,
 		int size,
 		int freq
@@ -524,7 +524,7 @@ public static class AL10
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 	public static extern void alBufferi(
 		uint buffer,
-		int param,
+		ALBufferi param,
 		int value
 	);
 

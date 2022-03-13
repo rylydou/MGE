@@ -1,10 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using Demo;
+﻿using Demo;
 using MGE;
 using MGE.GLFW;
+using MGE.OpenAL;
 using MGE.OpenGL;
 
 // System Module (this is Mandatory)
@@ -12,6 +9,9 @@ App.modules.Register<GLFW_System>();
 
 // Graphics Module (not Mandatory but required for drawing anything)
 App.modules.Register<GL_Graphics>();
+
+// Audio Module
+App.modules.Register<AL_Audio>();
 
 // Content Module
 App.modules.Register<Content>();
