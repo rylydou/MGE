@@ -59,7 +59,8 @@ public enum ALSourcef : int
 {
 	Pitch = 0x1003,
 	Gain = 0x100A,
-	ReferenceDistance = 0x1020
+	ReferenceDistance = 0x1020,
+	MaxDistance = 0x1023,
 }
 
 public enum ALGetSourcei : int

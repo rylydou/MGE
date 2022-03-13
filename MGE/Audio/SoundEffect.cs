@@ -28,14 +28,8 @@ public class SoundEffect : IDisposable
 		implementation.Dispose();
 	}
 
-	public SoundEffectInstance Play(float volume, float pitch, float pan)
+	public void Play(float volume, float pitch, float pan)
 	{
-		var sfx = new SoundEffectInstance(audio);
-		sfx.SetSoundEffect(this);
-		sfx.volume = volume;
-		sfx.pitch = pitch;
-		sfx.pan = pan;
-		sfx.Play();
-		return sfx;
+		audio.PlaySoundEffect(this, volume, pitch, pan);
 	}
 }

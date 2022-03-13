@@ -8,7 +8,7 @@ internal class AL_SoundEffect : SoundEffect.Platform
 	public readonly AL_Audio audio;
 	public SoundEffect? soundEffect;
 
-	public uint handle;
+	public int handle;
 
 	internal AL_SoundEffect(AL_Audio audio)
 	{
@@ -19,13 +19,13 @@ internal class AL_SoundEffect : SoundEffect.Platform
 	{
 		this.soundEffect = soundEffect;
 
-		AL10.alGenBuffers(1, out handle); ALHelper.CheckError("Could not generate buffer.");
+		AL.alGenBuffers(1, out handle); AL.CheckError("Failed generate buffer.");
 
-		var buffer = AudioLoader.Load(stream, out var format, out var frequency, out var channels, out var blockAlignment, out var bitsPerSample, out var samplesPerBlock, out var count);
+		var buffer = AudioLoader.Load(stream, out var format, out var frequency, out var channels, out var blockAlignment, out var bitsPerSample, out var samplesPerBlock, out var sampleCount);
+
+		soundEffect.duration = TimeSpan.FromSeconds((float)sampleCount / (float)frequency);
 
 		PlatformInitializeBuffer(buffer, buffer.Length, format, channels, frequency, blockAlignment, bitsPerSample, 0, 0);
-
-		// AL10.alBufferData(handle, (int)format, data, count, freq); ALHelper.CheckError("Could not load WAV into buffer.", format, count, freq);
 	}
 
 	private void PlatformInitializePcm(byte[] buffer, int offset, int count, int sampleBits, int sampleRate, AudioChannel channels, int loopStart, int loopLength)
@@ -149,26 +149,26 @@ internal class AL_SoundEffect : SoundEffect.Platform
 
 		if (sampleAlignment > 0)
 		{
-			AL10.alBufferi(handle, ALBufferi.UnpackBlockAlignmentSoft, sampleAlignment);
-			ALHelper.CheckError("Failed to fill buffer.");
+			AL.alBufferi(handle, ALBufferi.UnpackBlockAlignmentSoft, sampleAlignment);
+			AL.CheckError("Failed fill buffer.");
 		}
 
-		AL10.alBufferData(handle, openALFormat, dataBuffer, size, sampleRate);
-		ALHelper.CheckError("Failed to fill buffer.");
+		AL.alBufferData(handle, openALFormat, dataBuffer, size, sampleRate);
+		AL.CheckError("Failed fill buffer.");
 
 		// int bits, channels;
 		// Duration = -1;
 		// AL.GetBuffer(openALDataBuffer, ALGetBufferi.Bits, out bits);
-		// ALHelper.CheckError("Failed to get buffer bits");
+		// ALHelper.CheckError("Failed get buffer bits");
 		// AL.GetBuffer(openALDataBuffer, ALGetBufferi.Channels, out channels);
-		// ALHelper.CheckError("Failed to get buffer channels");
+		// ALHelper.CheckError("Failed get buffer channels");
 		// AL.GetBuffer(openALDataBuffer, ALGetBufferi.Size, out unpackedSize);
-		// ALHelper.CheckError("Failed to get buffer size");
+		// ALHelper.CheckError("Failed get buffer size");
 		// Duration = (float)(unpackedSize / ((bits / 8) * channels)) / (float)sampleRate;
 	}
 
 	public override void Dispose()
 	{
-		AL10.alDeleteBuffers(1, ref handle); ALHelper.CheckError("Could not delete buffer", handle);
+		AL.alDeleteBuffers(1, ref handle); AL.CheckError("Failed delete buffer", handle);
 	}
 }

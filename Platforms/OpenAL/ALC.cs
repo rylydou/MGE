@@ -28,13 +28,28 @@
 
 #region Using Statements
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 #endregion
 
 namespace MGE.OpenAL;
 
-public static class ALC10
+public static class ALC
 {
+	[Conditional("DEBUG")]
+	[DebuggerHidden]
+	internal static void CheckError(IntPtr device, string message = "", params object[] args)
+	{
+		ALCError error;
+		if ((error = ALC.alcGetError(device)) != ALCError.NoError)
+		{
+			if (args != null && args.Length > 0)
+				message = String.Format(message, args);
+
+			throw new InvalidOperationException(message + " (Reason: " + error.ToString() + ")");
+		}
+	}
+
 	private const string nativeLibName = "OpenAL";
 
 	/* typedef int ALenum; */
@@ -122,5 +137,63 @@ public static class ALC10
 		int param,
 		int size,
 		int[] values
+	);
+
+	// ALC11
+
+	/* typedef int ALenum */
+	public const int ALC_MONO_SOURCES = 0x1010;
+	public const int ALC_STEREO_SOURCES = 0x1011;
+
+	public const int ALC_CAPTURE_DEVICE_SPECIFIER = 0x0310;
+	public const int ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER = 0x0311;
+	public const int ALC_CAPTURE_SAMPLES = 0x0312;
+	public const int ALC_DEFAULT_ALL_DEVICES_SPECIFIER = 0x1012;
+	public const int ALC_ALL_DEVICES_SPECIFIER = 0x1013;
+
+	/* context refers to an ALCcontext* */
+	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	public static extern void alcProcessContext(IntPtr context);
+
+	/* context refers to an ALCcontext* */
+	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	public static extern void alcSuspendContext(IntPtr context);
+
+	/* device refers to an ALCdevice* */
+	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	public static extern bool alcIsExtensionPresent(
+		IntPtr device,
+		[In()] [MarshalAs(UnmanagedType.LPStr)]
+				string extname
+	);
+
+	/* IntPtr refers to an ALCdevice*, buffersize to an ALCsizei */
+	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	public static extern IntPtr alcCaptureOpenDevice(
+		[In()] [MarshalAs(UnmanagedType.LPStr)]
+				string devicename,
+		uint frequency,
+		int format,
+		int buffersize
+	);
+
+	/* device refers to an ALCdevice* */
+	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	public static extern bool alcCaptureCloseDevice(IntPtr device);
+
+	/* device refers to an ALCdevice* */
+	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	public static extern void alcCaptureStart(IntPtr device);
+
+	/* device refers to an ALCdevice* */
+	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	public static extern void alcCaptureStop(IntPtr device);
+
+	/* device refers to an ALCdevice*, samples to an ALCsizei */
+	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	public static extern void alcCaptureSamples(
+		IntPtr device,
+		IntPtr buffer,
+		int samples
 	);
 }
