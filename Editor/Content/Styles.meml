@@ -1,0 +1,32 @@
+$base: '#161616'
+$background: '#202020'
+$outset: '#2B2B2B'
+$inset: '#161616'
+$accent: '#FE9137'
+$foreground: '#FFE'
+$midground: '#9A9A9A'
+
+midground: $midground
+foreground: $foreground
+
+element: {
+	background: $outset
+
+	.select: {
+		border: $accent
+	}
+
+	.active: {
+		foreground: $base
+		background: $accent
+	}
+
+	entry: {
+		background: $inset
+		border: $outset
+	}
+}
+
+canvas: {
+	background: '#161616'
+}

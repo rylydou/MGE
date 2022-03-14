@@ -141,9 +141,8 @@ public struct Color : IEquatable<Color>
 	/// <returns></returns>
 	public Color Premultiply()
 	{
-		return this;
-		// var a = this.a;
-		// return new Color((byte)(r * a / 255), (byte)(g * a / 255), (byte)(b * a / 255), a);
+		var a = this.a;
+		return new Color((byte)(r * a / 255), (byte)(g * a / 255), (byte)(b * a / 255), a);
 	}
 
 	public Color WithAlpha(byte alpha)

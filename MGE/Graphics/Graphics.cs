@@ -88,7 +88,7 @@ public abstract class Graphics : AppModule
 		var bounds = new RectInt(0, 0, target.renderWidth, target.renderHeight);
 		var clamped = RectInt.Intersect(viewport, bounds);
 
-		ClearInternal(target, flags, color, depth, stencil, clamped);
+		ClearInternal(target, flags, color.Premultiply(), depth, stencil, clamped);
 	}
 
 	/// <summary>

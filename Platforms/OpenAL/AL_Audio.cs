@@ -33,15 +33,18 @@ public class AL_Audio : Audio
 		context = ALC.alcCreateContext(device, new int[0]); ALC.CheckError(device, "Failed create a context from defualt device");
 		ALC.alcMakeContextCurrent(context); ALC.CheckError(device, "Failed bind the current context");
 
+		// Get extentions
 		supportsIeee = AL.alIsExtensionPresent("AL_EXT_float32");
 		supportsAdpcm = AL.alIsExtensionPresent("AL_SOFT_MSADPCM");
 		supportsIma4 = AL.alIsExtensionPresent("AL_EXT_IMA4");
 		supportsEfx = AL.alIsExtensionPresent("AL_EXT_EFX");
 
+		// Log info
 		Log.System(ALC.alcGetString(device, ALCGetString.CaptureDeviceSpecifier));
 		Log.System(ALC.alcGetString(device, ALCGetString.Extensions));
 		Log.System(AL.alGetString(ALGetString.Extensions));
 
+		// Pool all sources
 		_allSources = new int[MAX_SOURCES];
 		AL.alGenSources(MAX_SOURCES, _allSources); AL.CheckError("Failed generate sources");
 		_availableSources = new(_allSources);

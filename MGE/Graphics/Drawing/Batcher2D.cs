@@ -420,6 +420,8 @@ public class Batch2D
 
 	public void Quad(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3, Color color)
 	{
+		color = color.Premultiply();
+
 		PushQuad();
 		ExpandVertices(_vertexCount + 4);
 
@@ -458,6 +460,8 @@ public class Batch2D
 
 	public void Quad(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3, in Vector2 t0, in Vector2 t1, in Vector2 t2, in Vector2 t3, Color color, bool washed = false)
 	{
+		color = color.Premultiply();
+
 		PushQuad();
 		ExpandVertices(_vertexCount + 4);
 
@@ -518,10 +522,10 @@ public class Batch2D
 		Transform(ref _vertices[_vertexCount + 3].pos, v3, matrixStack);
 
 		// COL
-		_vertices[_vertexCount + 0].col = c0;
-		_vertices[_vertexCount + 1].col = c1;
-		_vertices[_vertexCount + 2].col = c2;
-		_vertices[_vertexCount + 3].col = c3;
+		_vertices[_vertexCount + 0].col = c0.Premultiply();
+		_vertices[_vertexCount + 1].col = c1.Premultiply();
+		_vertices[_vertexCount + 2].col = c2.Premultiply();
+		_vertices[_vertexCount + 3].col = c3.Premultiply();
 
 		// MULT
 		_vertices[_vertexCount + 0].mult = 0;
@@ -568,10 +572,10 @@ public class Batch2D
 			VerticalFlip(ref _vertices[_vertexCount + 0].tex, ref _vertices[_vertexCount + 1].tex, ref _vertices[_vertexCount + 2].tex, ref _vertices[_vertexCount + 3].tex);
 
 		// COL
-		_vertices[_vertexCount + 0].col = c0;
-		_vertices[_vertexCount + 1].col = c1;
-		_vertices[_vertexCount + 2].col = c2;
-		_vertices[_vertexCount + 3].col = c3;
+		_vertices[_vertexCount + 0].col = c0.Premultiply();
+		_vertices[_vertexCount + 1].col = c1.Premultiply();
+		_vertices[_vertexCount + 2].col = c2.Premultiply();
+		_vertices[_vertexCount + 3].col = c3.Premultiply();
 
 		// MULT
 		_vertices[_vertexCount + 0].mult = mult;
@@ -600,6 +604,8 @@ public class Batch2D
 
 	public void Triangle(in Vector2 v0, in Vector2 v1, in Vector2 v2, Color color)
 	{
+		color = color.Premultiply();
+
 		PushTriangle();
 		ExpandVertices(_vertexCount + 3);
 
@@ -645,9 +651,9 @@ public class Batch2D
 		Transform(ref _vertices[_vertexCount + 2].pos, v2, matrixStack);
 
 		// COL
-		_vertices[_vertexCount + 0].col = c0;
-		_vertices[_vertexCount + 1].col = c1;
-		_vertices[_vertexCount + 2].col = c2;
+		_vertices[_vertexCount + 0].col = c0.Premultiply();
+		_vertices[_vertexCount + 1].col = c1.Premultiply();
+		_vertices[_vertexCount + 2].col = c2.Premultiply();
 
 		// MULT
 		_vertices[_vertexCount + 0].mult = 0;

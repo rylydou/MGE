@@ -2,6 +2,8 @@ namespace MGE.UI;
 
 public abstract class UIWidget
 {
+	public UIStyle baseStyle = new();
+
 	public string? id;
 
 	public UIContainer? parent { get; private set; }
@@ -125,7 +127,7 @@ public abstract class UIWidget
 		{
 			if (this is not UICanvas)
 			{
-				batch.Rect(rect, new Color(0, 0, 0, 200).Premultiply());
+				batch.Rect(rect, new Color(0, 0, 0, 200));
 			}
 		}
 
@@ -133,7 +135,7 @@ public abstract class UIWidget
 
 		if (canvas!.enableDebug)
 		{
-			batch.HollowRect(rect, 1, Color.LerpClamped(_flashColor.WithAlpha(0), _flashColor, _flashTime).Premultiply());
+			batch.HollowRect(rect, 1, Color.LerpClamped(_flashColor.WithAlpha(0), _flashColor, _flashTime));
 
 			// Font.normal.DrawString(GetType().Name, rect.topLeft, Color.white);
 		}

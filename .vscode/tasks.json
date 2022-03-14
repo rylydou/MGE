@@ -13,6 +13,19 @@
         "--nologo"
       ],
       "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Build Editor",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/Editor/MGE.Editor.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary",
+        "--nologo"
+      ],
+      "problemMatcher": "$msCompile"
     }
   ]
 }

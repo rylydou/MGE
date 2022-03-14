@@ -2,7 +2,7 @@ namespace MGE.UI;
 
 public class UICanvas : UIBox
 {
-	public bool enableDebug = true;
+	public bool enableDebug = false;
 
 	public UICanvas()
 	{

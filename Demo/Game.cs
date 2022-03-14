@@ -14,7 +14,7 @@ public class Game : Module
 	Texture? _sprite;
 	SoundEffect? _soundEffect;
 
-	UICanvas _canvas = new();
+	UICanvas _canvas = new() { direction = UIDirection.Vertical };
 
 	// This is called when the Application has Started
 	protected override void Startup()

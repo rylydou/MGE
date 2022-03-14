@@ -25,6 +25,31 @@
         "programOutput": true,
         "threadExit": false
       }
+    },
+    {
+      "name": "Run Editor",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build Editor",
+      "program": "${workspaceFolder}/Editor/bin/Debug/MGE.Editor.dll",
+      "args": [],
+      "env": {
+        "MGE_APPDATA": "${workspaceFolder}/Editor/appdata",
+        "MGE_CONTENT": "${workspaceFolder}/Editor/Content"
+      },
+      "cwd": "${workspaceFolder}/Editor",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "logging": {
+        "browserStdOut": false,
+        "elapsedTiming": false,
+        "engineLogging": false,
+        "exceptions": false,
+        "moduleLoad": false,
+        "processExit": false,
+        "programOutput": true,
+        "threadExit": false
+      }
     }
   ]
 }
