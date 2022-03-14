@@ -1,5 +1,6 @@
 using System;
 using MGE;
+using MGE.UI;
 
 namespace Demo;
 
@@ -12,6 +13,8 @@ public class Game : Module
 
 	Texture? _sprite;
 	SoundEffect? _soundEffect;
+
+	UICanvas _canvas = new();
 
 	// This is called when the Application has Started
 	protected override void Startup()
@@ -30,6 +33,20 @@ public class Game : Module
 		App.window.SetMinSize(new(320, 180));
 
 		App.window.Center();
+
+		_canvas.AddChild(new UIButton()
+		{
+			resizing = new(UIResizing.FillContainer, UIResizing.FillContainer),
+		});
+		_canvas.AddChild(new UIButton()
+		{
+			fixedSize = new(90, 30),
+		});
+		_canvas.AddChild(new UIButton()
+		{
+			resizing = new(UIResizing.FillContainer, UIResizing.Fixed),
+			fixedSize = new(90, 30),
+		});
 	}
 
 	// This is called when the Application is shutting down, or when the Module is removed
@@ -68,6 +85,8 @@ public class Game : Module
 		{
 			_soundEffect!.Play(Random.Shared.NextSingle(), Random.Shared.NextSingle() * 2 - 1, Random.Shared.NextSingle() * 2 - 1);
 		}
+
+		_canvas.fixedSize = App.window.size;
 	}
 
 	void Render(Window window)
@@ -79,6 +98,9 @@ public class Game : Module
 
 		// Draw a rectangle
 		batch.Image(_sprite!, position, Color.white);
+
+		// Draw UI
+		_canvas.Draw(batch);
 
 		_font!.DrawString(batch, $"{Time.fps}fps ({Time.rawDelta:F4}ms)", window.renderMouse + new Vector2(0, -18), Color.white);
 

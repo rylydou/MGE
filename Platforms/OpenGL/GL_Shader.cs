@@ -15,9 +15,9 @@ internal class GL_Shader : Shader.Platform
 
 		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 		{
-			lock (graphics.BackgroundContext)
+			lock (graphics._backgroundContext)
 			{
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 
 				Create();
 				GL.Flush();
@@ -204,7 +204,7 @@ internal class GL_Shader : Shader.Platform
 	{
 		if (ID != 0)
 		{
-			graphics.ProgramsToDelete.Add(ID);
+			graphics.programsToDelete.Add(ID);
 			ID = 0;
 		}
 	}

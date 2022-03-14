@@ -15,4 +15,9 @@ public class UICanvas : UIBox
 
 		base.PropertiesChanged();
 	}
+
+	public void Draw(Batch2D batch)
+	{
+		DoRender(batch);
+	}
 }

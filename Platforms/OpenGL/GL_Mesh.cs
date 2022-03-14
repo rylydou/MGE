@@ -63,9 +63,9 @@ internal class GL_Mesh : Mesh.Platform
 	{
 		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 		{
-			lock (graphics.BackgroundContext)
+			lock (graphics._backgroundContext)
 			{
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 
 				UploadBufferData(ref id, type, data, ref currentBufferSize);
 				GL.Flush();
@@ -196,16 +196,16 @@ internal class GL_Mesh : Mesh.Platform
 	protected override void Dispose()
 	{
 		if (vertexBuffer > 0)
-			graphics.BuffersToDelete.Add(vertexBuffer);
+			graphics.buffersToDelete.Add(vertexBuffer);
 
 		if (indexBuffer > 0)
-			graphics.BuffersToDelete.Add(indexBuffer);
+			graphics.buffersToDelete.Add(indexBuffer);
 
 		if (instanceBuffer > 0)
-			graphics.BuffersToDelete.Add(instanceBuffer);
+			graphics.buffersToDelete.Add(instanceBuffer);
 
 		foreach (var kv in vertexArrays)
-			graphics.GetContextMeta(kv.Key).VertexArraysToDelete.Add(kv.Value);
+			graphics.GetContextMeta(kv.Key).vertexArraysToDelete.Add(kv.Value);
 
 		vertexArrays.Clear();
 		bindedArrays.Clear();

@@ -5,17 +5,17 @@ namespace MGE.OpenGL;
 
 internal static class GL
 {
-	public static int MajorVersion;
-	public static int MinorVersion;
-	public static int MaxColorAttachments;
-	public static int MaxCubeMapTextureSize;
-	public static int MaxDrawBuffers;
-	public static int MaxElementIndices;
-	public static int MaxElementVertices;
-	public static int MaxRenderbufferSize;
-	public static int MaxSamples;
-	public static int MaxTextureImageUnits;
-	public static int MaxTextureSize;
+	public static int majorVersion;
+	public static int minorVersion;
+	public static int maxColorAttachments;
+	public static int maxCubeMapTextureSize;
+	public static int maxDrawBuffers;
+	public static int maxElementIndices;
+	public static int maxElementVertices;
+	public static int maxRenderbufferSize;
+	public static int maxSamples;
+	public static int maxTextureImageUnits;
+	public static int maxTextureSize;
 
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 	static GL_Bindings bindings;
@@ -26,17 +26,17 @@ internal static class GL
 	{
 		bindings = new GL_Bindings(system);
 
-		GetIntegerv((GLEnum)0x821B, out MajorVersion);
-		GetIntegerv((GLEnum)0x821C, out MinorVersion);
-		GetIntegerv((GLEnum)0x8CDF, out MaxColorAttachments);
-		GetIntegerv((GLEnum)0x851C, out MaxCubeMapTextureSize);
-		GetIntegerv((GLEnum)0x8824, out MaxDrawBuffers);
-		GetIntegerv((GLEnum)0x80E9, out MaxElementIndices);
-		GetIntegerv((GLEnum)0x80E8, out MaxElementVertices);
-		GetIntegerv((GLEnum)0x84E8, out MaxRenderbufferSize);
-		GetIntegerv((GLEnum)0x8D57, out MaxSamples);
-		GetIntegerv((GLEnum)0x8872, out MaxTextureImageUnits);
-		GetIntegerv((GLEnum)0x0D33, out MaxTextureSize);
+		GetIntegerv((GLEnum)0x821B, out majorVersion);
+		GetIntegerv((GLEnum)0x821C, out minorVersion);
+		GetIntegerv((GLEnum)0x8CDF, out maxColorAttachments);
+		GetIntegerv((GLEnum)0x851C, out maxCubeMapTextureSize);
+		GetIntegerv((GLEnum)0x8824, out maxDrawBuffers);
+		GetIntegerv((GLEnum)0x80E9, out maxElementIndices);
+		GetIntegerv((GLEnum)0x80E8, out maxElementVertices);
+		GetIntegerv((GLEnum)0x84E8, out maxRenderbufferSize);
+		GetIntegerv((GLEnum)0x8D57, out maxSamples);
+		GetIntegerv((GLEnum)0x8872, out maxTextureImageUnits);
+		GetIntegerv((GLEnum)0x0D33, out maxTextureSize);
 
 #if DEBUG
 		if (bindings.glDebugMessageCallback is not null)
@@ -69,8 +69,8 @@ internal static class GL
 					case GLEnum.DEBUG_SEVERITY_MEDIUM: severityName = "MEDIUM"; break;
 					case GLEnum.DEBUG_SEVERITY_LOW: severityName = "LOW"; break;
 
-						// skip notifications
-						default:
+					// skip notifications
+					default:
 					case GLEnum.DEBUG_SEVERITY_NOTIFICATION:
 						return;
 				}

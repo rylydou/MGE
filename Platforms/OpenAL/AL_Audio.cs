@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace MGE.OpenAL;
 
@@ -80,14 +77,11 @@ public class AL_Audio : Audio
 		AL.alDistanceModel(ALDistanceModel.InverseDistanceClamped); AL.CheckError("Failed set source distance");
 
 		// Set source properties
-		AL.alSourcei(source, ALSourcei.SourceRelative, 1); AL.CheckError("Failed set source relative");
-		AL.alSourcef(source, ALSourcef.MaxDistance, 1f); AL.CheckError("Failed set max distance");
-		AL.alSourcef(source, ALSourcef.ReferenceDistance, 0.5f); AL.CheckError("Failed set reference distance");
-
 		AL.alSourcef(source, ALSourcef.Gain, volume); AL.CheckError("Failed set volume of source");
 		AL.alSourcef(source, ALSourcef.Pitch, ConvertPitch(pitch)); AL.CheckError("Failed set pitch of source");
-		AL.alSource3f(source, ALSource3f.Position, pan, 0.0f, 0.1f); AL.CheckError("Failed set pan of source");
+		AL.alSource3f(source, ALSource3f.Position, pan, 0, 0); AL.CheckError("Failed set pan of source");
 
+		// Play the source
 		AL.alSourcePlay(source);
 	}
 
@@ -105,7 +99,7 @@ public class AL_Audio : Audio
 		return source;
 	}
 
-	internal int GetSource()
+	internal int ReserveSource()
 	{
 		int source;
 		lock (_availableSources!)

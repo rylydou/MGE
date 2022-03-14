@@ -2,7 +2,7 @@ using System;
 
 namespace MGE;
 
-public enum Renderer
+public enum GraphicsRenderer
 {
 	None = 0,
 	Unknown = 1,
@@ -55,7 +55,7 @@ public abstract class Graphics : AppModule
 	/// <summary>
 	/// The Renderer this Graphics Module implements
 	/// </summary>
-	public abstract Renderer renderer { get; }
+	public abstract GraphicsRenderer renderer { get; }
 
 	protected Graphics() : base(200)
 	{

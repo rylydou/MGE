@@ -125,7 +125,7 @@ public abstract class UIWidget
 		{
 			if (this is not UICanvas)
 			{
-				batch.Rect(rect, new Color(0xFFFFFF11));
+				batch.Rect(rect, new Color(0, 0, 0, 200).Premultiply());
 			}
 		}
 
@@ -133,7 +133,7 @@ public abstract class UIWidget
 
 		if (canvas!.enableDebug)
 		{
-			batch.HollowRect(rect, -1, Color.LerpClamped(_flashColor.WithAlpha(0), _flashColor, _flashTime));
+			batch.HollowRect(rect, 1, Color.LerpClamped(_flashColor.WithAlpha(0), _flashColor, _flashTime).Premultiply());
 
 			// Font.normal.DrawString(GetType().Name, rect.topLeft, Color.white);
 		}

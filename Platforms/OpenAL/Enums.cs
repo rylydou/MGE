@@ -82,6 +82,7 @@ public enum ALSourceState : int
 public enum ALListener3f : int
 {
 	Position = 0x1004,
+	Velocity = 0x1006,
 }
 
 public enum ALSource3f : int

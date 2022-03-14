@@ -5,40 +5,48 @@ namespace MGE.OpenGL;
 
 public class GL_Graphics : Graphics, IGraphicsOpenGL
 {
-	internal ISystemOpenGL system => App.system as ISystemOpenGL ?? throw new Exception("System does not implement IGLSystem");
+	// Does not use the cleaner syntax because vscode goes crazy
+	internal ISystemOpenGL system
+	{
+		get
+		{
+			if (App.system is ISystemOpenGL glSystem) return glSystem;
+			throw new Exception("System does not implement IGLSystem");
+		}
+	}
 
 	// Background Context can be null up until Startup, at which point they never are again
-	internal ISystemOpenGL.Context BackgroundContext = null!;
+	internal ISystemOpenGL.Context _backgroundContext = null!;
 
 	// Stores info about the Context
 	internal class ContextMeta
 	{
-		public List<uint> VertexArraysToDelete = new List<uint>();
-		public List<uint> FrameBuffersToDelete = new List<uint>();
-		public RenderTarget? LastRenderTarget;
-		public RenderPass? LastRenderState;
-		public RectInt Viewport;
-		public bool ForceScissorUpdate;
+		public List<uint> vertexArraysToDelete = new List<uint>();
+		public List<uint> frameBuffersToDelete = new List<uint>();
+		public RenderTarget? lastRenderTarget;
+		public RenderPass? lastRenderState;
+		public RectInt viewport;
+		public bool forceScissorUpdate;
 	}
 
 	// various resources waiting to be deleted
-	internal List<uint> BuffersToDelete = new List<uint>();
-	internal List<uint> ProgramsToDelete = new List<uint>();
-	internal List<uint> TexturesToDelete = new List<uint>();
+	internal List<uint> buffersToDelete = new List<uint>();
+	internal List<uint> programsToDelete = new List<uint>();
+	internal List<uint> texturesToDelete = new List<uint>();
 
 	// list of Contexts and their associated Metadata
-	readonly Dictionary<ISystemOpenGL.Context, ContextMeta> contextMetadata = new Dictionary<ISystemOpenGL.Context, ContextMeta>();
-	readonly List<ISystemOpenGL.Context> disposedContexts = new List<ISystemOpenGL.Context>();
+	readonly Dictionary<ISystemOpenGL.Context, ContextMeta> _contextMetadata = new Dictionary<ISystemOpenGL.Context, ContextMeta>();
+	readonly List<ISystemOpenGL.Context> _disposedContexts = new List<ISystemOpenGL.Context>();
 
 	// stored delegates for deleting graphics resources
 	delegate void DeleteResource(uint id);
-	readonly DeleteResource deleteArray = GL.DeleteVertexArray;
-	readonly DeleteResource deleteFramebuffer = GL.DeleteFramebuffer;
-	readonly DeleteResource deleteBuffer = GL.DeleteBuffer;
-	readonly DeleteResource deleteTexture = GL.DeleteTexture;
-	readonly DeleteResource deleteProgram = GL.DeleteProgram;
+	readonly DeleteResource _deleteArray = GL.DeleteVertexArray;
+	readonly DeleteResource _deleteFramebuffer = GL.DeleteFramebuffer;
+	readonly DeleteResource _deleteBuffer = GL.DeleteBuffer;
+	readonly DeleteResource _deleteTexture = GL.DeleteTexture;
+	readonly DeleteResource _deleteProgram = GL.DeleteProgram;
 
-	public override Renderer renderer => Renderer.OpenGL;
+	public override GraphicsRenderer renderer => GraphicsRenderer.OpenGL;
 
 	protected override void ApplicationStarted()
 	{
@@ -50,58 +58,58 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 		GL.Init(this, system);
 		GL.DepthMask(true);
 
-		maxTextureSize = GL.MaxTextureSize;
+		maxTextureSize = GL.maxTextureSize;
 		originBottomLeft = true;
-		apiVersion = new Version(GL.MajorVersion, GL.MinorVersion);
+		apiVersion = new Version(GL.majorVersion, GL.minorVersion);
 		deviceName = GL.GetString(GLEnum.RENDERER);
 
-		BackgroundContext = system.CreateGLContext();
+		_backgroundContext = system.CreateGLContext();
 	}
 
 	protected override void Shutdown()
 	{
-		BackgroundContext.Dispose();
+		_backgroundContext.Dispose();
 	}
 
 	protected override void FrameStart()
 	{
 		// delete any GL graphics resources that are shared between contexts
-		DeleteResources(deleteBuffer, BuffersToDelete);
-		DeleteResources(deleteProgram, ProgramsToDelete);
-		DeleteResources(deleteTexture, TexturesToDelete);
+		DeleteResources(_deleteBuffer, buffersToDelete);
+		DeleteResources(_deleteProgram, programsToDelete);
+		DeleteResources(_deleteTexture, texturesToDelete);
 
 		// check for any resources we're still tracking that are tied to contexts
 		{
 			var lastContext = system.GetCurrentGLContext();
 			var changedContext = false;
 
-			lock (contextMetadata)
+			lock (_contextMetadata)
 			{
-				foreach (var kv in contextMetadata)
+				foreach (var kv in _contextMetadata)
 				{
 					var context = kv.Key;
 					var meta = kv.Value;
 
 					if (context.IsDisposed)
 					{
-						disposedContexts.Add(context);
+						_disposedContexts.Add(context);
 					}
-					else if (meta.FrameBuffersToDelete.Count > 0 || meta.VertexArraysToDelete.Count > 0)
+					else if (meta.frameBuffersToDelete.Count > 0 || meta.vertexArraysToDelete.Count > 0)
 					{
 						lock (context)
 						{
 							system.SetCurrentGLContext(context);
 
-							DeleteResources(deleteFramebuffer, meta.FrameBuffersToDelete);
-							DeleteResources(deleteArray, meta.VertexArraysToDelete);
+							DeleteResources(_deleteFramebuffer, meta.frameBuffersToDelete);
+							DeleteResources(_deleteArray, meta.vertexArraysToDelete);
 
 							changedContext = true;
 						}
 					}
 				}
 
-				foreach (var context in disposedContexts)
-					contextMetadata.Remove(context);
+				foreach (var context in _disposedContexts)
+					_contextMetadata.Remove(context);
 			}
 
 			if (changedContext)
@@ -126,8 +134,8 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 
 	internal ContextMeta GetContextMeta(ISystemOpenGL.Context context)
 	{
-		if (!contextMetadata.TryGetValue(context, out var meta))
-			contextMetadata[context] = meta = new ContextMeta();
+		if (!_contextMetadata.TryGetValue(context, out var meta))
+			_contextMetadata[context] = meta = new ContextMeta();
 		return meta;
 	}
 
@@ -177,12 +185,12 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 			// if we're off the main thread, clear using the Background Context
 			if (mainThreadId != Environment.CurrentManagedThreadId)
 			{
-				lock (BackgroundContext)
+				lock (_backgroundContext)
 				{
-					system.SetCurrentGLContext(BackgroundContext);
+					system.SetCurrentGLContext(_backgroundContext);
 
-					renderTexture.Bind(BackgroundContext);
-					Clear(this, BackgroundContext, target, flags, color, depth, stencil, viewport);
+					renderTexture.Bind(_backgroundContext);
+					Clear(this, _backgroundContext, target, flags, color, depth, stencil, viewport);
 					GL.Flush();
 
 					system.SetCurrentGLContext(null);
@@ -213,15 +221,15 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 			{
 				viewport.y = target.renderHeight - viewport.y - viewport.height;
 
-				if (meta.Viewport != viewport)
+				if (meta.viewport != viewport)
 				{
 					GL.Viewport(viewport.x, viewport.y, viewport.width, viewport.height);
-					meta.Viewport = viewport;
+					meta.viewport = viewport;
 				}
 			}
 
 			// we disable the scissor for clearing
-			meta.ForceScissorUpdate = true;
+			meta.forceScissorUpdate = true;
 			GL.Disable(GLEnum.SCISSOR_TEST);
 
 			// clear
@@ -264,11 +272,11 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 		}
 		else if (mainThreadId != Environment.CurrentManagedThreadId)
 		{
-			lock (BackgroundContext)
+			lock (_backgroundContext)
 			{
-				system.SetCurrentGLContext(BackgroundContext);
+				system.SetCurrentGLContext(_backgroundContext);
 
-				Draw(this, ref pass, BackgroundContext);
+				Draw(this, ref pass, _backgroundContext);
 				GL.Flush();
 
 				system.SetCurrentGLContext(null);
@@ -296,17 +304,17 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 			// get the previous state
 			var updateAll = false;
 			var contextMeta = graphics.GetContextMeta(context);
-			if (contextMeta.LastRenderState is null)
+			if (contextMeta.lastRenderState is null)
 			{
 				updateAll = true;
 				lastPass = pass;
 			}
 			else
-				lastPass = contextMeta.LastRenderState.Value;
-			contextMeta.LastRenderState = pass;
+				lastPass = contextMeta.lastRenderState.Value;
+			contextMeta.lastRenderState = pass;
 
 			// Bind the Target
-			if (updateAll || contextMeta.LastRenderTarget != pass.target)
+			if (updateAll || contextMeta.lastRenderTarget != pass.target)
 			{
 				if (pass.target is Window)
 				{
@@ -317,7 +325,7 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 					renderTexture.Bind(context);
 				}
 
-				contextMeta.LastRenderTarget = pass.target;
+				contextMeta.lastRenderTarget = pass.target;
 			}
 
 			// Use the Shader
@@ -444,10 +452,10 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 			{
 				viewport.y = pass.target.renderHeight - viewport.y - viewport.height;
 
-				if (updateAll || contextMeta.Viewport != viewport)
+				if (updateAll || contextMeta.viewport != viewport)
 				{
 					GL.Viewport(viewport.x, viewport.y, viewport.width, viewport.height);
-					contextMeta.Viewport = viewport;
+					contextMeta.viewport = viewport;
 				}
 			}
 
@@ -458,7 +466,7 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 				scissor.width = Math.Max(0, scissor.width);
 				scissor.height = Math.Max(0, scissor.height);
 
-				if (updateAll || lastPass.scissor != scissor || contextMeta.ForceScissorUpdate)
+				if (updateAll || lastPass.scissor != scissor || contextMeta.forceScissorUpdate)
 				{
 					if (pass.scissor is null)
 					{
@@ -470,7 +478,7 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 						GL.Scissor(scissor.x, scissor.y, scissor.width, scissor.height);
 					}
 
-					contextMeta.ForceScissorUpdate = false;
+					contextMeta.forceScissorUpdate = false;
 					lastPass.scissor = scissor;
 				}
 			}

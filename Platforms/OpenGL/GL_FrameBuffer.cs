@@ -75,7 +75,7 @@ internal class GL_FrameBuffer : FrameBuffer.Platform
 		if (framebuffers.Count > 0)
 		{
 			foreach (var kv in framebuffers)
-				graphics.GetContextMeta(kv.Key).FrameBuffersToDelete.Add(kv.Value);
+				graphics.GetContextMeta(kv.Key).frameBuffersToDelete.Add(kv.Value);
 			framebuffers.Clear();
 		}
 	}

@@ -73,14 +73,14 @@ internal class GL_Texture : Texture.Platform
 	{
 		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 		{
-			lock (graphics.BackgroundContext)
+			lock (graphics._backgroundContext)
 			{
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 
 				Init();
 				GL.Flush();
 
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 			}
 		}
 		else
@@ -114,14 +114,14 @@ internal class GL_Texture : Texture.Platform
 
 		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 		{
-			lock (graphics.BackgroundContext)
+			lock (graphics._backgroundContext)
 			{
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 
 				SetFilter(ID, f);
 				GL.Flush();
 
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 			}
 		}
 		else
@@ -145,14 +145,14 @@ internal class GL_Texture : Texture.Platform
 
 		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 		{
-			lock (graphics.BackgroundContext)
+			lock (graphics._backgroundContext)
 			{
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 
 				SetFilter(ID, s, t);
 				GL.Flush();
 
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 			}
 		}
 		else
@@ -173,14 +173,14 @@ internal class GL_Texture : Texture.Platform
 	{
 		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 		{
-			lock (graphics.BackgroundContext)
+			lock (graphics._backgroundContext)
 			{
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 
 				Upload();
 				GL.Flush();
 
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 			}
 		}
 		else
@@ -207,14 +207,14 @@ internal class GL_Texture : Texture.Platform
 
 		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 		{
-			lock (graphics.BackgroundContext)
+			lock (graphics._backgroundContext)
 			{
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 
 				Upload();
 				GL.Flush();
 
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 			}
 		}
 		else
@@ -236,14 +236,14 @@ internal class GL_Texture : Texture.Platform
 
 		if (graphics.mainThreadId != Environment.CurrentManagedThreadId)
 		{
-			lock (graphics.BackgroundContext)
+			lock (graphics._backgroundContext)
 			{
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 
 				Download();
 				GL.Flush();
 
-				graphics.system.SetCurrentGLContext(graphics.BackgroundContext);
+				graphics.system.SetCurrentGLContext(graphics._backgroundContext);
 			}
 		}
 		else
@@ -263,7 +263,7 @@ internal class GL_Texture : Texture.Platform
 	{
 		if (ID != 0)
 		{
-			graphics.TexturesToDelete.Add(ID);
+			graphics.texturesToDelete.Add(ID);
 			ID = 0;
 		}
 	}
