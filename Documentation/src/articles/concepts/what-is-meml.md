@@ -1,20 +1,16 @@
----
-uid: index.md
-title: What is meml
----
+# What is meml?
 
-# Introduction
+## Introduction
 
-Meml stands for **M**angrove **E**ngine **M**arkup **L**angauge. It is the language used for storing data in a readable format in Mangrove.
+Meml stands for Mangrove Engine Markup Langauge. It is the language used for storing data in a readable format in Mangrove.
 
-Meml is based off of [Hjson](https://hjson.github.io/), a more human readable version of json.
+Meml is based off of [Hjson](https://hjson.github.io), a more human readable version of json.
 
 Meml supports objects...
 
 ```meml
 {
 	key: 'value'
-
 	myNumber: 123
 }
 ```
@@ -33,7 +29,7 @@ myOtherArray: [
 ]
 ```
 
-# Types
+## Types
 
 Meml also has support for many of the primitive types in C#
 
@@ -69,7 +65,7 @@ Plus byte arrays to store binary data.
 data: *SGVsbG8gd29ybGQ=* # Encoded as base64
 ```
 
-# Object
+## Object
 
 Types of objects are defined like this
 
@@ -80,7 +76,7 @@ Types of objects are defined like this
 }
 ```
 
-# Arrays
+## Arrays
 
 ```meml
 myArray: [ 2 4 6 8 ]
@@ -105,7 +101,7 @@ table: [
 ]
 ```
 
-# Variables
+## Variables
 
 All variables must be defining at the start of the file (ignoring comments), they must start with a '$' sign.
 
@@ -119,5 +115,3 @@ $robot: {
 
 myRobot: $robot
 ```
-
-# Notes
