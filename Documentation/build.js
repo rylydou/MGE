@@ -38,14 +38,14 @@ function main() {
 
 	const baseHtmlPage = fs.readFileSync('src/page.html').toString();
 
-	// Delete old build output
-	fs.rmSync('build', { recursive: true, force: true });
-	fs.mkdirSync('build');
+	// Delete old dist output
+	fs.rmSync('dist', { recursive: true, force: true });
+	fs.mkdirSync('dist');
 
 	// Compile styles
 	console.log('Building styles');
 	var css = sass.compile('src/styles/styles.scss', { style: 'compressed' }).css;
-	fs.writeFileSync('build/styles.css', css);
+	fs.writeFileSync('dist/styles.css', css);
 
 	// Compile all markdown files to html
 	findFilesRecursive('src', /\.md$/, (filename) => {
@@ -60,7 +60,7 @@ function main() {
 		page = page.replace('$PAGE_CONTENT$', parsedHtml);
 
 		// String.replace on replaces the first instance right?
-		let htmlFilePath = filename.replace('src', 'build').replace(/\.md$/, '.html');
+		let htmlFilePath = filename.replace('src', 'dist').replace(/\.md$/, '.html');
 		let htmlFolderPath = path.dirname(htmlFilePath);
 
 		if (!fs.existsSync(htmlFolderPath)) {
