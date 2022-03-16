@@ -17,7 +17,9 @@ function main() {
 			return '';
 		}
 
-		return `<h${level}>${text}</h${level}>`;
+		let name = text.toLocaleLowerCase().replace(/[^a-z0-9 _-]/gi, '-').toLowerCase();
+
+		return `<h${level} id="${name}">${text}</h${level}>`;
 	};
 
 	markdownRenderer.link = (href, title, text) => {
@@ -33,33 +35,53 @@ function main() {
 	};
 
 	hljs.default.registerLanguage('meml', (hljs) => {
+		const comment = {
+			scope: 'comment',
+			begin: '#',
+			end: '[\n\r$]',
+			relevance: 100
+		}
+
+		const type = {
+			scope: 'type',
+			match: /![\w\.:]+/g,
+			relevance: 1,
+		}
+
+		const variable = {
+			scope: 'variable',
+			match: /\$\w+/g,
+			relevance: 1,
+		}
+
 		const property = {
 			scope: 'tag',
-			begin: /[^\r\n]*\w:/g,
-			relevance: 0
+			begin: /\w+(?=:)/g,
 		};
 
 		const punctuation = {
 			scope: "punctuation",
 			match: /[{}[\]:]/,
-			relevance: 1
-		};
-
-		const constants = {
-			scope: 'constant',
-			beginKeywords: 'true false null nan inf',
 		};
 
 		const keywords = {
-			literal: ['true', 'false', 'null', 'nan', 'inf']
+			scope: 'keyword',
+			beginKeywords: 'true false null',
 		};
 
 		const string = {
 			scope: 'string',
 			begin: "'",
+			beginScope: 'quote',
 			end: "'",
+			endScope: 'quote',
 			illegal: '\\n',
 			contains: [hljs.BACKSLASH_ESCAPE]
+		}
+
+		const number = {
+			scope: 'number',
+			match: /\d+(\.\d+)?.?/g,
 		}
 
 		const number_hex = {
@@ -67,34 +89,34 @@ function main() {
 			match: /0[xX][0-9|a-f|A-F]+/g
 		}
 
-		const number_float = {
+		const number_constants = {
 			scope: 'number',
-			match: /[\+-]?[0-9]+\.?[0-9]+[fdm]?/g
-		}
+			match: '(nan)|[+-]?(inf)',
+		};
 
-		const number_int = {
+		const binary = {
 			scope: 'number',
-			match: /(([+]?[0-9]+[BSIL]|[\+-]?[0-9]+[bsilc]?))/g
-		}
+			begin: '\\*',
+			beginScope: 'quote',
+			end: '\\*',
+			endScope: 'quote',
+			illegal: '\\n'
+		};
 
 		return {
 			name: 'MEML',
 			contains: [
-				property,
+				comment,
 				punctuation,
-				constants,
-				hljs.QUOTE_STRING_MODE,
-				hljs.HASH_COMMENT_MODE,
+				type,
+				variable,
+				property,
+				keywords,
 				string,
-				number_float,
-				number_int,
+				binary,
+				number,
 				number_hex,
-				{
-					scope: 'number',
-					begin: '\\*',
-					end: '\\*',
-					illegal: '\\n'
-				}
+				number_constants,
 			],
 			illegal: '\\S'
 		};

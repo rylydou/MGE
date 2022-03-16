@@ -34,7 +34,7 @@ myOtherArray: [
 Meml also has support for many of the primitive types in C#
 
 ```meml
-# Oh yeah and these are comments too!
+# Oh yeah, these are comments too!
 string: 'Hello world'
 
 nullValue: null
@@ -62,7 +62,7 @@ infinity: inf
 Plus byte arrays to store binary data.
 
 ```meml
-data: *SGVsbG8gd29ybGQ=* # Encoded as base64
+data: *SGVsbG8gd29ybGQ=* # Encoded as base64 https://en.wikipedia.org/wiki/Base64
 ```
 
 ## Object
@@ -71,7 +71,7 @@ Types of objects are defined like this
 
 ```meml
 {
-	!Assembly: 'Namespace.Type'
+	!Assembly:Namespace.Type # Object type
 	key: 'value'
 }
 ```
@@ -96,7 +96,7 @@ Meml does **not** support tables, instead do something like this if you need to 
 table: [
 	{
 		key: 42
-		value 'meaning of life'
+		value: 'meaning of life'
 	}
 ]
 ```
