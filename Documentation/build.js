@@ -33,25 +33,28 @@ function main() {
 	};
 
 	hljs.default.registerLanguage('meml', (hljs) => {
-		const ATTRIBUTE = {
-			className: 'attr',
-			begin: /(\\.|[^\\"\r\n])*(?=\s*:)/,
-			relevance: 1.01
-		};
-		const PUNCTUATION = {
-			match: /[{}[\]:]/,
-			className: "punctuation",
+		const property = {
+			scope: 'tag',
+			begin: /[^\r\n]*\w:/g,
 			relevance: 0
 		};
-		const LITERALS = {
-			beginKeywords: [
-				"true",
-				"false",
-				"null",
-			].join(" ")
+
+		const punctuation = {
+			scope: "punctuation",
+			match: /[{}[\]:]/,
+			relevance: 1
 		};
 
-		const STRING = {
+		const constants = {
+			scope: 'constant',
+			beginKeywords: 'true false null nan inf',
+		};
+
+		const keywords = {
+			literal: ['true', 'false', 'null', 'nan', 'inf']
+		};
+
+		const string = {
 			scope: 'string',
 			begin: "'",
 			end: "'",
@@ -59,21 +62,33 @@ function main() {
 			contains: [hljs.BACKSLASH_ESCAPE]
 		}
 
-		const NUMBER = {
+		const number_hex = {
 			scope: 'number',
-			begin: "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)"
+			match: /0[xX][0-9|a-f|A-F]+/g
+		}
+
+		const number_float = {
+			scope: 'number',
+			match: /[\+-]?[0-9]+\.?[0-9]+[fdm]?/g
+		}
+
+		const number_int = {
+			scope: 'number',
+			match: /(([+]?[0-9]+[BSIL]|[\+-]?[0-9]+[bsilc]?))/g
 		}
 
 		return {
 			name: 'MEML',
 			contains: [
-				ATTRIBUTE,
-				PUNCTUATION,
+				property,
+				punctuation,
+				constants,
 				hljs.QUOTE_STRING_MODE,
-				LITERALS,
 				hljs.HASH_COMMENT_MODE,
-				STRING,
-				NUMBER,
+				string,
+				number_float,
+				number_int,
+				number_hex,
 				{
 					scope: 'number',
 					begin: '\\*',
@@ -87,7 +102,7 @@ function main() {
 
 	markdownRenderer.code = (code, language, isEscaped) => {
 		return '<pre><code>' +
-			hljs.default.highlight(language, code).value +
+			hljs.default.highlight(code, { language: language }).value +
 			'</code></pre>';
 	};
 
