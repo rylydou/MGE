@@ -1,5 +1,10 @@
-# Home
+# Mangrove Engine
 
-## Articles
+```cs
+using System;
 
-- [What is meml?](articles/concepts/what-is-meml.md)
+void Main(string[] args)
+{
+	Console.Log("Hello " + args[0]);
+}
+```

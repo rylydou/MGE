@@ -103,7 +103,7 @@ table: [
 
 ## Variables
 
-All variables must be defining at the start of the file (ignoring comments), they must start with a '$' sign.
+All variables must be defining at the start of the file (ignoring comments), they must start with a $ sign.
 
 ```meml
 # Variable is defined here

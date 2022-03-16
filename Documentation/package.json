@@ -3,9 +3,11 @@
   "scripts": {
     "build": "node build.js",
     "watch": "npx nodemon -w src build.js",
-    "dev": "npx lite-server --baseDir=\"dist\""
+    "dev": "npx ws -d dist"
   },
   "devDependencies": {
+    "highlight.js": "^11.5.0",
+    "local-web-server": "^5.2.0",
     "marked": "^4.0.12",
     "nodemon": "^2.0.15",
     "sass": "^1.49.9"
