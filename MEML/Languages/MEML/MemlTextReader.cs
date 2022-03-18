@@ -18,7 +18,7 @@ public class MemlTextReader : IDataReader, IDisposable
 	readonly StringBuilder _builder = new();
 	readonly bool _disposeStream;
 
-	public Dictionary<string, StructureValue> variables = new();
+	public Dictionary<string, (StructureToken token, object value)> variables = new();
 
 	bool _storedNext;
 	long _position;
@@ -123,22 +123,12 @@ public class MemlTextReader : IDataReader, IDisposable
 					value = _builder.ToString();
 					return true;
 
-				// Variable use
-				case '$':
-					_builder.Clear();
-					while (PeekChar(out next) && char.IsLetterOrDigit(next))
-					{
-						_builder.Append(next);
-						SkipChar();
-					}
-					break;
-
 				// Other
 				default:
 					_builder.Clear();
 					_builder.Append(next);
 
-					while (PeekChar(out next) && char.IsWhiteSpace(next))
+					while (PeekChar(out next) && !("\r\n,:{}[]#").Contains(next))
 					{
 						_builder.Append(next);
 						SkipChar();
@@ -169,7 +159,20 @@ public class MemlTextReader : IDataReader, IDisposable
 				{
 					// Read variable value
 					Read();
-					variables.Add(str.Substring(1), this.CurrentValue());
+					object varValue;
+					switch (token)
+					{
+						default: varValue = value!; break;
+						case StructureToken.ObjectStart: varValue = this.ReadObject(); break;
+						case StructureToken.ArrayStart: varValue = this.ReadArray(); break;
+
+						case StructureToken.ObjectKey:
+						case StructureToken.ObjectEnd:
+						case StructureToken.ArrayEnd:
+							throw new Exception($"Unexpected {token}");
+					}
+
+					variables.Add(str.Substring(1), (token, varValue));
 
 					// Actually return something useful
 					return Read();
@@ -181,6 +184,19 @@ public class MemlTextReader : IDataReader, IDisposable
 			}
 			else
 			{
+				// Variable use
+				if (str.StartsWith('$'))
+				{
+					var varName = str.Substring(1);
+
+					if (!variables.TryGetValue(varName, out var varValue))
+						throw new Exception($"Variable '{varName}' is not defined @{_position}");
+
+					token = varValue.token;
+					value = varValue.value;
+					return true;
+				}
+
 				switch (str)
 				{
 					case "null": token = StructureToken.Null; value = null; return true;

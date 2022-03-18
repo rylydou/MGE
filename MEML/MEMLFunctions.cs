@@ -9,9 +9,9 @@ public static class DataReaderAndWriterFunctions
 	/// Reads an Meml Object from the Stream and returns it
 	/// </summary>
 	/// <param name="into">An optional object to read into. If null, it creates a new JsonObject</param>
-	public static StructureValue ReadObject(this IDataReader reader)
+	public static StructureValue ReadObject(this IDataReader reader, StructureObject? into = null)
 	{
-		var result = new StructureObject();
+		var result = into ?? new StructureObject();
 		var opened = false;
 
 		while (reader.Read() && reader.token != StructureToken.ObjectEnd)
