@@ -91,7 +91,7 @@ function main() {
 
 		const number_constants = {
 			scope: 'number',
-			match: '(nan)|[+-]?(inf)',
+			match: '(nan)|([+-]?inf)',
 		};
 
 		const binary = {

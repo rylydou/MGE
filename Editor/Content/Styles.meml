@@ -28,5 +28,5 @@ element: {
 }
 
 canvas: {
-	background: '#161616'
+	background: $base
 }

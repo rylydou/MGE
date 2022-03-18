@@ -2,7 +2,7 @@
 
 namespace MEML;
 
-public class StructureObject : MemlValue<Dictionary<string, StructureValue>>
+public class StructureObject : StructureValue<Dictionary<string, StructureValue>>
 {
 	public StructureObject() : base(StructureType.Object, new Dictionary<string, StructureValue>()) { }
 

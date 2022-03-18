@@ -122,24 +122,24 @@ public abstract class StructureValue
 	// 	return stream.ToArray();
 	// }
 
-	public static implicit operator StructureValue(bool value) => new MemlValue<bool>(StructureType.Bool, value);
-	public static implicit operator StructureValue(string value) => new MemlValue<string>(StructureType.String, value ?? "");
+	public static implicit operator StructureValue(bool value) => new StructureValue<bool>(StructureType.Bool, value);
+	public static implicit operator StructureValue(string value) => new StructureValue<string>(StructureType.String, value ?? "");
 
-	public static implicit operator StructureValue(byte value) => new MemlValue<byte>(StructureType.Byte, value);
-	public static implicit operator StructureValue(sbyte value) => new MemlValue<sbyte>(StructureType.SByte, value);
-	public static implicit operator StructureValue(char value) => new MemlValue<char>(StructureType.Char, value);
-	public static implicit operator StructureValue(short value) => new MemlValue<short>(StructureType.Short, value);
-	public static implicit operator StructureValue(ushort value) => new MemlValue<ushort>(StructureType.UShort, value);
-	public static implicit operator StructureValue(int value) => new MemlValue<int>(StructureType.Int, value);
-	public static implicit operator StructureValue(uint value) => new MemlValue<uint>(StructureType.UInt, value);
-	public static implicit operator StructureValue(long value) => new MemlValue<long>(StructureType.Long, value);
-	public static implicit operator StructureValue(ulong value) => new MemlValue<ulong>(StructureType.ULong, value);
+	public static implicit operator StructureValue(byte value) => new StructureValue<byte>(StructureType.Byte, value);
+	public static implicit operator StructureValue(sbyte value) => new StructureValue<sbyte>(StructureType.SByte, value);
+	public static implicit operator StructureValue(char value) => new StructureValue<char>(StructureType.Char, value);
+	public static implicit operator StructureValue(short value) => new StructureValue<short>(StructureType.Short, value);
+	public static implicit operator StructureValue(ushort value) => new StructureValue<ushort>(StructureType.UShort, value);
+	public static implicit operator StructureValue(int value) => new StructureValue<int>(StructureType.Int, value);
+	public static implicit operator StructureValue(uint value) => new StructureValue<uint>(StructureType.UInt, value);
+	public static implicit operator StructureValue(long value) => new StructureValue<long>(StructureType.Long, value);
+	public static implicit operator StructureValue(ulong value) => new StructureValue<ulong>(StructureType.ULong, value);
 
-	public static implicit operator StructureValue(float value) => new MemlValue<float>(StructureType.Float, value);
-	public static implicit operator StructureValue(double value) => new MemlValue<double>(StructureType.Double, value);
-	public static implicit operator StructureValue(decimal value) => new MemlValue<decimal>(StructureType.Decimal, value);
+	public static implicit operator StructureValue(float value) => new StructureValue<float>(StructureType.Float, value);
+	public static implicit operator StructureValue(double value) => new StructureValue<double>(StructureType.Double, value);
+	public static implicit operator StructureValue(decimal value) => new StructureValue<decimal>(StructureType.Decimal, value);
 
-	public static implicit operator StructureValue(byte[] value) => new MemlValue<byte[]>(StructureType.Binary, value);
+	public static implicit operator StructureValue(byte[] value) => new StructureValue<byte[]>(StructureType.Binary, value);
 
 	public static implicit operator bool(StructureValue value) => value.Bool;
 	public static implicit operator string(StructureValue value) => value.String;
@@ -224,11 +224,11 @@ public class StructureValueNull : StructureValue
 /// <summary>
 /// A Structure Value with a given C# data type
 /// </summary>
-public class MemlValue<T> : StructureValue
+public class StructureValue<T> : StructureValue
 {
 	public readonly T Value;
 
-	public MemlValue(StructureType type, T value) : base(type)
+	public StructureValue(StructureType type, T value) : base(type)
 	{
 		Value = value;
 	}

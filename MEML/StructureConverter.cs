@@ -109,23 +109,23 @@ public class StructureConverter
 
 		if (type.IsPrimitive)
 		{
-			if (obj is bool @bool) return new MemlValue<bool>(StructureType.Bool, @bool);
+			if (obj is bool @bool) return new StructureValue<bool>(StructureType.Bool, @bool);
 
-			if (obj is float @float) return new MemlValue<float>(StructureType.Float, @float);
-			if (obj is double @double) return new MemlValue<double>(StructureType.Double, @double);
-			if (obj is int @int) return new MemlValue<int>(StructureType.Int, @int);
-			if (obj is uint @uint) return new MemlValue<uint>(StructureType.UInt, @uint);
-			if (obj is byte @byte) return new MemlValue<byte>(StructureType.Byte, @byte);
-			if (obj is char @char) return new MemlValue<char>(StructureType.Char, @char);
-			if (obj is short @short) return new MemlValue<short>(StructureType.Short, @short);
-			if (obj is ushort @ushort) return new MemlValue<ushort>(StructureType.UShort, @ushort);
-			if (obj is long @long) return new MemlValue<long>(StructureType.Long, @long);
-			if (obj is ulong @ulong) return new MemlValue<ulong>(StructureType.ULong, @ulong);
+			if (obj is float @float) return new StructureValue<float>(StructureType.Float, @float);
+			if (obj is double @double) return new StructureValue<double>(StructureType.Double, @double);
+			if (obj is int @int) return new StructureValue<int>(StructureType.Int, @int);
+			if (obj is uint @uint) return new StructureValue<uint>(StructureType.UInt, @uint);
+			if (obj is byte @byte) return new StructureValue<byte>(StructureType.Byte, @byte);
+			if (obj is char @char) return new StructureValue<char>(StructureType.Char, @char);
+			if (obj is short @short) return new StructureValue<short>(StructureType.Short, @short);
+			if (obj is ushort @ushort) return new StructureValue<ushort>(StructureType.UShort, @ushort);
+			if (obj is long @long) return new StructureValue<long>(StructureType.Long, @long);
+			if (obj is ulong @ulong) return new StructureValue<ulong>(StructureType.ULong, @ulong);
 		}
 
-		if (obj is string @string) return new MemlValue<string>(StructureType.String, @string);
+		if (obj is string @string) return new StructureValue<string>(StructureType.String, @string);
 
-		if (obj is byte[] binary) return new MemlValue<byte[]>(StructureType.Binary, binary);
+		if (obj is byte[] binary) return new StructureValue<byte[]>(StructureType.Binary, binary);
 
 		// Array
 		if (obj is ICollection collection)

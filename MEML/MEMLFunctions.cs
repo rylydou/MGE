@@ -144,62 +144,62 @@ public static class DataReaderAndWriterFunctions
 
 				default:
 					{
-						if (value is MemlValue<bool> Bool)
+						if (value is StructureValue<bool> Bool)
 						{
 							writer.Value(Bool.Bool);
 							return;
 						}
-						else if (value is MemlValue<decimal> Decimal)
+						else if (value is StructureValue<decimal> Decimal)
 						{
 							writer.Value(Decimal.Decimal);
 							return;
 						}
-						else if (value is MemlValue<float> Float)
+						else if (value is StructureValue<float> Float)
 						{
 							writer.Value(Float.Float);
 							return;
 						}
-						else if (value is MemlValue<double> Double)
+						else if (value is StructureValue<double> Double)
 						{
 							writer.Value(Double.Double);
 							return;
 						}
-						else if (value is MemlValue<byte> Byte)
+						else if (value is StructureValue<byte> Byte)
 						{
 							writer.Value(Byte.Byte);
 							return;
 						}
-						else if (value is MemlValue<char> Char)
+						else if (value is StructureValue<char> Char)
 						{
 							writer.Value(Char.Char);
 							return;
 						}
-						else if (value is MemlValue<short> Short)
+						else if (value is StructureValue<short> Short)
 						{
 							writer.Value(Short.Short);
 							return;
 						}
-						else if (value is MemlValue<ushort> UShort)
+						else if (value is StructureValue<ushort> UShort)
 						{
 							writer.Value(UShort.UShort);
 							return;
 						}
-						else if (value is MemlValue<int> Int)
+						else if (value is StructureValue<int> Int)
 						{
 							writer.Value(Int.Int);
 							return;
 						}
-						else if (value is MemlValue<uint> UInt)
+						else if (value is StructureValue<uint> UInt)
 						{
 							writer.Value(UInt.UInt);
 							return;
 						}
-						else if (value is MemlValue<long> Long)
+						else if (value is StructureValue<long> Long)
 						{
 							writer.Value(Long.Long);
 							return;
 						}
-						else if (value is MemlValue<ulong> ULong)
+						else if (value is StructureValue<ulong> ULong)
 						{
 							writer.Value(ULong.ULong);
 							return;
@@ -207,7 +207,7 @@ public static class DataReaderAndWriterFunctions
 					}
 					break;
 				case StructureType.Binary:
-					if (value is MemlValue<byte[]> Bytes)
+					if (value is StructureValue<byte[]> Bytes)
 					{
 						writer.Value(Bytes.Bytes);
 						return;

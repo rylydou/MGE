@@ -6,7 +6,7 @@ namespace MEML;
 /// <summary>
 /// A data structure encapsulating an Array
 /// </summary>
-public class StructureArray : MemlValue<List<StructureValue>>, IEnumerable
+public class StructureArray : StructureValue<List<StructureValue>>, IEnumerable
 {
 	public StructureArray() : base(StructureType.Array, new List<StructureValue>()) { }
 

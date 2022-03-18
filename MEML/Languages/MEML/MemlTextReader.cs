@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,8 @@ public class MemlTextReader : IDataReader, IDisposable
 	readonly TextReader _reader;
 	readonly StringBuilder _builder = new();
 	readonly bool _disposeStream;
+
+	public Dictionary<string, StructureValue> variables = new();
 
 	bool _storedNext;
 	long _position;
@@ -120,12 +123,22 @@ public class MemlTextReader : IDataReader, IDisposable
 					value = _builder.ToString();
 					return true;
 
+				// Variable use
+				case '$':
+					_builder.Clear();
+					while (PeekChar(out next) && char.IsLetterOrDigit(next))
+					{
+						_builder.Append(next);
+						SkipChar();
+					}
+					break;
+
 				// Other
 				default:
 					_builder.Clear();
 					_builder.Append(next);
 
-					while (PeekChar(out next) && !("\r\n,:{}[]#").Contains(next))
+					while (PeekChar(out next) && char.IsWhiteSpace(next))
 					{
 						_builder.Append(next);
 						SkipChar();
@@ -151,6 +164,16 @@ public class MemlTextReader : IDataReader, IDisposable
 			if (isKey)
 			{
 				if (lastToken == StructureToken.ObjectKey) throw new Exception($"Empty value @{_position}");
+
+				if (str.StartsWith('$'))
+				{
+					// Read variable value
+					Read();
+					variables.Add(str.Substring(1), this.CurrentValue());
+
+					// Actually return something useful
+					return Read();
+				}
 
 				token = StructureToken.ObjectKey;
 				value = str;
