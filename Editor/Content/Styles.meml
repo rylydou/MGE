@@ -1,15 +1,30 @@
-$base: '#161616'
-$background: '#202020'
-$outset: '#2B2B2B'
-$inset: '#161616'
-$accent: '#FE9137'
-$foreground: '#FFE'
-$midground: '#9A9A9A'
+!MGE: 'UIStylesetLoader'
 
-midground: $midground
-foreground: $foreground
+$transparent: '#00000000'
+$base:        '#161616FF'
+$background:  '#202020FF'
+$outset:      '#2B2B2BFF'
+$inset:       '#161616FF'
+$accent:      '#FE9137FF'
+$foreground:  '#FFFFFFFF'
+$midground:   '#808080FF'
 
 element: {
+	midground: $midground
+	foreground: $foreground
+}
+
+canvas: {
+	@inherit: 'element'
+
+	background: $base
+}
+
+# A control is anything that the user can interact with
+# ex. PushButton, Slider, Entry
+control: {
+	@inherit: 'element'
+
 	background: $outset
 
 	.select: {
@@ -21,12 +36,25 @@ element: {
 		background: $accent
 	}
 
-	entry: {
-		background: $inset
-		border: $outset
+	.flat: {
+		background: $transparent
+
+		.select: {
+			background: $outset
+			border: $transparent
+		}
 	}
 }
 
-canvas: {
-	background: $base
+entry: {
+	@inherit: 'control'
+
+	background: $inset
+	border: $outset
+
+	.select: { } # No select state
+
+	.active: {
+		border: $accent
+	}
 }

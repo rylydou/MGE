@@ -48,4 +48,10 @@ static class Extentions
 		}
 		return true;
 	}
+
+	// public static TValue GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue defaultValue) where TKey : notnull
+	// {
+	// 	if (dict.TryGetValue(key, out var value)) return value;
+	// 	return defaultValue;
+	// }
 }

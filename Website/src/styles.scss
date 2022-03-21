@@ -55,46 +55,17 @@ article {
 }
 
 .navbar {
-  display: flex;
   width: 100%;
-  // overflow-x: auto;
-  // box-shadow: inset 0 0 16px $base;
-
-  @media only screen and (max-width: 600px) {
-    flex-direction: column;
-  }
-
-  a {
-    white-space: nowrap;
-    padding: 0.25em 0.5em;
-    margin-top: 0.5em;
-    font-weight: bold;
-    text-decoration: none;
-    color: $accent;
-
-    &:hover {
-      color: $background;
-      background-color: $accent;
-    }
-  }
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 0.5em;
+  gap: 0.25em;
 }
 
 footer {
   width: 100%;
-
-  a {
-    display: inline-block;
-    padding: 0.25em 0.5em;
-    margin-bottom: 0.5em;
-    font-weight: bold;
-    text-decoration: none;
-    color: $accent;
-
-    &:hover {
-      color: $background;
-      background-color: $accent;
-    }
-  }
+  display: flex;
+  flex-wrap: wrap;
 }
 
 h1,
@@ -121,7 +92,7 @@ p {
   margin-top: 1em;
 }
 
-a:not(.nostyle) {
+a:not(.button) {
   color: $accent;
   text-decoration: none;
 
@@ -132,6 +103,20 @@ a:not(.nostyle) {
   &:hover:visited:not(.nodim),
   &:focus:visited:not(.nodim) {
     color: darken(desaturate($accent, 25%), 25%);
+  }
+}
+
+a.button {
+  display: inline-block;
+  padding: 0.25em 0.5em;
+  margin-bottom: 0.5em;
+  font-weight: bold;
+  text-decoration: none;
+  color: $accent;
+
+  &:hover {
+    color: $background;
+    background-color: $accent;
   }
 }
 
