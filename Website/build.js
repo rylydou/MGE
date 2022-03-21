@@ -160,7 +160,7 @@ function main() {
 		page = page.replace(/\$PAGE_CONTENT\$/, parsedHtml);
 
 		let pagePath = '';
-		if (filename === 'src/index.md') {
+		if (filename.replace('\\', '/') === 'src/index.md') {
 			pagePath = 'dist';
 		}
 		else {

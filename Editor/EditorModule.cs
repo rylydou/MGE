@@ -4,7 +4,7 @@ namespace MGE.Editor;
 
 public class EditorModule : Module
 {
-	public readonly Batch2D batch = new Batch2D();
+	public readonly Batch2D batch = new();
 
 #pragma warning disable CS8618
 	Font _font;
