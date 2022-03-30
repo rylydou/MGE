@@ -54,4 +54,9 @@ static class Extentions
 	// 	if (dict.TryGetValue(key, out var value)) return value;
 	// 	return defaultValue;
 	// }
+
+	public static void Set(this object obj, string propertyName, object value)
+	{
+		var member = obj.GetType().GetMember(propertyName);
+	}
 }

@@ -19,5 +19,7 @@ public class UIStyleset
 		var currentColor = Color.clear;
 
 		if (style.colors.TryGetValue(name, out var color)) currentColor = color;
+
+		return currentColor;
 	}
 }
