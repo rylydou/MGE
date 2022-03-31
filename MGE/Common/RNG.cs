@@ -16,7 +16,7 @@ public class RNG
 	public int RandomInt(int min, int max) => rng.Next(min, max + 1);
 
 	public float RandomFloat() => rng.NextSingle();
-	public float RandomFloat(float max) => max * RandomFloat();
+	public float RandomFloat(float max) => RandomFloat() * max;
 	public float RandomFloat(float min, float max) => (max - min) * RandomFloat() + min;
 
 	public bool RandomBool() => RandomInt(1) == 0;

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace MGE.GLFW
 {
-	public class GLFW_System : System, ISystemOpenGL, ISystemVulkan
+	public class GLFW_System : Windowing, ISystemOpenGL, ISystemVulkan
 	{
 		readonly GLFW_Input _input;
 

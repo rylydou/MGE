@@ -270,16 +270,16 @@ public class ModuleList : IEnumerable<Module>
 			modules[i]?.FrameStart();
 	}
 
-	internal void FixedUpdate()
+	internal void Tick(float delta)
 	{
 		for (int i = 0; i < modules.Count; i++)
-			modules[i]?.FixedUpdate();
+			modules[i]?.Tick(delta);
 	}
 
-	internal void Update()
+	internal void Update(float delta)
 	{
 		for (int i = 0; i < modules.Count; i++)
-			modules[i]?.Update();
+			modules[i]?.Update(delta);
 	}
 
 	internal void FrameEnd()

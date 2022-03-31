@@ -9,7 +9,9 @@ public abstract class Node
 
 	public Node()
 	{
+		Log.Info("Node constructed");
 		name = GetType().Name;
+		RegisterCallbacks();
 	}
 
 	[Prop] List<Node> _children = new();
@@ -91,32 +93,34 @@ public abstract class Node
 
 	#region Events
 
-	public virtual void _OnEnterScene() { }
-	public virtual void _OnExitScene() { }
+	protected virtual void RegisterCallbacks()
+	{
+		onEnterScene += OnEnterScene;
+		onExitScene += OnExitScene;
+
+		onTick += Tick;
+		onTick += (delta) => GetChildren<Node>().ForEach(c => c.onTick(delta));
+		onUpdate += Update;
+		onUpdate += (delta) => GetChildren<Node>().ForEach(c => c.onUpdate(delta));
+	}
+
+	public Action onEnterScene = () => { };
+	protected virtual void OnEnterScene() { }
+
+	public Action onExitScene = () => { };
+	protected virtual void OnExitScene() { }
 
 	#endregion Events
 
 	#region Loops
 
-	internal void Update(float delta)
-	{
-		_Update(delta);
+	public delegate void TickDelegate(float delta);
+	public TickDelegate onTick = (delta) => { };
+	protected virtual void Tick(float delta) { }
 
-		foreach (var child in GetChildren<Node>())
-		{
-			child._Update(delta);
-		}
-	}
-
-	public virtual void _Update(float delta) { }
-
-	public virtual void _Tick(float delta)
-	{
-		foreach (var child in GetChildren<Node>())
-		{
-			child._Tick(delta);
-		}
-	}
+	public delegate void UpdateDelegate(float delta);
+	public UpdateDelegate onUpdate = (delta) => { };
+	protected virtual void Update(float delta) { }
 
 	#endregion Loops
 }

@@ -46,7 +46,7 @@ public class EditorModule : Module
 	}
 
 	// This is called every frame of the Application
-	protected override void Update()
+	protected override void Update(float delta)
 	{
 		_canvas.fixedSize = App.window.size;
 	}

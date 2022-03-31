@@ -42,12 +42,12 @@ public abstract class Module
 	/// <summary>
 	/// Called every fixed step
 	/// </summary>
-	protected internal virtual void FixedUpdate() { }
+	protected internal virtual void Tick(float delta) { }
 
 	/// <summary>
 	/// Called every variable step
 	/// </summary>
-	protected internal virtual void Update() { }
+	protected internal virtual void Update(float delta) { }
 
 	/// <summary>
 	/// Called at the end of the frame, after Update and Fixed Update.
@@ -88,5 +88,4 @@ public abstract class AppModule : Module
 	/// Called when the Module is created, before Startup but after the first Window is created
 	/// </summary>
 	protected internal virtual void FirstWindowCreated() { }
-
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace MGE;
 
@@ -333,7 +332,7 @@ public class Window : RenderTarget
 
 	}
 
-	public Window(System system, string title, int width, int height, WindowFlags flags = WindowFlags.ScaleToMonitor)
+	public Window(Windowing system, string title, int width, int height, WindowFlags flags = WindowFlags.ScaleToMonitor)
 	{
 		system._windows.Add(this);
 

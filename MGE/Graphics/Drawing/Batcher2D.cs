@@ -14,6 +14,8 @@ namespace MGE;
 /// </summary>
 public class Batch2D
 {
+	public static Batch2D current = new Batch2D();
+
 	public static readonly VertexFormat vertexFormat = new VertexFormat(
 		new VertexAttribute("a_position", VertexAttrib.Position, VertexType.Float, VertexComponents.Two, false),
 		new VertexAttribute("a_tex", VertexAttrib.TexCoord0, VertexType.Float, VertexComponents.Two, false),

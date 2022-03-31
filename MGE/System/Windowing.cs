@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace MGE;
 
-public abstract class System : AppModule
+public abstract class Windowing : AppModule
 {
 	/// <summary>
 	/// Underlying System implementation API Name
@@ -63,7 +63,7 @@ public abstract class System : AppModule
 	/// </summary>
 	protected readonly List<Monitor> _monitors = new List<Monitor>();
 
-	protected System() : base(100)
+	protected Windowing() : base(100)
 	{
 		windows = new ReadOnlyCollection<Window>(_windows);
 		monitors = new ReadOnlyCollection<Monitor>(_monitors);

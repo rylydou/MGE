@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace MGE;
@@ -37,6 +38,14 @@ static class Extentions
 		}
 
 		return pixels;
+	}
+
+	public static void ForEach<T>(this IEnumerable<T> list, Action<T> action)
+	{
+		foreach (var item in list)
+		{
+			action(item);
+		}
 	}
 
 	public static bool Set<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value) where TKey : notnull

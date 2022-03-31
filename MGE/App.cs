@@ -36,7 +36,7 @@ public static class App
 	/// <summary>
 	/// Gets the System Module
 	/// </summary>
-	public static System system => modules.Get<System>();
+	public static Windowing system => modules.Get<Windowing>();
 
 	/// <summary>
 	/// Gets the Graphics Module
@@ -138,7 +138,7 @@ public static class App
 			// init modules
 			modules.ApplicationStarted();
 
-			if (!modules.Has<System>())
+			if (!modules.Has<Windowing>())
 				throw new Exception("App requires a System Module to be registered before it can Start");
 
 			// our primary Window
@@ -221,12 +221,12 @@ public static class App
 						Time.duration += fixedTarget;
 
 						system.input.Step();
-						modules.FixedUpdate();
-						modules.Update();
+						modules.Tick(Time.fixedDelta);
+						modules.Update(Time.delta);
 					}
 					else
 					{
-						modules.FixedUpdate();
+						modules.Tick(Time.fixedDelta);
 					}
 
 					if (exiting)
@@ -243,7 +243,7 @@ public static class App
 				Time.delta = Time.variableDelta = Time.rawDelta * Time.deltaScale;
 
 				// update
-				modules.Update();
+				modules.Update(Time.delta);
 			}
 
 			modules.FrameEnd();
