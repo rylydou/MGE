@@ -3,36 +3,36 @@ using System.Numerics;
 
 namespace MGE;
 
-/// <summary>
-/// An interface that implements a 2D Transform
-/// </summary>
-public interface ITransform2D
-{
-	/// <summary>
-	/// Gets or Sets the World Position of the Transform
-	/// </summary>
-	Vector2 position { get; set; }
+// /// <summary>
+// /// An interface that implements a 2D Transform
+// /// </summary>
+// public interface ITransform2D
+// {
+// 	/// <summary>
+// 	/// Gets or Sets the World Position of the Transform
+// 	/// </summary>
+// 	Vector2 position { get; set; }
 
-	/// <summary>
-	/// Gets or Sets the World Scale of the Transform
-	/// </summary>
-	Vector2 scale { get; set; }
+// 	/// <summary>
+// 	/// Gets or Sets the World Scale of the Transform
+// 	/// </summary>
+// 	Vector2 scale { get; set; }
 
-	/// <summary>
-	/// Gets or Sets the Origin of the Transform
-	/// </summary>
-	Vector2 origin { get; set; }
+// 	/// <summary>
+// 	/// Gets or Sets the Origin of the Transform
+// 	/// </summary>
+// 	Vector2 origin { get; set; }
 
-	/// <summary>
-	/// Gets or Sets the World Rotation of the Transform
-	/// </summary>
-	float rotation { get; set; }
-}
+// 	/// <summary>
+// 	/// Gets or Sets the World Rotation of the Transform
+// 	/// </summary>
+// 	float rotation { get; set; }
+// }
 
 /// <summary>
 /// A 2D Transform
 /// </summary>
-public class Transform2D : ITransform2D
+public class Transform2D
 {
 	Transform2D? _parent = null;
 	bool _dirty = true;

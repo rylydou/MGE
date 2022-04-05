@@ -7,6 +7,6 @@ public class SpriteFontLoader : IContentLoader
 
 	public object Load(File file, string path)
 	{
-		return new Font(App.graphics, file);
+		return new Font(App.graphics, file, resolutionFactor, kernelSize);
 	}
 }

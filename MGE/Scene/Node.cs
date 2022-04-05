@@ -5,16 +5,17 @@ namespace MGE;
 
 public abstract class Node
 {
-	[Prop] public string name;
+	[HiddenProp] public string name;
 
 	public Node()
 	{
-		Log.Info("Node constructed");
 		name = GetType().Name;
 		RegisterCallbacks();
 	}
 
-	[Prop] List<Node> _children = new();
+	[HiddenProp] List<Node> _children = new();
+
+	public Node? parent { get; private set; }
 
 	#region Node Querying
 
@@ -67,26 +68,23 @@ public abstract class Node
 
 	#region Node Management
 
-	public Action<Node> onNodeAttached = node => { };
-	public void AttachNode(Node node)
+	public void AddChild(Node node)
 	{
+		if (node.parent is not null) throw new Exception("Add child", "Node is already a child of something");
+
+		node.parent = this;
 		_children.Add(node);
-		OnAttachNode(node);
-	}
-	public virtual void OnAttachNode(Node node)
-	{
-		onNodeAttached.Invoke(node);
+		onChildAdded(node);
 	}
 
-	public Action<Node> onNodeDetached = node => { };
-	public void DetachNode(Node node)
+	public void RemoveChild(Node node)
 	{
+		if (node.parent is null) throw new Exception("Remove Child", "Node is not a child of anything");
+		if (node.parent != this) throw new Exception("Remove Child", "Parent doesn't own the child");
+
+		node.parent = null;
 		_children.Remove(node);
-		OnDetachNode(node);
-	}
-	public virtual void OnDetachNode(Node node)
-	{
-		onNodeDetached.Invoke(node);
+		onChildRemoved(node);
 	}
 
 	#endregion Node Management
@@ -97,6 +95,14 @@ public abstract class Node
 	{
 		onEnterScene += OnEnterScene;
 		onExitScene += OnExitScene;
+
+		onChildAdded += OnChildAdded;
+		onChildRemoved += OnChildRemoved;
+
+		onChildAddedDeep += OnChildAddedDeep;
+		onChildRemovedDeep += OnChildRemovedDeep;
+
+		onReady += Ready;
 
 		onTick += Tick;
 		onTick += (delta) => GetChildren<Node>().ForEach(c => c.onTick(delta));
@@ -110,9 +116,32 @@ public abstract class Node
 	public Action onExitScene = () => { };
 	protected virtual void OnExitScene() { }
 
+	public Action<Node> onChildAdded = node => { };
+	protected virtual void OnChildAdded(Node node) { }
+
+	public Action<Node> onChildRemoved = node => { };
+	protected virtual void OnChildRemoved(Node node) { }
+
+	// When a child or grandchild is changed
+	public Action<Node> onChildAddedDeep = node => { };
+	protected virtual void OnChildAddedDeep(Node node) { }
+
+	public Action<Node> onChildRemovedDeep = node => { };
+	protected virtual void OnChildRemovedDeep(Node node) { }
+
+	// When a child or grandchild is changed and the signal has not been handled by any other parent
+	public Func<Node, bool> onChildAddedDeepUnhandled = node => false;
+	protected virtual bool OnChildAddedDeepUnhandled(Node node) => false;
+
+	public Func<Node, bool> onChildRemovedDeepUnhandled = node => false;
+	protected virtual bool OnChildRemovedDeepUnhandled(Node node) => false;
+
 	#endregion Events
 
 	#region Loops
+
+	public Action onReady = () => { };
+	protected virtual void Ready() { }
 
 	public delegate void TickDelegate(float delta);
 	public TickDelegate onTick = (delta) => { };

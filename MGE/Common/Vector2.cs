@@ -313,7 +313,7 @@ public struct Vector2 : IEquatable<Vector2>
 
 	#region Overrides
 
-	public override string ToString() => $"({x:N2)}, {y:N2)})";
+	public override string ToString() => $"({x:N2}, {y:N2})";
 	public string ToString(string format) => string.Format(format, x, y);
 
 	public override int GetHashCode() => HashCode.Combine(x, y);

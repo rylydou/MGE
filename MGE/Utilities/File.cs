@@ -9,7 +9,7 @@ namespace MGE;
 
 public struct File : IEquatable<File>
 {
-	static StructureConverter converter = new StructureConverter()
+	static StructureConverter converter = new()
 	{
 		memberFinder = (type) => type.GetMembers(StructureConverter.suggestedBindingFlags).Where(m => m.GetCustomAttribute<SaveAttribute>() is not null)
 	};

@@ -31,7 +31,11 @@ public class ModuleList : IEnumerable<Module>
 	/// </summary>
 	public void Register(Type type)
 	{
-		NativeLibrary.SetDllImportResolver(Assembly.GetAssembly(type)!, App.DllImportResolver);
+		try
+		{
+			NativeLibrary.SetDllImportResolver(Assembly.GetAssembly(type)!, App.DllImportResolver);
+		}
+		catch { }
 
 		if (immediateInit)
 		{

@@ -2,11 +2,14 @@ using MGE;
 
 namespace Demo;
 
-public class PlayerNode : Node2D
+public class Player : Node2D
 {
-	Texture sprite = App.content.Get<Texture>("Tree.png");
-	Font _font = App.content.Get<Font>("Fonts/Kenney Future/Regular.ttf");
-	SoundEffect _soundEffect = App.content.Get<SoundEffect>("What.wav");
+	[Prop] public float moveSpeed;
+
+	Font _font = App.content.Get<Font>("Fonts/Inter/Regular.ttf");
+
+	Texture _sprite = App.content.Get<Texture>("Scene/Player/Sprite.ase");
+	SoundEffect _soundEffect = App.content.Get<SoundEffect>("Scene/Player/What.wav");
 
 	protected override void Update(float delta)
 	{
@@ -22,7 +25,7 @@ public class PlayerNode : Node2D
 		if (kb.Down(Keys.S)) input.y += 1;
 
 		// Set the position
-		position += input.normalized * 128 * delta;
+		position += input.normalized * moveSpeed * delta;
 
 		if (kb.Pressed(Keys.Space))
 		{
@@ -32,8 +35,8 @@ public class PlayerNode : Node2D
 
 	protected override void Draw(Batch2D batch)
 	{
-		batch.Image(sprite, position, Color.white);
+		batch.Image(_sprite, position, Color.white);
 
-		_font.DrawString(batch, $"{Time.fps}fps ({Time.rawDelta:F4}ms)\nPosition: {position}", new(8), Color.white);
+		_font.DrawString(batch, $"{Time.fps}fps ({Time.rawDelta:N4}ms)\n\tPosition: {position}", new(8), Color.white);
 	}
 }

@@ -8,7 +8,7 @@ public interface IConvexShape2D : IProjectable2D
 	/// <summary>
 	/// The number of sides of the Convex shape
 	/// </summary>
-	public int Points { get; }
+	public int points { get; }
 
 	/// <summary>
 	/// Gets a point of the Convex Shape at the given index
@@ -18,7 +18,7 @@ public interface IConvexShape2D : IProjectable2D
 	/// <summary>
 	/// The number of axis of the Convex Shape
 	/// </summary>
-	public int Axis { get; }
+	public int axis { get; }
 
 	/// <summary>
 	/// Gets a axis of the Convex Shape at the given index
@@ -82,7 +82,7 @@ public static class IConvexShape2DExt
 
 		// a-axis
 		{
-			for (int i = 0; i < a.Axis; i++)
+			for (int i = 0; i < a.axis; i++)
 			{
 				var axis = a.GetAxis(i);
 				if (!a.AxisOverlaps(b, axis, out float amount))
@@ -98,7 +98,7 @@ public static class IConvexShape2DExt
 
 		// b-axis
 		{
-			for (int i = 0; i < b.Axis; i++)
+			for (int i = 0; i < b.axis; i++)
 			{
 				var axis = b.GetAxis(i);
 				if (!a.AxisOverlaps(b, axis, out float amount))

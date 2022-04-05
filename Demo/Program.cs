@@ -16,8 +16,11 @@ App.modules.Register<AL_Audio>();
 // Content Module
 App.modules.Register<Content>();
 
+// Physics Module
+App.modules.Register<Physics>();
+
 // Register the custom Game Module to run your code
 App.modules.Register<Game>();
 
 // Start the Application with a single 1280x720 Window
-App.Start("My Application", 1280, 720);
+App.Start("My Application", 1280, 720, WindowFlags.ScaleToMonitor);

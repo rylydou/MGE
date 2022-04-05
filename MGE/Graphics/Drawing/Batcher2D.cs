@@ -417,7 +417,7 @@ public class Batch2D
 
 	public void Quad(in Quad2D quad, Color color)
 	{
-		Quad(quad.A, quad.B, quad.C, quad.D, color);
+		Quad(quad.a, quad.b, quad.c, quad.d, color);
 	}
 
 	public void Quad(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3, Color color)

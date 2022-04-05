@@ -276,7 +276,7 @@ public struct Rect : IEquatable<Rect>
 
 	#region Overrides
 
-	public override string ToString() => $"{{ {x:F2}, {y:F2}; {width:F2} x {height:F2} }}";
+	public override string ToString() => $"{{ {x:N2}, {y:N2}; {width:N2} x {height:N2} }}";
 	public string ToString(string format) => string.Format(format, x, y, width, height);
 
 	public override int GetHashCode() => HashCode.Combine(x, y, width, height);
