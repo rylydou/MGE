@@ -335,10 +335,10 @@ public class Batch2D
 
 	public Matrix3x2 PushMatrix(in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, bool relative = true)
 	{
-		return PushMatrix(Transform2D.CreateMatrix(position, origin, scale, rotation), relative);
+		return PushMatrix(GraphicsTransform2D.CreateMatrix(position, origin, scale, rotation), relative);
 	}
 
-	public Matrix3x2 PushMatrix(Transform2D transform, bool relative = true)
+	public Matrix3x2 PushMatrix(GraphicsTransform2D transform, bool relative = true)
 	{
 		return PushMatrix(transform.worldMatrix, relative);
 	}
@@ -1042,7 +1042,7 @@ public class Batch2D
 	{
 		var was = matrixStack;
 
-		matrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
+		matrixStack = GraphicsTransform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
 
 		SetTexture(texture);
 		Quad(
@@ -1082,7 +1082,7 @@ public class Batch2D
 	{
 		var was = matrixStack;
 
-		matrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
+		matrixStack = GraphicsTransform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
 
 		var tx0 = clip.x / texture.width;
 		var ty0 = clip.y / texture.height;
@@ -1125,7 +1125,7 @@ public class Batch2D
 	{
 		var was = matrixStack;
 
-		matrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
+		matrixStack = GraphicsTransform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
 
 		SetTexture(subtex.texture);
 		Quad(
@@ -1142,7 +1142,7 @@ public class Batch2D
 		var tex = subtex.texture;
 		var was = matrixStack;
 
-		matrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
+		matrixStack = GraphicsTransform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
 
 		var px0 = -frame.x;
 		var py0 = -frame.y;

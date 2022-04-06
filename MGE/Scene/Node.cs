@@ -17,6 +17,8 @@ public abstract class Node
 
 	public Node? parent { get; private set; }
 
+	public bool isInScene { get; private set; }
+
 	#region Node Querying
 
 	public IEnumerable<T> GetChildren<T>()

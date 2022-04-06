@@ -230,6 +230,42 @@ public struct Rect : IEquatable<Rect>
 		_height += amount * 2;
 	}
 
+	/// <summary>
+	/// Returns this <see cref="Rect2"/> expanded to include a given point.
+	/// </summary>
+	/// <param name="to">The point to include.</param>
+	/// <returns>The expanded <see cref="Rect2"/>.</returns>
+	public Rect Expand(Vector2 to)
+	{
+		Rect expanded = this;
+
+		Vector2 begin = expanded.position;
+		Vector2 end = expanded.position + expanded.size;
+
+		if (to.x < begin.x)
+		{
+			begin.x = to.x;
+		}
+		if (to.y < begin.y)
+		{
+			begin.y = to.y;
+		}
+
+		if (to.x > end.x)
+		{
+			end.x = to.x;
+		}
+		if (to.y > end.y)
+		{
+			end.y = to.y;
+		}
+
+		expanded.position = begin;
+		expanded.size = end - begin;
+
+		return expanded;
+	}
+
 	public bool Contains(Vector2 point) => (point.x >= xMin) && (point.x < xMax) && (point.y >= yMin) && (point.y < yMax);
 	public bool Contains(Rect rect) => (rect.xMin >= xMin) && (rect.xMax < xMax) && (rect.yMin >= yMin) && (rect.yMax < yMax);
 
