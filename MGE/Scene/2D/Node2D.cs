@@ -77,7 +77,7 @@ public abstract class Node2D : CanvasItem
 		set
 		{
 			var pi = GetParentItem();
-			if (pi)
+			if (pi is not null)
 			{
 				var inv = pi.globalTransform.AffineInverse();
 				transform = inv * value;
@@ -95,7 +95,7 @@ public abstract class Node2D : CanvasItem
 		set
 		{
 			var pi = GetParentItem();
-			if (pi)
+			if (pi is not null)
 			{
 				var inv = pi.globalTransform.AffineInverse();
 				position = inv * value;
@@ -113,9 +113,9 @@ public abstract class Node2D : CanvasItem
 		set
 		{
 			var pi = GetParentItem();
-			if (pi)
+			if (pi is not null)
 			{
-				var parentGlobalRot = pi.globalTransform.Rotation;
+				var parentGlobalRot = pi.globalTransform.rotation;
 				rotation = value - parentGlobalRot;
 			}
 			else
@@ -131,9 +131,9 @@ public abstract class Node2D : CanvasItem
 		set
 		{
 			var pi = GetParentItem();
-			if (pi)
+			if (pi is not null)
 			{
-				var parentGlobalScale = pi.globalTransform.Scale;
+				var parentGlobalScale = pi.globalTransform.scale;
 				scale = value / parentGlobalScale;
 			}
 			else
@@ -165,6 +165,11 @@ public abstract class Node2D : CanvasItem
 	public float GetAngleTo(Vector2 globalPoint)
 	{
 		return (ToLocal(globalPoint) * scale).angle;
+	}
+
+	public Node2D? GetParentItem()
+	{
+		return (parent as Node2D);
 	}
 
 	#endregion Utils

@@ -21,7 +21,7 @@ public class AL_Audio : Audio
 
 	protected override void ApplicationStarted()
 	{
-		apiName = "OpenGL";
+		apiName = "OpenAL";
 	}
 
 	protected override void FirstWindowCreated()

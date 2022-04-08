@@ -25,7 +25,7 @@ public class Player : Node2D
 		if (kb.Down(Keys.S)) input.y += 1;
 
 		// Set the position
-		localPosition += input.normalized * moveSpeed * delta;
+		position += input.normalized * moveSpeed * delta;
 
 		if (kb.Pressed(Keys.Space))
 		{
@@ -35,8 +35,8 @@ public class Player : Node2D
 
 	protected override void Draw(Batch2D batch)
 	{
-		batch.Image(_sprite, worldPosition, Color.white);
+		batch.Image(_sprite, new(0, 0), Color.white);
 
-		_font.DrawString(batch, $"{Time.fps}fps ({Time.rawDelta:N4}ms)\n\tPosition: {worldPosition}", new(8), Color.white);
+		// _font.DrawString(batch, $"{Time.fps}fps ({Time.rawDelta:N4}ms)\n\tPosition: {globalPosition}", new(8), Color.white);
 	}
 }
