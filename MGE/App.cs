@@ -133,8 +133,8 @@ public static class App
 				path = modules.Get<System>().UserDirectory(name);
 
 			Log.Error(e.Message);
-			// TODO - this call was broken with the logging updates!
-			//Log.AppendToFile(Name, Path.Combine(path, "ErrorLog.txt"));
+			// TODO  this call was broken with the logging updates!
+			// Log.AppendToFile(Name, Path.Combine(path, "ErrorLog.txt"));
 			throw;
 		}
 #endif

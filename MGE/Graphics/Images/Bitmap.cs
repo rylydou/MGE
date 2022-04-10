@@ -93,7 +93,7 @@ public class Bitmap
 	/// </summary>
 	public void SetPixels(RectInt destination, Memory<Color> source)
 	{
-		// TODO: perform bounds checking?
+		// TODO  perform bounds checking?
 
 		var src = source.Span;
 		var dst = new Span<Color>(pixels);

@@ -19,10 +19,6 @@ public enum GraphicsRenderer
 	Direct3D12,
 
 	Metal,
-
-	// Audio
-
-	OpenAL,
 }
 
 public abstract class Graphics : AppModule
@@ -70,12 +66,18 @@ public abstract class Graphics : AppModule
 	/// <summary>
 	/// Clears the Color of the Target
 	/// </summary>
-	public void Clear(RenderTarget target, Color color) => Clear(target, MGE.Clear.Color, color, 0, 0, new RectInt(0, 0, target.renderWidth, target.renderHeight));
+	public void Clear(RenderTarget target, Color color)
+	{
+		Clear(target, MGE.Clear.Color, color, 0, 0, new RectInt(0, 0, target.renderWidth, target.renderHeight));
+	}
 
 	/// <summary>
 	/// Clears the Target
 	/// </summary>
-	public void Clear(RenderTarget target, Color color, float depth, int stencil) => Clear(target, MGE.Clear.All, color, depth, stencil, new RectInt(0, 0, target.renderWidth, target.renderHeight));
+	public void Clear(RenderTarget target, Color color, float depth, int stencil)
+	{
+		Clear(target, MGE.Clear.All, color, depth, stencil, new RectInt(0, 0, target.renderWidth, target.renderHeight));
+	}
 
 	/// <summary>
 	/// Clears the Target

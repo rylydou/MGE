@@ -101,6 +101,12 @@ public struct Vector2 : IEquatable<Vector2>
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static Vector2 Transform(Vector2 position, Transform2D transform) => new Vector2(
+		(position.x * transform.x.x) + (position.y * transform.y.x) + transform.origin.x,
+		(position.x * transform.x.y) + (position.y * transform.y.y) + transform.origin.y
+	);
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Vector2 Transform(Vector2 position, Matrix3x2 matrix) => new Vector2(
 		(position.x * matrix.M11) + (position.y * matrix.M21) + matrix.M31,
 		(position.x * matrix.M12) + (position.y * matrix.M22) + matrix.M32
@@ -142,6 +148,12 @@ public struct Vector2 : IEquatable<Vector2>
 	public static Vector2 TransformNormal(Vector2 normal, Matrix3x2 matrix) => new Vector2(
 		(normal.x * matrix.M11) + (normal.y * matrix.M21),
 		(normal.x * matrix.M12) + (normal.y * matrix.M22)
+	);
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static Vector2 TransformNormal(Vector2 normal, Transform2D transform) => new Vector2(
+		(normal.x * transform.x.x) + (normal.y * transform.y.x),
+		(normal.x * transform.x.y) + (normal.y * transform.y.y)
 	);
 
 	#endregion Static
@@ -256,6 +268,11 @@ public struct Vector2 : IEquatable<Vector2>
 	{
 		x += offset.x;
 		y += offset.y;
+	}
+
+	public Vector2 Snap()
+	{
+		return new(Math.Round(x), Math.Round(y));
 	}
 
 	#region Operators

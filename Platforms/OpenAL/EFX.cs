@@ -193,7 +193,7 @@ public static class EFX
 	public const int AL_FILTER_HIGHPASS = 0x0002;
 	public const int AL_FILTER_BANDPASS = 0x0003;
 
-	/* TODO: EFX Default Value Constants! */
+	// TODO  EFX Default Value Constants!
 
 	/* n refers to an ALsizei */
 	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]

@@ -45,7 +45,7 @@ public static class DataReaderAndWriterFunctions
 		}
 		catch { }
 
-		// FIXME: this seems like the MaybeNullWhen attribute doesn't work?
+		// FIXME  this seems like the MaybeNullWhen attribute doesn't work?
 		// #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 		obj = null;
 		// #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.

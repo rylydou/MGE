@@ -112,6 +112,7 @@ namespace MGE.GLFW
 			set => GLFW.SetWindowAttrib(_pointer, GLFW.WindowAttributes.Resizable, value);
 		}
 
+		// FIXME  Making a window fullscreen on a secondary monitor causes the system to freeze
 		protected override bool fullscreen
 		{
 			get
@@ -131,31 +132,32 @@ namespace MGE.GLFW
 						GLFW.ShowWindow(_pointer);
 
 						var bounds = new RectInt(position, size);
-						var monitor = GLFW.GetPrimaryMonitor();
+						var monitor = ((GLFW_Monitor)this.monitor).pointer;
+						// var monitor = GLFW.GetPrimaryMonitor();
 
-						// find the monitor we overlap with most
-						unsafe
-						{
-							var monitors = GLFW.GetMonitors(out int count);
+						// // find the monitor we overlap with most
+						// unsafe
+						// {
+						// 	var monitors = GLFW.GetMonitors(out int count);
 
-							if (count > 1)
-							{
-								var currMonBounds = new RectInt();
-								GLFW.GetMonitorWorkarea(monitor, out currMonBounds.x, out currMonBounds.y, out currMonBounds.width, out currMonBounds.height);
+						// 	if (count > 1)
+						// 	{
+						// 		var currMonBounds = new RectInt();
+						// 		GLFW.GetMonitorWorkarea(monitor, out currMonBounds.x, out currMonBounds.y, out currMonBounds.width, out currMonBounds.height);
 
-								for (int i = 0; i < count; i++)
-								{
-									var nextMonBounds = new RectInt();
-									GLFW.GetMonitorWorkarea(monitors[i], out nextMonBounds.x, out nextMonBounds.y, out nextMonBounds.width, out nextMonBounds.height);
+						// 		for (int i = 0; i < count; i++)
+						// 		{
+						// 			var nextMonBounds = new RectInt();
+						// 			GLFW.GetMonitorWorkarea(monitors[i], out nextMonBounds.x, out nextMonBounds.y, out nextMonBounds.width, out nextMonBounds.height);
 
-									if (RectInt.Intersect(bounds, nextMonBounds).area > RectInt.Intersect(bounds, currMonBounds).area)
-									{
-										monitor = monitors[i];
-										currMonBounds = nextMonBounds;
-									}
-								}
-							}
-						}
+						// 			if (RectInt.Intersect(bounds, nextMonBounds).area > RectInt.Intersect(bounds, currMonBounds).area)
+						// 			{
+						// 				monitor = monitors[i];
+						// 				currMonBounds = nextMonBounds;
+						// 			}
+						// 		}
+						// 	}
+						// }
 
 						if (monitor != IntPtr.Zero)
 						{
@@ -197,7 +199,7 @@ namespace MGE.GLFW
 				else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
 					return GLFW.GetCocoaWindow(_pointer);
 				else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-					return GLFW.GetX11Window(_pointer); // TODO Support wayland
+					return GLFW.GetX11Window(_pointer); // TODO  Support wayland, maybe, I'm not sure how this works
 				return IntPtr.Zero;
 			}
 		}

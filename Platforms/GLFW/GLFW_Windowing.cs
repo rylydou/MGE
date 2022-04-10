@@ -130,8 +130,8 @@ namespace MGE.GLFW
 						if (vkDestroySurfaceKHR is null)
 						{
 							var ptr = GetVKProcAddress(vkInstance, "vkDestroySurfaceKHR");
-							// if (ptr is not null) FIXME
-							vkDestroySurfaceKHR = (VkDestroySurfaceKHR)Marshal.GetDelegateForFunctionPointer(ptr, typeof(VkDestroySurfaceKHR));
+							if (ptr != IntPtr.Zero)
+								vkDestroySurfaceKHR = (VkDestroySurfaceKHR)Marshal.GetDelegateForFunctionPointer(ptr, typeof(VkDestroySurfaceKHR));
 						}
 
 						vkDestroySurfaceKHR?.Invoke(vkInstance, _vkSurfaces[_windowPointers[i]], IntPtr.Zero);

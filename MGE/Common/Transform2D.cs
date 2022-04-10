@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 
 namespace MGE;
 
@@ -374,17 +375,17 @@ public struct Transform2D : IEquatable<Transform2D>
 	/// Do not use <c>new Transform2D()</c> with no arguments in C#, because it sets all values to zero.
 	/// </summary>
 	/// <value>Equivalent to <c>new Transform2D(Vector2.Right, Vector2.Down, Vector2.Zero)</c>.</value>
-	public static Transform2D Identity { get { return _identity; } }
+	public static Transform2D identity { get { return _identity; } }
 	/// <summary>
 	/// The transform that will flip something along the X axis.
 	/// </summary>
 	/// <value>Equivalent to <c>new Transform2D(Vector2.Left, Vector2.Down, Vector2.Zero)</c>.</value>
-	public static Transform2D FlipX { get { return _flipX; } }
+	public static Transform2D flipX { get { return _flipX; } }
 	/// <summary>
 	/// The transform that will flip something along the Y axis.
 	/// </summary>
 	/// <value>Equivalent to <c>new Transform2D(Vector2.Right, Vector2.Up, Vector2.Zero)</c>.</value>
-	public static Transform2D FlipY { get { return _flipY; } }
+	public static Transform2D flipY { get { return _flipY; } }
 
 	/// <summary>
 	/// Constructs a transformation matrix from 3 vectors (matrix columns).
@@ -428,6 +429,34 @@ public struct Transform2D : IEquatable<Transform2D>
 		x.y = y.x = Math.Sin(rotation);
 		y.x *= -1;
 		this.origin = origin;
+	}
+
+	/// <summary>
+	/// Creates a Matrix3x2 given the Transform Values
+	/// </summary>
+	public static Transform2D CreateMatrix(in Vector2 position, in Vector2 origin, in Vector2 scale, in float rotation)
+	{
+		Transform2D matrix = Transform2D.identity;
+
+		if (origin != Vector2.zero)
+			matrix = matrix.Translated(-origin);
+		// matrix = Transform2D.CreateTranslation(-origin.x, -origin.y);
+		// else
+		// matrix = Transform2D.identity;
+
+		if (scale != Vector2.one)
+			matrix = matrix.Scaled(scale);
+		// matrix *= Transform2D.CreateScale(scale.x, scale.y);
+
+		if (rotation != 0)
+			matrix = matrix.Rotated(rotation);
+		// matrix *= Transform2D.CreateRotation(rotation);
+
+		if (position != Vector2.zero)
+			matrix = matrix.Translated(position);
+		// matrix *= Transform2D.CreateTranslation(position.x, position.y);
+
+		return matrix;
 	}
 
 	/// <summary>
@@ -569,6 +598,16 @@ public struct Transform2D : IEquatable<Transform2D>
 	public static bool operator !=(Transform2D left, Transform2D right)
 	{
 		return !left.Equals(right);
+	}
+
+	public static explicit operator Matrix3x2(Transform2D t)
+	{
+		return new(t.x.x, t.x.y, t.y.x, t.y.y, t.origin.x, t.origin.y);
+	}
+
+	public static explicit operator Matrix4x4(Transform2D t)
+	{
+		return new((Matrix3x2)t);
 	}
 
 	/// <summary>

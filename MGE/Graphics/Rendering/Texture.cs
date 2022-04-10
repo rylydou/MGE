@@ -274,8 +274,7 @@ public class Texture : IDisposable
 		}
 		else
 		{
-			// TODO:
-			// do this inline with a single buffer
+			// TODO do this inline with a single buffer
 
 			var buffer = new byte[size];
 			GetData<byte>(buffer);

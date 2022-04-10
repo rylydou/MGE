@@ -12,7 +12,7 @@ namespace MGE
 	///
 	/// Aseprite File Spec: https://github.com/aseprite/aseprite/blob/master/docs/ase-file-specs.md
 	///
-	/// TODO: This is not a true or full implementation, and is missing several features (ex. blendmodes)
+	/// TODO  This is not a true or full implementation, and is missing several features (ex. blendmodes)
 	///
 	/// </summary>
 	public class Aseprite

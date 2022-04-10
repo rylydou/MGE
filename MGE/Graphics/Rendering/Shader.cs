@@ -123,7 +123,7 @@ public class ShaderUniform
 }
 
 /// <summary>
-/// TODO: This isn't api-agnostic and doesn't represent the final implementation
+/// TODO  This isn't api-agnostic and doesn't represent the final implementation
 ///
 /// Not sure what the best way to implement this is:
 ///

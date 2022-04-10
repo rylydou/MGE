@@ -57,13 +57,13 @@ public class Batch2D
 	public readonly Material defaultMaterial;
 	public readonly Mesh mesh;
 
-	public Matrix3x2 matrixStack = Matrix3x2.Identity;
+	public Transform2D matrixStack = Transform2D.identity;
 	public RectInt? scissor => _currentBatch.scissor;
 
 	public string textureUniformName = "u_texture";
 	public string matrixUniformName = "u_matrix";
 
-	readonly Stack<Matrix3x2> _matrixStack = new Stack<Matrix3x2>();
+	readonly Stack<Transform2D> _matrixStack = new Stack<Transform2D>();
 	Vertex[] _vertices;
 	int[] _indices;
 	RenderPass _pass;
@@ -84,13 +84,13 @@ public class Batch2D
 		public int layer;
 		public Material? material;
 		public BlendMode blendMode;
-		public Matrix3x2 matrix;
+		public Transform2D matrix;
 		public Texture? texture;
 		public RectInt? scissor;
 		public uint offset;
 		public uint elements;
 
-		public Batch(Material? material, BlendMode blend, Texture? texture, Matrix3x2 matrix, uint offset, uint elements)
+		public Batch(Material? material, BlendMode blend, Texture? texture, Transform2D matrix, uint offset, uint elements)
 		{
 			layer = 0;
 			this.material = material;
@@ -132,10 +132,10 @@ public class Batch2D
 		_vertexCount = 0;
 		_indexCount = 0;
 		_currentBatchInsert = 0;
-		_currentBatch = new Batch(null, BlendMode.Normal, null, Matrix3x2.Identity, 0, 0);
+		_currentBatch = new Batch(null, BlendMode.Normal, null, Transform2D.identity, 0, 0);
 		_batches.Clear();
 		_matrixStack.Clear();
-		matrixStack = Matrix3x2.Identity;
+		matrixStack = Transform2D.identity;
 	}
 
 	#region Rendering
@@ -200,7 +200,7 @@ public class Batch2D
 
 		_pass.material = batch.material ?? defaultMaterial;
 		_pass.material[textureUniformName]?.SetTexture(batch.texture);
-		_pass.material[matrixUniformName]?.SetMatrix4x4(new Matrix4x4(batch.matrix) * matrix);
+		_pass.material[matrixUniformName]?.SetMatrix4x4((Matrix4x4)batch.matrix * matrix);
 
 		_pass.meshIndexStart = batch.offset * 3;
 		_pass.meshIndexCount = batch.elements * 3;
@@ -252,7 +252,7 @@ public class Batch2D
 		return _currentBatch.blendMode;
 	}
 
-	public void SetMatrix(in Matrix3x2 matrix)
+	public void SetMatrix(in Transform2D matrix)
 	{
 		if (_currentBatch.elements == 0)
 		{
@@ -325,7 +325,7 @@ public class Batch2D
 		_currentBatchInsert = insert;
 	}
 
-	public void SetState(Material? material, in BlendMode blendmode, in Matrix3x2 matrix, RectInt? scissor)
+	public void SetState(Material? material, in BlendMode blendmode, in Transform2D matrix, RectInt? scissor)
 	{
 		SetMaterial(material);
 		SetBlendMode(blendmode);
@@ -333,22 +333,17 @@ public class Batch2D
 		SetScissor(scissor);
 	}
 
-	public Matrix3x2 PushMatrix(in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, bool relative = true)
+	public Transform2D PushMatrix(in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, bool relative = true)
 	{
-		return PushMatrix(GraphicsTransform2D.CreateMatrix(position, origin, scale, rotation), relative);
+		return PushMatrix(Transform2D.CreateMatrix(position, origin, scale, rotation), relative);
 	}
 
-	public Matrix3x2 PushMatrix(GraphicsTransform2D transform, bool relative = true)
+	public Transform2D PushMatrix(in Vector2 position, bool relative = true)
 	{
-		return PushMatrix(transform.worldMatrix, relative);
+		return PushMatrix(Transform2D.identity.Translated(position), relative);
 	}
 
-	public Matrix3x2 PushMatrix(in Vector2 position, bool relative = true)
-	{
-		return PushMatrix(Matrix3x2.CreateTranslation(position.x, position.y), relative);
-	}
-
-	public Matrix3x2 PushMatrix(in Matrix3x2 matrix, bool relative = true)
+	public Transform2D PushMatrix(in Transform2D matrix, bool relative = true)
 	{
 		_matrixStack.Push(matrixStack);
 
@@ -364,7 +359,7 @@ public class Batch2D
 		return matrixStack;
 	}
 
-	public Matrix3x2 PopMatrix()
+	public Transform2D PopMatrix()
 	{
 		Debug.Assert(_matrixStack.Count > 0, "Batch.MatrixStack Pops more than it Pushes");
 
@@ -374,7 +369,7 @@ public class Batch2D
 		}
 		else
 		{
-			matrixStack = Matrix3x2.Identity;
+			matrixStack = Transform2D.identity;
 		}
 
 		return matrixStack;
@@ -885,7 +880,7 @@ public class Batch2D
 				_vertexCount += 12;
 			}
 
-			// TODO: replace with hard-coded values
+			// TODO  replace with hard-coded values
 			var left = Calc.Angle(Vector2.left);
 			var right = Calc.Angle(Vector2.right);
 			var up = Calc.Angle(Vector2.up);
@@ -1042,7 +1037,7 @@ public class Batch2D
 	{
 		var was = matrixStack;
 
-		matrixStack = GraphicsTransform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
+		matrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
 
 		SetTexture(texture);
 		Quad(
@@ -1082,7 +1077,7 @@ public class Batch2D
 	{
 		var was = matrixStack;
 
-		matrixStack = GraphicsTransform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
+		matrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
 
 		var tx0 = clip.x / texture.width;
 		var ty0 = clip.y / texture.height;
@@ -1125,7 +1120,7 @@ public class Batch2D
 	{
 		var was = matrixStack;
 
-		matrixStack = GraphicsTransform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
+		matrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
 
 		SetTexture(subtex.texture);
 		Quad(
@@ -1142,7 +1137,7 @@ public class Batch2D
 		var tex = subtex.texture;
 		var was = matrixStack;
 
-		matrixStack = GraphicsTransform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
+		matrixStack = Transform2D.CreateMatrix(position, origin, scale, rotation) * matrixStack;
 
 		var px0 = -frame.x;
 		var py0 = -frame.y;
@@ -1280,7 +1275,7 @@ public class Batch2D
 	// 	var sy = rect.height / font.size;
 	// 	var scale = Math.Min(maxSize / font.size, Math.Min(sx, sy));
 	// 	var pos = rect.size * 0.5f - size * scale * 0.5f;
-	// 	PushMatrix(Matrix3x2.CreateScale(scale) * Matrix3x2.CreateTranslation(pos));
+	// 	PushMatrix(Transform2D.CreateScale(scale) * Transform2D.CreateTranslation(pos));
 	// 	Text(font, textSpan, color);
 	// 	PopMatrix();
 	// }
@@ -1296,7 +1291,7 @@ public class Batch2D
 	// 	var sy = rect.height / font.size;
 	// 	var scale = Math.Min(sx, sy);
 	// 	var pos = rect.size * 0.5f - size * scale * 0.5f;
-	// 	PushMatrix(Matrix3x2.CreateScale(scale) * Matrix3x2.CreateTranslation(pos));
+	// 	PushMatrix(Transform2D.CreateScale(scale) * Transform2D.CreateTranslation(pos));
 	// 	Text(font, textSpan, color);
 	// 	PopMatrix();
 	// }
@@ -1403,10 +1398,10 @@ public class Batch2D
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	void Transform(ref Vector2 to, in Vector2 position, in Matrix3x2 matrix)
+	void Transform(ref Vector2 to, in Vector2 position, in Transform2D matrix)
 	{
-		to.x = (position.x * matrix.M11) + (position.y * matrix.M21) + matrix.M31;
-		to.y = (position.x * matrix.M12) + (position.y * matrix.M22) + matrix.M32;
+		to.x = (position.x * matrix.x.x) + (position.y * matrix.y.x) + matrix.origin.x;
+		to.y = (position.x * matrix.x.y) + (position.y * matrix.y.y) + matrix.origin.y;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

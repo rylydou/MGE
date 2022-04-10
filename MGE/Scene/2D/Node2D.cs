@@ -1,10 +1,29 @@
-using System;
-
 namespace MGE;
 
-public abstract class Node2D : CanvasItem
+public class Node2D : CanvasItem
 {
 	#region Local
+
+	Transform2D _transform = Transform2D.identity;
+	public Transform2D transform
+	{
+		get => GetTransform();
+		set => SetTransform(value);
+	}
+	public override Transform2D GetTransform()
+	{
+		return _transform;
+	}
+	public void SetTransform(Transform2D transform)
+	{
+		if (_transform == transform) return;
+		_transform = transform;
+
+		_position = _transform.origin;
+		_rotation = _transform.rotation;
+		_scale = _transform.scale;
+		if (isInScene) onTransformChanged();
+	}
 
 	Vector2 _position = new(0.0f, 0.0f);
 	public Vector2 position
@@ -20,7 +39,7 @@ public abstract class Node2D : CanvasItem
 		}
 	}
 
-	float _rotation;
+	float _rotation = 0;
 	public float rotation
 	{
 		get => _rotation;
@@ -35,7 +54,7 @@ public abstract class Node2D : CanvasItem
 		}
 	}
 
-	Vector2 _scale;
+	Vector2 _scale = Vector2.one;
 	public Vector2 scale
 	{
 		get => _scale;
@@ -50,54 +69,31 @@ public abstract class Node2D : CanvasItem
 		}
 	}
 
-	Transform2D _transform;
-	public Transform2D transform
-	{
-		get => _transform;
-		set
-		{
-			if (_transform == value) return;
-			_transform = value;
-
-			_position = _transform.origin;
-			_rotation = _transform.rotation;
-			_scale = _transform.scale;
-			if (isInScene) onTransformChanged();
-		}
-	}
-
 	#endregion Local
 
 	#region Global
 
-	Transform2D _globalTransform;
-	public Transform2D globalTransform
+	public void SetGlobalTransform(Transform2D transform)
 	{
-		get => _globalTransform;
-		set
+		if (TryGetParentItem(out var pi))
 		{
-			var pi = GetParentItem();
-			if (pi is not null)
-			{
-				var inv = pi.globalTransform.AffineInverse();
-				transform = inv * value;
-			}
-			else
-			{
-				transform = value;
-			}
+			var inv = pi.GetGlobalTransform().AffineInverse();
+			this.transform = inv * transform;
+		}
+		else
+		{
+			this.transform = transform;
 		}
 	}
 
 	public Vector2 globalPosition
 	{
-		get => globalTransform.origin;
+		get => GetGlobalTransform().origin;
 		set
 		{
-			var pi = GetParentItem();
-			if (pi is not null)
+			if (TryGetParentItem(out var pi))
 			{
-				var inv = pi.globalTransform.AffineInverse();
+				var inv = pi.GetGlobalTransform().AffineInverse();
 				position = inv * value;
 			}
 			else
@@ -109,13 +105,12 @@ public abstract class Node2D : CanvasItem
 
 	public float globalRotation
 	{
-		get => globalTransform.rotation;
+		get => GetGlobalTransform().rotation;
 		set
 		{
-			var pi = GetParentItem();
-			if (pi is not null)
+			if (TryGetParentItem(out var pi))
 			{
-				var parentGlobalRot = pi.globalTransform.rotation;
+				var parentGlobalRot = pi.GetGlobalTransform().rotation;
 				rotation = value - parentGlobalRot;
 			}
 			else
@@ -127,13 +122,12 @@ public abstract class Node2D : CanvasItem
 
 	public Vector2 globalScale
 	{
-		get => globalTransform.scale;
+		get => GetGlobalTransform().scale;
 		set
 		{
-			var pi = GetParentItem();
-			if (pi is not null)
+			if (TryGetParentItem(out var pi))
 			{
-				var parentGlobalScale = pi.globalTransform.scale;
+				var parentGlobalScale = pi.GetGlobalTransform().scale;
 				scale = value / parentGlobalScale;
 			}
 			else
@@ -149,12 +143,12 @@ public abstract class Node2D : CanvasItem
 
 	public Vector2 ToLocal(Vector2 globalPoint)
 	{
-		return globalTransform.AffineInverse() * globalPoint;
+		return GetGlobalTransform().AffineInverse() * globalPoint;
 	}
 
 	public Vector2 ToGlobal(Vector2 localPoint)
 	{
-		return globalTransform * localPoint;
+		return GetGlobalTransform() * localPoint;
 	}
 
 	public void LookAt(Vector2 globalPoint)
@@ -167,13 +161,5 @@ public abstract class Node2D : CanvasItem
 		return (ToLocal(globalPoint) * scale).angle;
 	}
 
-	public Node2D? GetParentItem()
-	{
-		return (parent as Node2D);
-	}
-
 	#endregion Utils
-
-	public Action onTransformChanged = () => { };
-	protected virtual void OnTransformChanged() { }
 }

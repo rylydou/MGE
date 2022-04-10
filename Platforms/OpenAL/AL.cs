@@ -630,7 +630,7 @@ public static class AL
 
 	// ALEXT
 
-	/* TODO: All OpenAL Soft extensions! Complete as needed. */
+	// TODO  All OpenAL Soft extensions! Complete as needed.
 
 	/* typedef int ALenum */
 	public const int AL_FORMAT_MONO_FLOAT32 = 0x10010;

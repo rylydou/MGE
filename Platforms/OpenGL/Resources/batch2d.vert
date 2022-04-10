@@ -13,7 +13,7 @@ out vec3 v_type;
 
 void main(void)
 {
-	gl_Position = u_matrix * vec4(a_position, 0.0, 1.0);
+	gl_Position = u_matrix * vec4(round(a_position), 0.0, 1.0);
 
 	v_tex = a_tex;
 	v_col = a_color;
