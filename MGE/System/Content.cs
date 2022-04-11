@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MGE;
@@ -42,7 +43,7 @@ public class Content : AppModule
 	{
 		contentIndex.Clear();
 
-		Log.StartStopwatch("Scan content");
+		Log.StartStopwatch("Scaning content");
 
 		IndexContent(contentFolder);
 
@@ -77,21 +78,29 @@ public class Content : AppModule
 		preloadedAssets.Clear();
 		unloadedAssets.Clear();
 
-		Log.StartStopwatch("Load content");
+		Log.StartStopwatch("Loading content");
 
 		foreach (var item in contentIndex)
 		{
-			if (item.Value.path.EndsWith(".load")) continue;
+			var filePath = item.Value;
+			var fileName = item.Key;
 
-			var loadFile = new File(item.Value + ".load");
+			if (filePath.path.EndsWith(".load")) continue;
+
+			var loadFile = new File(filePath + ".load");
 
 			if (!loadFile.exists) continue;
 
 			var loader = loadFile.ReadMeml<IContentLoader>();
 
-			preloadedAssets.Add(item.Key, loader.Load(item.Value, item.Key));
+			var sw = new Stopwatch();
+			sw.Start();
+			var value = loader.Load(filePath, fileName);
+			sw.Stop();
+			// {loader.GetType().FullName,-42}
+			Log.Trace($"{fileName,-64} {sw.ElapsedMilliseconds}ms" + (sw.ElapsedMilliseconds >= 100 ? "<--" : ""));
 
-			Log.Info($"Loaded {item.Key,-42} {loader.GetType().FullName}");
+			preloadedAssets.Add(fileName, value);
 		}
 
 		Log.EndStopwatch();

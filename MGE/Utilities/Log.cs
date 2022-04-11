@@ -157,18 +157,19 @@ public static class Log
 		LogInternal(LogLevel.System, message, callerFilePath, callerLineNumber);
 	}
 
-	static Stack<(string name, Stopwatch stopwatch)> _stopwatchStack = new();
+	static Stack<Stopwatch> _stopwatchStack = new();
 	public static void StartStopwatch(string name)
 	{
 		var stopwatch = new Stopwatch();
-		_stopwatchStack.Push(new(name, stopwatch));
+		_stopwatchStack.Push(stopwatch);
 		stopwatch.Start();
+		Log.Info($"{name}...");
 	}
 
 	public static void EndStopwatch()
 	{
 		var stopwatch = _stopwatchStack.Pop();
-		stopwatch.stopwatch.Stop();
-		Log.Info($"⏱ {stopwatch.name,-16} {stopwatch.stopwatch.ElapsedMilliseconds,5}ms");
+		stopwatch.Stop();
+		Log.Info($"...finished in {stopwatch.ElapsedMilliseconds}ms");
 	}
 }
