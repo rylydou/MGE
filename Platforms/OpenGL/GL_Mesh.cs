@@ -129,7 +129,7 @@ internal class GL_Mesh : Mesh.Platform
 				bindedArrays[context] = true;
 
 				// bind buffers and determine what attributes are on
-				foreach (var attribute in material.shader.Attributes.Values)
+				foreach (var attribute in material.shader.attributes.Values)
 				{
 					if (lastVertexFormat is not null)
 					{
@@ -148,7 +148,7 @@ internal class GL_Mesh : Mesh.Platform
 					}
 
 					// nothing is using this so disable it
-					GL.DisableVertexAttribArray(attribute.Location);
+					GL.DisableVertexAttribArray(attribute.location);
 				}
 
 				// bind our index buffer
@@ -158,14 +158,14 @@ internal class GL_Mesh : Mesh.Platform
 
 		static bool TrySetupAttribPointer(ShaderAttribute attribute, VertexFormat format, uint divisor)
 		{
-			if (format.TryGetAttribute(attribute.Name, out var element, out var ptr))
+			if (format.TryGetAttribute(attribute.name, out var element, out var ptr))
 			{
 				// this is kind of messy because some attributes can take up multiple slots
 				// ex. a marix4x4 actually takes up 4 (size 16)
 				for (int i = 0, loc = 0; i < (int)element.components; i += 4, loc++)
 				{
 					var components = Math.Min((int)element.components - i, 4);
-					var location = (uint)(attribute.Location + loc);
+					var location = (uint)(attribute.location + loc);
 
 					GL.EnableVertexAttribArray(location);
 					GL.VertexAttribPointer(location, components, ConvertVertexType(element.type), element.normalized, format.stride, new IntPtr(ptr));

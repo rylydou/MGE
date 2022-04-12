@@ -85,7 +85,7 @@ internal class GL_Shader : Shader.Platform
 				GL.GetActiveAttrib(ID, (uint)i, out _, out _, out string name);
 				int location = GL.GetAttribLocation(ID, name);
 				if (location >= 0)
-					Attributes.Add(name, new ShaderAttribute(name, (uint)location));
+					attributes.Add(name, new ShaderAttribute(name, (uint)location));
 			}
 
 			// get uniforms
@@ -98,7 +98,7 @@ internal class GL_Shader : Shader.Platform
 				{
 					if (size > 1 && name.EndsWith("[0]"))
 						name = name.Substring(0, name.Length - 3);
-					Uniforms.Add(name, new GL_Uniform(this, name, size, location, type));
+					uniforms.Add(name, new GL_Uniform(this, name, size, location, type));
 				}
 			}
 
@@ -134,13 +134,13 @@ internal class GL_Shader : Shader.Platform
 				continue;
 
 			// Sampler 2D
-			if (uniform.Type == UniformType.Sampler)
+			if (uniform.type == UniformType.Sampler)
 			{
 #pragma warning disable CA2014 // Do not use stackalloc in loops
-				int* n = stackalloc int[uniform.Length];
+				int* n = stackalloc int[uniform.length];
 #pragma warning restore CA2014 // Do not use stackalloc in loops
 
-				for (int i = 0; i < uniform.Length; i++)
+				for (int i = 0; i < uniform.length; i++)
 				{
 					var textures = (parameter.value as Texture?[]);
 					var texture = textures?[i]?.implementation as GL_Texture;
@@ -153,49 +153,49 @@ internal class GL_Shader : Shader.Platform
 					textureSlot++;
 				}
 
-				GL.Uniform1iv(uniform.Location, uniform.Length, new IntPtr(n));
+				GL.Uniform1iv(uniform.location, uniform.length, new IntPtr(n));
 			}
 			// Int
-			else if (uniform.Type == UniformType.Int && parameter.value is int[] intArray)
+			else if (uniform.type == UniformType.Int && parameter.value is int[] intArray)
 			{
 				fixed (int* ptr = intArray)
-					GL.Uniform1iv(uniform.Location, uniform.Length, new IntPtr(ptr));
+					GL.Uniform1iv(uniform.location, uniform.length, new IntPtr(ptr));
 			}
 			// Float
-			else if (uniform.Type == UniformType.Float && parameter.value is float[] floatArray)
+			else if (uniform.type == UniformType.Float && parameter.value is float[] floatArray)
 			{
 				fixed (float* ptr = floatArray)
-					GL.Uniform1fv(uniform.Location, uniform.Length, new IntPtr(ptr));
+					GL.Uniform1fv(uniform.location, uniform.length, new IntPtr(ptr));
 			}
 			// Float2
-			else if (uniform.Type == UniformType.Float2 && parameter.value is float[] float2Array)
+			else if (uniform.type == UniformType.Float2 && parameter.value is float[] float2Array)
 			{
 				fixed (float* ptr = float2Array)
-					GL.Uniform2fv(uniform.Location, uniform.Length, new IntPtr(ptr));
+					GL.Uniform2fv(uniform.location, uniform.length, new IntPtr(ptr));
 			}
 			// Float3
-			else if (uniform.Type == UniformType.Float3 && parameter.value is float[] float3Array)
+			else if (uniform.type == UniformType.Float3 && parameter.value is float[] float3Array)
 			{
 				fixed (float* ptr = float3Array)
-					GL.Uniform3fv(uniform.Location, uniform.Length, new IntPtr(ptr));
+					GL.Uniform3fv(uniform.location, uniform.length, new IntPtr(ptr));
 			}
 			// Float4
-			else if (uniform.Type == UniformType.Float4 && parameter.value is float[] float4Array)
+			else if (uniform.type == UniformType.Float4 && parameter.value is float[] float4Array)
 			{
 				fixed (float* ptr = float4Array)
-					GL.Uniform4fv(uniform.Location, uniform.Length, new IntPtr(ptr));
+					GL.Uniform4fv(uniform.location, uniform.length, new IntPtr(ptr));
 			}
 			// Matrix3x2
-			else if (uniform.Type == UniformType.Matrix3x2 && parameter.value is float[] matrix3x2Array)
+			else if (uniform.type == UniformType.Matrix3x2 && parameter.value is float[] matrix3x2Array)
 			{
 				fixed (float* ptr = matrix3x2Array)
-					GL.UniformMatrix3x2fv(uniform.Location, uniform.Length, false, new IntPtr(ptr));
+					GL.UniformMatrix3x2fv(uniform.location, uniform.length, false, new IntPtr(ptr));
 			}
 			// Matrix4x4
-			else if (uniform.Type == UniformType.Matrix4x4 && parameter.value is float[] matrix4x4Array)
+			else if (uniform.type == UniformType.Matrix4x4 && parameter.value is float[] matrix4x4Array)
 			{
 				fixed (float* ptr = matrix4x4Array)
-					GL.UniformMatrix4fv(uniform.Location, uniform.Length, false, new IntPtr(ptr));
+					GL.UniformMatrix4fv(uniform.location, uniform.length, false, new IntPtr(ptr));
 			}
 		}
 	}

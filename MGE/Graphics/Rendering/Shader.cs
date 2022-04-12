@@ -13,8 +13,8 @@ public class Shader : IDisposable
 {
 	public abstract class Platform
 	{
-		protected internal readonly Dictionary<string, ShaderAttribute> Attributes = new Dictionary<string, ShaderAttribute>();
-		protected internal readonly Dictionary<string, ShaderUniform> Uniforms = new Dictionary<string, ShaderUniform>();
+		protected internal readonly Dictionary<string, ShaderAttribute> attributes = new Dictionary<string, ShaderAttribute>();
+		protected internal readonly Dictionary<string, ShaderUniform> uniforms = new Dictionary<string, ShaderUniform>();
 		protected internal abstract void Dispose();
 	}
 
@@ -26,18 +26,18 @@ public class Shader : IDisposable
 	/// <summary>
 	/// List of all Vertex Attributes, by Name
 	/// </summary>
-	public readonly ReadOnlyDictionary<string, ShaderAttribute> Attributes;
+	public readonly ReadOnlyDictionary<string, ShaderAttribute> attributes;
 
 	/// <summary>
 	/// List of all Uniforms, by Name
 	/// </summary>
-	public readonly ReadOnlyDictionary<string, ShaderUniform> Uniforms;
+	public readonly ReadOnlyDictionary<string, ShaderUniform> uniforms;
 
 	public Shader(Graphics graphics, ShaderSource source)
 	{
 		implementation = graphics.CreateShader(source);
-		Uniforms = new ReadOnlyDictionary<string, ShaderUniform>(implementation.Uniforms);
-		Attributes = new ReadOnlyDictionary<string, ShaderAttribute>(implementation.Attributes);
+		uniforms = new ReadOnlyDictionary<string, ShaderUniform>(implementation.uniforms);
+		attributes = new ReadOnlyDictionary<string, ShaderAttribute>(implementation.attributes);
 	}
 
 	public Shader(ShaderSource source) : this(App.graphics, source)
@@ -58,17 +58,17 @@ public class ShaderAttribute
 	/// <summary>
 	/// The name of the Attribute
 	/// </summary>
-	public readonly string Name;
+	public readonly string name;
 
 	/// <summary>
 	/// The Location of the Attribute in the Shader
 	/// </summary>
-	public readonly uint Location;
+	public readonly uint location;
 
 	public ShaderAttribute(string name, uint location)
 	{
-		Name = name;
-		Location = location;
+		this.name = name;
+		this.location = location;
 	}
 }
 
@@ -96,29 +96,29 @@ public class ShaderUniform
 	/// <summary>
 	/// The Name of the Uniform
 	/// </summary>
-	public readonly string Name;
+	public readonly string name;
 
 	/// <summary>
 	/// The Location of the Uniform in the Shader
 	/// </summary>
-	public readonly int Location;
+	public readonly int location;
 
 	/// <summary>
 	/// The Array length of the uniform
 	/// </summary>
-	public readonly int Length;
+	public readonly int length;
 
 	/// <summary>
 	/// The Type of Uniform
 	/// </summary>
-	public readonly UniformType Type;
+	public readonly UniformType type;
 
 	public ShaderUniform(string name, int location, int length, UniformType type)
 	{
-		Name = name;
-		Location = location;
-		Length = length;
-		Type = type;
+		this.name = name;
+		this.location = location;
+		this.length = length;
+		this.type = type;
 	}
 }
 

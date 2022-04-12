@@ -22,17 +22,17 @@ public class Material
 		/// <summary>
 		/// The Name of the Parameter
 		/// </summary>
-		public string name => uniform.Name;
+		public string name => uniform.name;
 
 		/// <summary>
 		/// The Shader Uniform Type of the Parameter
 		/// </summary>
-		public UniformType type => uniform.Type;
+		public UniformType type => uniform.type;
 
 		/// <summary>
 		/// Array Length (1 for single values)
 		/// </summary>
-		public int length => uniform.Length;
+		public int length => uniform.length;
 
 		/// <summary>
 		/// Whether the Parameter is an Array
@@ -48,16 +48,16 @@ public class Material
 		{
 			this.uniform = uniform;
 
-			value = uniform.Type switch
+			value = uniform.type switch
 			{
-				UniformType.Int => new int[uniform.Length],
-				UniformType.Float => new float[uniform.Length],
-				UniformType.Float2 => new float[uniform.Length * 2],
-				UniformType.Float3 => new float[uniform.Length * 3],
-				UniformType.Float4 => new float[uniform.Length * 4],
-				UniformType.Matrix3x2 => new float[uniform.Length * 6],
-				UniformType.Matrix4x4 => new float[uniform.Length * 16],
-				UniformType.Sampler => new Texture?[uniform.Length],
+				UniformType.Int => new int[uniform.length],
+				UniformType.Float => new float[uniform.length],
+				UniformType.Float2 => new float[uniform.length * 2],
+				UniformType.Float3 => new float[uniform.length * 3],
+				UniformType.Float4 => new float[uniform.length * 4],
+				UniformType.Matrix3x2 => new float[uniform.length * 6],
+				UniformType.Matrix4x4 => new float[uniform.length * 16],
+				UniformType.Sampler => new Texture?[uniform.length],
 				UniformType.Unknown => null!,
 				_ => null!
 			};
@@ -358,10 +358,10 @@ public class Material
 
 		var parameters = new List<Parameter>();
 
-		foreach (var uniform in shader.Uniforms.Values)
+		foreach (var uniform in shader.uniforms.Values)
 		{
 			var parameter = new Parameter(uniform);
-			parametersByName[uniform.Name] = parameter;
+			parametersByName[uniform.name] = parameter;
 			parameters.Add(parameter);
 		}
 

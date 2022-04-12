@@ -98,7 +98,7 @@ public class Content : AppModule
 			var value = loader.Load(filePath, fileName);
 			sw.Stop();
 			// {loader.GetType().FullName,-42}
-			Log.Trace($"{fileName,-64} {sw.ElapsedMilliseconds}ms" + (sw.ElapsedMilliseconds >= 100 ? "<--" : ""));
+			Log.Trace($"{fileName,-64} {sw.ElapsedMilliseconds}ms" + (sw.ElapsedMilliseconds >= 100 ? " <--" : ""));
 
 			preloadedAssets.Add(fileName, value);
 		}
