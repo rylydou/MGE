@@ -90,7 +90,7 @@ myOtherArray: [
 ]
 ```
 
-Meml does **not** support tables, instead do something like this if you need to create a table
+Meml does not support tables, instead do something like this if you need to create a table
 
 ```meml
 table: [

@@ -3,174 +3,175 @@ const fs = require('fs');
 const marked = require('marked');
 const sass = require('sass');
 const hljs = require('highlight.js');
+const cheerio = require('cheerio');
 
-main();
+const markdownRenderer = new marked.Renderer();
 
-function main() {
-	const markdownRenderer = new marked.Renderer();
+let pageTitle = '';
 
-	let pageTitle = '';
+markdownRenderer.heading = (text, level) => {
+	if (level === 1) {
+		pageTitle = text;
+		return '';
+	}
 
-	markdownRenderer.heading = (text, level) => {
-		if (level === 1) {
-			pageTitle = text;
-			return '';
-		}
+	let name = text.toLocaleLowerCase().replace(/[^a-z0-9 _-]/gi, '-').toLowerCase();
 
-		let name = text.toLocaleLowerCase().replace(/[^a-z0-9 _-]/gi, '-').toLowerCase();
+	return `<h${level} id="${name}">${text}</h${level}>`;
+};
 
-		return `<h${level} id="${name}">${text}</h${level}>`;
+markdownRenderer.link = (href, title, text) => {
+	// If its a external link then treat it specially
+	if (href.startsWith('http')) {
+		return `<a href="${href}" title="${title ?? ''}" target="_blank">${text}</a>`;
+	}
+
+	// Change references from markdown to html
+	href = '/' + href.replace(/\.md$/, '');
+
+	return `<a href="${href.replace()}" title="${title ?? ''}">${text}</a>`;
+};
+
+hljs.default.registerLanguage('meml', (hljs) => {
+	const comment = {
+		scope: 'comment',
+		begin: '#',
+		end: '[\n\r$]',
+		relevance: 100
+	}
+
+	const type = {
+		scope: 'type',
+		match: /![\w\.:]+/g,
+		relevance: 1,
+	}
+
+	const variable = {
+		scope: 'variable',
+		match: /\$\w+/g,
+		relevance: 1,
+	}
+
+	const property = {
+		scope: 'tag',
+		begin: /\w+(?=:)/g,
 	};
 
-	markdownRenderer.link = (href, title, text) => {
-		// If its a external link then treat it specially
-		if (href.startsWith('http')) {
-			return `<a href="${href}" title="${title ?? ''}" target="_blank">${text}</a>`;
-		}
-
-		// Change references from markdown to html
-		href = '/' + href.replace(/\.md$/, '');
-
-		return `<a href="${href.replace()}" title="${title ?? ''}">${text}</a>`;
+	const punctuation = {
+		scope: "punctuation",
+		match: /[{}[\]:]/,
 	};
 
-	hljs.default.registerLanguage('meml', (hljs) => {
-		const comment = {
-			scope: 'comment',
-			begin: '#',
-			end: '[\n\r$]',
-			relevance: 100
-		}
-
-		const type = {
-			scope: 'type',
-			match: /![\w\.:]+/g,
-			relevance: 1,
-		}
-
-		const variable = {
-			scope: 'variable',
-			match: /\$\w+/g,
-			relevance: 1,
-		}
-
-		const property = {
-			scope: 'tag',
-			begin: /\w+(?=:)/g,
-		};
-
-		const punctuation = {
-			scope: "punctuation",
-			match: /[{}[\]:]/,
-		};
-
-		const keywords = {
-			scope: 'keyword',
-			beginKeywords: 'true false null',
-		};
-
-		const string = {
-			scope: 'string',
-			begin: "'",
-			beginScope: 'quote',
-			end: "'",
-			endScope: 'quote',
-			illegal: '\\n',
-			contains: [hljs.BACKSLASH_ESCAPE]
-		}
-
-		const number = {
-			scope: 'number',
-			match: /\d+(\.\d+)?.?/g,
-		}
-
-		const number_hex = {
-			scope: 'number',
-			match: /0[xX][0-9|a-f|A-F]+/g
-		}
-
-		const number_constants = {
-			scope: 'number',
-			match: '(nan)|([+-]?inf)',
-		};
-
-		const binary = {
-			scope: 'number',
-			begin: '\\*',
-			beginScope: 'quote',
-			end: '\\*',
-			endScope: 'quote',
-			illegal: '\\n'
-		};
-
-		return {
-			name: 'MEML',
-			contains: [
-				comment,
-				punctuation,
-				type,
-				variable,
-				property,
-				keywords,
-				string,
-				binary,
-				number,
-				number_hex,
-				number_constants,
-			],
-			illegal: '\\S'
-		};
-	});
-
-	markdownRenderer.code = (code, language, isEscaped) => {
-		return '<pre><code>' +
-			hljs.default.highlight(code, { language: language }).value +
-			'</code></pre>';
+	const keywords = {
+		scope: 'keyword',
+		beginKeywords: 'true false null',
 	};
 
-	marked.marked.setOptions({ renderer: markdownRenderer, headerIds: true, gfm: true });
+	const string = {
+		scope: 'string',
+		begin: "'",
+		beginScope: 'quote',
+		end: "'",
+		endScope: 'quote',
+		illegal: '\\n',
+		contains: [hljs.BACKSLASH_ESCAPE]
+	}
 
-	const baseHtmlPage = fs.readFileSync('src/page.html').toString();
+	const number = {
+		scope: 'number',
+		match: /\d+(\.\d+)?.?/g,
+	}
 
-	// Delete old dist output
-	console.log('Cleaning build results');
-	fs.rmSync('dist', { recursive: true, force: true });
-	fs.mkdirSync('dist');
+	const number_hex = {
+		scope: 'number',
+		match: /0[xX][0-9|a-f|A-F]+/g
+	}
 
-	// Copy assets
-	console.log('Copying assets');
-	copyFolderRecursiveSync('src/assets', 'dist');
-	// fs.cpSync('src/assets', 'dist/assets');
+	const number_constants = {
+		scope: 'number',
+		match: '(nan)|([+-]?inf)',
+	};
 
-	// Compile styles
-	console.log('Building styles');
-	var css = sass.compile('src/styles.scss', { style: 'compressed' }).css;
-	fs.writeFileSync('dist/styles.css', css);
+	const binary = {
+		scope: 'number',
+		begin: '\\*',
+		beginScope: 'quote',
+		end: '\\*',
+		endScope: 'quote',
+		illegal: '\\n'
+	};
 
-	// Compile all markdown files to html
-	findFilesRecursive('src', /\.md$/, (filename) => {
-		console.log('Building', filename);
+	return {
+		name: 'MEML',
+		contains: [
+			comment,
+			punctuation,
+			type,
+			variable,
+			property,
+			keywords,
+			string,
+			binary,
+			number,
+			number_hex,
+			number_constants,
+		],
+		illegal: '\\S'
+	};
+});
 
-		let markdown = fs.readFileSync(filename).toString();
-		let parsedHtml = marked.marked(markdown);
+markdownRenderer.code = (code, language, isEscaped) => {
+	return '<pre><code>' +
+		hljs.default.highlight(code, { language: language }).value +
+		'</code></pre>';
+};
 
-		let page = baseHtmlPage;
+marked.marked.setOptions({ renderer: markdownRenderer, headerIds: true, gfm: true });
 
-		page = page.replace(/\$TITLE\$/g, pageTitle);
-		page = page.replace(/\$PAGE_CONTENT\$/, parsedHtml);
+const baseHtmlPage = fs.readFileSync('src/page.html').toString();
 
-		let pagePath = '';
-		if (filename.replace('\\', '/') === 'src/index.md') {
-			pagePath = 'dist';
-		}
-		else {
-			pagePath = filename.replace('src', 'dist').replace('.md', '');
-			fs.mkdirSync(pagePath, { recursive: true });
-		}
+// Delete old dist output
+console.log('Cleaning build results');
+fs.rmSync('dist', { recursive: true, force: true });
+fs.mkdirSync('dist');
 
-		fs.writeFileSync(pagePath + '/index.html', page);
-	});
-}
+// Copy assets
+console.log('Copying assets');
+copyFolderRecursiveSync('src/assets', 'dist');
+// fs.cpSync('src/assets', 'dist/assets');
+
+// Compile styles
+console.log('Building styles');
+var css = sass.compile('src/styles.scss', { style: 'compressed' }).css;
+fs.writeFileSync('dist/styles.css', css);
+
+// Compile all markdown files to html
+findFilesRecursive('src', /\.md$/, (filename) => {
+	console.log('Building', filename);
+
+	let markdown = fs.readFileSync(filename).toString();
+	let parsedHtml = marked.marked(markdown);
+
+	const $ = cheerio.load(baseHtmlPage);
+
+	$('title').text(pageTitle);
+	$("#title").text(pageTitle);
+	$("#main-content").html(parsedHtml);
+
+	// page = page.replace(/\$TITLE\$/g, pageTitle);
+	// page = page.replace(/\$PAGE_CONTENT\$/, parsedHtml);
+
+	let pagePath = '';
+	if (filename.replace('\\', '/') === 'src/index.md') {
+		pagePath = 'dist';
+	}
+	else {
+		pagePath = filename.replace('src', 'dist').replace('.md', '');
+		fs.mkdirSync(pagePath, { recursive: true });
+	}
+
+	fs.writeFileSync(pagePath + '/index.html', $.html());
+});
 
 function findFilesRecursive(startPath, filter, callback) {
 	let files = fs.readdirSync(startPath);

@@ -37,6 +37,6 @@ public class Player : Node2D
 	{
 		batch.Image(_sprite, new(0, 0), Color.white);
 
-		// _font.DrawString(batch, $"{Time.fps}fps ({Time.rawDelta:N4}ms)\n\tPosition: {globalPosition}", new(8), Color.white);
+		_font.DrawString(batch, $"{Time.fps}fps ({Time.rawDelta:N4}ms)\n\tPosition: {globalPosition}", new(8), Color.white);
 	}
 }

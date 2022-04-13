@@ -6,6 +6,7 @@
     "dev": "npx ws -d dist"
   },
   "devDependencies": {
+    "cheerio": "^1.0.0-rc.10",
     "highlight.js": "^11.5.0",
     "local-web-server": "^5.2.0",
     "marked": "^4.0.12",
