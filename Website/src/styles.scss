@@ -4,7 +4,7 @@ $accent: var(--ac);
 $foreground: var(--fg);
 $midground: var(--mg);
 
-body.dark {
+body#dark {
 	--bs: #161616;
 	--bg: #202020;
 	--ac: #fe9137;
@@ -12,7 +12,7 @@ body.dark {
 	--mg: #868f8f;
 }
 
-body.light {
+body#light {
 	--bs: #eee;
 	--bg: #fff;
 	--ac: #37a4fe;
@@ -85,8 +85,12 @@ article {
 	height: 100%;
 
 	#toc {
-		height: auto;
+		height: max-content;
 		overflow-y: auto;
+	}
+
+	.bottom {
+		margin-top: auto;
 	}
 }
 
@@ -147,6 +151,25 @@ a.button {
 		color: $background;
 		background-color: $accent;
 	}
+}
+
+button {
+	cursor: pointer;
+	color: $accent;
+	display: inline;
+	font-size: 16px;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+body#dark button#theme-toggle::after {
+	content: 'Switch to light theme';
+}
+
+body#light button#theme-toggle::after {
+	content: 'Switch to dark theme';
 }
 
 ul,
@@ -224,7 +247,7 @@ code {
 	font-family: "Iosevka", monospace;
 }
 
-body.dark {
+body#dark {
 	/*
 	base00  #212121  Default Background
 	base01  #303030  Lighter Background (Used for status bars, line number and folding marks)
@@ -388,7 +411,7 @@ body.dark {
 
 }
 
-body.light {
+body#light {
 	/*
 	base00  #FAFAFA  Default Background
 	base01  #E7EAEC  Lighter Background (Used for status bars, line number and folding marks)

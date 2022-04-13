@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="/styles.css">
 </head>
 
-<body class="dark">
+<body id="dark">
 	<div class="sidebar">
 		<div id="toc">
 			<details>
@@ -17,6 +17,10 @@
 				<a href="/articles/overview">Overview</a>
 				<a href="/articles/getting-started">Getting started</a>
 			</details>
+		</div>
+
+		<div class="bottom">
+			<button id="theme-toggle" onclick="isLight=!isLight;setTheme();"><noscript>Can't </noscript></button>
 		</div>
 	</div>
 	<div class="page">
@@ -38,6 +42,27 @@
 			<a class="button" style="float: right;" href="#">Back to top</a>
 		</footer>
 	</div>
+
+	<script>
+		let isLight = localStorage.getItem('isLight');
+
+		setTheme();
+
+		function setTheme() {
+			const themeName = isLight ? 'light' : 'dark';
+
+			// Save preference
+			localStorage.setItem('isLight', isLight);
+
+			// Update theme
+			document.body.id = themeName;
+
+			// Update toggle
+			// darkThemeLabel.textContent = `Switch to ${isLight ? 'light' : 'dark'} theme`;
+
+			console.log(`switched to ${themeName} theme`);
+		}
+	</script>
 </body>
 
 </html>
