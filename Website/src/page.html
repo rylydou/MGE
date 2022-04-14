@@ -28,29 +28,45 @@
 			// Update toggle
 			// darkThemeLabel.textContent = `Switch to ${isLight ? 'light' : 'dark'} theme`;
 
-			console.log(`switched to ${themeName} theme`);
+			console.log(`Switched to ${themeName} theme`);
 		}
 	</script>
 
-	<div class="sidebar">
-		<div id="toc">
-			<details>
-				<summary>Articles</summary>
-				<a href="/articles/overview">Overview</a>
-				<a href="/articles/getting-started">Getting started</a>
-			</details>
+	<div id="sidebar">
+		<div id="sidebar-indicator">
+			Menu
 		</div>
 
-		<div class="bottom">
-			<button id="theme-toggle" onclick="isLight=!isLight;setTheme();"></button>
+		<div id="sidebar-content">
+			<div id="toc">
+				<details>
+					<summary>Articles</summary>
+					<a href="/docs/overview">Overview</a>
+					<a href="/docs/getting-started">Getting started</a>
+				</details>
+			</div>
 		</div>
 	</div>
+
+
 	<div class="page">
 		<div class="navbar">
-			<a class="button" href="/">Mangrove Engine</a>
-			<a class="button" href="/articles">Articles</a>
-			<a class="button" href="/documentation">Documentation</a>
-			<a class="button" style="float: right;" href="https://www.github.com/CiberTurtle/MGE">Github</a>
+			<a class="button" href="/" style="padding: 0.25em;">
+				<!-- <svg width="22" height="22" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+					<path fill-rule="evenodd" clip-rule="evenodd"
+						d="M8 0L15 4V12L8 16L1 12L1 4L8 0ZM4.05416 4.56417L8 2.3094L11.9458 4.56417L8 6.8423L4.05416 4.56417ZM3.02073 6.28292V10.8453L6.98964 13.1132V8.57437L3.02073 6.28292Z" />
+				</svg> -->
+				Home
+			</a>
+			<a class="button" href="/docs">Docs</a>
+			<a class="button" href="/api">API</a>
+			<button id="theme-toggle" style="float: right;" onclick="isLight=!isLight;setTheme();">
+				<svg width="22" height="22" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="fill: none;">
+					<circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="2" />
+					<path d="M8 1V2M8 14V15M14 8H15M2 8H1M12.5 12.5L13 13M3.5 3.5L3 3M12.5 3.5L13 3M3.5 12.5L3 13"
+						stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+				</svg>
+			</button>
 		</div>
 
 		<article>

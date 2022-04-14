@@ -16,7 +16,6 @@ console.timeEnd('Cleaning build results');
 // Copy assets
 console.time('Copying assets');
 util.copyFolderRecursiveSync('src/assets', 'dist');
-util.copyFileSync('src/sidebar.html', 'dist');
 console.timeEnd('Copying assets');
 // fs.cpSync('src/assets', 'dist/assets');
 

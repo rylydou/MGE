@@ -3,6 +3,8 @@ $background: var(--bg);
 $accent: var(--ac);
 $foreground: var(--fg);
 $midground: var(--mg);
+$bgTime: 1000ms;
+$fgTime: 500ms;
 
 body#dark {
 	--bs: #161616;
@@ -16,7 +18,7 @@ body#light {
 	--bs: #eee;
 	--bg: #fff;
 	--ac: #256eaa;
-	--fg: #444;
+	--fg: #000;
 	--mg: #86868f;
 }
 
@@ -46,7 +48,7 @@ body {
 	font-size: 16px;
 	font-family: "Open Sans", Arial, sans-serif;
 
-	// transition: color 1000ms, background-color 1000ms;
+	transition: color $fgTime, background-color $bgTime;
 }
 
 ::selection {
@@ -77,33 +79,73 @@ article {
 
 .navbar {
 	width: 100%;
-	display: flex;
-	flex-wrap: wrap;
 	padding-top: 0.5em;
-	gap: 0.25em;
-}
-
-.sidebar {
-	display: flex;
-	flex-direction: column;
-	position: fixed;
-	left: 0;
-	width: 320px;
-	padding: 1em;
-	height: 100%;
-
-	#toc {
-		flex-shrink: 1;
-		flex-grow: 1;
-	}
-
-	.bottom {}
+	// display: flex;
+	// flex-wrap: wrap;
+	user-select: none;
 }
 
 footer {
 	width: 100%;
-	display: flex;
-	flex-wrap: wrap;
+	padding-bottom: 0.5em;
+	// display: flex;
+	// flex-wrap: wrap;
+}
+
+#sidebar {
+	user-select: none;
+	pointer-events: none;
+
+	>* {
+		background-color: $base;
+	}
+
+	#sidebar-content {
+		position: fixed;
+		left: 0;
+		pointer-events: all;
+		width: 320px;
+		height: 100%;
+		padding: 1em;
+		z-index: 1000;
+		transition: transform 250ms 150ms ease-out, background-color $bgTime;
+
+		#toc {
+			overflow-y: auto;
+		}
+	}
+
+	#sidebar-indicator {
+		position: fixed;
+		left: 0;
+		pointer-events: all;
+		margin-top: 8em;
+		padding: 0.5em;
+		z-index: 999;
+
+		transition: transform 250ms 150ms ease-out, background-color $bgTime;
+	}
+
+	@media only screen and (max-width: 1540px) {
+		>* {
+			box-shadow: 0 0 16px #0004;
+		}
+
+		#sidebar-content {
+			transform: translateX(-100%);
+			border-right: solid 2px $background;
+		}
+
+		&:hover {
+			#sidebar-content {
+				transform: none;
+			}
+
+			#sidebar-indicator {
+				transform: translateX(-100%);
+			}
+		}
+	}
 }
 
 h1,
@@ -130,7 +172,8 @@ p {
 	margin-top: 1em;
 }
 
-a:not(.button) {
+a:not(.button),
+.link {
 	color: $accent;
 	text-decoration: none;
 
@@ -145,11 +188,14 @@ a:not(.button) {
 	}
 }
 
-a.button {
+button:not(.link),
+.button {
+	cursor: pointer;
+	user-select: none;
 	display: inline-block;
 	padding: 0.25em 0.5em;
-	// margin-bottom: 0.5em;
 	font-weight: bold;
+	font-size: 16px;
 	text-decoration: none;
 	color: $accent;
 
@@ -159,24 +205,30 @@ a.button {
 	}
 }
 
-button {
-	cursor: pointer;
-	color: $accent;
-	display: inline;
-	font-size: 16px;
-
-	&:hover {
-		text-decoration: underline;
-	}
+svg {
+	fill: currentColor;
 }
 
-body#dark button#theme-toggle::after {
-	content: 'Switch to light theme';
-}
+// button#theme-toggle {
+// 	width: 28px;
+// 	height: 28px;
+// 	padding: 4px;
+// 	color: $accent;
+// 	border-radius: 50%;
 
-body#light button#theme-toggle::after {
-	content: 'Switch to dark theme';
-}
+// 	&:hover {
+// 		color: $base;
+// 		background-color: $accent;
+// 	}
+// }
+
+// body#dark button#theme-toggle span::after {
+// 	content: url('/assets/icons/light_mode_white_24dp.svg');
+// }
+
+// body#light button#theme-toggle span::after {
+// 	content: url('/assets/icons/dark_mode_black_24dp.svg');
+// }
 
 ul,
 ol {
@@ -247,7 +299,7 @@ pre {
 	outline: solid 1em $background;
 	overflow-x: auto;
 	tab-size: 2;
-	// transition: background-color 1000ms, outline-color 1000ms;
+	transition: color $fgTime, background-color $bgTime, outline-color $bgTime;
 }
 
 code {
