@@ -15,20 +15,20 @@ body#dark {
 body#light {
 	--bs: #eee;
 	--bg: #fff;
-	--ac: #37a4fe;
-	--fg: #000;
-	--mg: #AAA;
+	--ac: #256eaa;
+	--fg: #444;
+	--mg: #86868f;
 }
 
 @font-face {
 	font-family: "Open Sans";
-	src: url(assets/fonts/open-sans.ttf);
+	src: url('/assets/fonts/open-sans.ttf');
 	font-display: swap;
 }
 
 @font-face {
 	font-family: "Iosevka";
-	src: url(assets/fonts/iosevka.ttf);
+	src: url('/assets/fonts/iosevka.ttf');
 	font-display: swap;
 }
 
@@ -45,6 +45,13 @@ body {
 	color: $foreground;
 	font-size: 16px;
 	font-family: "Open Sans", Arial, sans-serif;
+
+	// transition: color 1000ms, background-color 1000ms;
+}
+
+::selection {
+	background-color: $accent;
+	color: $base;
 }
 
 ::-webkit-scrollbar {
@@ -77,21 +84,20 @@ article {
 }
 
 .sidebar {
+	display: flex;
+	flex-direction: column;
 	position: fixed;
 	left: 0;
-	background-color: $background;
 	width: 320px;
 	padding: 1em;
 	height: 100%;
 
 	#toc {
-		height: max-content;
-		overflow-y: auto;
+		flex-shrink: 1;
+		flex-grow: 1;
 	}
 
-	.bottom {
-		margin-top: auto;
-	}
+	.bottom {}
 }
 
 footer {
@@ -241,6 +247,7 @@ pre {
 	outline: solid 1em $background;
 	overflow-x: auto;
 	tab-size: 2;
+	// transition: background-color 1000ms, outline-color 1000ms;
 }
 
 code {
@@ -459,7 +466,7 @@ body#light {
 
 	/* base03 - #CCD7DA -  Comments, Invisibles, Line Highlighting */
 	.hljs-comment {
-		color: #CCD7DA;
+		// color: #CCD7DA;
 		color: $midground;
 	}
 

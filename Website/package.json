@@ -10,7 +10,6 @@
     "highlight.js": "^11.5.0",
     "local-web-server": "^5.2.0",
     "marked": "^4.0.12",
-    "minify": "^8.0.4",
     "nodemon": "^2.0.15",
     "sass": "^1.49.9"
   }

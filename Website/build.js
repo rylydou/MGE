@@ -1,52 +1,53 @@
-const path = require('path');
 const fs = require('fs');
 const sass = require('sass');
 const cheerio = require('cheerio');
-const minify = require('minify');
-
-let pageTitle = '';
+const builder = require('./builder.js');
+const util = require('./util.js');
+const path = require('path');
 
 const baseHtmlPage = fs.readFileSync('src/page.html').toString();
 
 // Delete old dist output
-console.log('Cleaning build results');
+console.time('Cleaning build results');
 fs.rmSync('dist', { recursive: true, force: true });
 fs.mkdirSync('dist');
+console.timeEnd('Cleaning build results');
 
 // Copy assets
-console.log('Copying assets');
-copyFolderRecursiveSync('src/assets', 'dist');
+console.time('Copying assets');
+util.copyFolderRecursiveSync('src/assets', 'dist');
+util.copyFileSync('src/sidebar.html', 'dist');
+console.timeEnd('Copying assets');
 // fs.cpSync('src/assets', 'dist/assets');
 
 // Compile styles
-console.log('Building styles');
+console.time('Building styles');
 var css = sass.compile('src/styles.scss', { style: 'compressed' }).css;
 fs.writeFileSync('dist/styles.css', css);
+console.timeEnd('Building styles');
 
-// Compile all markdown files to html
-findFilesRecursive('src', /\.md$/, (filename) => {
-	console.log('Building', filename);
-
-	let markdown = fs.readFileSync(filename).toString();
-	let parsedHtml = marked.marked(markdown);
+// Compile markdown pages
+util.findFilesRecursive('src', /\.md$/, (filename) => {
+	console.time(`Building ${filename}`);
+	let pageMarkdown = fs.readFileSync(filename).toString();
+	let builtPage = builder.buildPage(pageMarkdown);
+	console.timeEnd(`Building ${filename}`);
 
 	const $ = cheerio.load(baseHtmlPage);
 
-	$('title').text(pageTitle);
-	$("#title").text(pageTitle);
-	$("#main-content").html(parsedHtml);
+	$('title').text(builtPage.title);
+	$('#title').text(builtPage.title);
+	$('#main-content').html(builtPage.html);
 
-	// page = page.replace(/\$TITLE\$/g, pageTitle);
-	// page = page.replace(/\$PAGE_CONTENT\$/, parsedHtml);
+	let pagePath = filename;
 
-	let pagePath = '';
-	if (filename.replace('\\', '/') === 'src/index.md') {
-		pagePath = 'dist';
+	if (filename.endsWith('index.md')) {
+		pagePath = path.dirname(pagePath);
 	}
-	else {
-		pagePath = filename.replace('src', 'dist').replace('.md', '');
-		fs.mkdirSync(pagePath, { recursive: true });
-	}
+
+	pagePath = pagePath.replace('src', 'dist').replace(/\.md$/, '');
+
+	if (!fs.existsSync(!pagePath)) fs.mkdirSync(pagePath, { recursive: true });
 
 	fs.writeFileSync(pagePath + '/index.html', $.html());
 });

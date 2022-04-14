@@ -5,46 +5,14 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title></title>
+	<title id="title">{{Page title}}</title>
 	<link rel="stylesheet" href="/styles.css">
+	<link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon">
 </head>
 
 <body id="dark">
-	<div class="sidebar">
-		<div id="toc">
-			<details>
-				<summary>Articles</summary>
-				<a href="/articles/overview">Overview</a>
-				<a href="/articles/getting-started">Getting started</a>
-			</details>
-		</div>
-
-		<div class="bottom">
-			<button id="theme-toggle" onclick="isLight=!isLight;setTheme();"><noscript>Can't </noscript></button>
-		</div>
-	</div>
-	<div class="page">
-		<div class="navbar">
-			<a class="button" href="/">Mangrove Engine</a>
-			<a class="button" href="/articles">Articles</a>
-			<a class="button" href="/documentation">Documentation</a>
-			<a class="button" style="float: right;" href="https://www.github.com/CiberTurtle/MGE">Github</a>
-		</div>
-
-		<article>
-			<header>
-				<h1 id="title">Page title</h1>
-			</header>
-			<div id="main-content">Page content</div>
-		</article>
-
-		<footer>
-			<a class="button" style="float: right;" href="#">Back to top</a>
-		</footer>
-	</div>
-
 	<script>
-		let isLight = localStorage.getItem('isLight');
+		let isLight = localStorage.getItem('isLight') == 'true' ? true : false;
 
 		setTheme();
 
@@ -63,6 +31,39 @@
 			console.log(`switched to ${themeName} theme`);
 		}
 	</script>
+
+	<div class="sidebar">
+		<div id="toc">
+			<details>
+				<summary>Articles</summary>
+				<a href="/articles/overview">Overview</a>
+				<a href="/articles/getting-started">Getting started</a>
+			</details>
+		</div>
+
+		<div class="bottom">
+			<button id="theme-toggle" onclick="isLight=!isLight;setTheme();"></button>
+		</div>
+	</div>
+	<div class="page">
+		<div class="navbar">
+			<a class="button" href="/">Mangrove Engine</a>
+			<a class="button" href="/articles">Articles</a>
+			<a class="button" href="/documentation">Documentation</a>
+			<a class="button" style="float: right;" href="https://www.github.com/CiberTurtle/MGE">Github</a>
+		</div>
+
+		<article>
+			<header>
+				<h1 id="title">{{Page title}}</h1>
+			</header>
+			<div id="main-content">{{Page content}}</div>
+		</article>
+
+		<footer>
+			<a class="button" style="float: right;" href="#">Back to top</a>
+		</footer>
+	</div>
 </body>
 
 </html>

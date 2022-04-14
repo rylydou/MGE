@@ -1,11 +1,14 @@
 const marked = require('marked');
 const hljs = require('highlight.js');
 
+var title = '';
+
 const markdownRenderer = new marked.Renderer();
 
 markdownRenderer.heading = (text, level) => {
-	if (level === 1) {
-		pageTitle = text;
+	if (level == 1) {
+		if (title == '')
+			title = text;
 		return '';
 	}
 
@@ -24,6 +27,12 @@ markdownRenderer.link = (href, title, text) => {
 	href = '/' + href.replace(/\.md$/, '');
 
 	return `<a href="${href.replace()}" title="${title ?? ''}">${text}</a>`;
+};
+
+markdownRenderer.code = (code, language, isEscaped) => {
+	return '<pre><code>' +
+		hljs.default.highlight(code, { language: language }).value +
+		'</code></pre>';
 };
 
 // Code highlighting
@@ -115,12 +124,9 @@ hljs.default.registerLanguage('meml', (hljs) => {
 	};
 });
 
-markdownRenderer.code = (code, language, isEscaped) => {
-	return '<pre><code>' +
-		hljs.default.highlight(code, { language: language }).value +
-		'</code></pre>';
-};
+exports.buildPage = (markdown) => {
+	title = '';
+	let html = marked.marked(markdown, { renderer: markdownRenderer, headerIds: true, gfm: true });
 
-export function buildPage(markdown) {
-	return marked.marked(markdown, { renderer: markdownRenderer, headerIds: true, gfm: true });
+	return { html, title };
 }
