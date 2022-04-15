@@ -48,7 +48,7 @@ body {
 	font-size: 16px;
 	font-family: "Open Sans", Arial, sans-serif;
 
-	transition: color $fgTime, background-color $bgTime;
+	transition: background-color $bgTime;
 }
 
 ::selection {
@@ -69,8 +69,9 @@ body {
 
 .page {
 	max-width: min(780px, 100%);
+	min-height: 100vh;
 	margin: 0 auto;
-	padding: 0 1em;
+	padding: 1em;
 }
 
 article {
@@ -78,18 +79,24 @@ article {
 }
 
 .navbar {
-	width: 100%;
-	padding-top: 0.5em;
-	// display: flex;
-	// flex-wrap: wrap;
 	user-select: none;
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 0.5em;
+	width: auto;
+	// margin-inline: -1em;
 }
 
-footer {
-	width: 100%;
-	padding-bottom: 0.5em;
-	// display: flex;
-	// flex-wrap: wrap;
+.footer {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 0.5em;
+	width: auto;
+	// margin-inline: -1em;
+}
+
+.flex-separator {
+	flex-grow: 1;
 }
 
 #sidebar {
@@ -98,17 +105,19 @@ footer {
 
 	>* {
 		background-color: $base;
+
+		transition: transform 250ms ease-out, background-color $bgTime, border-color $bgTime;
 	}
 
 	#sidebar-content {
 		position: fixed;
 		left: 0;
 		pointer-events: all;
-		width: 320px;
+		width: min(320px, 80%);
 		height: 100%;
 		padding: 1em;
 		z-index: 1000;
-		transition: transform 250ms 150ms ease-out, background-color $bgTime;
+		border-right: solid 2px $base;
 
 		#toc {
 			overflow-y: auto;
@@ -117,32 +126,26 @@ footer {
 
 	#sidebar-indicator {
 		position: fixed;
-		left: 0;
+		top: 4em;
+		left: 1em;
 		pointer-events: all;
-		margin-top: 8em;
-		padding: 0.5em;
+		padding: 0.25em 0.5em;
 		z-index: 999;
-
-		transition: transform 250ms 150ms ease-out, background-color $bgTime;
+		border: solid 2px $base;
 	}
 
 	@media only screen and (max-width: 1540px) {
 		>* {
-			box-shadow: 0 0 16px #0004;
+			background-color: $background;
 		}
 
 		#sidebar-content {
 			transform: translateX(-100%);
-			border-right: solid 2px $background;
 		}
 
 		&:hover {
 			#sidebar-content {
 				transform: none;
-			}
-
-			#sidebar-indicator {
-				transform: translateX(-100%);
 			}
 		}
 	}
@@ -192,22 +195,33 @@ button:not(.link),
 .button {
 	cursor: pointer;
 	user-select: none;
-	display: inline-block;
-	padding: 0.25em 0.5em;
-	font-weight: bold;
-	font-size: 16px;
-	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5em;
+	// padding: 0.25em;
+	// padding: 0.25em 0.5em;
+	padding-inline: 0.5em;
+	height: 30px;
 	color: $accent;
+	font-weight: bold;
+	font-size: unset;
+	text-decoration: none;
+	transition: transform 150ms;
 
 	&:hover {
 		color: $background;
 		background-color: $accent;
 	}
+
+	&:active {
+		transform: scale(1.25);
+		transition: transform 0ms;
+	}
 }
 
-svg {
-	fill: currentColor;
-}
+// svg {
+// 	fill: currentColor;
+// }
 
 // button#theme-toggle {
 // 	width: 28px;
@@ -222,13 +236,13 @@ svg {
 // 	}
 // }
 
-// body#dark button#theme-toggle span::after {
-// 	content: url('/assets/icons/light_mode_white_24dp.svg');
-// }
+body#dark button#theme-toggle .dark {
+	display: none;
+}
 
-// body#light button#theme-toggle span::after {
-// 	content: url('/assets/icons/dark_mode_black_24dp.svg');
-// }
+body#light button#theme-toggle .light {
+	display: none;
+}
 
 ul,
 ol {
@@ -237,6 +251,26 @@ ol {
 
 ul {
 	list-style-type: square;
+}
+
+ul[role="tree"] {
+	list-style-position: inside;
+
+	>li {
+		>a {
+			color: $foreground;
+		}
+
+		>ul {
+			padding-left: 1em;
+		}
+
+		&[active] {
+			>a {
+				color: $accent;
+			}
+		}
+	}
 }
 
 details {
@@ -299,7 +333,7 @@ pre {
 	outline: solid 1em $background;
 	overflow-x: auto;
 	tab-size: 2;
-	transition: color $fgTime, background-color $bgTime, outline-color $bgTime;
+	transition: background-color $bgTime, outline-color $bgTime;
 }
 
 code {

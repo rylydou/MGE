@@ -5,9 +5,9 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title id="title">{{Page title}}</title>
+	<title>{{Page title}}</title>
 	<link rel="stylesheet" href="/styles.css">
-	<link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon">
+	<link rel="shortcut icon" href="/assets/favicon.svg" type="image/x-icon">
 </head>
 
 <body id="dark">
@@ -32,40 +32,57 @@
 		}
 	</script>
 
-	<div id="sidebar">
-		<div id="sidebar-indicator">
-			Menu
-		</div>
+	<div id="sidebar" role="button">
+		<button id="sidebar-indicator">Menu</button>
 
 		<div id="sidebar-content">
-			<div id="toc">
-				<details>
+			<ul id="toc" role="tree">
+				<li role="treeitem" active>
+					<a href="/docs/getting-started">Getting started</a>
+					<ul role="tree">
+						<li role="treeitem" active><a href="/docs/getting-started/installation">Installation</a></li>
+						<li role="treeitem"><a href="/docs/getting-started/project-creation">Project creation</a></li>
+					</ul>
+				</li>
+				<!-- <details>
 					<summary>Articles</summary>
 					<a href="/docs/overview">Overview</a>
 					<a href="/docs/getting-started">Getting started</a>
-				</details>
-			</div>
+				</details> -->
+			</ul>
 		</div>
 	</div>
 
 
 	<div class="page">
 		<div class="navbar">
-			<a class="button" href="/" style="padding: 0.25em;">
-				<!-- <svg width="22" height="22" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+			<a class="button" href="/">
+				<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
 					<path fill-rule="evenodd" clip-rule="evenodd"
 						d="M8 0L15 4V12L8 16L1 12L1 4L8 0ZM4.05416 4.56417L8 2.3094L11.9458 4.56417L8 6.8423L4.05416 4.56417ZM3.02073 6.28292V10.8453L6.98964 13.1132V8.57437L3.02073 6.28292Z" />
-				</svg> -->
-				Home
+				</svg>
+				MGE
 			</a>
 			<a class="button" href="/docs">Docs</a>
 			<a class="button" href="/api">API</a>
+
+			<div class="flex-separator"></div>
+
 			<button id="theme-toggle" style="float: right;" onclick="isLight=!isLight;setTheme();">
-				<svg width="22" height="22" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="fill: none;">
+
+				<svg class="light" width="16" height="16" viewBox="0 0 16 16" fill="none">
 					<circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="2" />
 					<path d="M8 1V2M8 14V15M14 8H15M2 8H1M12.5 12.5L13 13M3.5 3.5L3 3M12.5 3.5L13 3M3.5 12.5L3 13"
 						stroke="currentColor" stroke-width="2" stroke-linecap="round" />
 				</svg>
+
+				<svg class="dark" width="16" height="16" viewBox="0 0 16 16" fill="none">
+					<path
+						d="M14 11C14.1103 11 14.2201 10.998 14.3295 10.9941C13.2072 13.3624 10.794 15 8 15C4.13401 15 1 11.866 1 8C1 5.20602 2.6376 2.79282 5.00593 1.67049C5.00199 1.77987 5 1.88972 5 2C5 6.97056 9.02944 11 14 11Z"
+						stroke="currentColor" stroke-width="2" />
+				</svg>
+
+
 			</button>
 		</div>
 
@@ -76,9 +93,10 @@
 			<div id="main-content">{{Page content}}</div>
 		</article>
 
-		<footer>
-			<a class="button" style="float: right;" href="#">Back to top</a>
-		</footer>
+		<div class="footer">
+			<div class="flex-separator"></div>
+			<a class="button" href="#">Back to top</a>
+		</div>
 	</div>
 </body>
 

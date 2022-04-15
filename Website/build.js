@@ -34,7 +34,7 @@ util.findFilesRecursive('src', /\.md$/, (filename) => {
 
 	const $ = cheerio.load(baseHtmlPage);
 
-	$('title').text(builtPage.title);
+	$('title').text(builtPage.title + " - MGE");
 	$('#title').text(builtPage.title);
 	$('#main-content').html(builtPage.html);
 
