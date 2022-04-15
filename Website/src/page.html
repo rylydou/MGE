@@ -12,47 +12,25 @@
 
 <body id="dark">
 	<script>
-		let isLight = localStorage.getItem('isLight') == 'true' ? true : false;
+		let isLight = localStorage.getItem('isLight') == 'true' ? true : false
 
-		setTheme();
+		setTheme()
 
 		function setTheme() {
-			const themeName = isLight ? 'light' : 'dark';
+			const themeName = isLight ? 'light' : 'dark'
 
 			// Save preference
-			localStorage.setItem('isLight', isLight);
+			localStorage.setItem('isLight', isLight)
 
 			// Update theme
-			document.body.id = themeName;
+			document.body.id = themeName
 
 			// Update toggle
-			// darkThemeLabel.textContent = `Switch to ${isLight ? 'light' : 'dark'} theme`;
+			// darkThemeLabel.textContent = `Switch to ${isLight ? 'light' : 'dark'} theme`
 
-			console.log(`Switched to ${themeName} theme`);
+			console.log(`Switched to ${themeName} theme`)
 		}
 	</script>
-
-	<div id="sidebar" role="button">
-		<button id="sidebar-indicator">Menu</button>
-
-		<div id="sidebar-content">
-			<ul id="toc" role="tree">
-				<li role="treeitem" active>
-					<a href="/docs/getting-started">Getting started</a>
-					<ul role="tree">
-						<li role="treeitem" active><a href="/docs/getting-started/installation">Installation</a></li>
-						<li role="treeitem"><a href="/docs/getting-started/project-creation">Project creation</a></li>
-					</ul>
-				</li>
-				<!-- <details>
-					<summary>Articles</summary>
-					<a href="/docs/overview">Overview</a>
-					<a href="/docs/getting-started">Getting started</a>
-				</details> -->
-			</ul>
-		</div>
-	</div>
-
 
 	<div class="page">
 		<div class="navbar">
@@ -63,7 +41,9 @@
 				</svg>
 				MGE
 			</a>
+
 			<a class="button" href="/docs">Docs</a>
+
 			<a class="button" href="/api">API</a>
 
 			<div class="flex-separator"></div>
@@ -90,12 +70,27 @@
 			<header>
 				<h1 id="title">{{Page title}}</h1>
 			</header>
+
+			<details id="toc">
+				<summary>Table of contents</summary>
+				<ul role="tree">
+					<li role="treeitem" active open>
+						<a href="/docs/getting-started">Getting started</a>
+						<ul role="tree">
+							<li role="treeitem" active><a href="/docs/getting-started/installation">Installation</a></li>
+							<li role="treeitem"><a href="/docs/getting-started/project-creation">Project creation</a></li>
+						</ul>
+					</li>
+				</ul>
+			</details>
+
 			<div id="main-content">{{Page content}}</div>
 		</article>
 
 		<div class="footer">
 			<div class="flex-separator"></div>
-			<a class="button" href="#">Back to top</a>
+			<!-- People who have js disabled prob also have a shortcut to scroll to the top -->
+			<button onclick="window.scrollTo(0, 0)">Back to top</button>
 		</div>
 	</div>
 </body>

@@ -1,39 +1,39 @@
-const marked = require('marked');
-const hljs = require('highlight.js');
+const marked = require('marked')
+const hljs = require('highlight.js')
 
-var title = '';
+var title = ''
 
-const markdownRenderer = new marked.Renderer();
+const markdownRenderer = new marked.Renderer()
 
 markdownRenderer.heading = (text, level) => {
 	if (level == 1) {
 		if (title == '')
-			title = text;
-		return '';
+			title = text
+		return ''
 	}
 
-	let name = text.toLocaleLowerCase().replace(/[^a-z0-9 _-]/gi, '-').toLowerCase();
+	let name = text.toLocaleLowerCase().replace(/[^a-z0-9 _-]/gi, '-').toLowerCase()
 
-	return `<h${level} id="${name}">${text}</h${level}>`;
-};
+	return `<h${level} id="${name}">${text}</h${level}>`
+}
 
 markdownRenderer.link = (href, title, text) => {
 	// If its a external link then treat it specially
 	if (href.startsWith('http')) {
-		return `<a href="${href}" title="${title ?? ''}" target="_blank">${text}</a>`;
+		return `<a href="${href}" title="${title ?? ''}" target="_blank">${text}</a>`
 	}
 
 	// Change references from markdown to html
-	href = '/' + href.replace(/\.md$/, '');
+	href = '/' + href.replace(/\.md$/, '')
 
-	return `<a href="${href.replace()}" title="${title ?? ''}">${text}</a>`;
-};
+	return `<a href="${href.replace()}" title="${title ?? ''}">${text}</a>`
+}
 
 markdownRenderer.code = (code, language, isEscaped) => {
 	return '<pre><code>' +
 		hljs.default.highlight(code, { language: language }).value +
-		'</code></pre>';
-};
+		'</code></pre>'
+}
 
 // Code highlighting
 hljs.default.registerLanguage('meml', (hljs) => {
@@ -59,17 +59,17 @@ hljs.default.registerLanguage('meml', (hljs) => {
 	const property = {
 		scope: 'tag',
 		begin: /\w+(?=:)/g,
-	};
+	}
 
 	const punctuation = {
 		scope: "punctuation",
 		match: /[{}[\]:]/,
-	};
+	}
 
 	const keywords = {
 		scope: 'keyword',
 		beginKeywords: 'true false null',
-	};
+	}
 
 	const string = {
 		scope: 'string',
@@ -94,7 +94,7 @@ hljs.default.registerLanguage('meml', (hljs) => {
 	const number_constants = {
 		scope: 'number',
 		match: '(nan)|([+-]?inf)',
-	};
+	}
 
 	const binary = {
 		scope: 'number',
@@ -103,7 +103,7 @@ hljs.default.registerLanguage('meml', (hljs) => {
 		end: '\\*',
 		endScope: 'quote',
 		illegal: '\\n'
-	};
+	}
 
 	return {
 		name: 'MEML',
@@ -121,12 +121,12 @@ hljs.default.registerLanguage('meml', (hljs) => {
 			number_constants,
 		],
 		illegal: '\\S'
-	};
-});
+	}
+})
 
 exports.buildPage = (markdown) => {
-	title = '';
-	let html = marked.marked(markdown, { renderer: markdownRenderer, headerIds: true, gfm: true });
+	title = ''
+	let html = marked.marked(markdown, { renderer: markdownRenderer, headerIds: true, gfm: true })
 
-	return { html, title };
+	return { html, title }
 }

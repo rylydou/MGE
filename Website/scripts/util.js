@@ -5,7 +5,7 @@ exports.findFilesRecursive = (startPath, filter, callback) => {
 	let files = fs.readdirSync(startPath);
 
 	for (let i = 0; i < files.length; i++) {
-		let filename = path.join(startPath, files[i]);
+		let filename = path.join(startPath, files[i].replace(/\\/g, '/'));
 		let stat = fs.lstatSync(filename);
 
 		if (stat.isDirectory()) {
