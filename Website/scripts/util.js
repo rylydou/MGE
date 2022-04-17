@@ -1,52 +1,52 @@
-const path = require('path');
-const fs = require('fs');
+const path = require('path')
+const fs = require('fs')
 
 exports.findFilesRecursive = (startPath, filter, callback) => {
-	let files = fs.readdirSync(startPath);
+	let files = fs.readdirSync(startPath)
 
 	for (let i = 0; i < files.length; i++) {
-		let filename = path.join(startPath, files[i].replace(/\\/g, '/'));
-		let stat = fs.lstatSync(filename);
+		let filename = path.join(startPath, files[i].replace(/\\/g, '/'))
+		let stat = fs.lstatSync(filename)
 
 		if (stat.isDirectory()) {
-			exports.findFilesRecursive(filename, filter, callback); // Recurse
+			exports.findFilesRecursive(filename, filter, callback) // Recurse
 		}
-		else if (filter.test(filename)) callback(filename);
+		else if (filter.test(filename)) callback(filename)
 	};
-};
+}
 
 exports.copyFileSync = (source, target) => {
-	let targetFile = target;
+	let targetFile = target
 
 	// If target is a directory, a new file with the same name will be created
 	if (fs.existsSync(target)) {
 		if (fs.lstatSync(target).isDirectory()) {
-			targetFile = path.join(target, path.basename(source));
+			targetFile = path.join(target, path.basename(source))
 		}
 	}
 
-	fs.writeFileSync(targetFile, fs.readFileSync(source));
+	fs.writeFileSync(targetFile, fs.readFileSync(source))
 }
 
 exports.copyFolderRecursiveSync = (source, target) => {
-	let files = [];
+	let files = []
 
 	// Check if folder needs to be created or integrated
-	let targetFolder = path.join(target, path.basename(source));
+	let targetFolder = path.join(target, path.basename(source))
 	if (!fs.existsSync(targetFolder)) {
-		fs.mkdirSync(targetFolder);
+		fs.mkdirSync(targetFolder)
 	}
 
 	// Copy
 	if (fs.lstatSync(source).isDirectory()) {
-		files = fs.readdirSync(source);
+		files = fs.readdirSync(source)
 		files.forEach(function (file) {
-			let curSource = path.join(source, file);
+			let curSource = path.join(source, file)
 			if (fs.lstatSync(curSource).isDirectory()) {
-				exports.copyFolderRecursiveSync(curSource, targetFolder);
+				exports.copyFolderRecursiveSync(curSource, targetFolder)
 			} else {
-				exports.copyFileSync(curSource, targetFolder);
+				exports.copyFileSync(curSource, targetFolder)
 			}
-		});
+		})
 	}
 }

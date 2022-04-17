@@ -3,8 +3,12 @@ $background: var(--bg);
 $accent: var(--ac);
 $foreground: var(--fg);
 $midground: var(--mg);
+
 $bgTime: 1000ms;
 $fgTime: 500ms;
+
+$page-width: 780px;
+$sidebar-width: 280px;
 
 body#dark {
 	--bs: #161616;
@@ -56,16 +60,13 @@ body {
 	color: $base;
 }
 
-// ::-webkit-scrollbar {
-// 	width: 8px;
-// 	height: 4px;
-// 	background-color: transparent;
-// }
+::-webkit-scrollbar {
+	background-color: transparent;
+}
 
-// ::-webkit-scrollbar-thumb {
-// 	background-color: $background;
-// 	border-radius: 4px;
-// }
+::-webkit-scrollbar-thumb {
+	background-color: $background;
+}
 
 .page {
 	max-width: min(780px, 100%);
@@ -100,6 +101,13 @@ article {
 }
 
 #toc {
+	outline: solid 1em transparent;
+
+	>summary {
+		margin-bottom: 1em;
+		font-weight: bold;
+		color: $midground;
+	}
 
 	// Desktop
 	@media only screen and (min-width: 1540px) {
@@ -113,21 +121,23 @@ article {
 
 	// Mobile
 	@media only screen and (max-width: 1540px) {
-		width: 100%;
-	}
-}
+		width: auto;
+		margin-bottom: 2em;
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	margin-top: 1.5em;
-	margin-bottom: 1em;
-	font-size: 2em;
-	font-family: "Iosevka", monospace;
-	font-weight: normal;
+		>ul {
+			width: fit-content;
+		}
+
+		&[open] {
+			background-color: $background;
+			outline: solid 1em $background;
+			transition: background-color $bgTime, outline-color $bgTime;
+
+			>summary {
+				color: $foreground;
+			}
+		}
+	}
 }
 
 #title {
@@ -148,12 +158,6 @@ a:not(.button),
 
 	&:hover {
 		text-decoration: underline;
-	}
-
-	&:hover:visited:not(.nodim),
-	&:focus:visited:not(.nodim) {
-		opacity: 0.75;
-		// color: darken(desaturate($accent, 25%), 25%);
 	}
 }
 
@@ -185,6 +189,19 @@ button:not(.link),
 	}
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin-top: 1.5em;
+	margin-bottom: 1em;
+	font-size: 2em;
+	font-family: "Iosevka", monospace;
+	font-weight: normal;
+}
+
 body#dark button#theme-toggle .dark {
 	display: none;
 }
@@ -204,34 +221,18 @@ ul {
 }
 
 ul[role="tree"] {
-	list-style: none;
-	line-height: 1.5em;
+	list-style-type: none;
+	line-height: 2em;
 
 	>li {
-		&::before {
-			content: '+';
-			cursor: pointer;
-			margin-right: 0.5em;
-			color: $foreground;
-		}
-
-		>a {
-			color: $foreground;
-		}
-
 		>ul {
 			padding-left: 1em;
+			border-left: solid 2px $midground;
 		}
 
 		&[active] {
 			>a {
 				color: $accent;
-			}
-		}
-
-		&[open] {
-			&::before {
-				content: '-';
 			}
 		}
 	}

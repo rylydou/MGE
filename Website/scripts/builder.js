@@ -12,9 +12,9 @@ markdownRenderer.heading = (text, level) => {
 		return ''
 	}
 
-	let name = text.toLocaleLowerCase().replace(/[^a-z0-9 _-]/gi, '-').toLowerCase()
+	let id = text.toLocaleLowerCase().replace(/[^a-z0-9 _-]/gi, '-').toLowerCase()
 
-	return `<h${level} id="${name}">${text}</h${level}>`
+	return `<h${level}><a href="#${id}" id="${id}">#</a> ${text}</h${level}>`
 }
 
 markdownRenderer.link = (href, title, text) => {

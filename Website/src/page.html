@@ -13,21 +13,11 @@
 <body id="dark">
 	<script>
 		let isLight = localStorage.getItem('isLight') == 'true' ? true : false
-
 		setTheme()
-
 		function setTheme() {
 			const themeName = isLight ? 'light' : 'dark'
-
-			// Save preference
 			localStorage.setItem('isLight', isLight)
-
-			// Update theme
 			document.body.id = themeName
-
-			// Update toggle
-			// darkThemeLabel.textContent = `Switch to ${isLight ? 'light' : 'dark'} theme`
-
 			console.log(`Switched to ${themeName} theme`)
 		}
 	</script>
@@ -52,16 +42,14 @@
 
 				<svg class="light" width="16" height="16" viewBox="0 0 16 16" fill="none">
 					<circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="2" />
-					<path d="M8 1V2M8 14V15M14 8H15M2 8H1M12.5 12.5L13 13M3.5 3.5L3 3M12.5 3.5L13 3M3.5 12.5L3 13"
-						stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+					<path d="M8 1v1m0 12v1m6-7h1M2 8H1m11.5 4.5.5.5M3.5 3.5 3 3m9.5.5L13 3m-9.5 9.5L3 13" stroke="currentColor"
+						stroke-width="2" stroke-linecap="round" />
 				</svg>
 
 				<svg class="dark" width="16" height="16" viewBox="0 0 16 16" fill="none">
-					<path
-						d="M14 11C14.1103 11 14.2201 10.998 14.3295 10.9941C13.2072 13.3624 10.794 15 8 15C4.13401 15 1 11.866 1 8C1 5.20602 2.6376 2.79282 5.00593 1.67049C5.00199 1.77987 5 1.88972 5 2C5 6.97056 9.02944 11 14 11Z"
-						stroke="currentColor" stroke-width="2" />
+					<path d="M14 11c.11 0 .22-.002.33-.006A7.002 7.002 0 1 1 5.005 1.67 9 9 0 0 0 14 11Z" stroke="currentColor"
+						stroke-width="2" />
 				</svg>
-
 
 			</button>
 		</div>
@@ -71,17 +59,8 @@
 				<h1 id="title">{{Page title}}</h1>
 			</header>
 
-			<details id="toc">
-				<summary>Table of contents</summary>
-				<ul role="tree">
-					<li role="treeitem" active open>
-						<a href="/docs/getting-started">Getting started</a>
-						<ul role="tree">
-							<li role="treeitem" active><a href="/docs/getting-started/installation">Installation</a></li>
-							<li role="treeitem"><a href="/docs/getting-started/project-creation">Project creation</a></li>
-						</ul>
-					</li>
-				</ul>
+			<details id="toc" open>
+				<summary>Sitemap</summary>
 			</details>
 
 			<div id="main-content">{{Page content}}</div>
@@ -93,6 +72,19 @@
 			<button onclick="window.scrollTo(0, 0)">Back to top</button>
 		</div>
 	</div>
+
+	<script>
+		let isOpen = true
+		window.addEventListener('resize', onresize)
+		onresize()
+		function onresize() {
+			let newIsOpen = window.innerWidth > 1540
+			// The position of the toc changed
+			if (newIsOpen == isOpen) return
+			isOpen = newIsOpen
+			document.getElementById('toc').open = isOpen
+		}
+	</script>
 </body>
 
 </html>
