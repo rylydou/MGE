@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "build": "node ./scripts/build.js",
-    "watch": "npx nodemon -w src build.js",
+    "watch": "npx nodemon -w src scripts/build.js",
     "dev": "npx ws -d dist"
   },
   "devDependencies": {

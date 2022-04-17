@@ -50,3 +50,14 @@ exports.copyFolderRecursiveSync = (source, target) => {
 		})
 	}
 }
+
+exports.convertPath = (path) => {
+	// Remove `.md`, will get changed to `.html`
+	path = path.replace(/\.md$/, '')
+	// Remove the number and space at the beginning of the file and folders used for ordering
+	path = path.replace(/\d+_/g, '')
+	// Remove `/index`, special case to handle index files
+	path = path.replace(/\/?index$/, '')
+
+	return path
+}

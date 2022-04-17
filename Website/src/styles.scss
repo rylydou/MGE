@@ -66,17 +66,34 @@ body {
 
 ::-webkit-scrollbar-thumb {
 	background-color: $background;
+
+	&:hover {
+		background-color: $midground;
+	}
 }
 
 .page {
 	max-width: min(780px, 100%);
-	min-height: 100vh;
 	margin: 0 auto;
 	padding: 1em;
 }
 
 article {
 	margin-bottom: 50vh;
+
+	p {
+		margin-top: 1em;
+	}
+
+	img {
+		width: 100%;
+		height: auto;
+		margin-top: 1em;
+		// background: $background;
+		// outline: solid 1em $background;
+
+		// transition: background-color $bgTime, outline-color $bgTime;
+	}
 }
 
 .navbar {
@@ -104,7 +121,7 @@ article {
 	outline: solid 1em transparent;
 
 	>summary {
-		margin-bottom: 1em;
+		margin-bottom: 0.5em;
 		font-weight: bold;
 		color: $midground;
 	}
@@ -145,10 +162,6 @@ article {
 	text-align: center;
 	font-size: 3em;
 	font-weight: normal;
-}
-
-p {
-	margin-top: 1em;
 }
 
 a:not(.button),
@@ -195,8 +208,8 @@ h3,
 h4,
 h5,
 h6 {
-	margin-top: 1.5em;
-	margin-bottom: 1em;
+	margin-top: 2em;
+	// margin-bottom: 1em;
 	font-size: 2em;
 	font-family: "Iosevka", monospace;
 	font-weight: normal;
@@ -232,7 +245,7 @@ ul[role="tree"] {
 
 		&[active] {
 			>a {
-				color: $accent;
+				text-decoration: underline;
 			}
 		}
 	}
@@ -244,10 +257,8 @@ details>summary {
 }
 
 pre {
-	margin-top: 2em;
-	margin-bottom: 2em;
+	margin-block: 2em;
 	background-color: $background;
-	// padding: 1em;
 	outline: solid 1em $background;
 	overflow-x: auto;
 	tab-size: 2;

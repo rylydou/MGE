@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{{Page title}}</title>
+	<title>{{PAGE TITLE}}</title>
 	<link rel="stylesheet" href="/styles.css">
 	<link rel="shortcut icon" href="/assets/favicon.svg" type="image/x-icon">
 </head>
@@ -32,11 +32,18 @@
 				MGE
 			</a>
 
-			<a class="button" href="/docs">Docs</a>
+			<a href="/docs" class="button">Docs</a>
 
-			<a class="button" href="/api">API</a>
+			<a href="/api" class="button">API</a>
 
 			<div class="flex-separator"></div>
+
+			<a href="https://github.com/CiberTurtle/MGE" target="_blank" class="button"><svg width="16" height="16"
+					viewBox="0 0 16 16" fill="none">
+					<path fill-rule="evenodd" clip-rule="evenodd"
+						d="M8 0C3.581 0 0 3.672 0 8.203c0 3.624 2.292 6.698 5.471 7.783.4.075.546-.178.546-.396 0-.194-.007-.71-.01-1.395-2.226.496-2.695-1.1-2.695-1.1-.364-.947-.889-1.2-.889-1.2-.726-.508.055-.498.055-.498.803.058 1.225.846 1.225.846.714 1.253 1.873.89 2.329.68.073-.529.279-.89.508-1.095-1.777-.207-3.644-.911-3.644-4.054 0-.896.311-1.628.823-2.201-.082-.208-.357-1.042.078-2.171 0 0 .672-.22 2.2.84A7.465 7.465 0 0 1 8 3.968c.68.003 1.364.094 2.003.276 1.527-1.062 2.198-.841 2.198-.841.436 1.13.162 1.963.08 2.17.512.574.822 1.306.822 2.202 0 3.15-1.87 3.844-3.653 4.047.287.253.543.754.543 1.52 0 1.096-.01 1.98-.01 2.25 0 .219.144.474.55.394C13.71 14.898 16 11.825 16 8.203 16 3.673 12.418 0 8 0Z"
+						fill="currentColor" />
+				</svg></a>
 
 			<button id="theme-toggle" style="float: right;" onclick="isLight=!isLight;setTheme();">
 
@@ -56,17 +63,18 @@
 
 		<article>
 			<header>
-				<h1 id="title">{{Page title}}</h1>
+				<h1 id="title">{{PAGE TITLE}}</h1>
 			</header>
 
 			<details id="toc" open>
 				<summary>Sitemap</summary>
 			</details>
 
-			<div id="main-content">{{Page content}}</div>
+			<div id="main-content">{{PAGE CONTENT}}</div>
 		</article>
 
 		<div class="footer">
+			<a href="" target="_blank" id="edit" class="button">Edit</a>
 			<div class="flex-separator"></div>
 			<!-- People who have js disabled prob also have a shortcut to scroll to the top -->
 			<button onclick="window.scrollTo(0, 0)">Back to top</button>

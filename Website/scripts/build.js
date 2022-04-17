@@ -3,6 +3,8 @@ const sass = require('sass')
 const cheerio = require('cheerio')
 const builder = require('./builder.js')
 const util = require('./util.js')
+const settings = require('./settings.js')
+const path = require('path')
 
 // Delete old dist output
 console.time('Cleaning build results')
@@ -12,14 +14,14 @@ console.timeEnd('Cleaning build results')
 
 // Copy assets
 console.time('Copying assets')
-util.copyFolderRecursiveSync('src/assets', 'dist')
+util.copyFolderRecursiveSync(`${settings.source}/assets`, 'dist')
 console.timeEnd('Copying assets')
 // fs.cpSync('src/assets', 'dist/assets')
 
 // Compile styles
 console.time('Building styles')
-var css = sass.compile('src/styles.scss', { style: 'compressed' }).css
-fs.writeFileSync('dist/styles.css', css)
+var css = sass.compile(`${settings.source}/styles.scss`, { style: 'compressed' }).css
+fs.writeFileSync(`${settings.destination}/styles.css`, css)
 console.timeEnd('Building styles')
 
 const pages = []
@@ -28,22 +30,20 @@ const pages = []
 util.findFilesRecursive('src', /\.md$/, (filename) => {
 	console.time(`Building ${filename}`)
 
-	let markdown = fs.readFileSync(filename).toString()
-	let page = builder.buildPage(markdown)
-
-	console.timeEnd(`Building ${filename}`)
+	let page = {}
 
 	let url = filename
-	// Remove the number and space at the beginning of the file and folders used for ordering
-	url = filename.replace(/\d+\s/g, '')
 	// Remove `src/`, will get replaced with `dist/`
-	url = url.replace(/^src\//, '')
-	// Remove `.md`, will get changed to `.html`
-	url = url.replace(/\.md$/, '')
-	// Remove `/index`, special case to handle index files
-	url = url.replace(/\/?index$/, '')
-
+	url = url.replace(`${settings.source}/`, '')
+	url = util.convertPath(url)
 	page.url = url
+
+	page.path = filename
+
+	let markdown = fs.readFileSync(filename).toString()
+	page = Object.assign(page, builder.buildPage(markdown, url))
+
+	console.timeEnd(`Building ${filename}`)
 
 	pages.push(page)
 })
@@ -77,7 +77,7 @@ function populate(root) {
 		let hasHREF = item._href != undefined
 		if (hasHREF) str += `<a href="${item._href}">`
 		if (item._title == undefined)
-			str += (key[0].toUpperCase() + key.substring(1).replace(/-/g, ''))
+			str += (key[0].toUpperCase() + key.substring(1).replace(/-/g, ' '))
 		else str += item._title
 		if (hasHREF) str += `</a>`
 
@@ -96,17 +96,18 @@ console.timeEnd('Generate TOC')
 
 // console.log(JSON.stringify(toc, null, 2))
 
-const pageSkeleton = fs.readFileSync('src/page.html')
+const pageSkeleton = fs.readFileSync(`${settings.source}/page.html`)
 
 pages.forEach(page => {
-	let dest = 'dist/' + page.url
+	let dest = `${settings.destination}/${page.url}`
 
 	// Populate the html page
 	const $ = cheerio.load(pageSkeleton)
-	$('title').text(page.title + " - MGE")
+	$('title').text(`${page.title} - MGE`)
 	$('#title').text(page.title)
 	$('#main-content').html(page.html)
 	$('#toc').append(tocHTML)
+	$('#edit').attr('href', `${settings.editURL}/${page.path}`)
 
 	// Create the folders leading up to the file
 	if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true })

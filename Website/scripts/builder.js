@@ -1,7 +1,9 @@
 const marked = require('marked')
 const hljs = require('highlight.js')
+const util = require('./util.js')
 
 var title = ''
+var dir = ''
 
 const markdownRenderer = new marked.Renderer()
 
@@ -17,21 +19,31 @@ markdownRenderer.heading = (text, level) => {
 	return `<h${level}><a href="#${id}" id="${id}">#</a> ${text}</h${level}>`
 }
 
+markdownRenderer.image = (href, title, text) => {
+	if (!text) console.log(`[!] '${href}' is missing alt text`)
+	return `<img src="${href}" alt="${text ?? 'Image'}" title="${title ?? ''}"/>`
+}
+
 markdownRenderer.link = (href, title, text) => {
 	// If its a external link then treat it specially
-	if (href.startsWith('http')) {
+	if (href.startsWith('http'))
 		return `<a href="${href}" title="${title ?? ''}" target="_blank">${text}</a>`
-	}
 
-	// Change references from markdown to html
-	href = '/' + href.replace(/\.md$/, '')
+	if (href.startsWith('./'))
+		href = `${dir}/${util.convertPath(href)}`
+	else
+		href = util.convertPath(href)
 
 	return `<a href="${href.replace()}" title="${title ?? ''}">${text}</a>`
 }
 
 markdownRenderer.code = (code, language, isEscaped) => {
+	let html = hljs.default.highlight(code, { language: language }).value
+
+	html = html.replace(/    /g, '\t')
+
 	return '<pre><code>' +
-		hljs.default.highlight(code, { language: language }).value +
+		html +
 		'</code></pre>'
 }
 
@@ -124,9 +136,10 @@ hljs.default.registerLanguage('meml', (hljs) => {
 	}
 })
 
-exports.buildPage = (markdown) => {
+exports.buildPage = (markdown, dirname) => {
 	title = ''
-	let html = marked.marked(markdown, { renderer: markdownRenderer, headerIds: true, gfm: true })
+	dir = dirname
+	let html = marked.marked(markdown, { renderer: markdownRenderer, gfm: true, smartLists: true, })
 
 	return { html, title }
 }
