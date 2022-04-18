@@ -26,8 +26,12 @@ public class AL_Audio : Audio
 
 	protected override void FirstWindowCreated()
 	{
-		// Get the defualt audio device
-		device = ALC.alcOpenDevice(""); ALC.CheckError(device, "Failed open default audio device");
+		// Get the default audio device
+		device = ALC.alcOpenDevice(""); // ALC.CheckError(device, "Failed open default audio device");
+		audioEnabled = ALC.alcGetError(device) == ALCError.NoError;
+		Log.System("Sound " + (audioEnabled ? "on" : "off"));
+
+		if (!audioEnabled) return;
 
 		// Create a context using this device
 		context = ALC.alcCreateContext(device, new int[0]); ALC.CheckError(device, "Failed create a context from defualt device");
@@ -70,6 +74,8 @@ public class AL_Audio : Audio
 
 	public override void PlaySoundEffect(SoundEffect soundEffect, float volume, float pitch, float pan)
 	{
+		if (!audioEnabled) return;
+
 		var source = BorrowSource();
 
 		var al_soundEffect = (AL_SoundEffect)soundEffect.implementation;

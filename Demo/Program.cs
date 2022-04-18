@@ -23,4 +23,4 @@ App.modules.Register<Physics>();
 App.modules.Register<Game>();
 
 // Start the Application with a single 1280x720 Window
-App.Start("My Application", 1280, 720, WindowFlags.ScaleToMonitor);
+App.Start("MGE Game", 1280, 720, WindowFlags.ScaleToMonitor);

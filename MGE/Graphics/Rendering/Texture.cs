@@ -99,7 +99,7 @@ public class Texture : IDisposable
 	/// <summary>
 	/// Default Texture Filter used for all Textures
 	/// </summary>
-	public static TextureFilter defaultTextureFilter = TextureFilter.Linear;
+	public static TextureFilter defaultTextureFilter = TextureFilter.Nearest;
 
 	/// <summary>
 	/// A reference to the internal platform implementation of the Texture

@@ -5,38 +5,64 @@ namespace Demo;
 public class Player : Node2D
 {
 	[Prop] public float moveSpeed;
+	[Prop] public float moveSpeedAir;
+	[Prop] public float jumpVel;
+	[Prop] public float gravity;
+	[Prop] public float friction;
+	[Prop] public float frictionAir;
 
 	Font _font = App.content.Get<Font>("Fonts/Inter/Regular.ttf");
 
 	Texture _sprite = App.content.Get<Texture>("Scene/Player/Sprite.ase");
-	SoundEffect _soundEffect = App.content.Get<SoundEffect>("Scene/Player/What.wav");
+
+	public bool alt;
+	public Vector2 velocity;
+	public float floorY;
+	float _moveInput;
+	bool _jumpDown;
 
 	protected override void Update(float delta)
 	{
 		var kb = App.input.keyboard;
 
 		// Get input
-		var input = Vector2.zero;
+		_moveInput = 0;
+		if (kb.Down(alt ? Keys.Left : Keys.A)) _moveInput -= 1;
+		if (kb.Down(alt ? Keys.Right : Keys.D)) _moveInput += 1;
 
-		if (kb.Down(Keys.A)) input.x -= 1;
-		if (kb.Down(Keys.D)) input.x += 1;
+		if (kb.Pressed(alt ? Keys.Up : Keys.Space)) _jumpDown = true;
+	}
 
-		if (kb.Down(Keys.W)) input.y -= 1;
-		if (kb.Down(Keys.S)) input.y += 1;
+	protected override void Tick(float delta)
+	{
+		var grounded = position.y >= floorY;
 
-		// Set the position
-		position += input.normalized * moveSpeed * delta;
+		if (grounded)
+			velocity.y = 0;
+		else
+			velocity.y += gravity;
 
-		if (kb.Pressed(Keys.Space))
+		if (grounded && _jumpDown)
+			velocity.y = -jumpVel;
+		_jumpDown = false;
+
+		velocity.x *= grounded ? friction : frictionAir;
+		if (grounded)
 		{
-			_soundEffect!.Play(RNG.shared.RandomFloat(), RNG.shared.RandomFloat(-1f, 1f), RNG.shared.RandomFloat(-1, 1));
+			if (Math.Abs(_moveInput) > 0.15f)
+				velocity.x = _moveInput * moveSpeed;
 		}
+		else velocity.x += _moveInput * moveSpeedAir;
+
+		position += velocity * delta;
+		position = new(position.x, Math.Clamp(position.y, floorY));
 	}
 
 	protected override void Draw(Batch2D batch)
 	{
-		batch.Image(_sprite, new(0, 0), Color.white);
+		var time = (float)Time.duration.TotalSeconds;
+		batch.Image(_sprite, Vector2.zero, Vector2.one, Vector2.zero, 0, alt ? Color.red : Color.white);
 
-		_font.DrawString(batch, $"{Time.fps}fps ({Time.rawDelta:N4}ms)\n\tPosition: {globalPosition}", new(8), Color.white);
+		// _font.DrawString(batch, $"{Time.fps}fps ({Time.rawDelta:N4}ms)\n\tPosition: {globalPosition}", new(8), Color.white);
 	}
 }

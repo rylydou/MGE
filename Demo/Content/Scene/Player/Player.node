@@ -1,2 +1,7 @@
 !Demo: 'Demo.Player'
-moveSpeed: 256.0
+moveSpeed: 192.0
+moveSpeedAir: 8.0
+jumpVel: 480.0
+gravity: 24
+friction: 0.75
+frictionAir: 0.975

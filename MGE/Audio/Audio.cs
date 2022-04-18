@@ -26,6 +26,8 @@ public abstract class Audio : AppModule
 		}
 	}
 
+	public bool audioEnabled { get; protected set; }
+
 	protected Audio() : base(400) { }
 
 	protected internal override void Startup()

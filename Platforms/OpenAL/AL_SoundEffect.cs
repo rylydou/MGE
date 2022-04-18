@@ -19,7 +19,10 @@ internal class AL_SoundEffect : SoundEffect.Platform
 	{
 		this.soundEffect = soundEffect;
 
-		AL.alGenBuffers(1, out handle); AL.CheckError("Failed generate buffer.");
+		if (audio.audioEnabled)
+		{
+			AL.alGenBuffers(1, out handle); AL.CheckError("Failed generate buffer.");
+		}
 
 		var buffer = AudioLoader.Load(stream, out var format, out var frequency, out var channels, out var blockAlignment, out var bitsPerSample, out var samplesPerBlock, out var sampleCount);
 
@@ -138,6 +141,8 @@ internal class AL_SoundEffect : SoundEffect.Platform
 
 	void BindDataBuffer(byte[] dataBuffer, ALFormat format, int size, int sampleRate, int sampleAlignment = 0)
 	{
+		if (!audio.audioEnabled) return;
+
 		if ((format == ALFormat.MonoMSAdpcm || format == ALFormat.StereoMSAdpcm) && !audio.supportsAdpcm)
 			throw new InvalidOperationException("MS-ADPCM is not supported by this OpenAL driver");
 		if ((format == ALFormat.MonoIma4 || format == ALFormat.StereoIma4) && !audio.supportsIma4)
