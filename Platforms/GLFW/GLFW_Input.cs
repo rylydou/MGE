@@ -80,9 +80,9 @@ internal class GLFW_Input : Input
 	{
 		var cursor = GetCursor(cursors);
 
-		for (int i = 0; i < App.system.windows.Count; i++)
+		for (int i = 0; i < App.windowing.windows.Count; i++)
 		{
-			if (App.system.windows[i].implementation is GLFW_Window window)
+			if (App.windowing.windows[i].implementation is GLFW_Window window)
 				GLFW.SetCursor(window._pointer, cursor);
 		}
 	}
@@ -96,7 +96,7 @@ internal class GLFW_Input : Input
 	{
 		clipboardText = value;
 
-		if (App.system.windows[0].implementation is GLFW_Window window)
+		if (App.windowing.windows[0].implementation is GLFW_Window window)
 			GLFW.SetClipboardString(window._pointer, value);
 	}
 

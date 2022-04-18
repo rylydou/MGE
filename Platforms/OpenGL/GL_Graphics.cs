@@ -10,7 +10,7 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 	{
 		get
 		{
-			if (App.system is ISystemOpenGL glSystem) return glSystem;
+			if (App.windowing is ISystemOpenGL glSystem) return glSystem;
 			throw new Exception("System does not implement IGLSystem");
 		}
 	}

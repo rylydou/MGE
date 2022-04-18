@@ -36,7 +36,7 @@ public static class App
 	/// <summary>
 	/// Gets the System Module
 	/// </summary>
-	public static Windowing system => modules.Get<Windowing>();
+	public static Windowing windowing => modules.Get<Windowing>();
 
 	/// <summary>
 	/// Gets the Graphics Module
@@ -61,7 +61,7 @@ public static class App
 	/// <summary>
 	/// Gets the System Input
 	/// </summary>
-	public static Input input => system.input;
+	public static Input input => windowing.input;
 
 	/// <summary>
 	/// Gets the Primary Window
@@ -94,7 +94,7 @@ public static class App
 		}
 	}
 
-	public static string libaryExtention
+	public static string libraryExtention
 	{
 		get
 		{
@@ -147,7 +147,7 @@ public static class App
 				throw new Exception("App requires a System Module to be registered before it can Start");
 
 			// our primary Window
-			primaryWindow = new Window(system, title, width, height, flags);
+			primaryWindow = new Window(windowing, title, width, height, flags);
 			modules.FirstWindowCreated();
 
 			// startup application
@@ -171,7 +171,7 @@ public static class App
 		{
 			var forceFixedTimestep = App.forceFixedTimestep;
 			if (!forceFixedTimestep)
-				system.input.Step();
+				windowing.input.Step();
 
 			modules.FrameStart();
 
@@ -225,7 +225,7 @@ public static class App
 					{
 						Time.duration += fixedTarget;
 
-						system.input.Step();
+						windowing.input.Step();
 						modules.Tick(Time.fixedDelta);
 						modules.Update(Time.delta);
 					}
@@ -262,13 +262,13 @@ public static class App
 			{
 				modules.BeforeRender();
 
-				for (int i = 0; i < system.windows.Count; i++)
-					if (system.windows[i].opened)
-						system.windows[i].Render();
+				for (int i = 0; i < windowing.windows.Count; i++)
+					if (windowing.windows[i].opened)
+						windowing.windows[i].Render();
 
-				for (int i = 0; i < system.windows.Count; i++)
-					if (system.windows[i].opened)
-						system.windows[i].Present();
+				for (int i = 0; i < windowing.windows.Count; i++)
+					if (windowing.windows[i].opened)
+						windowing.windows[i].Present();
 
 				modules.AfterRender();
 			}
@@ -310,6 +310,6 @@ public static class App
 
 	public static File GetLibrary(string libraryName)
 	{
-		return Folder.here.GetFile($"Runtimes/{libraryName}/{App.shortEnvName}.{App.libaryExtention}");
+		return Folder.here.GetFile($"Runtimes/{libraryName}/{App.shortEnvName}.{App.libraryExtention}");
 	}
 }

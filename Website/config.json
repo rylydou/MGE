@@ -1,6 +1,0 @@
-{
-  "outputPathMode": "index.html",
-  "sourceDir": "src",
-  "buildDir": "dist",
-  "copyDirs": ["assets"]
-}

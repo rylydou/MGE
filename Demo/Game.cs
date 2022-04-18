@@ -12,8 +12,6 @@ public class Game : Module
 
 		App.window.SetAspectRatio(new(320, 180));
 		App.window.SetMinSize(new(320, 180));
-
-		App.window.Center();
 	}
 
 	protected override void Shutdown()

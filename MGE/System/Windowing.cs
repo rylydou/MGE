@@ -34,10 +34,12 @@ public abstract class Windowing : AppModule
 	/// </summary>
 	public readonly ReadOnlyCollection<Monitor> monitors;
 
+	int? _prefPrimaryMonitor;
+
 	/// <summary>
 	/// The Primary Monitor
 	/// </summary>
-	public Monitor primaryMonitor => monitors.First(m => m.isPrimary);
+	public Monitor primaryMonitor => _prefPrimaryMonitor.HasValue ? monitors[_prefPrimaryMonitor.Value] : monitors.First(m => m.isPrimary);
 
 	/// <summary>
 	/// System Input
@@ -65,6 +67,12 @@ public abstract class Windowing : AppModule
 
 	protected Windowing() : base(100)
 	{
+		var configFile = Folder.data.GetFile("config.meml");
+		if (configFile.exists)
+		{
+			_prefPrimaryMonitor = configFile.ReadMemlStructure()["primaryMonitor"].Int;
+		}
+
 		windows = new ReadOnlyCollection<Window>(_windows);
 		monitors = new ReadOnlyCollection<Monitor>(_monitors);
 	}

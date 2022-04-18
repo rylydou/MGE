@@ -327,7 +327,7 @@ public class Window : RenderTarget
 	/// </summary>
 	public Monitor monitor => implementation.monitor;
 
-	public Window(string title, int width, int height, WindowFlags flags = WindowFlags.ScaleToMonitor) : this(App.system, title, width, height, flags)
+	public Window(string title, int width, int height, WindowFlags flags = WindowFlags.ScaleToMonitor) : this(App.windowing, title, width, height, flags)
 	{
 
 	}
@@ -346,9 +346,12 @@ public class Window : RenderTarget
 			system._windows.Remove(this);
 		};
 		implementation.onCloseRequested = () => onCloseRequested?.Invoke(this);
+		implementation.position = App.windowing.primaryMonitor.bounds.center;
 
 		// default close request to... close the window!
 		onCloseRequested = (window) => window.Close();
+
+		Center();
 	}
 
 	public void Focus()

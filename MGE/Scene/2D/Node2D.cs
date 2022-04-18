@@ -22,6 +22,7 @@ public class Node2D : CanvasItem
 		_position = _transform.origin;
 		_rotation = _transform.rotation;
 		_scale = _transform.scale;
+		globalInvalid = true;
 		if (isInScene) onTransformChanged();
 	}
 
@@ -35,6 +36,7 @@ public class Node2D : CanvasItem
 
 			_position = value;
 			_transform.origin = _position;
+			globalInvalid = true;
 			if (isInScene) onTransformChanged();
 		}
 	}
@@ -50,6 +52,7 @@ public class Node2D : CanvasItem
 
 			_rotation = value;
 			_transform.rotation = _rotation;
+			globalInvalid = true;
 			if (isInScene) onTransformChanged();
 		}
 	}
@@ -65,6 +68,7 @@ public class Node2D : CanvasItem
 
 			_scale = value;
 			_transform.scale = _scale;
+			globalInvalid = true;
 			if (isInScene) onTransformChanged();
 		}
 	}

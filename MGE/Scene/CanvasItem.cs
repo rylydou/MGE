@@ -48,10 +48,6 @@ public abstract class CanvasItem : Node
 		onExitScene += () => globalInvalid = true;
 
 		onTransformChanged += OnTransformChanged;
-		onTransformChanged += () =>
-		{
-			globalInvalid = true;
-		};
 
 		onUpdate += (delta) =>
 		{
