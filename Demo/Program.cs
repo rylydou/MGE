@@ -16,9 +16,6 @@ App.modules.Register<AL_Audio>();
 // Content Module
 App.modules.Register<Content>();
 
-// Physics Module
-App.modules.Register<Physics>();
-
 // Register the custom Game Module to run your code
 App.modules.Register<Game>();
 

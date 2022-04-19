@@ -11,11 +11,19 @@ public class Player : Node2D
 	[Prop] public float friction;
 	[Prop] public float frictionAir;
 
-	Font _font = App.content.Get<Font>("Fonts/Inter/Regular.ttf");
-
 	Texture _sprite = App.content.Get<Texture>("Scene/Player/Sprite.ase");
 
-	public bool alt;
+	bool _alt;
+	public bool alt
+	{
+		get => _alt;
+		set
+		{
+			_alt = value;
+			if (_alt)
+				_sprite = App.content.Get<Texture>("Scene/Player/Sprite Alt.ase");
+		}
+	}
 	public Vector2 velocity;
 	public float floorY;
 	float _moveInput;
@@ -58,11 +66,9 @@ public class Player : Node2D
 		position = new(position.x, Math.Clamp(position.y, floorY));
 	}
 
-	protected override void Draw(Batch2D batch)
+	protected override void Render(Batch2D batch)
 	{
 		var time = (float)Time.duration.TotalSeconds;
-		batch.Image(_sprite, Vector2.zero, Vector2.one, Vector2.zero, 0, alt ? Color.red : Color.white);
-
-		// _font.DrawString(batch, $"{Time.fps}fps ({Time.rawDelta:N4}ms)\n\tPosition: {globalPosition}", new(8), Color.white);
+		batch.Image(_sprite, Vector2.zero, Vector2.one, Vector2.zero, 0, Color.white);
 	}
 }

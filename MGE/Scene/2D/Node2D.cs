@@ -10,28 +10,24 @@ public class Node2D : CanvasItem
 	public Transform2D transform
 	{
 		get => GetTransform();
-		set => SetTransform(value);
+		set
+		{
+			if (_transform == value) return;
+			_transform = value;
+
+			_position = _transform.origin;
+			_rotation = _transform.rotation;
+			_scale = _transform.scale;
+
+			_localInvalid = false;
+			GlobalInvalid();
+			if (isInScene) onTransformChanged();
+		}
 	}
 	public override Transform2D GetTransform()
 	{
-		if (_localInvalid)
-		{
-			_transform = Transform2D.CreateMatrix(_position, Vector2.zero, _scale, _rotation);
-		}
+		if (_localInvalid) _transform = Transform2D.CreateMatrix(_position, Vector2.zero, _scale, _rotation);
 		return _transform;
-	}
-	public void SetTransform(Transform2D transform)
-	{
-		if (_transform == transform) return;
-		_transform = transform;
-
-		_position = _transform.origin;
-		_rotation = _transform.rotation;
-		_scale = _transform.scale;
-
-		_localInvalid = false;
-		globalInvalid = true;
-		if (isInScene) onTransformChanged();
 	}
 
 	Vector2 _position = new(0.0f, 0.0f);
@@ -46,7 +42,7 @@ public class Node2D : CanvasItem
 			// _transform.origin = _position;
 
 			_localInvalid = true;
-			globalInvalid = true;
+			GlobalInvalid();
 			if (isInScene) onTransformChanged();
 		}
 	}
@@ -63,7 +59,7 @@ public class Node2D : CanvasItem
 			// _transform.rotation = _rotation;
 
 			_localInvalid = true;
-			globalInvalid = true;
+			GlobalInvalid();
 			if (isInScene) onTransformChanged();
 		}
 	}
@@ -80,7 +76,7 @@ public class Node2D : CanvasItem
 			// _transform.scale = _scale;
 
 			_localInvalid = true;
-			globalInvalid = true;
+			GlobalInvalid();
 			if (isInScene) onTransformChanged();
 		}
 	}

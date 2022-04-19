@@ -4,6 +4,7 @@ namespace Demo;
 
 public class Game : Module
 {
+	Scene scene = new();
 	Player player = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
 	Player playerAlt = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
 
@@ -17,20 +18,17 @@ public class Game : Module
 
 		public Vector2 position;
 		public Vector2 velocity;
-		public float lifetime;
 		public bool alt;
 
 		public void Start()
 		{
 			velocity = new(RNG.shared.RandomFloat(-48, 48), RNG.shared.RandomFloat(48, 192));
-			position = new(RNG.shared.RandomFloat(size.x), -RNG.shared.RandomFloat(size.y));
-			lifetime = 0;
+			position = new(RNG.shared.RandomFloat(-size.x / 2, size.x * 1.5f), -RNG.shared.RandomFloat(size.y));
 			alt = RNG.shared.RandomBool();
 		}
 
 		public void Update(float delta)
 		{
-			lifetime += delta;
 			position += velocity * delta;
 
 			if (position.y > size.y)
@@ -50,11 +48,15 @@ public class Game : Module
 	public Game()
 	{
 		Particle.size = new(_framebuffer.renderWidth, _framebuffer.renderHeight);
-		_particles = new Particle[2048];
+		_particles = new Particle[4096];
 		for (int i = 0; i < _particles.Length; i++)
 		{
 			_particles[i].Start();
+			_particles[i].position = new(_particles[i].position.x, RNG.shared.RandomFloat(-_framebuffer.renderHeight, _framebuffer.renderHeight));
 		}
+
+		scene.AddChild(player);
+		scene.AddChild(playerAlt);
 	}
 
 	protected override void Startup()
@@ -87,29 +89,21 @@ public class Game : Module
 		var bottomColor = new Color(0x394778);
 		Batch2D.current.Rect(new(_framebuffer.renderWidth, _framebuffer.renderHeight), topColor, topColor, bottomColor, bottomColor);
 
-		// Batch2D.current.CheckeredPattern(new(0, 0, App.window.size.x, App.window.size.y), 12, 12, Color.darkGray, Color.gray);
-
-		player.onUpdate(delta);
-		playerAlt.onUpdate(delta);
+		scene.onUpdate(delta);
 
 		for (int i = 0; i < _particles.Length; i++)
-		{
-			_particles[i].Update(delta / 4);
-		}
+			_particles[i].Update(delta / 2);
 	}
 
 	protected override void Tick(float delta)
 	{
-		player.onTick(delta);
-		playerAlt.onTick(delta);
+		scene.onTick(delta);
 	}
 
 	void Render(Window window)
 	{
 		for (int i = 0; i < _particles.Length; i++)
-		{
 			_particles[i].Render();
-		}
 
 		Batch2D.current.Render(_framebuffer);
 		Batch2D.current.Clear();

@@ -54,11 +54,6 @@ public static class App
 	public static Content content => modules.Get<Content>();
 
 	/// <summary>
-	/// Get the Physics Module
-	/// </summary>
-	public static Physics physics => modules.Get<Physics>();
-
-	/// <summary>
 	/// Gets the System Input
 	/// </summary>
 	public static Input input => windowing.input;

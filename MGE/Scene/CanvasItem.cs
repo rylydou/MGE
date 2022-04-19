@@ -9,11 +9,13 @@ public abstract class CanvasItem : Node
 
 	public abstract Transform2D GetTransform();
 
-	public bool globalInvalid { get; protected set; }
+	bool _globalInvalid;
+	public void GlobalInvalid() => _globalInvalid = true;
+
 	Transform2D _globalTransform = Transform2D.identity;
 	public virtual Transform2D GetGlobalTransform()
 	{
-		if (globalInvalid)
+		if (_globalInvalid)
 		{
 			if (TryGetParentItem(out var pi))
 			{
@@ -24,7 +26,7 @@ public abstract class CanvasItem : Node
 				_globalTransform = GetTransform();
 			}
 
-			globalInvalid = false;
+			_globalInvalid = false;
 		}
 
 		return _globalTransform;
@@ -45,7 +47,7 @@ public abstract class CanvasItem : Node
 	{
 		base.RegisterCallbacks();
 
-		onExitScene += () => globalInvalid = true;
+		onExitScene += () => _globalInvalid = true;
 
 		onTransformChanged += OnTransformChanged;
 
@@ -58,7 +60,7 @@ public abstract class CanvasItem : Node
 			onDraw(batch);
 			batch.PopMatrix();
 		};
-		onDraw += Draw;
+		onDraw += Render;
 	}
 
 	public Action onTransformChanged = () => { };
@@ -66,5 +68,5 @@ public abstract class CanvasItem : Node
 
 	public delegate void DrawDelegate(Batch2D batch);
 	public DrawDelegate onDraw = (batch) => { };
-	protected virtual void Draw(Batch2D batch) { }
+	protected virtual void Render(Batch2D batch) { }
 }

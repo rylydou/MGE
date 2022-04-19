@@ -17,7 +17,7 @@ public abstract class Node
 
 	public Node? parent { get; private set; }
 
-	public bool isInScene { get; private set; }
+	public bool isInScene { get; internal set; }
 
 	#region Node Querying
 
