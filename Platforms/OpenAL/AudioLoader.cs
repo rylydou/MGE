@@ -122,7 +122,7 @@ internal static class AudioLoader
 		sampleCount = 0;
 
 		// WAVE header
-		while (audioData == null)
+		while (audioData is null)
 		{
 			string chunkType = new string(reader.ReadChars(4));
 			int chunkSize = reader.ReadInt32();

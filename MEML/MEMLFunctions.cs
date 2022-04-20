@@ -113,7 +113,7 @@ public static class DataReaderAndWriterFunctions
 
 	public static void Write(this IDataWriter writer, StructureValue value)
 	{
-		if (value != null)
+		if (value is not null)
 		{
 			switch (value.type)
 			{

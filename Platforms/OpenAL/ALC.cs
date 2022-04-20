@@ -43,7 +43,7 @@ public static class ALC
 		ALCError error;
 		if ((error = ALC.alcGetError(device)) != ALCError.NoError)
 		{
-			if (args != null && args.Length > 0)
+			if (args is not null && args.Length > 0)
 				message = String.Format(message, args);
 
 			throw new InvalidOperationException(message + " (Reason: " + error.ToString() + ")");

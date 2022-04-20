@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MGE;
 
@@ -17,7 +18,12 @@ public abstract class Node
 
 	public Node? parent { get; private set; }
 
-	public bool isInScene { get; internal set; }
+	public Scene? scene { get; internal set; }
+	public bool isInScene
+	{
+		[MemberNotNullWhen(true, nameof(scene))]
+		get => scene is not null;
+	}
 
 	bool _initialized = false;
 
@@ -79,7 +85,11 @@ public abstract class Node
 		node.parent = this;
 		_children.Add(node);
 		onChildAdded(node);
-		if (isInScene) node.onEnterScene();
+		if (isInScene)
+		{
+			node.scene = scene;
+			node.onEnterScene();
+		}
 	}
 
 	public void RemoveChild(Node node)
@@ -90,7 +100,11 @@ public abstract class Node
 		node.parent = null;
 		_children.Remove(node);
 		onChildRemoved(node);
-		if (isInScene) node.onEnterScene();
+		if (isInScene)
+		{
+			node.onExitScene();
+			node.scene = null;
+		}
 	}
 
 	#endregion Node Management
