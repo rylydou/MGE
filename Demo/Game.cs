@@ -4,15 +4,19 @@ namespace Demo;
 
 public class Game : Module
 {
-	Scene scene = new();
-	Player player = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
-	Player playerAlt = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
+	public static readonly Vector2Int screenSize = new(320 * 2, 180 * 2);
+	public static readonly float unitSize = 16;
+	public static readonly Vector2Int screenUnitSize = new(Math.CeilToInt(screenSize.x / unitSize), Math.CeilToInt(screenSize.y / unitSize));
 
-	FrameBuffer _framebuffer = new(320 * 2, 180 * 2);
+	Scene scene = new();
+	Player player1 = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
+	Player player2 = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
+	Tilemap<byte> tilemap = new();
+
+	FrameBuffer _framebuffer = new(screenSize.x, screenSize.y);
 
 	struct Particle
 	{
-		public static Vector2 size;
 		public static Color color = new(0xdff6f5);
 		public static Color colorAlt = new(0x8aebf1);
 
@@ -23,7 +27,7 @@ public class Game : Module
 		public void Start()
 		{
 			velocity = new(RNG.shared.RandomFloat(-48, 48), RNG.shared.RandomFloat(48, 192));
-			position = new(RNG.shared.RandomFloat(-size.x / 2, size.x * 1.5f), -RNG.shared.RandomFloat(size.y));
+			position = new(RNG.shared.RandomFloat(-screenSize.x / 2, screenSize.x * 1.5f), -RNG.shared.RandomFloat(screenSize.y));
 			alt = RNG.shared.RandomBool();
 		}
 
@@ -31,10 +35,8 @@ public class Game : Module
 		{
 			position += velocity * delta;
 
-			if (position.y > size.y)
-			{
+			if (position.y > screenSize.y)
 				Start();
-			}
 		}
 
 		public void Render()
@@ -47,23 +49,26 @@ public class Game : Module
 
 	public Game()
 	{
-		Particle.size = new(_framebuffer.renderWidth, _framebuffer.renderHeight);
 		_particles = new Particle[4096];
 		for (int i = 0; i < _particles.Length; i++)
 		{
 			_particles[i].Start();
-			_particles[i].position = new(_particles[i].position.x, RNG.shared.RandomFloat(-_framebuffer.renderHeight, _framebuffer.renderHeight));
+			_particles[i].position = new(_particles[i].position.x, RNG.shared.RandomFloat(-screenSize.y, screenSize.y));
 		}
 
-		scene.AddChild(player);
-		scene.AddChild(playerAlt);
+		tilemap.mapSize = screenUnitSize;
+		tilemap.tileSize = new(unitSize);
+
+		scene.AddChild(tilemap);
+		scene.AddChild(player1);
+		scene.AddChild(player2);
 	}
 
 	protected override void Startup()
 	{
-		player.floorY = _framebuffer.renderHeight - 24;
-		playerAlt.floorY = _framebuffer.renderHeight - 24;
-		playerAlt.alt = true;
+		player1.floorY = _framebuffer.renderHeight - 24;
+		player2.floorY = _framebuffer.renderHeight - 24;
+		player2.isPlayer2 = true;
 
 		App.window.onRender += Render;
 
@@ -87,12 +92,22 @@ public class Game : Module
 
 		var topColor = new Color(0x3978a8);
 		var bottomColor = new Color(0x394778);
-		Batch2D.current.Rect(new(_framebuffer.renderWidth, _framebuffer.renderHeight), topColor, topColor, bottomColor, bottomColor);
+		Batch2D.current.Rect(new(screenSize), topColor, topColor, bottomColor, bottomColor);
 
 		scene.onUpdate(delta);
 
 		for (int i = 0; i < _particles.Length; i++)
 			_particles[i].Update(delta / 2);
+
+		var screenScale = App.window.size / screenSize;
+		var mousePosition = App.window.renderMouse / screenScale;
+		var tilePosition = tilemap.WorldToTilePosition(mousePosition);
+		tilePosition = new(Math.Clamp(tilePosition.x, 0, screenUnitSize.x - 1), Math.Clamp(tilePosition.y, 0, screenUnitSize.y - 1));
+
+		if (App.input.mouse.Down(MouseButtons.Left))
+			tilemap.SetTile(tilePosition, 1);
+		else if (App.input.mouse.Down(MouseButtons.Right))
+			tilemap.SetTile(tilePosition, 0);
 	}
 
 	protected override void Tick(float delta)
@@ -108,8 +123,8 @@ public class Game : Module
 		Batch2D.current.Render(_framebuffer);
 		Batch2D.current.Clear();
 
-		var scale = new Vector2((float)window.width / _framebuffer.renderWidth, (float)window.height / _framebuffer.renderHeight);
-		Batch2D.current.Image(_framebuffer, Vector2.zero, scale, Vector2.zero, 0, Color.white);
+		var screenScale = window.size / screenSize;
+		Batch2D.current.Image(_framebuffer, Vector2.zero, screenScale, Vector2.zero, 0, Color.white);
 		Batch2D.current.Render(window);
 	}
 }

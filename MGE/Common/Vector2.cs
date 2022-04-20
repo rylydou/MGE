@@ -277,18 +277,18 @@ public struct Vector2 : IEquatable<Vector2>
 
 	#region Operators
 
-	public static Vector2 operator +(Vector2 left, Vector2 right) => new Vector2(left.x + right.x, left.y + right.y);
-	public static Vector2 operator -(Vector2 left, Vector2 right) => new Vector2(left.x - right.x, left.y - right.y);
-	public static Vector2 operator *(Vector2 left, Vector2 right) => new Vector2(left.x * right.x, left.y * right.y);
-	public static Vector2 operator /(Vector2 left, Vector2 right) => new Vector2(left.x / right.x, left.y / right.y);
+	public static Vector2 operator +(Vector2 left, Vector2 right) => new(left.x + right.x, left.y + right.y);
+	public static Vector2 operator -(Vector2 left, Vector2 right) => new(left.x - right.x, left.y - right.y);
+	public static Vector2 operator *(Vector2 left, Vector2 right) => new(left.x * right.x, left.y * right.y);
+	public static Vector2 operator /(Vector2 left, Vector2 right) => new(left.x / right.x, left.y / right.y);
 
-	public static Vector2 operator -(Vector2 vector) => new Vector2(-vector.x, -vector.y);
+	public static Vector2 operator -(Vector2 vector) => new(-vector.x, -vector.y);
 
-	public static Vector2 operator +(Vector2 left, float right) => new Vector2(left.x + right, left.y + right);
-	public static Vector2 operator -(Vector2 left, float right) => new Vector2(left.x - right, left.y - right);
-	public static Vector2 operator *(Vector2 left, float right) => new Vector2(left.x * right, left.y * right);
-	public static Vector2 operator *(float left, Vector2 right) => new Vector2(right.x * left, right.y * left);
-	public static Vector2 operator /(Vector2 left, float right) => new Vector2(left.x / right, left.y / right);
+	public static Vector2 operator +(Vector2 left, float right) => new(left.x + right, left.y + right);
+	public static Vector2 operator -(Vector2 left, float right) => new(left.x - right, left.y - right);
+	public static Vector2 operator *(Vector2 left, float right) => new(left.x * right, left.y * right);
+	public static Vector2 operator *(float left, Vector2 right) => new(right.x * left, right.y * left);
+	public static Vector2 operator /(Vector2 left, float right) => new(left.x / right, left.y / right);
 
 	public static bool operator ==(Vector2 left, Vector2 right)
 	{

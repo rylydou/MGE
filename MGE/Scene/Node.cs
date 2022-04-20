@@ -19,6 +19,8 @@ public abstract class Node
 
 	public bool isInScene { get; internal set; }
 
+	bool _initialized = false;
+
 	#region Node Querying
 
 	public IEnumerable<T> GetChildren<T>()
@@ -77,6 +79,7 @@ public abstract class Node
 		node.parent = this;
 		_children.Add(node);
 		onChildAdded(node);
+		if (isInScene) node.onEnterScene();
 	}
 
 	public void RemoveChild(Node node)
@@ -87,6 +90,7 @@ public abstract class Node
 		node.parent = null;
 		_children.Remove(node);
 		onChildRemoved(node);
+		if (isInScene) node.onEnterScene();
 	}
 
 	#endregion Node Management
@@ -95,6 +99,11 @@ public abstract class Node
 
 	protected virtual void RegisterCallbacks()
 	{
+		onEnterScene += () =>
+		{
+			if (_initialized) return;
+			onReady();
+		};
 		onEnterScene += OnEnterScene;
 		onExitScene += OnExitScene;
 

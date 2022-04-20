@@ -139,7 +139,7 @@ article {
 	// Mobile
 	@media only screen and (max-width: 1540px) {
 		width: auto;
-		margin-bottom: 2em;
+		margin-block: 2em;
 
 		>ul {
 			width: fit-content;
@@ -159,8 +159,9 @@ article {
 
 #title {
 	margin-top: 1em;
+	margin-bottom: 2em;
 	text-align: center;
-	font-size: 3em;
+	font-size: 45px;
 	font-weight: normal;
 }
 
@@ -210,7 +211,7 @@ h5,
 h6 {
 	margin-top: 2em;
 	// margin-bottom: 1em;
-	font-size: 2em;
+	font-size: 24px;
 	font-family: "Iosevka", monospace;
 	font-weight: normal;
 }

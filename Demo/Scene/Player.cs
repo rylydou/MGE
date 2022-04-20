@@ -11,23 +11,24 @@ public class Player : Node2D
 	[Prop] public float friction;
 	[Prop] public float frictionAir;
 
-	Texture _sprite = App.content.Get<Texture>("Scene/Player/Sprite.ase");
+	Texture _sprite = App.content.Get<Texture>("Scene/Player/Red.ase");
 
 	bool _alt;
-	public bool alt
+	public bool isPlayer2
 	{
 		get => _alt;
 		set
 		{
 			_alt = value;
 			if (_alt)
-				_sprite = App.content.Get<Texture>("Scene/Player/Sprite Alt.ase");
+				_sprite = App.content.Get<Texture>("Scene/Player/Blue.ase");
 		}
 	}
 	public Vector2 velocity;
 	public float floorY;
 	float _moveInput;
 	bool _jumpDown;
+	// bool _jumpUp;
 
 	protected override void Update(float delta)
 	{
@@ -35,10 +36,11 @@ public class Player : Node2D
 
 		// Get input
 		_moveInput = 0;
-		if (kb.Down(alt ? Keys.Left : Keys.A)) _moveInput -= 1;
-		if (kb.Down(alt ? Keys.Right : Keys.D)) _moveInput += 1;
+		if (kb.Down(isPlayer2 ? Keys.Left : Keys.A)) _moveInput -= 1;
+		if (kb.Down(isPlayer2 ? Keys.Right : Keys.D)) _moveInput += 1;
 
-		if (kb.Pressed(alt ? Keys.Up : Keys.Space)) _jumpDown = true;
+		if (kb.Pressed(isPlayer2 ? Keys.Up : Keys.W)) _jumpDown = true;
+		// if (kb.Released(isPlayer2 ? Keys.Up : Keys.W)) _jumpUp = true;
 	}
 
 	protected override void Tick(float delta)
