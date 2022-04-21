@@ -84,10 +84,10 @@ public abstract class Node
 
 		node.parent = this;
 		_children.Add(node);
-		onChildAdded(node);
 		if (isInScene)
 		{
 			node.scene = scene;
+			onChildAdded(node);
 			node.onEnterScene();
 		}
 	}
@@ -99,10 +99,10 @@ public abstract class Node
 
 		node.parent = null;
 		_children.Remove(node);
-		onChildRemoved(node);
 		if (isInScene)
 		{
 			node.onExitScene();
+			onChildRemoved(node);
 			node.scene = null;
 		}
 	}
@@ -119,18 +119,28 @@ public abstract class Node
 			onReady();
 		};
 		onEnterScene += OnEnterScene;
+		onEnterScene += () => _children.ForEach(child => child.onEnterScene());
+
 		onExitScene += OnExitScene;
+		onExitScene += () => _children.ForEach(child => child.onExitScene());
 
 		onChildAdded += OnChildAdded;
+		onChildAdded += onChildAddedDeep;
+
 		onChildRemoved += OnChildRemoved;
+		onChildRemoved += onChildRemovedDeep;
 
 		onChildAddedDeep += OnChildAddedDeep;
+		onChildAddedDeep += node => parent!.onChildAddedDeep(node);
+
 		onChildRemovedDeep += OnChildRemovedDeep;
+		onChildRemovedDeep += node => parent!.onChildRemovedDeep(node);
 
 		onReady += Ready;
 
 		onTick += Tick;
 		onTick += (delta) => GetChildren<Node>().ForEach(c => c.onTick(delta));
+
 		onUpdate += Update;
 		onUpdate += (delta) => GetChildren<Node>().ForEach(c => c.onUpdate(delta));
 	}
@@ -154,12 +164,12 @@ public abstract class Node
 	public Action<Node> onChildRemovedDeep = node => { };
 	protected virtual void OnChildRemovedDeep(Node node) { }
 
-	// When a child or grandchild is changed and the signal has not been handled by any other parent
-	public Func<Node, bool> onChildAddedDeepUnhandled = node => false;
-	protected virtual bool OnChildAddedDeepUnhandled(Node node) => false;
+	// // When a child or grandchild is changed and the signal has not been handled by any other parent
+	// public Func<Node, bool> onChildAddedDeepUnhandled = node => false;
+	// protected virtual bool OnChildAddedDeepUnhandled(Node node) => false;
 
-	public Func<Node, bool> onChildRemovedDeepUnhandled = node => false;
-	protected virtual bool OnChildRemovedDeepUnhandled(Node node) => false;
+	// public Func<Node, bool> onChildRemovedDeepUnhandled = node => false;
+	// protected virtual bool OnChildRemovedDeepUnhandled(Node node) => false;
 
 	#endregion Events
 

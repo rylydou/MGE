@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace MGE;
 
 public class Node2D : CanvasItem
@@ -171,6 +173,22 @@ public class Node2D : CanvasItem
 	public float GetAngleTo(Vector2 globalPoint)
 	{
 		return (ToLocal(globalPoint) * scale).angle;
+	}
+
+	public Node2D? Closest(IEnumerable<Node2D> list)
+	{
+		Node2D? closest = null;
+		var closestDistanceSqr = float.PositiveInfinity;
+
+		foreach (var body in list)
+		{
+			var distanceSqr = Vector2.DistanceSqr(body.globalPosition, body.globalPosition);
+			if (distanceSqr >= closestDistanceSqr) continue;
+			closest = body;
+			closestDistanceSqr = distanceSqr;
+		}
+
+		return closest;
 	}
 
 	#endregion Utils

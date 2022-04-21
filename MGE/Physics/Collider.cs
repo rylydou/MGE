@@ -2,7 +2,7 @@ namespace MGE;
 
 public abstract class Collider2D
 {
-	public CollisionObject2D? node { get; internal set; }
+	public Body2D? node { get; internal set; }
 
 	[Prop] public Vector2 position;
 

@@ -1,15 +1,15 @@
 namespace MGE;
 
-public class KinematicBody2D : CollisionObject2D
+public class KinematicBody2D : Body2D
 {
 	[Prop] public float safeMargin = 0.08f;
 
-	public KinematicCollision2D MoveAndSlide(Vector2 velocity)
-	{
-		var collision = new KinematicCollision2D();
+	// public KinematicCollision2D MoveAndSlide(Vector2 velocity)
+	// {
+	// 	var collision = new KinematicCollision2D();
 
-		return collision;
-	}
+	// 	return collision;
+	// }
 }
 
 public class KinematicCollision2D

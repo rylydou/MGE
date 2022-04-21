@@ -20,9 +20,9 @@ public static class Physics
 {
 	#region CollisionObject2D
 
-	public static bool Check(CollisionObject2D a, CollisionObject2D b) => a.collider is not null && b.collider is not null && a != b && b.collidable && a.collider.Collide(b.collider);
+	public static bool Check(Body2D a, Body2D b) => a.collider is not null && b.collider is not null && a != b && b.collidable && a.collider.Collide(b.collider);
 
-	public static bool Check(CollisionObject2D a, CollisionObject2D b, Vector2 at)
+	public static bool Check(Body2D a, Body2D b, Vector2 at)
 	{
 		Vector2 position = a.position;
 		a.position = at;
@@ -31,9 +31,9 @@ public static class Physics
 		return num != 0;
 	}
 
-	public static bool Check(CollisionObject2D a, IEnumerable<CollisionObject2D> b)
+	public static bool Check(Body2D a, IEnumerable<Body2D> b)
 	{
-		foreach (CollisionObject2D b1 in b)
+		foreach (Body2D b1 in b)
 		{
 			if (Physics.Check(a, b1))
 				return true;
@@ -41,7 +41,7 @@ public static class Physics
 		return false;
 	}
 
-	public static bool Check(CollisionObject2D a, IEnumerable<CollisionObject2D> b, Vector2 at)
+	public static bool Check(Body2D a, IEnumerable<Body2D> b, Vector2 at)
 	{
 		Vector2 position = a.position;
 		a.position = at;
@@ -50,9 +50,9 @@ public static class Physics
 		return num != 0;
 	}
 
-	public static CollisionObject2D? First(CollisionObject2D a, IEnumerable<CollisionObject2D> b)
+	public static Body2D? First(Body2D a, IEnumerable<Body2D> b)
 	{
-		foreach (CollisionObject2D b1 in b)
+		foreach (Body2D b1 in b)
 		{
 			if (Physics.Check(a, b1))
 				return b1;
@@ -60,7 +60,7 @@ public static class Physics
 		return null;
 	}
 
-	public static CollisionObject2D? First(CollisionObject2D a, IEnumerable<CollisionObject2D> b, Vector2 at)
+	public static Body2D? First(Body2D a, IEnumerable<Body2D> b, Vector2 at)
 	{
 		var position = a.position;
 		a.position = at;
@@ -69,9 +69,9 @@ public static class Physics
 		return entity;
 	}
 
-	public static List<CollisionObject2D> All(CollisionObject2D a, IEnumerable<CollisionObject2D> b, List<CollisionObject2D> into)
+	public static List<Body2D> All(Body2D a, IEnumerable<Body2D> b, List<Body2D> into)
 	{
-		foreach (CollisionObject2D b1 in b)
+		foreach (Body2D b1 in b)
 		{
 			if (Physics.Check(a, b1))
 				into.Add(b1);
@@ -79,26 +79,26 @@ public static class Physics
 		return into;
 	}
 
-	public static List<CollisionObject2D> All(
-		CollisionObject2D a,
-		IEnumerable<CollisionObject2D> b,
-		List<CollisionObject2D> into,
+	public static List<Body2D> All(
+		Body2D a,
+		IEnumerable<Body2D> b,
+		List<Body2D> into,
 		Vector2 at)
 	{
 		Vector2 position = a.position;
 		a.position = at;
-		List<CollisionObject2D> entityList = Physics.All(a, b, into);
+		List<Body2D> entityList = Physics.All(a, b, into);
 		a.position = position;
 		return entityList;
 	}
 
-	public static List<CollisionObject2D> All(CollisionObject2D a, IEnumerable<CollisionObject2D> b) => Physics.All(a, b, new List<CollisionObject2D>());
+	public static List<Body2D> All(Body2D a, IEnumerable<Body2D> b) => Physics.All(a, b, new List<Body2D>());
 
-	public static List<CollisionObject2D> All(CollisionObject2D a, IEnumerable<CollisionObject2D> b, Vector2 at) => Physics.All(a, b, new List<CollisionObject2D>(), at);
+	public static List<Body2D> All(Body2D a, IEnumerable<Body2D> b, Vector2 at) => Physics.All(a, b, new List<Body2D>(), at);
 
-	public static bool CheckPoint(CollisionObject2D a, Vector2 point) => a.collider is not null && a.collider.PointCheck(point);
+	public static bool CheckPoint(Body2D a, Vector2 point) => a.collider is not null && a.collider.PointCheck(point);
 
-	public static bool CheckPoint(CollisionObject2D a, Vector2 point, Vector2 at)
+	public static bool CheckPoint(Body2D a, Vector2 point, Vector2 at)
 	{
 		Vector2 position = a.position;
 		a.position = at;
@@ -107,9 +107,9 @@ public static class Physics
 		return num != 0;
 	}
 
-	public static bool CheckLine(CollisionObject2D a, Vector2 from, Vector2 to) => a.collider is not null && a.collider.LineCheck(from, to);
+	public static bool CheckLine(Body2D a, Vector2 from, Vector2 to) => a.collider is not null && a.collider.LineCheck(from, to);
 
-	public static bool CheckLine(CollisionObject2D a, Vector2 from, Vector2 to, Vector2 at)
+	public static bool CheckLine(Body2D a, Vector2 from, Vector2 to, Vector2 at)
 	{
 		Vector2 position = a.position;
 		a.position = at;
@@ -118,9 +118,9 @@ public static class Physics
 		return num != 0;
 	}
 
-	public static bool CheckRect(CollisionObject2D a, Rect rect) => a.collider is not null && a.collider.Collide(rect);
+	public static bool CheckRect(Body2D a, Rect rect) => a.collider is not null && a.collider.RectCheck(rect);
 
-	public static bool CheckRect(CollisionObject2D a, Rect rect, Vector2 at)
+	public static bool CheckRect(Body2D a, Rect rect, Vector2 at)
 	{
 		Vector2 position = a.position;
 		a.position = at;

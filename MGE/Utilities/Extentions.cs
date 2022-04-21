@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MGE;
 
@@ -67,5 +69,14 @@ static class Extentions
 	public static void Set(this object obj, string propertyName, object value)
 	{
 		var member = obj.GetType().GetMember(propertyName);
+	}
+
+	public static IEnumerable<Body2D> WhereInLayer(this IEnumerable<Body2D> list, Layer layer)
+	{
+		foreach (var body in list)
+		{
+			if (body.layer.CheckLayer(layer))
+				yield return body;
+		}
 	}
 }
