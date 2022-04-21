@@ -19,10 +19,10 @@ public abstract class Collider2D
 		// if (!(ignoreBounds || collider.ignoreBounds) && !bounds.Overlaps(collider.bounds)) return false;
 		if (!bounds.Overlaps(collider.bounds)) return false;
 
-		var result = CheckCollider(collider);
-		if (!result.HasValue) result = collider.CheckCollider(this);
+		var result = CheckCollider(collider) ?? collider.CheckCollider(this);
 
 		if (!result.HasValue) throw new System.NotImplementedException($"Collision {GetType().Name} vs {collider.GetType().Name} is not implemented");
+
 
 		return result.Value;
 	}
@@ -30,11 +30,10 @@ public abstract class Collider2D
 	public abstract bool PointCheck(Vector2 point);
 	public abstract bool RectCheck(Rect rect);
 	public abstract bool LineCheck(Vector2 from, Vector2 to);
-	public abstract RaycastHit? Raycast(Vector2 position, Vector2 direction);
 
 	public void Render(Batch2D batch)
 	{
-		if (!ignoreBounds) batch.HollowRect(bounds, 1, Color.yellow);
+		if (!ignoreBounds) batch.HollowRect(new(position, size), -1, Color.yellow);
 		Render(batch, Color.green);
 	}
 	protected abstract void Render(Batch2D batch, Color color);
@@ -68,13 +67,13 @@ public abstract class Collider2D
 	public Vector2 bottomCenter { get => new Vector2(centerX, bottom); set { centerX = value.x; bottom = value.y; } }
 	public Vector2 bottomRight { get => new Vector2(right, bottom); set { right = value.x; bottom = value.y; } }
 
-	public Vector2 absPosition => node is not null ? node.position + position : position;
-	public float absX => node is not null ? node.position.x + position.x : position.x;
-	public float absY => node is not null ? node.position.y + position.y : position.y;
-	public float absTop => node is not null ? node.position.y + top : top;
-	public float absBottom => node is not null ? node.position.y + bottom : bottom;
-	public float absLeft => node is not null ? node.position.x + left : left;
-	public float absRight => node is not null ? node.position.x + right : right;
+	public Vector2 absPosition => node is not null ? node.globalPosition + position : position;
+	public float absX => node is not null ? node.globalPosition.x + position.x : position.x;
+	public float absY => node is not null ? node.globalPosition.y + position.y : position.y;
+	public float absTop => node is not null ? node.globalPosition.y + top : top;
+	public float absBottom => node is not null ? node.globalPosition.y + bottom : bottom;
+	public float absLeft => node is not null ? node.globalPosition.x + left : left;
+	public float absRight => node is not null ? node.globalPosition.x + right : right;
 
 	public Rect bounds => new Rect(absLeft, absTop, width, height);
 }

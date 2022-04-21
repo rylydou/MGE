@@ -8,23 +8,25 @@ public abstract class Body2D : Node2D
 	[Prop] public bool collidable = true;
 	[Prop] public Layer layer = new Layer(1);
 
-	[Prop] public Collider2D? collider;
+	[Prop] public Collider2D? collider { get; private set; }
 
-	// public bool OnGround(int downCheck = 1)
-	// {
-	// 	if (this.CollideCheck<Solid>(this.globalPosition + Vector2.down * (float)downCheck))
-	// 		return true;
-	// 	return !this.IgnoreJumpThrus && this.CollideCheckOutside<JumpThru>(this.position + Vector2.down * (float)downCheck);
-	// }
+	public void SetCollider(Collider2D? collider)
+	{
+		if (collider is not null)
+		{
+			if (collider.node is not null)
+				throw new Exception("Set collider", "Collider already has an owner");
 
-	// public bool OnGround(Vector2 at, int downCheck = 1)
-	// {
-	// 	Vector2 position = this.position;
-	// 	this.position = at;
-	// 	int num = this.OnGround(downCheck) ? 1 : 0;
-	// 	this.position = position;
-	// 	return num != 0;
-	// }
+			collider.node = this;
+		}
+
+		if (this.collider is not null)
+		{
+			this.collider.node = null;
+		}
+
+		this.collider = collider;
+	}
 
 	#region Check
 
@@ -41,6 +43,15 @@ public abstract class Body2D : Node2D
 	public bool CollideCheckOutside(Layer layer, Vector2 at)
 	{
 		foreach (var body in scene!.bodies.WhereInLayer(layer))
+		{
+			if (CollideCheckOutside(body, at))
+				return true;
+		}
+		return false;
+	}
+	public bool CollideCheckOutside<T>(Vector2 at) where T : Body2D
+	{
+		foreach (var body in scene!.bodies.Where(body => body is T))
 		{
 			if (CollideCheckOutside(body, at))
 				return true;

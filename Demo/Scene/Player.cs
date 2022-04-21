@@ -5,14 +5,21 @@ using Math = MGE.Math;
 
 namespace Demo;
 
-public class Player : Body2D
+public class Player : Actor
 {
+	[Prop] public float gravity;
+
 	[Prop] public float moveSpeed;
 	[Prop] public float moveSpeedAir;
-	[Prop] public float jumpVel;
-	[Prop] public float gravity;
 	[Prop] public float friction;
 	[Prop] public float frictionAir;
+
+	[Prop] public float jumpBufferLength;
+	float _jumpBuffer;
+	[Prop] public float coyoteTime;
+	float _coyoteTimer;
+	[Prop] public float jumpVelMin;
+	[Prop] public float jumpVelMax;
 
 	Texture _sprite = App.content.Get<Texture>("Scene/Player/Red.ase");
 
@@ -27,154 +34,15 @@ public class Player : Body2D
 				_sprite = App.content.Get<Texture>("Scene/Player/Blue.ase");
 		}
 	}
+
 	public Vector2 velocity;
+
 	float _moveInput;
-	bool _jumpDown;
-	// bool _jumpUp;
-
-	private Vector2 movementCounter;
-	public bool IgnoreJumpThrus;
-
-	public Vector2 ExactPosition => globalPosition + movementCounter;
-
-	public Vector2 PositionRemainder => movementCounter;
-
-	public void ZeroRemainderX() => movementCounter.x = 0.0f;
-	public void ZeroRemainderY() => movementCounter.y = 0.0f;
-
-	// public virtual bool IsRiding(JumpThru jumpThru) => !this.IgnoreJumpThrus && this.CollideCheckOutside(jumpThru, globalPosition + Vector2.down);
-	// public virtual bool IsRiding(Solid solid) => this.CollideCheck(solid, globalPosition + Vector2.down);
-
-	public bool OnGround(int downCheck = 1)
-	{
-		if (this.CollideCheck<Ground>(globalPosition + Vector2.down * (float)downCheck))
-			return true;
-		return false;
-		// return !this.IgnoreJumpThrus && this.CollideCheckOutside<JumpThru>(globalPosition + Vector2.down * (float)downCheck);
-	}
-	public bool OnGround(Vector2 at, int downCheck = 1)
-	{
-		var position = globalPosition;
-		globalPosition = at;
-		var num = this.OnGround(downCheck) ? 1 : 0;
-		globalPosition = position;
-		return num != 0;
-	}
-
-	public bool MoveH(float moveH, Action<CollisionInfo>? onCollide = null, Ground? pusher = null)
-	{
-		this.movementCounter.x += moveH;
-		int moveH1 = (int)System.Math.Round((double)this.movementCounter.x, MidpointRounding.ToEven);
-		if (moveH1 == 0)
-			return false;
-		this.movementCounter.x -= (float)moveH1;
-		return this.MoveHExact(moveH1, onCollide, pusher);
-	}
-
-	public bool MoveV(float moveV, Action<CollisionInfo>? onCollide = null, Ground? pusher = null)
-	{
-		this.movementCounter.y += moveV;
-		int moveV1 = (int)System.Math.Round((double)this.movementCounter.y, MidpointRounding.ToEven);
-		if (moveV1 == 0)
-			return false;
-		this.movementCounter.y -= (float)moveV1;
-		return this.MoveVExact(moveV1, onCollide, pusher);
-	}
-
-	public bool MoveHExact(int moveH, Action<CollisionInfo>? onCollide = null, Ground? pusher = null)
-	{
-		Vector2 vector2 = this.globalPosition + Vector2.down * (float)moveH;
-		int num1 = Math.Sign(moveH);
-		int num2 = 0;
-		while (moveH != 0)
-		{
-			var solid = this.CollideFirst<Ground>(globalPosition + Vector2.right * (float)num1);
-			if (solid != null)
-			{
-				this.movementCounter.x = 0.0f;
-				if (onCollide != null)
-					onCollide(new CollisionInfo()
-					{
-						Direction = Vector2.right * (float)num1,
-						Moved = Vector2.right * (float)num2,
-						TargetPosition = vector2,
-						// Hit = (Platform)solid,
-						// Pusher = pusher
-					});
-				return true;
-			}
-			num2 += num1;
-			moveH -= num1;
-			globalPosition = new(globalPosition.x + (float)num1, globalPosition.y);
-		}
-		return false;
-	}
-
-	public bool MoveVExact(int moveV, Action<CollisionInfo>? onCollide = null, Ground? pusher = null)
-	{
-		Vector2 vector2 = globalPosition + Vector2.down * (float)moveV;
-		int num1 = Math.Sign(moveV);
-		int num2 = 0;
-		while (moveV != 0)
-		{
-			var platform1 = this.CollideFirst<Ground>(globalPosition + Vector2.down * (float)num1);
-			if (platform1 != null)
-			{
-				this.movementCounter.y = 0.0f;
-				if (onCollide != null)
-					onCollide(new CollisionInfo()
-					{
-						Direction = Vector2.down * (float)num1,
-						Moved = Vector2.down * (float)num2,
-						TargetPosition = vector2,
-						// Hit = platform1,
-						// Pusher = pusher
-					});
-				return true;
-			}
-			// if (moveV > 0 && !this.IgnoreJumpThrus)
-			// {
-			// 	Platform platform2 = (Platform)this.CollideFirstOutside<JumpThru>(globalPosition + Vector2.down * (float)num1);
-			// 	if (platform2 != null)
-			// 	{
-			// 		this.movementCounter.y = 0.0f;
-			// 		if (onCollide != null)
-			// 			onCollide(new CollisionInfo()
-			// 			{
-			// 				Direction = Vector2.down * (float)num1,
-			// 				Moved = Vector2.down * (float)num2,
-			// 				TargetPosition = vector2,
-			// 				Hit = platform2,
-			// 				Pusher = pusher
-			// 			});
-			// 		return true;
-			// 	}
-			// }
-			num2 += num1;
-			moveV -= num1;
-			globalPosition = new(globalPosition.x, globalPosition.y + (float)num1);
-		}
-		return false;
-	}
-
-	public void MoveTowardsX(float targetX, float maxAmount, Action<CollisionInfo>? onCollide = null) => this.MoveToX(Calc.Approach(this.ExactPosition.x, targetX, maxAmount), onCollide);
-	public void MoveTowardsY(float targetY, float maxAmount, Action<CollisionInfo>? onCollide = null) => this.MoveToY(Calc.Approach(this.ExactPosition.y, targetY, maxAmount), onCollide);
-
-	public void MoveToX(float toX, Action<CollisionInfo>? onCollide = null) => this.MoveH(toX - this.ExactPosition.x, onCollide);
-	public void MoveToY(float toY, Action<CollisionInfo>? onCollide = null) => this.MoveV(toY - this.ExactPosition.y, onCollide);
-
-	public void NaiveMove(Vector2 amount)
-	{
-		this.movementCounter += amount;
-		int num1 = Math.RoundToInt(this.movementCounter.x);
-		int num2 = Math.RoundToInt(this.movementCounter.y);
-		globalPosition = globalPosition + new Vector2((float)num1, (float)num2);
-		this.movementCounter -= new Vector2((float)num1, (float)num2);
-	}
+	bool _cancelJump;
 
 	protected override void Ready()
 	{
-		collider = new HitboxCollider2D(new(24, 24));
+		SetCollider(new HitboxCollider2D(new(24, 24)));
 	}
 
 	protected override void Update(float delta)
@@ -186,30 +54,43 @@ public class Player : Body2D
 		if (kb.Down(isPlayer2 ? Keys.Left : Keys.A)) _moveInput -= 1;
 		if (kb.Down(isPlayer2 ? Keys.Right : Keys.D)) _moveInput += 1;
 
-		if (kb.Pressed(isPlayer2 ? Keys.Up : Keys.W)) _jumpDown = true;
-		// if (kb.Released(isPlayer2 ? Keys.Up : Keys.W)) _jumpUp = true;
+		_jumpBuffer -= delta;
+		if (kb.Pressed(isPlayer2 ? Keys.Up : Keys.W)) _jumpBuffer = jumpBufferLength;
+		if (kb.Released(isPlayer2 ? Keys.Up : Keys.W)) _cancelJump = true;
 
-		if (kb.Pressed(Keys.Tab))
+		if (kb.Pressed(Keys.R))
 		{
 			globalPosition = Vector2.zero;
 			velocity = Vector2.zero;
 		}
-
-		Log.Info(scene!.bodies.Where(body => body is Ground).Count().ToString());
 	}
+
+	bool grounded;
 
 	protected override void Tick(float delta)
 	{
-		var grounded = OnGround();
+		grounded = OnGround();
 
+		_coyoteTimer -= delta;
 		if (grounded)
-			velocity.y = 0;
-		else
-			velocity.y += gravity;
+		{
+			_coyoteTimer = coyoteTime;
+		}
 
-		if (grounded && _jumpDown)
-			velocity.y = -jumpVel;
-		_jumpDown = false;
+		velocity.y += gravity;
+
+		// Jump
+		if (_coyoteTimer > 0 && _jumpBuffer > 0)
+		{
+			_jumpBuffer = -1;
+			velocity.y = -jumpVelMax;
+		}
+
+		if (_cancelJump && velocity.y < -jumpVelMin)
+		{
+			velocity.y = -jumpVelMin;
+		}
+		_cancelJump = false;
 
 		velocity.x *= grounded ? friction : frictionAir;
 		if (grounded)
@@ -219,35 +100,62 @@ public class Player : Body2D
 		}
 		else velocity.x += _moveInput * moveSpeedAir;
 
-		MoveV(velocity.y * delta, info => velocity.y = 0);
-		MoveH(velocity.x * delta, info => velocity.x = 0);
+		var hitY = MoveV(velocity.y * delta);
+		var hitX = MoveH(velocity.x * delta);
 		// position += velocity * delta;
 		// position = new(position.x, Math.Clamp(position.y, floorY));
+
+		if (hitY) velocity.y = 0;
+		// if (hitX) velocity.x = 0;
 	}
 
 	protected override void Render(Batch2D batch)
 	{
 		var time = (float)Time.duration.TotalSeconds;
 		batch.Image(_sprite, Vector2.zero, Vector2.one, Vector2.zero, 0, Color.white);
+
+		collider?.Render(batch);
 	}
 
-	bool OnGround() => CollideCheck<Ground>(globalPosition + Vector2.down);
+	/* 	bool OnGround() => CollideCheck<Ground>(globalPosition + Vector2.down);
 
-	// bool MoveX(float moveH)
-	// {
-	// 	var direction = (int)Math.Sign(moveH);
-	// 	var movement = 0;
-	// 	while (moveH != 0)
-	// 	{
-	// 		var collision = CollideFirst<Ground>(globalPosition, Vector2.right * moveH);
-	// 		if (collision is not null)
-	// 		{
-	// 			return true;
-	// 		}
-	// 		movement += direction;
-	// 		moveH -= direction;
-	// 		globalPosition = new( globalPosition.y);
-	// 	}
-	// 	return false;
-	// }
+		bool MoveX(float x)
+		{
+			var move = Math.CeilToInt(x);
+			var direction = (int)Math.Sign(move);
+			var movement = 0;
+
+			while (move != 0)
+			{
+				var collision = CollideFirst<Ground>(globalPosition + Vector2.right * move);
+				if (collision is not null) return true;
+
+				movement += direction;
+				move -= direction;
+
+				globalPosition = new(globalPosition.x + direction, globalPosition.y);
+			}
+
+			return false;
+		}
+
+		bool MoveY(float y)
+		{
+			var move = Math.CeilToInt(y);
+			var direction = (int)Math.Sign(move);
+			var movement = 0;
+
+			while (move != 0)
+			{
+				var collision = CollideFirst<Ground>(globalPosition + Vector2.down * move);
+				if (collision is not null) return true;
+
+				movement += direction;
+				move -= direction;
+
+				globalPosition = new(globalPosition.x, globalPosition.y + direction);
+			}
+
+			return false;
+		} */
 }

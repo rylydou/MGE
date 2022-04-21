@@ -4,11 +4,11 @@ namespace Demo;
 
 public struct CollisionInfo
 {
-	public static readonly CollisionInfo Empty;
+	public static readonly CollisionInfo empty;
 
-	public Vector2 Direction;
-	public Vector2 Moved;
-	public Vector2 TargetPosition;
-	// public Platform Hit;
-	// public Solid Pusher;
+	public Vector2 direction;
+	public Vector2 moved;
+	public Vector2 targetPosition;
+	public Platform hit;
+	public Solid? pusher;
 }

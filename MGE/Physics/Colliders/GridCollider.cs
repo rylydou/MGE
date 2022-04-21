@@ -202,8 +202,14 @@ public class GridCollider2D : Collider2D
 			height = cellsY - y;
 
 		for (int i = 0; i < width; i++)
+		{
 			for (int j = 0; j < height; j++)
-				if (data[x + i, y + j]) return true;
+			{
+				if (data[x + i, y + j])
+					return true;
+			}
+		}
+
 		return false;
 	}
 
@@ -250,7 +256,7 @@ public class GridCollider2D : Collider2D
 		for (int x = 0; x < cellsX; x++)
 			for (int y = 0; y < cellsY; y++)
 				if (data[x, y])
-					batch.HollowRect(new(absLeft + x * cellSize, absTop + y * cellSize, cellSize, cellSize), 1, color);
+					batch.HollowRect(new(left + x * cellSize, top + y * cellSize, cellSize, cellSize), 1, color);
 	}
 
 	// public override void Draw(Camera camera, Color color)
@@ -275,15 +281,26 @@ public class GridCollider2D : Collider2D
 
 	public override bool RectCheck(Rect rect)
 	{
-		if (rect.Overlaps(bounds))
+		var left = (int)((rect.left - absLeft) / cellSize);
+		var right = (int)((rect.right - absLeft) / cellSize);
+		var top = (int)((rect.top - absTop) / cellSize);
+		var bottom = (int)((rect.bottom - absTop) / cellSize);
+
+		if (left < 0) left = 0;
+		if (right > cellsX) right = cellsX;
+		if (top < 0) top = 0;
+		if (bottom > cellsY) bottom = cellsY;
+
+		for (int i = left; i <= right; i++)
 		{
-			var x = (int)((rect.left - absLeft) / cellSize);
-			var y = (int)((rect.top - absTop) / cellSize);
-			var w = (int)((rect.right - absLeft + 1) / cellSize) - x - 1;
-			var h = (int)((rect.bottom - absTop + 1) / cellSize) - y - 1;
-			return CheckRect(x, y, w, h);
+			for (int j = top; j <= bottom; j++)
+			{
+				if (data[i, j])
+					return true;
+			}
 		}
-		else return false;
+
+		return false;
 	}
 
 	public override bool LineCheck(Vector2 from, Vector2 to)
@@ -341,89 +358,6 @@ public class GridCollider2D : Collider2D
 	{
 		if (collider is HitboxCollider2D hitbox)
 			return RectCheck(hitbox.bounds);
-		return null;
-	}
-
-	public override RaycastHit? Raycast(Vector2 position, Vector2 direction) => Raycast(position, direction, 64);
-	public RaycastHit? Raycast(Vector2 position, Vector2 direction, int maxSteps)
-	{
-		var mapPos = (Vector2Int)position;
-		var sideDist = Vector2.zero;
-		var deltaDist = new Vector2(Math.Abs(1f / direction.x), Math.Abs(1f / direction.y));
-		var step = Vector2Int.zero;
-
-		if (data[mapPos.x, mapPos.y])
-		{
-			return new RaycastHit()
-			{
-				origin = position,
-				distance = 0,
-				direction = direction,
-				normal = Vector2.zero,
-			};
-		}
-
-		if (direction.x < 0)
-		{
-			step.x = -1;
-			sideDist.x = (position.x - mapPos.x) * deltaDist.x;
-		}
-		else
-		{
-			step.x = 1;
-			sideDist.x = (mapPos.x + 1.0f - position.x) * deltaDist.x;
-		}
-
-		if (direction.y < 0)
-		{
-			step.y = -1;
-			sideDist.y = (position.y - mapPos.y) * deltaDist.y;
-		}
-		else
-		{
-			step.y = 1;
-			sideDist.y = (mapPos.y + 1.0f - position.y) * deltaDist.y;
-		}
-
-		var hasHit = false;
-		var hitOnX = false;
-		var steps = 0;
-
-		while (!hasHit && steps < maxSteps)
-		{
-			if (sideDist.x < sideDist.y)
-			{
-				sideDist.x += deltaDist.x;
-				mapPos.x += step.x;
-				hitOnX = false;
-			}
-			else
-			{
-				sideDist.y += deltaDist.y;
-				mapPos.y += step.y;
-				hitOnX = true;
-			}
-
-			hasHit = data[mapPos.x, mapPos.y];
-
-			steps++;
-		}
-
-		var distance = 0f;
-
-		if (!hitOnX) distance = (mapPos.x - position.x + (1 - step.x) / 2) / direction.x;
-		else distance = (mapPos.y - position.y + (1 - step.y) / 2) / direction.y;
-
-		if (hasHit)
-		{
-			return new RaycastHit()
-			{
-				origin = position,
-				distance = distance,
-				direction = direction,
-				normal = !hitOnX ? new Vector2(-Math.Sign(direction.x), 0) : new Vector2(0, -Math.Sign(direction.y)),
-			};
-		}
 		return null;
 	}
 

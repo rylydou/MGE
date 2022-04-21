@@ -23,7 +23,7 @@ public class HitboxCollider2D : Collider2D
 	public bool Intersects(HitboxCollider2D hitbox) => absLeft < hitbox.absRight && absRight > hitbox.absLeft && absBottom > hitbox.absTop && absTop < hitbox.absBottom;
 	public bool Intersects(float x, float y, float width, float height) => absRight > x && absBottom > y && absLeft < x + width && absTop < y + height;
 
-	protected override void Render(Batch2D batch, Color color) => batch.HollowRect(bounds, 1, color);
+	protected override void Render(Batch2D batch, Color color) => batch.HollowRect(new(position, size), 1, color);
 
 	public void SetFromRectangle(Rect rect)
 	{
@@ -63,7 +63,6 @@ public class HitboxCollider2D : Collider2D
 	public override bool PointCheck(Vector2 point) => Physics.RectVsPoint(absLeft, absTop, width, height, point);
 	public override bool RectCheck(Rect rect) => absRight > rect.left && absBottom > rect.top && absLeft < rect.right && absTop < rect.bottom;
 	public override bool LineCheck(Vector2 start, Vector2 end) => Physics.RectVsLine(absLeft, absTop, width, height, start, end);
-	public override RaycastHit Raycast(Vector2 position, Vector2 direction) => throw new System.NotImplementedException();
 
 	protected override bool? CheckCollider(Collider2D collider)
 	{

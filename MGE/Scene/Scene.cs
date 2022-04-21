@@ -11,21 +11,16 @@ public class Scene : Node
 		scene = this;
 	}
 
-	// protected override void OnChildAdded(Node node)
-	// {
-	// 	if (node is Body2D body)
-	// 		bodies.Add(body);
-	// }
-
-	// FIXME  OnChild___Deep does not work
 	protected override void OnChildAddedDeep(Node node)
 	{
+		Log.Info("Added deep " + node);
 		if (node is Body2D body)
 			bodies.Add(body);
 	}
 
 	protected override void OnChildRemovedDeep(Node node)
 	{
+		Log.Info("Removed deep " + node);
 		if (node is Body2D body)
 			bodies.Remove(body);
 	}

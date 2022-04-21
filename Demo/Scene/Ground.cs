@@ -2,7 +2,7 @@ using MGE;
 
 namespace Demo;
 
-public class Ground : Body2D
+public class Ground : Solid
 {
 	public Vector2Int mapSize;
 	public float tileSize;
@@ -12,7 +12,7 @@ public class Ground : Body2D
 	protected override void Ready()
 	{
 		tilemap = new GridCollider2D(mapSize, tileSize);
-		collider = tilemap;
+		SetCollider(tilemap);
 	}
 
 	protected override void Update(float delta)
@@ -30,15 +30,6 @@ public class Ground : Body2D
 
 	protected override void Render(Batch2D batch)
 	{
-		for (int y = 0; y < mapSize.y; y++)
-		{
-			for (int x = 0; x < mapSize.x; x++)
-			{
-				var tile = tilemap!.data[x, y];
-				if (tile == false) continue;
-
-				batch.HollowRect(new(x * tileSize, y * tileSize, tileSize, tileSize), 1, Color.green);
-			}
-		}
+		collider?.Render(batch);
 	}
 }

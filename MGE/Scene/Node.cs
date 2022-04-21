@@ -88,14 +88,15 @@ public abstract class Node
 		{
 			node.scene = scene;
 			onChildAdded(node);
+			onChildAddedDeep(node);
 			node.onEnterScene();
 		}
 	}
 
 	public void RemoveChild(Node node)
 	{
-		if (node.parent is null) throw new Exception("Remove Child", "Node is not a child of anything");
-		if (node.parent != this) throw new Exception("Remove Child", "Parent doesn't own the child");
+		if (node.parent is null) throw new Exception("Remove child", "Node is not a child of anything");
+		if (node.parent != this) throw new Exception("Remove child", "Parent doesn't own the child");
 
 		node.parent = null;
 		_children.Remove(node);
@@ -103,8 +104,15 @@ public abstract class Node
 		{
 			node.onExitScene();
 			onChildRemoved(node);
+			onChildRemovedDeep(node);
 			node.scene = null;
 		}
+	}
+
+	public void RemoveSelf()
+	{
+		if (parent is null) throw new Exception("Remove self", "Node is not a child of anything");
+		parent.RemoveChild(this);
 	}
 
 	#endregion Node Management
@@ -125,16 +133,13 @@ public abstract class Node
 		onExitScene += () => _children.ForEach(child => child.onExitScene());
 
 		onChildAdded += OnChildAdded;
-		onChildAdded += onChildAddedDeep;
-
 		onChildRemoved += OnChildRemoved;
-		onChildRemoved += onChildRemovedDeep;
 
 		onChildAddedDeep += OnChildAddedDeep;
-		onChildAddedDeep += node => parent!.onChildAddedDeep(node);
+		onChildAddedDeep += node => parent?.onChildAddedDeep(node);
 
 		onChildRemovedDeep += OnChildRemovedDeep;
-		onChildRemovedDeep += node => parent!.onChildRemovedDeep(node);
+		onChildRemovedDeep += node => parent?.onChildRemovedDeep(node);
 
 		onReady += Ready;
 
