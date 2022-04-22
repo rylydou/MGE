@@ -111,27 +111,27 @@ public class Actor : Body2D
 		return hit;
 	}
 
-	public bool MoveH(float moveH, Action<CollisionInfo>? onCollide = null, Solid? pusher = null)
+	public CollisionInfo? MoveH(float moveH, Solid? pusher = null)
 	{
 		movementCounter.x += moveH;
 		var moveH1 = (int)System.Math.Round(movementCounter.x, MidpointRounding.ToEven);
 		if (moveH1 == 0)
-			return false;
+			return null;
 		movementCounter.x -= moveH1;
-		return MoveHExact(moveH1, onCollide, pusher);
+		return MoveHExact(moveH1, pusher);
 	}
 
-	public bool MoveV(float moveV, Action<CollisionInfo>? onCollide = null, Solid? pusher = null)
+	public CollisionInfo? MoveV(float moveV, Solid? pusher = null)
 	{
 		this.movementCounter.y += moveV;
 		var moveV1 = (int)System.Math.Round(movementCounter.y, MidpointRounding.ToEven);
 		if (moveV1 == 0)
-			return false;
+			return null;
 		movementCounter.y -= moveV1;
-		return MoveVExact(moveV1, onCollide, pusher);
+		return MoveVExact(moveV1, pusher);
 	}
 
-	public bool MoveHExact(int moveH, Action<CollisionInfo>? onCollide = null, Solid? pusher = null)
+	public CollisionInfo? MoveHExact(int moveH, Solid? pusher = null)
 	{
 		var target = globalPosition + Vector2.right * moveH;
 		var dir = Math.Sign(moveH);
@@ -145,17 +145,14 @@ public class Actor : Body2D
 			{
 				movementCounter.x = 0.0f;
 
-				if (onCollide is not null)
-					onCollide(new CollisionInfo()
-					{
-						direction = Vector2.right * (float)dir,
-						moved = Vector2.right * (float)move,
-						targetPosition = target,
-						hit = (Platform)solid,
-						pusher = pusher
-					});
-
-				return true;
+				return new CollisionInfo()
+				{
+					direction = Vector2.right * (float)dir,
+					moved = Vector2.right * (float)move,
+					targetPosition = target,
+					hit = (Platform)solid,
+					pusher = pusher
+				};
 			}
 
 			move += dir;
@@ -164,10 +161,10 @@ public class Actor : Body2D
 			globalPosition = new(globalPosition.x + dir, globalPosition.y);
 		}
 
-		return false;
+		return null;
 	}
 
-	public bool MoveVExact(int moveV, Action<CollisionInfo>? onCollide = null, Solid? pusher = null)
+	public CollisionInfo? MoveVExact(int moveV, Solid? pusher = null)
 	{
 		var target = globalPosition + Vector2.down * (float)moveV;
 		var dir = Math.Sign(moveV);
@@ -180,17 +177,14 @@ public class Actor : Body2D
 			{
 				movementCounter.y = 0.0f;
 
-				if (onCollide is not null)
-					onCollide(new CollisionInfo()
-					{
-						direction = Vector2.down * dir,
-						moved = Vector2.down * move,
-						targetPosition = target,
-						hit = solid,
-						pusher = pusher
-					});
-
-				return true;
+				return new CollisionInfo()
+				{
+					direction = Vector2.down * dir,
+					moved = Vector2.down * move,
+					targetPosition = target,
+					hit = solid,
+					pusher = pusher
+				};
 			}
 
 			if (moveV > 0 && !ignoreJumpThrus)
@@ -201,17 +195,14 @@ public class Actor : Body2D
 				{
 					movementCounter.y = 0.0f;
 
-					if (onCollide is not null)
-						onCollide(new CollisionInfo()
-						{
-							direction = Vector2.down * dir,
-							moved = Vector2.down * move,
-							targetPosition = target,
-							hit = semisolid,
-							pusher = pusher
-						});
-
-					return true;
+					return new CollisionInfo()
+					{
+						direction = Vector2.down * dir,
+						moved = Vector2.down * move,
+						targetPosition = target,
+						hit = semisolid,
+						pusher = pusher
+					};
 				}
 			}
 
@@ -221,16 +212,14 @@ public class Actor : Body2D
 			globalPosition = new(globalPosition.x, globalPosition.y + dir);
 		}
 
-		return false;
+		return null;
 	}
 
-	public void MoveTowardsX(float targetX, float maxAmount, Action<CollisionInfo>? onCollide = null) => MoveToX(Calc.Approach(exactPosition.x, targetX, maxAmount), onCollide);
+	public CollisionInfo? MoveTowardsX(float targetX, float maxAmount) => MoveToX(Calc.Approach(exactPosition.x, targetX, maxAmount));
+	public CollisionInfo? MoveTowardsY(float targetY, float maxAmount) => MoveToY(Calc.Approach(exactPosition.y, targetY, maxAmount));
 
-	public void MoveTowardsY(float targetY, float maxAmount, Action<CollisionInfo>? onCollide = null) => MoveToY(Calc.Approach(exactPosition.y, targetY, maxAmount), onCollide);
-
-	public void MoveToX(float toX, Action<CollisionInfo>? onCollide = null) => MoveH(toX - exactPosition.x, onCollide);
-
-	public void MoveToY(float toY, Action<CollisionInfo>? onCollide = null) => MoveV(toY - exactPosition.y, onCollide);
+	public CollisionInfo? MoveToX(float toX) => MoveH(toX - exactPosition.x);
+	public CollisionInfo? MoveToY(float toY) => MoveV(toY - exactPosition.y);
 
 	public void NaiveMove(Vector2 amount)
 	{

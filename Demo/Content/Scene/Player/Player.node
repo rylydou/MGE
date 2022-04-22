@@ -1,13 +1,1 @@
 !Demo: 'Demo.Player'
-gravity: 24.0
-
-moveSpeed: 192.0
-friction: 0.75
-
-moveSpeedAir: 8.0
-frictionAir: 0.975
-
-jumpBufferLength: 0.1
-coyoteTime: 0.1
-jumpVelMin: 240.0
-jumpVelMax: 480.0

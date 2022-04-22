@@ -692,4 +692,38 @@ public static class Calc
 
 		return lineA + v * time;
 	}
+
+	public static IEnumerable<Vector2Int> GetTilesOnLine(Vector2 start, Vector2 end)
+	{
+		if ((Vector2Int)start == (Vector2Int)end) yield return end;
+
+		var t = start;
+		var frac = 1 / Math.Sqrt(Math.Pow(end.x - start.x, 2) + Math.Pow(end.y - start.y, 2));
+		var ctr = 0.0f;
+
+		while ((int)t.x != (int)end.x || (int)t.y != (int)end.y)
+		{
+			t = Vector2.LerpClamped(start, end, ctr);
+			ctr += frac;
+			yield return t;
+		}
+	}
+
+	// public static List<Vector2Int> GetTilesOnLine(Vector2 start, Vector2 end)
+	// {
+	// 	var points = new List<Vector2Int>();
+
+	// 	Vector2 t = start;
+	// 	var frac = 1 / Math.Sqrt(Math.Pow(end.x - start.x, 2) + Math.Pow(end.y - start.y, 2));
+	// 	var ctr = 0.0f;
+
+	// 	while ((int)t.x != (int)end.x || (int)t.y != (int)end.y)
+	// 	{
+	// 		t = Vector2.Lerp(start, end, ctr);
+	// 		ctr += frac;
+	// 		points.Add(t);
+	// 	}
+
+	// 	return points;
+	// }
 }

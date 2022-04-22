@@ -5,13 +5,15 @@ namespace Demo;
 public class Game : Module
 {
 	public static readonly Vector2Int screenSize = new(320 * 2, 180 * 2);
-	public static readonly float unitSize = 16;
+	public static readonly float unitSize = 8;
 	public static readonly Vector2Int screenUnitSize = new(Math.CeilToInt(screenSize.x / unitSize), Math.CeilToInt(screenSize.y / unitSize));
 
 	Scene scene = new();
 	Player player1 = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
 	Player player2 = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
 	Ground ground = new();
+
+	Font _font = App.content.Get<Font>("Fonts/Roboto/Regular.ttf");
 
 	FrameBuffer _framebuffer = new(screenSize.x, screenSize.y);
 
@@ -70,6 +72,9 @@ public class Game : Module
 
 		var screenScale = window.size / screenSize;
 		Batch2D.current.Image(_framebuffer, Vector2.zero, screenScale, Vector2.zero, 0, Color.white);
+
+		_font.DrawString(Batch2D.current, Time.fps.ToString(), new(16), Color.white.translucent);
+
 		Batch2D.current.Render(window);
 	}
 }
