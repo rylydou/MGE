@@ -5,13 +5,15 @@ namespace MGE;
 
 public struct Transform2D : IEquatable<Transform2D>
 {
+	const float RotationEpsilon = 0.001f * MathF.PI / 180f;
+
 	/// <summary>
-	/// The basis matrix's X vector (column 0). Equivalent to array index <c>[0]</c>.
+	/// The basis matrix's x vector (column 0). Equivalent to array index <c>[0]</c>.
 	/// </summary>
 	public Vector2 x;
 
 	/// <summary>
-	/// The basis matrix's Y vector (column 1). Equivalent to array index <c>[1]</c>.
+	/// The basis matrix's y vector (column 1). Equivalent to array index <c>[1]</c>.
 	/// </summary>
 	public Vector2 y;
 
@@ -44,7 +46,7 @@ public struct Transform2D : IEquatable<Transform2D>
 	/// <summary>
 	/// The scale of this transformation matrix.
 	/// </summary>
-	/// <value>Equivalent to the lengths of each column vector, but Y is negative if the determinant is negative.</value>
+	/// <value>Equivalent to the lengths of each column vector, but y is negative if the determinant is negative.</value>
 	public Vector2 scale
 	{
 		get
@@ -153,7 +155,7 @@ public struct Transform2D : IEquatable<Transform2D>
 	/// Returns the determinant of the basis matrix. If the basis is
 	/// uniformly scaled, its determinant is the square of the scale.
 	///
-	/// A negative determinant means the Y scale is negative.
+	/// A negative determinant means the y scale is negative.
 	/// A zero determinant means the basis isn't invertible,
 	/// and is usually considered invalid.
 	/// </summary>
@@ -377,12 +379,12 @@ public struct Transform2D : IEquatable<Transform2D>
 	/// <value>Equivalent to <c>new Transform2D(Vector2.Right, Vector2.Down, Vector2.Zero)</c>.</value>
 	public static Transform2D identity { get { return _identity; } }
 	/// <summary>
-	/// The transform that will flip something along the X axis.
+	/// The transform that will flip something along the x axis.
 	/// </summary>
 	/// <value>Equivalent to <c>new Transform2D(Vector2.Left, Vector2.Down, Vector2.Zero)</c>.</value>
 	public static Transform2D flipX { get { return _flipX; } }
 	/// <summary>
-	/// The transform that will flip something along the Y axis.
+	/// The transform that will flip something along the y axis.
 	/// </summary>
 	/// <value>Equivalent to <c>new Transform2D(Vector2.Right, Vector2.Up, Vector2.Zero)</c>.</value>
 	public static Transform2D flipY { get { return _flipY; } }
@@ -390,8 +392,8 @@ public struct Transform2D : IEquatable<Transform2D>
 	/// <summary>
 	/// Constructs a transformation matrix from 3 vectors (matrix columns).
 	/// </summary>
-	/// <param name="xAxis">The X vector, or column index 0.</param>
-	/// <param name="yAxis">The Y vector, or column index 1.</param>
+	/// <param name="xAxis">The x vector, or column index 0.</param>
+	/// <param name="yAxis">The y vector, or column index 1.</param>
 	/// <param name="originPos">The origin vector, or column index 2.</param>
 	public Transform2D(Vector2 xAxis, Vector2 yAxis, Vector2 originPos)
 	{
@@ -404,12 +406,12 @@ public struct Transform2D : IEquatable<Transform2D>
 	/// Constructs a transformation matrix from the given components.
 	/// Arguments are named such that xy is equal to calling x.y
 	/// </summary>
-	/// <param name="xx">The X component of the X column vector, accessed via <c>t.x.x</c> or <c>[0][0]</c>.</param>
-	/// <param name="xy">The Y component of the X column vector, accessed via <c>t.x.y</c> or <c>[0][1]</c>.</param>
-	/// <param name="yx">The X component of the Y column vector, accessed via <c>t.y.x</c> or <c>[1][0]</c>.</param>
-	/// <param name="yy">The Y component of the Y column vector, accessed via <c>t.y.y</c> or <c>[1][1]</c>.</param>
-	/// <param name="ox">The X component of the origin vector, accessed via <c>t.origin.x</c> or <c>[2][0]</c>.</param>
-	/// <param name="oy">The Y component of the origin vector, accessed via <c>t.origin.y</c> or <c>[2][1]</c>.</param>
+	/// <param name="xx">The x component of the x column vector, accessed via <c>t.x.x</c> or <c>[0][0]</c>.</param>
+	/// <param name="xy">The y component of the x column vector, accessed via <c>t.x.y</c> or <c>[0][1]</c>.</param>
+	/// <param name="yx">The x component of the y column vector, accessed via <c>t.y.x</c> or <c>[1][0]</c>.</param>
+	/// <param name="yy">The y component of the y column vector, accessed via <c>t.y.y</c> or <c>[1][1]</c>.</param>
+	/// <param name="ox">The x component of the origin vector, accessed via <c>t.origin.x</c> or <c>[2][0]</c>.</param>
+	/// <param name="oy">The y component of the origin vector, accessed via <c>t.origin.y</c> or <c>[2][1]</c>.</param>
 	public Transform2D(float xx, float xy, float yx, float yy, float ox, float oy)
 	{
 		x = new Vector2(xx, xy);
@@ -432,32 +434,305 @@ public struct Transform2D : IEquatable<Transform2D>
 	}
 
 	/// <summary>
-	/// Creates a Matrix3x2 given the Transform Values
+	/// Creates a Transform2D given the Transform Values
 	/// </summary>
 	public static Transform2D CreateMatrix(in Vector2 position, in Vector2 origin, in Vector2 scale, in float rotation)
 	{
 		Transform2D matrix = Transform2D.identity;
 
 		if (origin != Vector2.zero)
-			matrix = matrix.Translated(-origin);
-		// matrix = Transform2D.CreateTranslation(-origin.x, -origin.y);
-		// else
-		// matrix = Transform2D.identity;
+			matrix = Transform2D.CreateTranslation(-origin.x, -origin.y);
 
 		if (scale != Vector2.one)
-			matrix = matrix.Scaled(scale);
-		// matrix *= Transform2D.CreateScale(scale.x, scale.y);
+			matrix *= Transform2D.CreateScale(scale.x, scale.y);
 
 		if (rotation != 0)
-			matrix = matrix.Rotated(rotation);
-		// matrix *= Transform2D.CreateRotation(rotation);
+			matrix *= Transform2D.CreateRotation(rotation);
 
 		if (position != Vector2.zero)
-			matrix = matrix.Translated(position);
-		// matrix *= Transform2D.CreateTranslation(position.x, position.y);
+			matrix *= Transform2D.CreateTranslation(position.x, position.y);
 
 		return matrix;
 	}
+
+	/// <summary>Creates a rotation matrix using the given rotation in radians.</summary>
+	/// <param name="radians">The amount of rotation, in radians.</param>
+	/// <returns>The rotation matrix.</returns>
+	public static Transform2D CreateRotation(float radians)
+	{
+		radians = MathF.IEEERemainder(radians, MathF.PI * 2);
+
+		float c, s;
+
+		if (radians > -RotationEpsilon && radians < RotationEpsilon)
+		{
+			// Exact case for zero rotation.
+			c = 1;
+			s = 0;
+		}
+		else if (radians > MathF.PI / 2 - RotationEpsilon && radians < MathF.PI / 2 + RotationEpsilon)
+		{
+			// Exact case for 90 degree rotation.
+			c = 0;
+			s = 1;
+		}
+		else if (radians < -MathF.PI + RotationEpsilon || radians > MathF.PI - RotationEpsilon)
+		{
+			// Exact case for 180 degree rotation.
+			c = -1;
+			s = 0;
+		}
+		else if (radians > -MathF.PI / 2 - RotationEpsilon && radians < -MathF.PI / 2 + RotationEpsilon)
+		{
+			// Exact case for 270 degree rotation.
+			c = 0;
+			s = -1;
+		}
+		else
+		{
+			// Arbitrary rotation.
+			c = MathF.Cos(radians);
+			s = MathF.Sin(radians);
+		}
+
+		// [  c  s ]
+		// [ -s  c ]
+		// [  0  0 ]
+		Transform2D result = identity;
+
+		result.x.x = c;
+		result.x.y = s;
+		result.y.x = -s;
+		result.y.y = c;
+
+		return result;
+	}
+
+	/// <summary>Creates a rotation matrix using the specified rotation in radians and a center point.</summary>
+	/// <param name="radians">The amount of rotation, in radians.</param>
+	/// <param name="centerPoint">The center point.</param>
+	/// <returns>The rotation matrix.</returns>
+	public static Transform2D CreateRotation(float radians, Vector2 centerPoint)
+	{
+		Transform2D result;
+
+		radians = MathF.IEEERemainder(radians, MathF.PI * 2);
+
+		float c, s;
+
+		if (radians > -RotationEpsilon && radians < RotationEpsilon)
+		{
+			// Exact case for zero rotation.
+			c = 1;
+			s = 0;
+		}
+		else if (radians > MathF.PI / 2 - RotationEpsilon && radians < MathF.PI / 2 + RotationEpsilon)
+		{
+			// Exact case for 90 degree rotation.
+			c = 0;
+			s = 1;
+		}
+		else if (radians < -MathF.PI + RotationEpsilon || radians > MathF.PI - RotationEpsilon)
+		{
+			// Exact case for 180 degree rotation.
+			c = -1;
+			s = 0;
+		}
+		else if (radians > -MathF.PI / 2 - RotationEpsilon && radians < -MathF.PI / 2 + RotationEpsilon)
+		{
+			// Exact case for 270 degree rotation.
+			c = 0;
+			s = -1;
+		}
+		else
+		{
+			// Arbitrary rotation.
+			c = MathF.Cos(radians);
+			s = MathF.Sin(radians);
+		}
+
+		float x = centerPoint.x * (1 - c) + centerPoint.y * s;
+		float y = centerPoint.y * (1 - c) - centerPoint.x * s;
+
+		// [  c  s ]
+		// [ -s  c ]
+		// [  x  y ]
+		result.x.x = c;
+		result.x.y = s;
+		result.y.x = -s;
+		result.y.y = c;
+		result.origin.x = x;
+		result.origin.y = y;
+
+		return result;
+	}
+
+	/// <summary>Creates a scaling matrix from the specified vector scale.</summary>
+	/// <param name="scales">The scale to use.</param>
+	/// <returns>The scaling matrix.</returns>
+	public static Transform2D CreateScale(Vector2 scales)
+	{
+		Transform2D result = identity;
+
+		result.x.x = scales.x;
+		result.y.y = scales.y;
+
+		return result;
+	}
+
+	/// <summary>Creates a scaling matrix from the specified x and y components.</summary>
+	/// <param name="xScale">The value to scale by on the x axis.</param>
+	/// <param name="yScale">The value to scale by on the y axis.</param>
+	/// <returns>The scaling matrix.</returns>
+	public static Transform2D CreateScale(float xScale, float yScale)
+	{
+		Transform2D result = identity;
+
+		result.x.x = xScale;
+		result.y.y = yScale;
+
+		return result;
+	}
+
+	/// <summary>Creates a scaling matrix that is offset by a given center point.</summary>
+	/// <param name="xScale">The value to scale by on the x axis.</param>
+	/// <param name="yScale">The value to scale by on the y axis.</param>
+	/// <param name="centerPoint">The center point.</param>
+	/// <returns>The scaling matrix.</returns>
+	public static Transform2D CreateScale(float xScale, float yScale, Vector2 centerPoint)
+	{
+		Transform2D result = identity;
+
+		float tx = centerPoint.x * (1 - xScale);
+		float ty = centerPoint.y * (1 - yScale);
+
+		result.x.x = xScale;
+		result.y.y = yScale;
+		result.origin.x = tx;
+		result.origin.y = ty;
+
+		return result;
+	}
+
+	/// <summary>Creates a scaling matrix from the specified vector scale with an offset from the specified center point.</summary>
+	/// <param name="scales">The scale to use.</param>
+	/// <param name="centerPoint">The center offset.</param>
+	/// <returns>The scaling matrix.</returns>
+	public static Transform2D CreateScale(Vector2 scales, Vector2 centerPoint)
+	{
+		Transform2D result = identity;
+
+		float tx = centerPoint.x * (1 - scales.x);
+		float ty = centerPoint.y * (1 - scales.y);
+
+		result.x.x = scales.x;
+		result.y.y = scales.y;
+		result.origin.x = tx;
+		result.origin.y = ty;
+
+		return result;
+	}
+
+	/// <summary>Creates a scaling matrix that scales uniformly with the given scale.</summary>
+	/// <param name="scale">The uniform scale to use.</param>
+	/// <returns>The scaling matrix.</returns>
+	public static Transform2D CreateScale(float scale)
+	{
+		Transform2D result = identity;
+
+		result.x.x = scale;
+		result.y.y = scale;
+
+		return result;
+	}
+
+	/// <summary>Creates a scaling matrix that scales uniformly with the specified scale with an offset from the specified center.</summary>
+	/// <param name="scale">The uniform scale to use.</param>
+	/// <param name="centerPoint">The center offset.</param>
+	/// <returns>The scaling matrix.</returns>
+	public static Transform2D CreateScale(float scale, Vector2 centerPoint)
+	{
+		Transform2D result = identity;
+
+		float tx = centerPoint.x * (1 - scale);
+		float ty = centerPoint.y * (1 - scale);
+
+		result.x.x = scale;
+		result.y.y = scale;
+		result.origin.x = tx;
+		result.origin.y = ty;
+
+		return result;
+	}
+
+	/// <summary>Creates a skew matrix from the specified angles in radians.</summary>
+	/// <param name="radiansX">The x angle, in radians.</param>
+	/// <param name="radiansY">The y angle, in radians.</param>
+	/// <returns>The skew matrix.</returns>
+	public static Transform2D CreateSkew(float radiansX, float radiansY)
+	{
+		Transform2D result = identity;
+
+		float xTan = MathF.Tan(radiansX);
+		float yTan = MathF.Tan(radiansY);
+
+		result.x.y = yTan;
+		result.y.x = xTan;
+
+		return result;
+	}
+
+	/// <summary>Creates a skew matrix from the specified angles in radians and a center point.</summary>
+	/// <param name="radiansX">The x angle, in radians.</param>
+	/// <param name="radiansY">The y angle, in radians.</param>
+	/// <param name="centerPoint">The center point.</param>
+	/// <returns>The skew matrix.</returns>
+	public static Transform2D CreateSkew(float radiansX, float radiansY, Vector2 centerPoint)
+	{
+		Transform2D result = identity;
+
+		float xTan = MathF.Tan(radiansX);
+		float yTan = MathF.Tan(radiansY);
+
+		float tx = -centerPoint.y * xTan;
+		float ty = -centerPoint.x * yTan;
+
+		result.x.y = yTan;
+		result.y.x = xTan;
+
+		result.origin.x = tx;
+		result.origin.y = ty;
+
+		return result;
+	}
+
+	/// <summary>Creates a translation matrix from the specified 2-dimensional vector.</summary>
+	/// <param name="position">The translation position.</param>
+	/// <returns>The translation matrix.</returns>
+	public static Transform2D CreateTranslation(Vector2 position)
+	{
+		Transform2D result = identity;
+
+		result.origin.x = position.x;
+		result.origin.y = position.y;
+
+		return result;
+	}
+
+	/// <summary>Creates a translation matrix from the specified x and y components.</summary>
+	/// <param name="xPosition">The x position.</param>
+	/// <param name="yPosition">The y position.</param>
+	/// <returns>The translation matrix.</returns>
+	public static Transform2D CreateTranslation(float xPosition, float yPosition)
+	{
+		Transform2D result = identity;
+
+		result.origin.x = xPosition;
+		result.origin.y = yPosition;
+
+		return result;
+	}
+
 
 	/// <summary>
 	/// Composes these two transformation matrices by multiplying them
@@ -661,7 +936,7 @@ public struct Transform2D : IEquatable<Transform2D>
 	/// <returns>A string representation of this transform.</returns>
 	public override string ToString()
 	{
-		return $"[X: {x}, Y: {y}, O: {origin}]";
+		return $"[x: {x}, y: {y}, O: {origin}]";
 	}
 
 	/// <summary>
@@ -670,6 +945,6 @@ public struct Transform2D : IEquatable<Transform2D>
 	/// <returns>A string representation of this transform.</returns>
 	public string ToString(string format)
 	{
-		return $"[X: {x.ToString(format)}, Y: {y.ToString(format)}, O: {origin.ToString(format)}]";
+		return $"[x: {x.ToString(format)}, y: {y.ToString(format)}, O: {origin.ToString(format)}]";
 	}
 }

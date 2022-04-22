@@ -4,23 +4,21 @@ namespace Demo;
 
 public class Player : Actor
 {
-	[Prop] float _fallSpeed;
-	[Prop] float _minFallSpeed;
-	[Prop] float _maxFallSpeed;
-	[Prop] float _fallClamp;
+	[Prop] public float fallSpeed;
+	[Prop] public float fallClamp;
 
-	[Prop] float _acceleration;
-	[Prop] float _deAcceleration;
-	[Prop] float _moveClamp;
+	[Prop] public float acceleration;
+	[Prop] public float deAcceleration;
+	[Prop] public float accelerationAir;
+	[Prop] public float deAccelerationAir;
+	[Prop] public float moveClamp;
 
-	[Prop] float _jumpApexThreshold;
+	[Prop] public float deAccelerationEx;
+	[Prop] public float deAccelerationExAir;
 
-	float _apexPoint;
-	float _apexBonus;
-
-	[Prop] float _minJumpHeight;
+	[Prop] public float minJumpHeight;
 	float _minJumpSpeed;
-	[Prop] float _maxJumpHeight;
+	[Prop] public float maxJumpHeight;
 	float _maxJumpSpeed;
 
 	[Prop] public float jumpBufferLength;
@@ -45,6 +43,15 @@ public class Player : Actor
 	float _moveInput;
 	bool _cancelJump;
 
+	bool _colTop;
+	bool _colBottom;
+	bool _colLeft;
+	bool _colRight;
+
+	public float vSpeed;
+	public float hSpeed;
+	public float extraHSpeed;
+
 	protected override void Ready()
 	{
 		SetCollider(new HitboxCollider2D(new(12), new(2)));
@@ -66,53 +73,44 @@ public class Player : Actor
 		if (kb.Pressed(Keys.R))
 		{
 			globalPosition = Vector2.zero;
-			_hSpeed = 0;
-			_vSpeed = 0;
+			hSpeed = 0;
+			vSpeed = 0;
+		}
+
+		if (kb.Pressed(Keys.Space))
+		{
+			extraHSpeed = 256 * Time.fixedDelta;
+			vSpeed = -256 * Time.fixedDelta;
 		}
 	}
 
-	public Vector2 velocity { get; private set; }
-	Vector2 _lastPosition;
-
-	bool grounded;
-
-	float _vSpeed;
-	float _hSpeed;
-
 	protected override void Tick(float delta)
 	{
-		velocity = (globalPosition - _lastPosition) / delta;
+		_colTop = CollideCheck<Ground>(globalPosition + Vector2.up);
+		_colBottom = CollideCheck<Ground>(globalPosition + Vector2.down);
+		_colLeft = CollideCheck<Ground>(globalPosition + Vector2.left);
+		_colRight = CollideCheck<Ground>(globalPosition + Vector2.right);
 
-		grounded = OnGround();
 		_coyoteTimer -= delta;
-		if (grounded) _coyoteTimer = coyoteTime;
+		if (_colBottom) _coyoteTimer = coyoteTime;
 
 		CalcWalk(delta);
-		CalcJumpApex(delta);
 		CalcGravity(delta);
 		CalcJump(delta);
 
-		var hitY = MoveV(_vSpeed);
-		if (hitY.HasValue)
-		{
-			Bump(hitY.Value);
-			// _vSpeed = 0;
-		}
+		var hitV = MoveV(vSpeed);
+		if (hitV.HasValue) Bump(hitV.Value);
+		var hitX = MoveH(hSpeed + extraHSpeed);
+		if (hitX.HasValue) Bump(hitX.Value);
 
-		var hitX = MoveH(_hSpeed);
-		if (hitX.HasValue)
-		{
-			Bump(hitX.Value);
-		}
-
-		_lastPosition = globalPosition;
 
 		void Bump(CollisionInfo info)
 		{
-			if (_vSpeed < 0) _vSpeed = 0;
+			if (vSpeed < 0) vSpeed = 0;
 			var dir = globalPosition - info.hit.globalPosition;
-			var move = new Vector2(_hSpeed, _vSpeed).normalized * delta;
+			var move = new Vector2(hSpeed, vSpeed).normalized * delta;
 			globalPosition += dir.normalized * move.length;
+			// Log.Info("Bump:" + dir + " move:" + move);
 		}
 	}
 
@@ -121,84 +119,77 @@ public class Player : Actor
 		if (_moveInput != 0)
 		{
 			// Set horizontal move speed
-			_hSpeed += _moveInput * _acceleration * delta;
+			hSpeed += _moveInput * (_colBottom ? acceleration : accelerationAir) * delta;
 
 			// clamped by max frame movement
-			_hSpeed = Math.Clamp(_hSpeed, -_moveClamp, _moveClamp);
-
-			// Apply bonus at the apex of a jump
-			var apexBonus = Math.Sign(_moveInput) * _apexBonus * _apexPoint;
-			_hSpeed += apexBonus * delta;
+			hSpeed = Math.Clamp(hSpeed, -moveClamp * delta, moveClamp * delta);
 		}
 		else
 		{
 			// No input. Let's slow the character down
-			_hSpeed = Math.MoveTowards(_hSpeed, 0, _deAcceleration * delta);
+			hSpeed = Math.MoveTowards(hSpeed, 0, (_colBottom ? deAcceleration : deAccelerationAir) * delta);
 		}
 
-		if (_hSpeed > 0 && CollideCheck<Ground>(globalPosition + Vector2.right) || _hSpeed < 0 && CollideCheck<Ground>(globalPosition + Vector2.left))
+		extraHSpeed = Math.MoveTowards(extraHSpeed, 0, (_colBottom ? deAccelerationEx : deAccelerationExAir) * delta);
+
+		if (hSpeed > 0 && _colRight || hSpeed < 0 && _colLeft)
 		{
 			// Don't walk through walls
-			_hSpeed = 0;
-		}
-	}
-
-	void CalcJumpApex(float delta)
-	{
-		if (!grounded)
-		{
-			// Gets stronger the closer to the top of the jump
-			_apexPoint = Math.InverseLerp(_jumpApexThreshold, 0, Math.Abs(_vSpeed));
-			_fallSpeed = Math.Lerp(_minFallSpeed, _maxFallSpeed, _apexPoint);
-		}
-		else
-		{
-			_apexPoint = 0;
+			hSpeed = 0;
+			extraHSpeed = 0;
 		}
 	}
 
 	void CalcGravity(float delta)
 	{
-		if (grounded)
+		if (_colTop)
 		{
-			if (_vSpeed > 0)
+			if (vSpeed < 0)
+			{
+				// Move out of the celling
+				vSpeed = 0;
+			}
+		}
+
+		if (_colBottom)
+		{
+			if (vSpeed > 0)
 			{
 				// Move out of the ground
-				_vSpeed = 0;
+				vSpeed = 0;
 			}
 		}
 		else
 		{
-			var fallSpeed = _fallSpeed;
-			// Add downward force while ascending if we ended the jump early
-			// var fallSpeed = _endedJumpEarly && _currentVerticalSpeed > 0 ? _fallSpeed * _jumpEndEarlyGravityModifier : _fallSpeed;
-
 			// Fall
-			_vSpeed += fallSpeed * delta;
+			vSpeed += fallSpeed * delta;
 
 			// Clamp
-			if (_vSpeed > _fallClamp) _vSpeed = _fallClamp;
+			if (vSpeed > fallClamp * delta) vSpeed = fallClamp * delta;
 		}
 	}
 
 	void CalcJump(float delta)
 	{
+		_minJumpSpeed = -Math.Sqrt(2 * (fallSpeed * delta) * minJumpHeight);
+		_maxJumpSpeed = -Math.Sqrt(2 * (fallSpeed * delta) * maxJumpHeight);
+
 		if (_coyoteTimer > 0 && _jumpBuffer > 0)
 		{
 			_jumpBuffer = -1;
-			_vSpeed = _maxJumpSpeed;
+			vSpeed = _maxJumpSpeed;
 		}
 
-		if (_cancelJump && _vSpeed < _minJumpSpeed)
+		if (_cancelJump && vSpeed < _minJumpSpeed)
 		{
-			_vSpeed = _minJumpSpeed;
+			vSpeed = _minJumpSpeed;
 		}
 		_cancelJump = false;
 	}
 
 	protected override void Render(Batch2D batch)
 	{
-		var time = (float)Time.duration.TotalSeconds;
-		batch.Image(_sprite, Vector2.zero, Vector2.one, Vector2.zero, 0, Color.white);
+		var squish = Math.Abs(vSpeed) / Time.fixedDelta / fallClamp * 0.5f;
+		batch.Image(_sprite, Color.white);
 	}
 }

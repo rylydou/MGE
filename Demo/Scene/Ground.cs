@@ -27,7 +27,7 @@ public class Ground : Solid
 		tileMousePosition = new(Math.Clamp(tileMousePosition.x, 0, mapSize.x - 1), Math.Clamp(tileMousePosition.y, 0, mapSize.y - 1));
 
 		if (App.input.mouse.Down(MouseButtons.Left))
-			SetTiles(tileMousePosition, lastTileMousePosition, true);
+			SetTiles(tileMousePosition, lastTileMousePosition, !App.input.keyboard.shift);
 		else if (App.input.mouse.Down(MouseButtons.Right))
 			SetTiles(tileMousePosition, lastTileMousePosition, false);
 

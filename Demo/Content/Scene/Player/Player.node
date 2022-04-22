@@ -1,1 +1,18 @@
 !Demo: 'Demo.Player'
+fallSpeed: 16.0
+fallClamp: 384.0
+
+acceleration: 64.0
+deAcceleration: 48.0
+accelerationAir: 32.0
+deAccelerationAir: 24.0
+moveClamp: 196.0
+
+deAccelerationEx: 16.0
+deAccelerationExAir: 12.0
+
+minJumpHeight: 10.0
+maxJumpHeight: 36.0
+
+jumpBufferLength: 0.1
+coyoteTime: 0.1

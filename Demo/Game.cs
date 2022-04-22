@@ -13,7 +13,7 @@ public class Game : Module
 	Player player2 = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
 	Ground ground = new();
 
-	Font _font = App.content.Get<Font>("Fonts/Roboto/Regular.ttf");
+	Font _font = App.content.Get<Font>("Fonts/Inter/Regular.ttf");
 
 	FrameBuffer _framebuffer = new(screenSize.x, screenSize.y);
 
@@ -73,7 +73,12 @@ public class Game : Module
 		var screenScale = window.size / screenSize;
 		Batch2D.current.Image(_framebuffer, Vector2.zero, screenScale, Vector2.zero, 0, Color.white);
 
-		_font.DrawString(Batch2D.current, Time.fps.ToString(), new(16), Color.white.translucent);
+		var str =
+			$"{Time.fps} fps" + '\n' +
+			$"H: {player1.hSpeed / Time.fixedDelta:F0}" + '\n' +
+			$"X: {player1.extraHSpeed / Time.fixedDelta:F0}" + '\n' +
+			$"V: {player1.vSpeed / Time.fixedDelta:F0}";
+		_font.DrawString(Batch2D.current, str, new(8), Color.white.translucent);
 
 		Batch2D.current.Render(window);
 	}
