@@ -12,6 +12,10 @@ public class Ground : Solid
 	Vector2 lastTileMousePosition;
 
 	Texture _tileSprite = App.content.Get<Texture>("Scene/Ground/Dirt.ase");
+	Font _font = App.content.Get<Font>("Fonts/Inter/Regular.ttf");
+
+	Vector2 worldMousePosition;
+	Vector2 tileMousePosition;
 
 	protected override void Ready()
 	{
@@ -22,8 +26,8 @@ public class Ground : Solid
 	protected override void Update(float delta)
 	{
 		var screenScale = App.window.size / Game.screenSize;
-		var worldMousePosition = App.window.renderMouse / screenScale;
-		var tileMousePosition = worldMousePosition / tileSize;
+		worldMousePosition = App.window.renderMouse / screenScale;
+		tileMousePosition = worldMousePosition / tileSize;
 		tileMousePosition = new(Math.Clamp(tileMousePosition.x, 0, mapSize.x - 1), Math.Clamp(tileMousePosition.y, 0, mapSize.y - 1));
 
 		if (App.input.mouse.Down(MouseButtons.Left))
@@ -57,5 +61,13 @@ public class Ground : Solid
 				}
 			}
 		}
+
+		var pos = (Vector2Int)tileMousePosition * tileSize;
+		var guideColor = new Color(255, 255, 255, 25);
+
+		batch.Rect(new(0, pos.y + tileSize / 2, mapSize.x * tileSize, 1), guideColor);
+		batch.Rect(new(pos.x + tileSize / 2, 0, 1, mapSize.y * tileSize), guideColor);
+
+		batch.HollowRect(new(pos, tileSize), 1, Color.green.translucent);
 	}
 }

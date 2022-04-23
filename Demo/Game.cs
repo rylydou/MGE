@@ -24,13 +24,11 @@ public class Game : Module
 
 		scene.AddChild(ground);
 		scene.AddChild(player1);
-		// scene.AddChild(player2);
+		scene.AddChild(player2);
 	}
 
 	protected override void Startup()
 	{
-		// player1.floorY = _framebuffer.renderHeight - 24;
-		// player2.floorY = _framebuffer.renderHeight - 24;
 		player2.isPlayer2 = true;
 
 		App.window.onRender += Render;

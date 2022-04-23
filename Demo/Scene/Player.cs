@@ -26,7 +26,9 @@ public class Player : Actor
 	[Prop] public float coyoteTime;
 	float _coyoteTimer;
 
-	Texture _sprite = App.content.Get<Texture>("Scene/Player/Small Red.ase");
+	[Prop] public float bonkSpeed;
+
+	Texture _sprite = App.content.Get<Texture>("Scene/Player/Chicken.ase");
 
 	bool _alt;
 	public bool isPlayer2
@@ -36,12 +38,13 @@ public class Player : Actor
 		{
 			_alt = value;
 			if (_alt)
-				_sprite = App.content.Get<Texture>("Scene/Player/Blue.ase");
+				_sprite = App.content.Get<Texture>("Scene/Player/Amogus.ase");
 		}
 	}
 
 	float _moveInput;
 	bool _cancelJump;
+	bool _crouching;
 
 	bool _colTop;
 	bool _colBottom;
@@ -52,9 +55,14 @@ public class Player : Actor
 	public float hSpeed;
 	public float extraHSpeed;
 
+	bool facingRight = true;
+
 	protected override void Ready()
 	{
-		SetCollider(new HitboxCollider2D(new(12), new(2)));
+		SetCollider(new HitboxCollider2D(new(12)));
+		collider!.CenterOrigin();
+
+		Respawn();
 	}
 
 	protected override void Update(float delta)
@@ -66,22 +74,23 @@ public class Player : Actor
 		if (kb.Down(isPlayer2 ? Keys.Left : Keys.A)) _moveInput -= 1;
 		if (kb.Down(isPlayer2 ? Keys.Right : Keys.D)) _moveInput += 1;
 
+		if (_moveInput != 0)
+		{
+			facingRight = _moveInput >= 0;
+		}
+
 		_jumpBuffer -= delta;
 		if (kb.Pressed(isPlayer2 ? Keys.Up : Keys.W)) _jumpBuffer = jumpBufferLength;
 		if (kb.Released(isPlayer2 ? Keys.Up : Keys.W)) _cancelJump = true;
+		_crouching = kb.Down(isPlayer2 ? Keys.Down : Keys.S);
 
-		if (kb.Pressed(Keys.R))
-		{
-			globalPosition = Vector2.zero;
-			hSpeed = 0;
-			vSpeed = 0;
-		}
+		// if (kb.Pressed(Keys.R)) Respawn();
 
-		if (kb.Pressed(Keys.Space))
-		{
-			extraHSpeed = 256 * Time.fixedDelta;
-			vSpeed = -256 * Time.fixedDelta;
-		}
+		// if (kb.Pressed(Keys.Space))
+		// {
+		// 	extraHSpeed = 256 * Time.fixedDelta;
+		// 	vSpeed = -256 * Time.fixedDelta;
+		// }
 	}
 
 	protected override void Tick(float delta)
@@ -99,19 +108,16 @@ public class Player : Actor
 		CalcJump(delta);
 
 		var hitV = MoveV(vSpeed);
-		if (hitV.HasValue) Bump(hitV.Value);
 		var hitX = MoveH(hSpeed + extraHSpeed);
-		if (hitX.HasValue) Bump(hitX.Value);
 
+		if (globalPosition.y > Game.screenSize.y + 16) Respawn();
+	}
 
-		void Bump(CollisionInfo info)
-		{
-			if (vSpeed < 0) vSpeed = 0;
-			var dir = globalPosition - info.hit.globalPosition;
-			var move = new Vector2(hSpeed, vSpeed).normalized * delta;
-			globalPosition += dir.normalized * move.length;
-			// Log.Info("Bump:" + dir + " move:" + move);
-		}
+	void Respawn()
+	{
+		globalPosition = new(Game.screenSize.x / 2, 0);
+		hSpeed = 0;
+		vSpeed = fallClamp * Time.fixedDelta;
 	}
 
 	void CalcWalk(float delta)
@@ -122,7 +128,7 @@ public class Player : Actor
 			hSpeed += _moveInput * (_colBottom ? acceleration : accelerationAir) * delta;
 
 			// clamped by max frame movement
-			hSpeed = Math.Clamp(hSpeed, -moveClamp * delta, moveClamp * delta);
+			hSpeed = Math.Clamp(hSpeed, -moveClamp * delta, moveClamp * delta) * (_crouching ? 0.66f : 1f);
 		}
 		else
 		{
@@ -147,7 +153,7 @@ public class Player : Actor
 			if (vSpeed < 0)
 			{
 				// Move out of the celling
-				vSpeed = 0;
+				vSpeed = bonkSpeed * delta;
 			}
 		}
 
@@ -177,7 +183,7 @@ public class Player : Actor
 		if (_coyoteTimer > 0 && _jumpBuffer > 0)
 		{
 			_jumpBuffer = -1;
-			vSpeed = _maxJumpSpeed;
+			vSpeed = _crouching ? _minJumpSpeed : _maxJumpSpeed;
 		}
 
 		if (_cancelJump && vSpeed < _minJumpSpeed)
@@ -189,7 +195,53 @@ public class Player : Actor
 
 	protected override void Render(Batch2D batch)
 	{
-		var squish = Math.Abs(vSpeed) / Time.fixedDelta / fallClamp * 0.5f;
-		batch.Image(_sprite, Color.white);
+		const float centerX = 8;
+		const float centerY = 8;
+
+		const float hopsPerSecond = 10;
+
+		const float stretchFactor = 0.5f;
+		const float vFallingOffset = -4;
+
+		const float normalTiltAngle = 10;
+		const float fallingTiltAngle = -15;
+		const float vTiltOffset = 1;
+
+		const float vCrouchOffset = 4;
+
+		var realVSpeed = vSpeed / Time.fixedDelta;
+		var realHSpeed = hSpeed / Time.fixedDelta;
+
+		var vSpeedScale = realVSpeed / fallClamp;
+		var hSpeedScale = realHSpeed / moveClamp;
+
+		var fallingSpeedScale = Math.Clamp01(vSpeedScale);
+
+		var hopWave = Math.Sin((float)Time.duration.TotalSeconds * Math.pi * hopsPerSecond) / 2 + 1;
+
+		var offset = new Vector2(0, vTiltOffset * Math.Abs(hSpeedScale) + vFallingOffset * fallingSpeedScale);
+
+		// Move the pivot behind when moving and hop
+		var pivot = new Vector2(centerX * hSpeedScale * hopWave, centerY);
+
+		// Stretch the player when falling
+		var stretch = Math.Abs(vSpeedScale) * stretchFactor;
+		var scale = new Vector2(facingRight ? 1 - stretch : -1 + stretch, 1 + stretch);
+
+		var normalTilt = hSpeedScale * normalTiltAngle;
+		var fallingTilt = hSpeedScale * fallingTiltAngle;
+		// Mix between normal tilt and falling tilt based on vertical speed
+		var tilt = Math.Lerp(normalTilt, fallingTilt, fallingSpeedScale);
+
+		if (_crouching)
+		{
+			offset.y += vCrouchOffset;
+			scale.y *= 0.66f;
+			tilt = 0;
+		}
+
+		batch.Draw(_sprite, offset, pivot, scale, Math.Deg2Rad(tilt), Color.white);
+
+		// collider!.Render(batch);
 	}
 }

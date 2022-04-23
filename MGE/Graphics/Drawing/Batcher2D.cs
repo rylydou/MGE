@@ -985,6 +985,49 @@ public class Batch2D
 
 	#region Image
 
+	public void Draw(Texture texture, Vector2 position, Color color, bool washed = false)
+	{
+		SetTexture(texture);
+		var halfWidth = (float)texture.width / 2;
+		var halfHeight = (float)texture.height / 2;
+		Quad(
+			new(position.x - halfWidth, position.y - halfHeight),
+			new(position.x + halfWidth, position.y - halfHeight),
+			new(position.x + halfWidth, position.y + halfHeight),
+			new(position.x - halfWidth, position.y + halfHeight),
+			new(0, 0),
+			new(1, 0),
+			new(1, 1),
+			new(0, 1),
+		color, washed);
+	}
+
+	public void Draw(Texture texture, Vector2 position, Vector2 pivot, Vector2 scale, float rotation, Color color, bool washed = false)
+	{
+		var halfWidth = (float)texture.width / 2;
+		var halfHeight = (float)texture.height / 2;
+
+		SetTexture(texture);
+		Quad(
+			// position + Vector2.Transform(new(-halfWidth, -halfHeight), t),
+			// position + Vector2.Transform(new(+halfWidth, -halfHeight), t),
+			// position + Vector2.Transform(new(+halfWidth, +halfHeight), t),
+			// position + Vector2.Transform(new(-halfWidth, +halfHeight), t),
+			Vector2.RotateAroundPoint(pivot, new Vector2(position.x - halfWidth, position.y - halfHeight) * scale, rotation),
+			Vector2.RotateAroundPoint(pivot, new Vector2(position.x + halfWidth, position.y - halfHeight) * scale, rotation),
+			Vector2.RotateAroundPoint(pivot, new Vector2(position.x + halfWidth, position.y + halfHeight) * scale, rotation),
+			Vector2.RotateAroundPoint(pivot, new Vector2(position.x - halfWidth, position.y + halfHeight) * scale, rotation),
+			new(0, 0),
+			new(1, 0),
+			new(1, 1),
+			new(0, 1),
+		color, washed);
+	}
+
+	#endregion Image
+
+	#region Image
+
 	public void Image(Texture texture,
 		in Vector2 pos0, in Vector2 pos1, in Vector2 pos2, in Vector2 pos3,
 		in Vector2 uv0, in Vector2 uv1, in Vector2 uv2, in Vector2 uv3,
