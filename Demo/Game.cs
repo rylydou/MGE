@@ -11,6 +11,7 @@ public class Game : Module
 	Scene scene = new();
 	Player player1 = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
 	Player player2 = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
+	Player player3 = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
 	Ground ground = new();
 
 	Font _font = App.content.Get<Font>("Fonts/Inter/Regular.ttf");
@@ -23,13 +24,24 @@ public class Game : Module
 		ground.tileSize = unitSize;
 
 		scene.AddChild(ground);
-		scene.AddChild(player1);
+		scene.AddChild(player3);
 		scene.AddChild(player2);
+		scene.AddChild(player1);
+
+		scene.AddChild(App.content.Get<Prefab>("Scene/Items/Shotgun/Item.node").CreateInstance());
+		scene.AddChild(App.content.Get<Prefab>("Scene/Items/Shotgun/Item.node").CreateInstance());
 	}
 
 	protected override void Startup()
 	{
-		player2.isPlayer2 = true;
+		player1.controls.index = 0;
+		player1.sprite = App.content.Get<Texture>("Scene/Player/Chicken.ase");
+
+		player2.controls.index = -1;
+		player2.sprite = App.content.Get<Texture>("Scene/Player/Amogus.ase");
+
+		player3.controls.index = -2;
+		player3.sprite = App.content.Get<Texture>("Scene/Player/Red.ase");
 
 		App.window.onRender += Render;
 
@@ -73,9 +85,8 @@ public class Game : Module
 
 		var str =
 			$"{Time.fps} fps" + '\n' +
-			$"H: {player1.hSpeed / Time.fixedDelta:F0}" + '\n' +
-			$"X: {player1.extraHSpeed / Time.fixedDelta:F0}" + '\n' +
-			$"V: {player1.vSpeed / Time.fixedDelta:F0}";
+		"";
+
 		_font.DrawString(Batch2D.current, str, new(8), Color.white.translucent);
 
 		Batch2D.current.Render(window);

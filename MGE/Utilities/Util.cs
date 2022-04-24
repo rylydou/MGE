@@ -1,6 +1,9 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using MEML;
 
 namespace MGE;
 
@@ -32,5 +35,56 @@ public static class Util
 		return
 			asm.GetType(fullTypeName) ??
 			throw new Exception($"Type '{fullTypeName}' not found in '{assemblyName}'");
+	}
+
+	public static StructureConverter GetStructureConverter()
+	{
+		var _ = new StructureConverter();
+
+		_.RegisterConverter<Vector2>(_ => new StructureArray(_.x, _.y), _ => new Vector2(_[0].Float, _[1].Float));
+		_.RegisterConverter<Vector2Int>(_ => new StructureArray(_.x, _.y), _ => new Vector2Int(_[0].Int, _[1].Int));
+
+		_.RegisterConverter<Vector3>(_ => new StructureArray(_.x, _.y, _.z), _ => new Vector3(_[0].Float, _[1].Float, _[2].Float));
+
+		_.RegisterConverter<Rect>(_ => new StructureArray(_.x, _.y, _.width, _.height), _ => new Rect(_[0].Float, _[1].Float, _[2].Float, _[3].Float));
+		_.RegisterConverter<RectInt>(_ => new StructureArray(_.x, _.y, _.width, _.height), _ => new RectInt(_[0].Int, _[1].Int, _[2].Int, _[3].Int));
+
+		_.RegisterConverter<Color>(_ => "#" + _.ToHexStringRGBA(), _ => Color.FromHexStringRGBA(_.String));
+
+		return _;
+	}
+
+	public static Stream EmbeddedResource(string resourceName)
+	{
+		var assembly = Assembly.GetCallingAssembly() ?? throw new Exception();
+		return EmbeddedResource(assembly, resourceName);
+	}
+
+	public static Stream EmbeddedResource(Assembly assembly, string resourceName)
+	{
+		var fullname = assembly.GetName().Name + "." + resourceName;
+		var path = fullname.Replace('/', '.').Replace('\\', '.');
+
+		var stream = assembly.GetManifestResourceStream(path);
+		if (stream is null)
+			throw new Exception($"Embedded Resource '{resourceName}' doesn't exist");
+
+		return stream;
+	}
+
+	public static string EmbeddedResourceText(string resourceName)
+	{
+		var assembly = Assembly.GetCallingAssembly() ?? throw new Exception();
+
+		using var stream = EmbeddedResource(assembly, resourceName);
+		using var reader = new StreamReader(stream);
+		return reader.ReadToEnd();
+	}
+
+	public static string EmbeddedResourceText(Assembly assembly, string resourceName)
+	{
+		using var stream = EmbeddedResource(assembly, resourceName);
+		using var reader = new StreamReader(stream);
+		return reader.ReadToEnd();
 	}
 }

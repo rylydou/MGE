@@ -123,9 +123,9 @@ public static class App
 		}
 		catch (Exception e)
 		{
-			var path = System.DefaultUserDirectory(name);
-			if (modules.Has<System>())
-				path = modules.Get<System>().UserDirectory(name);
+			var path = Windowing.DefaultUserDirectory(name);
+			if (modules.Has<Windowing>())
+				path = modules.Get<Windowing>().UserDirectory(name);
 
 			Log.Error(e.Message);
 			// TODO  this call was broken with the logging updates!
@@ -178,14 +178,14 @@ public static class App
 			// fixed timestep update
 			{
 				// fixed delta time is always the same
-				var fixedTarget = TimeSpan.FromSeconds(1f / Time.fixedStepTarget);
-				Time.rawDelta = Time.rawFixedDelta = (float)fixedTarget.TotalSeconds;
-				Time.delta = Time.fixedDelta = Time.rawFixedDelta * Time.deltaScale;
+				var fixedTarget = TimeSpan.FromSeconds(1f / Time.tickStepTarget);
+				Time.rawDelta = Time.rawTickDelta = (float)fixedTarget.TotalSeconds;
+				Time.delta = Time.tickDelta = Time.rawTickDelta * Time.deltaScale;
 
 				if (forceFixedTimestep)
 				{
-					Time.rawVariableDelta = Time.rawFixedDelta;
-					Time.variableDelta = Time.fixedDelta;
+					Time.rawVariableDelta = Time.rawTickDelta;
+					Time.variableDelta = Time.tickDelta;
 				}
 
 				// increment time
@@ -207,13 +207,13 @@ public static class App
 				}
 
 				// Do not allow any update to take longer than our maximum.
-				if (fixedAccumulator > Time.fixedMaxElapsedTime)
-					fixedAccumulator = Time.fixedMaxElapsedTime;
+				if (fixedAccumulator > Time.tickMaxElapsedTime)
+					fixedAccumulator = Time.tickMaxElapsedTime;
 
 				// do as many fixed updates as we can
 				while (fixedAccumulator >= fixedTarget)
 				{
-					Time.fixedDuration += fixedTarget;
+					Time.tickDuration += fixedTarget;
 					fixedAccumulator -= fixedTarget;
 
 					if (forceFixedTimestep)
@@ -221,12 +221,12 @@ public static class App
 						Time.duration += fixedTarget;
 
 						windowing.input.Step();
-						modules.Tick(Time.fixedDelta);
+						modules.Tick(Time.tickDelta);
 						modules.Update(Time.delta);
 					}
 					else
 					{
-						modules.Tick(Time.fixedDelta);
+						modules.Tick(Time.tickDelta);
 					}
 
 					if (exiting)

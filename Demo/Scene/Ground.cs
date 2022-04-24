@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using MGE;
 
 namespace Demo;
@@ -7,12 +8,33 @@ public class Ground : Solid
 	public Vector2Int mapSize;
 	public float tileSize;
 
+	public Dictionary<(bool top, bool right, bool bottom, bool left), Vector2Int> lut = new(){
+		{(false, true, true, false), new(0, 0)},
+		{(false, true, true, true), new(1, 0)},
+		{(false, false, true, true), new(2, 0)},
+		{(false, false, true, false), new(3, 0)},
+
+		{(true, true, true, false), new(0, 1)},
+		{(true, true, true, true), new(1, 1)},
+		{(true, false, true, true), new(2, 1)},
+		{(true, false, true, false), new(3, 1)},
+
+		{(true, true, false, false), new(0, 2)},
+		{(true, true, false, true), new(1, 2)},
+		{(true, false, false, true), new(2, 2)},
+		{(true, false, false, false), new(3, 2)},
+
+		{(false, true, false, false), new(0, 3)},
+		{(false, true, false, true), new(1, 3)},
+		{(false, false, false, true), new(2, 3)},
+		{(false, false, false, false), new(3, 3)},
+	};
 	GridCollider2D? tilemap;
 
 	Vector2 lastTileMousePosition;
 
-	Texture _tileSprite = App.content.Get<Texture>("Scene/Ground/Dirt.ase");
-	Font _font = App.content.Get<Font>("Fonts/Inter/Regular.ttf");
+	Texture _tileset = App.content.Get<Texture>("Scene/Ground/Grass.ase");
+	// Texture _tileSprite = App.content.Get<Texture>("Scene/Ground/Dirt.ase");
 
 	Vector2 worldMousePosition;
 	Vector2 tileMousePosition;
@@ -48,25 +70,29 @@ public class Ground : Solid
 
 	protected override void Render(Batch2D batch)
 	{
+		var pos = (Vector2Int)tileMousePosition * tileSize;
+		var guideColor = new Color(255, 255, 255, 25);
+
+		batch.Rect(new(0, pos.y + tileSize / 2, mapSize.x * tileSize, 1), guideColor);
+		batch.Rect(new(pos.x + tileSize / 2, 0, 1, mapSize.y * tileSize), guideColor);
+
 		for (int x = 0; x < mapSize.x; x++)
 		{
 			for (int y = 0; y < mapSize.y; y++)
 			{
 				if (tilemap!.data[x, y])
 				{
-					var r1 = System.HashCode.Combine(x, y) % 4 + 4;
-					var r2 = System.HashCode.Combine(y, x) % 4 + 4;
-					var src = new RectInt(r1, r2, 8, 8);
-					batch.Image(_tileSprite, src, new Vector2(x, y) * tileSize, Color.white);
+					(bool top, bool right, bool bottom, bool left) key = new();
+					key.top = (y == 0) ? true : tilemap.data[x, y - 1];
+					key.right = (x == mapSize.x - 1) ? true : tilemap.data[x + 1, y];
+					key.bottom = (y == mapSize.y - 1) ? true : tilemap.data[x, y + 1];
+					key.left = (x == 0) ? true : tilemap.data[x - 1, y];
+
+					var src = new RectInt(lut[key] * 8, 8, 8);
+					batch.Image(_tileset, src, new Vector2(x, y) * tileSize, Color.white);
 				}
 			}
 		}
-
-		var pos = (Vector2Int)tileMousePosition * tileSize;
-		var guideColor = new Color(255, 255, 255, 25);
-
-		batch.Rect(new(0, pos.y + tileSize / 2, mapSize.x * tileSize, 1), guideColor);
-		batch.Rect(new(pos.x + tileSize / 2, 0, 1, mapSize.y * tileSize), guideColor);
 
 		batch.HollowRect(new(pos, tileSize), 1, Color.green.translucent);
 	}

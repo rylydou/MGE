@@ -1002,7 +1002,7 @@ public class Batch2D
 		color, washed);
 	}
 
-	public void Draw(Texture texture, Vector2 position, Vector2 pivot, Vector2 scale, float rotation, Color color, bool washed = false)
+	public void Draw(Texture texture, Vector2 position, Vector2 pivot, float rotation, Vector2 scale, Color color, bool washed = false)
 	{
 		var halfWidth = (float)texture.width / 2;
 		var halfHeight = (float)texture.height / 2;

@@ -9,22 +9,12 @@ namespace MGE;
 
 public struct File : IEquatable<File>
 {
-	static StructureConverter converter = new()
-	{
-		memberFinder = (type) => type.GetMembers(StructureConverter.suggestedBindingFlags).Where(m => m.GetCustomAttribute<SaveAttribute>() is not null)
-	};
+	static StructureConverter _converter;
 
 	static File()
 	{
-		converter.RegisterConverter<Vector2>(_ => new StructureArray(_.x, _.y), _ => new Vector2(_[0].Float, _[1].Float));
-		converter.RegisterConverter<Vector2Int>(_ => new StructureArray(_.x, _.y), _ => new Vector2Int(_[0].Int, _[1].Int));
-
-		converter.RegisterConverter<Vector3>(_ => new StructureArray(_.x, _.y, _.z), _ => new Vector3(_[0].Float, _[1].Float, _[2].Float));
-
-		converter.RegisterConverter<Rect>(_ => new StructureArray(_.x, _.y, _.width, _.height), _ => new Rect(_[0].Float, _[1].Float, _[2].Float, _[3].Float));
-		converter.RegisterConverter<RectInt>(_ => new StructureArray(_.x, _.y, _.width, _.height), _ => new RectInt(_[0].Int, _[1].Int, _[2].Int, _[3].Int));
-
-		converter.RegisterConverter<Color>(_ => "#" + _.ToHexStringRGBA(), _ => Color.FromHexStringRGBA(_.String));
+		_converter = Util.GetStructureConverter();
+		_converter.memberFinder = (type) => type.GetMembers(StructureConverter.suggestedBindingFlags).Where(m => m.GetCustomAttribute<SaveAttribute>() is not null);
 	}
 
 	public static File Create(string path)
@@ -72,7 +62,7 @@ public struct File : IEquatable<File>
 		var value = ReadMeml(type);
 		return (T)(value ?? throw new NotImplementedException());
 	}
-	public object? ReadMeml(Type? impliedType = null) => converter.CreateObjectFromStructure(new MemlTextReader(OpenReadText()).ReadObject(), impliedType);
+	public object? ReadMeml(Type? impliedType = null) => _converter.CreateObjectFromStructure(new MemlTextReader(OpenReadText()).ReadObject(), impliedType);
 
 	public StructureValue ReadMemlStructure()
 	{
@@ -83,7 +73,7 @@ public struct File : IEquatable<File>
 	public void WriteLines(string[] lines) => FileIO.WriteAllLines(path, lines);
 	public void WriteBytes(byte[] bytes) => FileIO.WriteAllBytes(path, bytes);
 
-	public void WriteMeml(object? obj, Type? impliedType = null) => new MemlTextWriter(OpenWrite()).Write(converter.CreateStructureFromObject(obj, impliedType));
+	public void WriteMeml(object? obj, Type? impliedType = null) => new MemlTextWriter(OpenWrite()).Write(_converter.CreateStructureFromObject(obj, impliedType));
 
 	public void AppendText(string? text) => FileIO.AppendAllText(path, text);
 	public void AppendLines(string[] lines) => FileIO.AppendAllLines(path, lines);

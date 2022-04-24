@@ -1,0 +1,10 @@
+!Demo: 'Demo.Items.Shotgun'
+name: 'Shotgun'
+
+_children: [
+	{
+		!MGE: 'MGE.Node2D'
+		name: 'Shoot point'
+		position: [ 8.0 0.0 ]
+	}
+]

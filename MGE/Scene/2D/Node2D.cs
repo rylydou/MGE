@@ -28,7 +28,14 @@ public class Node2D : CanvasItem
 	}
 	public override Transform2D GetTransform()
 	{
-		if (_localInvalid) _transform = Transform2D.CreateMatrix(_position, Vector2.zero, _scale, _rotation);
+		if (_localInvalid)
+		{
+			// _transform = Transform2D.identity;
+			// _transform.origin = _position;
+			// _transform.rotation = _rotation;
+			// _transform.scale = _scale;
+			_transform = Transform2D.CreateMatrix(Vector2.zero, -_position, _scale, _rotation);
+		}
 		return _transform;
 	}
 

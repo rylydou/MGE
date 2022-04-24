@@ -128,7 +128,7 @@ public class MemlTextReader : IDataReader, IDisposable
 					_builder.Clear();
 					_builder.Append(next);
 
-					while (PeekChar(out next) && !("\r\n,:{}[]#").Contains(next))
+					while (PeekChar(out next) && !("\r\n\t ,:{}[]#").Contains(next))
 					{
 						_builder.Append(next);
 						SkipChar();

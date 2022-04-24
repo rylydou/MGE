@@ -27,6 +27,14 @@ internal class GLFW_Input : Input
 
 	internal void Init()
 	{
+		GLFW.UpdateGamepadMappings(Util.EmbeddedResourceText("gamecontrollerdb.csv"));
+		var userGameControllerDB = Folder.data.GetFile("gamecontrollerdb.csv");
+		if (userGameControllerDB.exists)
+		{
+			GLFW.UpdateGamepadMappings(userGameControllerDB.ReadText());
+			Log.Info("Loaded user game controller database");
+		}
+
 		// find the already-connected joysticks
 		for (int jid = 0; jid <= (int)GLFW_Enum.JOYSTICK_LAST; jid++)
 		{

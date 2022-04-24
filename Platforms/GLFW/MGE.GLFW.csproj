@@ -17,6 +17,10 @@
 		<ProjectReference Include="../../MGE/MGE.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<EmbeddedResource Include="../../Thirdparty/SDL_GameControllerDB/gamecontrollerdb.txt" Link="gamecontrollerdb.csv" />
+	</ItemGroup>
+
 	<PropertyGroup Condition="($([MSBuild]::IsOsPlatform(Windows)) and '$(RuntimeIdentifier)'=='') or '$(RuntimeIdentifier)'=='win-x64'">
 		<TargetOS>win</TargetOS>
 	</PropertyGroup>

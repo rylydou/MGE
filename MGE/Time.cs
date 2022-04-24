@@ -11,12 +11,12 @@ public static class Time
 	/// <summary>
 	/// The Target Framerate of a Fixed Timestep update
 	/// </summary>
-	public static int fixedStepTarget = 60;
+	public static int tickStepTarget = 60;
 
 	/// <summary>
 	/// The Maximum elapsed time a fixed update can take before skipping update calls
 	/// </summary>
-	public static TimeSpan fixedMaxElapsedTime = TimeSpan.FromMilliseconds(500);
+	public static TimeSpan tickMaxElapsedTime = TimeSpan.FromMilliseconds(500);
 
 	/// <summary>
 	/// The time since the start of the Application
@@ -26,7 +26,7 @@ public static class Time
 	/// <summary>
 	/// The total fixed-update duration since the start of the Application
 	/// </summary>
-	public static TimeSpan fixedDuration { get; internal set; }
+	public static TimeSpan tickDuration { get; internal set; }
 
 	/// <summary>
 	/// Multiplies the Delta Time per frame by the scale value
@@ -48,12 +48,12 @@ public static class Time
 	/// <summary>
 	/// The last Fixed Delta Time.
 	/// </summary>
-	public static float fixedDelta { get; internal set; }
+	public static float tickDelta { get; internal set; }
 
 	/// <summary>
 	/// The last Fixed Delta Time, not scaled by DeltaScale
 	/// </summary>
-	public static float rawFixedDelta { get; internal set; }
+	public static float rawTickDelta { get; internal set; }
 
 	/// <summary>
 	/// The last Variable Delta Time.

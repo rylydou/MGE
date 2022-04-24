@@ -150,6 +150,11 @@ public struct Color : IEquatable<Color>
 		return new(r, g, b, alpha);
 	}
 
+	public Color WithAlpha(int alpha)
+	{
+		return new(r, g, b, alpha);
+	}
+
 	/// <summary>
 	/// Converts the Color to a Vector4
 	/// </summary>

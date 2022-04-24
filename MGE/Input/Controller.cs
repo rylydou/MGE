@@ -128,8 +128,8 @@ public class Controller
 	public Vector2 Axis(int axisX, int axisY) => new Vector2(Axis(axisX), Axis(axisY));
 	public Vector2 Axis(Axes axisX, Axes axisY) => new Vector2(Axis(axisX), Axis(axisY));
 
-	public Vector2 LeftStick => Axis(MGE.Axes.LeftX, MGE.Axes.LeftY);
-	public Vector2 RightStick => Axis(MGE.Axes.RightX, MGE.Axes.RightY);
+	public Vector2 leftStick => Axis(Axes.LeftX, Axes.LeftY);
+	public Vector2 rightStick => Axis(Axes.RightX, Axes.RightY);
 
 	public bool Repeated(Buttons button)
 	{

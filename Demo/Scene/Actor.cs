@@ -6,9 +6,14 @@ namespace Demo;
 
 public class Actor : Body2D
 {
+	protected bool hitTop;
+	protected bool hitBottom;
+	protected bool hitLeft;
+	protected bool hitRight;
+
 	Vector2 movementCounter;
 	public Vector2 positionRemainder => movementCounter;
-	public Vector2 exactPosition => globalPosition + movementCounter;
+	public Vector2 exactPosition => position + movementCounter;
 
 	public void ZeroRemainderX() => this.movementCounter.x = 0.0f;
 	public void ZeroRemainderY() => this.movementCounter.y = 0.0f;
@@ -23,6 +28,14 @@ public class Actor : Body2D
 		base.RegisterCallbacks();
 
 		onSquish += OnSquish;
+	}
+
+	protected override void Tick(float delta)
+	{
+		hitTop = CollideCheck<Ground>(position + Vector2.up);
+		hitBottom = CollideCheck<Ground>(position + Vector2.down);
+		hitLeft = CollideCheck<Ground>(position + Vector2.left);
+		hitRight = CollideCheck<Ground>(position + Vector2.right);
 	}
 
 	public Action<CollisionInfo> onSquish = info => { };
@@ -49,9 +62,9 @@ public class Actor : Body2D
 						for (int j = 1; j >= -1; j -= 2)
 						{
 							var vec = new Vector2(x * i, y * j);
-							if (!CollideCheck<Solid>(globalPosition + vec))
+							if (!CollideCheck<Solid>(position + vec))
 							{
-								globalPosition = globalPosition + vec;
+								position = position + vec;
 								if (info.pusher is not null)
 									info.pusher.collidable = false;
 								return true;
@@ -75,7 +88,7 @@ public class Actor : Body2D
 							var vec = new Vector2(x * i, y * j);
 							if (!CollideCheck<Solid>(info.targetPosition + vec))
 							{
-								globalPosition = info.targetPosition + vec;
+								position = info.targetPosition + vec;
 								if (info.pusher is not null)
 									info.pusher.collidable = false;
 								return true;
@@ -92,22 +105,22 @@ public class Actor : Body2D
 		return false;
 	}
 
-	public virtual bool IsRiding(Semisolid semisolid) => !ignoreJumpThrus && CollideCheckOutside(semisolid, globalPosition + Vector2.down);
-	public virtual bool IsRiding(Solid solid) => CollideCheck(solid, globalPosition + Vector2.down);
+	public virtual bool IsRiding(Semisolid semisolid) => !ignoreJumpThrus && CollideCheckOutside(semisolid, position + Vector2.down);
+	public virtual bool IsRiding(Solid solid) => CollideCheck(solid, position + Vector2.down);
 
 	public bool OnGround(int downCheck = 1)
 	{
-		if (CollideCheck<Solid>(globalPosition + Vector2.down * downCheck))
+		if (CollideCheck<Solid>(position + Vector2.down * downCheck))
 			return true;
-		return !ignoreJumpThrus && CollideCheckOutside<Semisolid>(globalPosition + Vector2.down * downCheck);
+		return !ignoreJumpThrus && CollideCheckOutside<Semisolid>(position + Vector2.down * downCheck);
 	}
 
 	public bool OnGround(Vector2 at, int downCheck = 1)
 	{
-		Vector2 position = globalPosition;
-		globalPosition = at;
+		Vector2 lastPosition = position;
+		position = at;
 		var hit = OnGround(downCheck);
-		globalPosition = position;
+		position = lastPosition;
 		return hit;
 	}
 
@@ -133,13 +146,14 @@ public class Actor : Body2D
 
 	public CollisionInfo? MoveHExact(int moveH, Solid? pusher = null)
 	{
-		var target = globalPosition + Vector2.right * moveH;
+		var target = position + Vector2.right * moveH;
 		var dir = Math.Sign(moveH);
 		var move = 0;
 
 		while (moveH != 0)
 		{
-			var solid = CollideFirst<Solid>(globalPosition + Vector2.right * dir);
+			var step = position + Vector2.right * dir;
+			var solid = CollideFirst<Solid>(step);
 
 			if (solid is not null)
 			{
@@ -158,7 +172,7 @@ public class Actor : Body2D
 			move += dir;
 			moveH -= dir;
 
-			globalPosition = new(globalPosition.x + dir, globalPosition.y);
+			position = step;
 		}
 
 		return null;
@@ -166,13 +180,14 @@ public class Actor : Body2D
 
 	public CollisionInfo? MoveVExact(int moveV, Solid? pusher = null)
 	{
-		var target = globalPosition + Vector2.down * (float)moveV;
+		var target = position + Vector2.down * (float)moveV;
 		var dir = Math.Sign(moveV);
 		var move = 0;
 
 		while (moveV != 0)
 		{
-			var solid = CollideFirst<Solid>(globalPosition + Vector2.down * dir);
+			var step = position + Vector2.down * dir;
+			var solid = CollideFirst<Solid>(step);
 			if (solid is not null)
 			{
 				movementCounter.y = 0.0f;
@@ -189,7 +204,7 @@ public class Actor : Body2D
 
 			if (moveV > 0 && !ignoreJumpThrus)
 			{
-				var semisolid = this.CollideFirstOutside<Semisolid>(globalPosition + Vector2.down * dir);
+				var semisolid = this.CollideFirstOutside<Semisolid>(step);
 
 				if (semisolid is not null)
 				{
@@ -209,7 +224,7 @@ public class Actor : Body2D
 			move += dir;
 			moveV -= dir;
 
-			globalPosition = new(globalPosition.x, globalPosition.y + dir);
+			position = step;
 		}
 
 		return null;
@@ -226,7 +241,7 @@ public class Actor : Body2D
 		movementCounter += amount;
 		var x = Math.RoundToInt(this.movementCounter.x);
 		var y = Math.RoundToInt(this.movementCounter.y);
-		globalPosition = globalPosition + new Vector2(x, y);
+		position = position + new Vector2(x, y);
 		movementCounter -= new Vector2(x, y);
 	}
 }

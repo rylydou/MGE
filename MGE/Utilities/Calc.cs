@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace MGE;
@@ -645,44 +644,6 @@ public static class Calc
 
 	#endregion
 
-	#region Embedded Resources
-
-	public static Stream EmbeddedResource(string resourceName)
-	{
-		var assembly = Assembly.GetCallingAssembly() ?? throw new Exception();
-		return EmbeddedResource(assembly, resourceName);
-	}
-
-	public static Stream EmbeddedResource(Assembly assembly, string resourceName)
-	{
-		var fullname = assembly.GetName().Name + "." + resourceName;
-		var path = fullname.Replace('/', '.').Replace('\\', '.');
-
-		var stream = assembly.GetManifestResourceStream(path);
-		if (stream is null)
-			throw new Exception($"Embedded Resource '{resourceName}' doesn't exist");
-
-		return stream;
-	}
-
-	public static string EmbeddedResourceText(string resourceName)
-	{
-		var assembly = Assembly.GetCallingAssembly() ?? throw new Exception();
-
-		using var stream = EmbeddedResource(assembly, resourceName);
-		using var reader = new StreamReader(stream);
-		return reader.ReadToEnd();
-	}
-
-	public static string EmbeddedResourceText(Assembly assembly, string resourceName)
-	{
-		using var stream = EmbeddedResource(assembly, resourceName);
-		using var reader = new StreamReader(stream);
-		return reader.ReadToEnd();
-	}
-
-	#endregion Utils
-
 	public static Vector2 ClosestPointOnLine(Vector2 lineA, Vector2 lineB, Vector2 closestTo)
 	{
 		var v = lineB - lineA;
@@ -708,22 +669,4 @@ public static class Calc
 			yield return t;
 		}
 	}
-
-	// public static List<Vector2Int> GetTilesOnLine(Vector2 start, Vector2 end)
-	// {
-	// 	var points = new List<Vector2Int>();
-
-	// 	Vector2 t = start;
-	// 	var frac = 1 / Math.Sqrt(Math.Pow(end.x - start.x, 2) + Math.Pow(end.y - start.y, 2));
-	// 	var ctr = 0.0f;
-
-	// 	while ((int)t.x != (int)end.x || (int)t.y != (int)end.y)
-	// 	{
-	// 		t = Vector2.Lerp(start, end, ctr);
-	// 		ctr += frac;
-	// 		points.Add(t);
-	// 	}
-
-	// 	return points;
-	// }
 }

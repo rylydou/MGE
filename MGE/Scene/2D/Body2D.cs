@@ -12,6 +12,8 @@ public abstract class Body2D : Node2D
 
 	public void SetCollider(Collider2D? collider)
 	{
+		if (this.collider == collider) return;
+
 		if (collider is not null)
 		{
 			if (collider.node is not null)
@@ -36,8 +38,8 @@ public abstract class Body2D : Node2D
 	public bool CollideCheck(Layer layer) => Physics.Check(this, scene!.bodies.WhereInLayer(layer));
 	public bool CollideCheck(Layer layer, Vector2 at) => Physics.Check(this, scene!.bodies.WhereInLayer(layer), at);
 
-	public bool CollideCheck<T>() where T : Body2D => Physics.Check(this, scene!.bodies.Where(body => body is T));
-	public bool CollideCheck<T>(Vector2 at) where T : Body2D => Physics.Check(this, scene!.bodies.Where(body => body is T), at);
+	public bool CollideCheck<T>() where T : Body2D => Physics.Check(this, scene!.bodies.Where(b => b is T));
+	public bool CollideCheck<T>(Vector2 at) where T : Body2D => Physics.Check(this, scene!.bodies.Where(b => b is T), at);
 
 	public bool CollideCheckOutside(Body2D other, Vector2 at) => !Physics.Check(this, other) && Physics.Check(this, other, at);
 	public bool CollideCheckOutside(Layer layer, Vector2 at)
@@ -69,8 +71,8 @@ public abstract class Body2D : Node2D
 	public Body2D? CollideFirst(Layer layer) => Physics.First(this, scene!.bodies.WhereInLayer(layer));
 	public Body2D? CollideFirst(Layer layer, Vector2 at) => Physics.First(this, scene!.bodies.WhereInLayer(layer), at);
 
-	public T? CollideFirst<T>() where T : Body2D => Physics.First(this, scene!.bodies.Where(body => body is T)) as T;
-	public T? CollideFirst<T>(Vector2 at) where T : Body2D => Physics.First(this, scene!.bodies.Where(body => body is T), at) as T;
+	public T? CollideFirst<T>() where T : Body2D => Physics.First(this, scene!.bodies.Where(b => b is T)) as T;
+	public T? CollideFirst<T>(Vector2 at) where T : Body2D => Physics.First(this, scene!.bodies.Where(b => b is T), at) as T;
 
 	public Body2D? CollideFirstOutside(Vector2 at)
 	{
@@ -104,11 +106,11 @@ public abstract class Body2D : Node2D
 
 	#region All
 
-	public IEnumerable<Body2D> CollideAll(Layer layer) => scene!.bodies.WhereInLayer(layer).Where(body => CollideCheck(body));
-	public IEnumerable<Body2D> CollideAll(Layer layer, Vector2 at) => scene!.bodies.WhereInLayer(layer).Where(body => CollideCheck(body, at));
+	public IEnumerable<Body2D> CollideAll(Layer layer) => scene!.bodies.WhereInLayer(layer).Where(b => CollideCheck(b));
+	public IEnumerable<Body2D> CollideAll(Layer layer, Vector2 at) => scene!.bodies.WhereInLayer(layer).Where(b => CollideCheck(b, at));
 
-	public IEnumerable<T> CollideAll<T>() where T : Body2D => (IEnumerable<T>)scene!.bodies.Where(body => body is T && CollideCheck(body));
-	public IEnumerable<T> CollideAll<T>(Vector2 at) where T : Body2D => (IEnumerable<T>)scene!.bodies.Where(body => body is T && CollideCheck(body, at));
+	public IEnumerable<T> CollideAll<T>() where T : Body2D => scene!.bodies.Where(b => b is T && CollideCheck(b)).Select(b => (T)b);
+	public IEnumerable<T> CollideAll<T>(Vector2 at) where T : Body2D => scene!.bodies.Where(b => b is T && CollideCheck(b, at)).Select(b => (T)b);
 
 	#endregion All
 
@@ -126,57 +128,6 @@ public abstract class Body2D : Node2D
 	#endregion Shapes
 
 	#region Utilities
-
-	// protected bool TrySquishWiggle(CollisionData info, int wiggleX = 3, int wiggleY = 3)
-	// {
-	// 	info.Pusher.Collidable = true;
-	// 	for (int index1 = 0; index1 <= wiggleX; ++index1)
-	// 	{
-	// 		for (int index2 = 0; index2 <= wiggleY; ++index2)
-	// 		{
-	// 			if (index1 != 0 || index2 != 0)
-	// 			{
-	// 				for (int index3 = 1; index3 >= -1; index3 -= 2)
-	// 				{
-	// 					for (int index4 = 1; index4 >= -1; index4 -= 2)
-	// 					{
-	// 						Vector2 vector2 = new Vector2((float)(index1 * index3), (float)(index2 * index4));
-	// 						if (!this.CollideCheck<Solid>(this.position + vector2))
-	// 						{
-	// 							this.position = this.position + vector2;
-	// 							info.Pusher.Collidable = false;
-	// 							return true;
-	// 						}
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// 	for (int index1 = 0; index1 <= wiggleX; ++index1)
-	// 	{
-	// 		for (int index2 = 0; index2 <= wiggleY; ++index2)
-	// 		{
-	// 			if (index1 != 0 || index2 != 0)
-	// 			{
-	// 				for (int index3 = 1; index3 >= -1; index3 -= 2)
-	// 				{
-	// 					for (int index4 = 1; index4 >= -1; index4 -= 2)
-	// 					{
-	// 						Vector2 vector2 = new Vector2((float)(index1 * index3), (float)(index2 * index4));
-	// 						if (!this.CollideCheck<Solid>(info.TargetPosition + vector2))
-	// 						{
-	// 							this.position = info.TargetPosition + vector2;
-	// 							info.Pusher.Collidable = false;
-	// 							return true;
-	// 						}
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// 	info.Pusher.Collidable = false;
-	// 	return false;
-	// }
 
 	public Body2D? Closest(Layer layer)
 	{

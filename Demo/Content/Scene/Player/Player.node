@@ -1,4 +1,8 @@
 !Demo: 'Demo.Player'
+name: 'Player'
+
+maxHealth: 100
+
 fallSpeed: 16.0
 fallClamp: 384.0
 
@@ -9,12 +13,19 @@ deAccelerationAir: 16.0
 moveClamp: 196.0
 
 deAccelerationEx: 16.0
-deAccelerationExAir: 12.0
+deAccelerationExAir: 8.0
 
-minJumpHeight: 24.0
+minJumpHeight: 16.0
 maxJumpHeight: 40.0
+bonkSpeed: 64.0
 
 jumpBufferLength: 0.1
 coyoteTime: 0.1
 
-bonkSpeed: 64.0
+_children: [
+	{
+		!MGE: 'MGE.Node2D'
+		name: 'Hold point'
+		position: [ 8.0 0.0 ]
+	}
+]

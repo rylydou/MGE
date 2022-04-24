@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace MGE;
 
@@ -14,11 +15,11 @@ public abstract class Node
 		RegisterCallbacks();
 	}
 
-	[HiddenProp] List<Node> _children = new();
+	[HiddenProp] public List<Node> _children = new();
 
 	public Node? parent { get; private set; }
 
-	public Scene? scene { get; internal set; }
+	public Scene? scene => this is Scene meAsScene ? meAsScene : parent?.scene;
 	public bool isInScene
 	{
 		[MemberNotNullWhen(true, nameof(scene))]
@@ -29,7 +30,17 @@ public abstract class Node
 
 	#region Node Querying
 
-	public IEnumerable<T> GetChildren<T>()
+	public T? GetChild<T>() where T : Node
+	{
+		return _children.FirstOrDefault(c => c is T) as T;
+	}
+
+	public T? GetChild<T>(string name) where T : Node
+	{
+		return GetChildren<T>().FirstOrDefault(c => name.Equals(c.name, StringComparison.OrdinalIgnoreCase));
+	}
+
+	public IEnumerable<T> GetChildren<T>() where T : Node
 	{
 		foreach (var child in _children)
 		{
@@ -40,7 +51,7 @@ public abstract class Node
 		}
 	}
 
-	public IEnumerable<T> GetChildrenRecursive<T>()
+	public IEnumerable<T> GetChildrenRecursive<T>() where T : Node
 	{
 		foreach (var child in _children)
 		{
@@ -58,7 +69,7 @@ public abstract class Node
 		}
 	}
 
-	public IEnumerable<T> GetChildrenRecursiveDeep<T>()
+	public IEnumerable<T> GetChildrenRecursiveDeep<T>() where T : Node
 	{
 		foreach (var child in _children)
 		{
@@ -86,9 +97,6 @@ public abstract class Node
 		_children.Add(node);
 		if (isInScene)
 		{
-			node.scene = scene;
-			onChildAdded(node);
-			onChildAddedDeep(node);
 			node.onEnterScene();
 		}
 	}
@@ -98,15 +106,12 @@ public abstract class Node
 		if (node.parent is null) throw new Exception("Remove child", "Node is not a child of anything");
 		if (node.parent != this) throw new Exception("Remove child", "Parent doesn't own the child");
 
-		node.parent = null;
 		_children.Remove(node);
 		if (isInScene)
 		{
 			node.onExitScene();
-			onChildRemoved(node);
-			onChildRemovedDeep(node);
-			node.scene = null;
 		}
+		node.parent = null;
 	}
 
 	public void RemoveSelf()
@@ -119,35 +124,92 @@ public abstract class Node
 
 	#region Events
 
+	void SetParents()
+	{
+		foreach (var child in _children)
+		{
+			if (child.parent is not null) continue;
+
+			child.parent = this;
+			child.SetParents();
+		}
+	}
+
 	protected virtual void RegisterCallbacks()
 	{
+		SetParents();
+
+		onReady += () =>
+		{
+			Ready();
+			GetChildren<Node>().ToArray().ForEach(child => child.onReady());
+		};
+
 		onEnterScene += () =>
 		{
-			if (_initialized) return;
-			onReady();
+			foreach (var child in _children)
+			{
+				child.parent = this;
+			}
+
+			if (!_initialized)
+			{
+				_initialized = true;
+
+				onReady();
+			}
+
+			parent!.onChildAdded(this);
+			OnEnterScene();
+			GetChildren<Node>().ToArray().ForEach(child => child.onEnterScene());
 		};
-		onEnterScene += OnEnterScene;
-		onEnterScene += () => _children.ForEach(child => child.onEnterScene());
 
-		onExitScene += OnExitScene;
-		onExitScene += () => _children.ForEach(child => child.onExitScene());
+		onExitScene += () =>
+		{
+			parent!.onChildRemoved(this);
+			OnExitScene();
+			GetChildren<Node>().ToArray().ForEach(child =>
+				{
+					child.onExitScene();
+					child.parent = null;
+				});
+		};
 
-		onChildAdded += OnChildAdded;
-		onChildRemoved += OnChildRemoved;
+		onChildAdded += node =>
+		{
+			OnChildAdded(node);
+			onChildAddedDeep(node);
+		};
 
-		onChildAddedDeep += OnChildAddedDeep;
-		onChildAddedDeep += node => parent?.onChildAddedDeep(node);
+		onChildRemoved += node =>
+		{
+			OnChildRemoved(node);
+			onChildRemovedDeep(node);
+		};
 
-		onChildRemovedDeep += OnChildRemovedDeep;
-		onChildRemovedDeep += node => parent?.onChildRemovedDeep(node);
+		onChildAddedDeep += node =>
+		{
+			OnChildAddedDeep(node);
+			parent?.onChildAddedDeep(node);
+		};
 
-		onReady += Ready;
+		onChildRemovedDeep += node =>
+		{
+			OnChildRemovedDeep(node);
+			parent?.onChildRemovedDeep(node);
+		};
 
-		onTick += Tick;
-		onTick += (delta) => GetChildren<Node>().ForEach(c => c.onTick(delta));
+		onTick += delta =>
+		{
+			Tick(delta);
+			GetChildren<Node>().ToArray().ForEach(c => c.onTick(delta));
+		};
 
-		onUpdate += Update;
-		onUpdate += (delta) => GetChildren<Node>().ForEach(c => c.onUpdate(delta));
+		onUpdate += delta =>
+		{
+			Update(delta);
+			GetChildren<Node>().ToArray().ForEach(c => c.onUpdate(delta));
+		};
 	}
 
 	public Action onEnterScene = () => { };

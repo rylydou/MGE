@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace MGE;
 
@@ -10,7 +11,11 @@ public abstract class CanvasItem : Node
 	public abstract Transform2D GetTransform();
 
 	bool _globalInvalid;
-	public void GlobalInvalid() => _globalInvalid = true;
+	public void GlobalInvalid()
+	{
+		_globalInvalid = true;
+		GetChildren<CanvasItem>().ForEach(ci => ci.GlobalInvalid());
+	}
 
 	Transform2D _globalTransform = Transform2D.identity;
 	public virtual Transform2D GetGlobalTransform()
@@ -32,6 +37,8 @@ public abstract class CanvasItem : Node
 		return _globalTransform;
 	}
 
+	public Vector2 right => Vector2.TransformNormal(Vector2.right, GetGlobalTransform());
+
 	public bool TryGetParentItem([MaybeNullWhen(false)] out CanvasItem pi)
 	{
 		if (parent is CanvasItem canvasItem)
@@ -50,16 +57,21 @@ public abstract class CanvasItem : Node
 		onExitScene += () => _globalInvalid = true;
 
 		onTransformChanged += OnTransformChanged;
-
-		onUpdate += (delta) =>
+		onUpdate = delta =>
 		{
-			if (!visible) return;
+			Update(delta);
 
-			var batch = Batch2D.current;
-			batch.PushMatrix(GetTransform());
-			onDraw(batch);
-			batch.PopMatrix();
+			if (visible)
+			{
+				var batch = Batch2D.current;
+				batch.PushMatrix(GetGlobalTransform(), false);
+				onDraw(batch);
+				batch.PopMatrix();
+			}
+
+			GetChildren<Node>().ToArray().ForEach(c => c.onUpdate(delta));
 		};
+
 		onDraw += Render;
 	}
 

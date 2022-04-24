@@ -6,12 +6,15 @@ namespace MGE;
 
 public class Prefab
 {
-	static StructureConverter _converter = new()
+	static StructureConverter _converter;
+
+	static Prefab()
 	{
-		memberFinder = (type) =>
+		_converter = Util.GetStructureConverter();
+		_converter.memberFinder = (type) =>
 			type.GetMembers(StructureConverter.suggestedBindingFlags)
-			.Where(m => m.GetCustomAttribute<PropAttribute>() is not null || m.GetCustomAttribute<HiddenPropAttribute>() is not null)
-	};
+			.Where(m => m.GetCustomAttribute<PropAttribute>() is not null || m.GetCustomAttribute<HiddenPropAttribute>() is not null);
+	}
 
 	StructureValue _prefab;
 
@@ -20,9 +23,9 @@ public class Prefab
 		_prefab = prefab;
 	}
 
-	public object CreateInstance()
+	public Node CreateInstance()
 	{
-		return _converter.CreateObjectFromStructure(_prefab) ?? throw new Exception("Create instance of prefab", "Prefab data is null");
+		return _converter.CreateObjectFromStructure<Node>(_prefab) ?? throw new Exception("Create instance of prefab", "Prefab data is null");
 	}
 
 	public T CreateInstance<T>()
