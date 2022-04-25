@@ -28,6 +28,8 @@ public class Actor : Body2D
 	public bool ignoreJumpThrus;
 	public bool allowPushing = true;
 
+	public float timeSinceLastDamage = float.PositiveInfinity;
+
 	protected override void Ready()
 	{
 		base.Ready();
@@ -48,6 +50,8 @@ public class Actor : Body2D
 		hitBottom = CollideCheck<Ground>(position + Vector2.down);
 		hitLeft = CollideCheck<Ground>(position + Vector2.left);
 		hitRight = CollideCheck<Ground>(position + Vector2.right);
+
+		timeSinceLastDamage += delta;
 	}
 
 	public void Damage(int damage, Vector2 knockback, bool addToVertical = false)
@@ -58,7 +62,10 @@ public class Actor : Body2D
 		if (health <= 0)
 		{
 			OnDeath();
+			return;
 		}
+
+		timeSinceLastDamage = 0;
 	}
 
 	public void ApplyImpulseForce(Vector2 force, bool addVertical = false)

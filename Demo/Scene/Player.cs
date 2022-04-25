@@ -33,6 +33,7 @@ public class Player : Actor
 	[Prop] public float pickupRange;
 
 	public Texture sprite = App.content.Get<Texture>("Scene/Player/Red.ase");
+	Texture inputErrorSprite = App.content.Get<Texture>("Input Error.ase");
 
 	Node2D? holdPoint;
 
@@ -137,6 +138,8 @@ public class Player : Actor
 		vSpeed = fallClamp * Time.tickDelta;
 
 		health = maxHealth;
+
+		timeSinceLastDamage = float.PositiveInfinity;
 	}
 
 	void Pickup(Item item)
@@ -329,17 +332,19 @@ public class Player : Actor
 
 		var color = Color.white;
 		var washed = false;
-		if (controls.isPresent)
+
+		if (timeSinceLastDamage < 0.1f)
 		{
-			if (controls.hasError)
-			{
-				color = Color.red;
-				washed = true;
-			}
+			color = RNG.shared.RandomBool() ? Color.white : Color.red;
+			washed = true;
 		}
-		else color = Color.gray.translucent;
 
 		batch.Draw(sprite, offset, pivot, Math.Deg2Rad(tilt), scale, color, washed);
+
+		if (!controls.isPresent || controls.hasError)
+		{
+			batch.Draw(inputErrorSprite, new(0, -24), new(0, -24), Time.SineWave(-Math.pi / 6, Math.pi / 8, 1f, 0f), Vector2.one, Color.white);
+		}
 
 		var holdOffset = new Vector2(8, isCrouching ? 2 : 0);
 

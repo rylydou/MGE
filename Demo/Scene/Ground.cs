@@ -34,7 +34,6 @@ public class Ground : Solid
 	Vector2 lastTileMousePosition;
 
 	Texture _tileset = App.content.Get<Texture>("Scene/Ground/Grass.ase");
-	// Texture _tileSprite = App.content.Get<Texture>("Scene/Ground/Dirt.ase");
 
 	Vector2 worldMousePosition;
 	Vector2 tileMousePosition;
@@ -43,6 +42,7 @@ public class Ground : Solid
 	{
 		tilemap = new GridCollider2D(mapSize, tileSize);
 		collider = tilemap;
+		tilemap.SetRect(24, mapSize.y - 16 - 4, mapSize.x - 48, 4, true);
 	}
 
 	protected override void Update(float delta)
