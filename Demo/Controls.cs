@@ -117,6 +117,7 @@ public class Controls
 
 		const float moveThreshold = 0.15f;
 		const float crouchThreshold = 0.15f;
+		const float triggerTreshold = 0.15f;
 
 		isPresent = controller.connected;
 		hasError = !controller.isGamepad;
@@ -129,8 +130,10 @@ public class Controls
 			: 0.0f;
 		if (controller.Pressed(Buttons.A)) jump = true;
 		if (controller.Released(Buttons.A)) jumpCancel = true;
-		crouch = controller.leftStick.y > crouchThreshold;
+		crouch = controller.leftStick.y > crouchThreshold || controller.Axis(Axes.LeftTrigger) > triggerTreshold;
 		if (controller.Pressed(Buttons.X)) action = true;
+		// Don't make this spam the button
+		// if (controller.Axis(Axes.RightTrigger) > triggerTreshold) action = true;
 
 		// Menu
 		navigateUp = controller.Repeated(Buttons.Up);

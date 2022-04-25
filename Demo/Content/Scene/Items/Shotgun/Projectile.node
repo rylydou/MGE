@@ -1,9 +1,0 @@
-!Demo: 'Demo.Projectile'
-name: 'Bullet'
-
-speed: 640.0
-deAcceleration: 800.0
-lifetime: 0.5
-
-damage: 20
-knockback: 96.0

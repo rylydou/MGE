@@ -42,7 +42,7 @@ public class Ground : Solid
 	protected override void Ready()
 	{
 		tilemap = new GridCollider2D(mapSize, tileSize);
-		SetCollider(tilemap);
+		collider = tilemap;
 	}
 
 	protected override void Update(float delta)

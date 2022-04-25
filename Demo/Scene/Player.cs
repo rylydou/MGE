@@ -6,8 +6,6 @@ namespace Demo;
 
 public class Player : Actor
 {
-	[Prop] public int maxHealth;
-
 	[Prop] public float fallSpeed;
 	[Prop] public float fallClamp;
 
@@ -16,6 +14,7 @@ public class Player : Actor
 	[Prop] public float accelerationAir;
 	[Prop] public float deAccelerationAir;
 	[Prop] public float moveClamp;
+	[Prop] public float crouchSpeedMult;
 
 	[Prop] public float deAccelerationEx;
 	[Prop] public float deAccelerationExAir;
@@ -40,24 +39,22 @@ public class Player : Actor
 	public Controls controls = new Controls(-1);
 	public Item? heldItem;
 
-	public int health;
+	public float hMoveSpeed;
 
-	public float vSpeed;
-	public float hSpeed;
-	public float extraHSpeed;
-
-	public bool crouching = false;
+	public bool isCrouching = false;
 
 	HitboxCollider2D _normalHitbox = new HitboxCollider2D(new(12, 12), new(-6, -6));
 	HitboxCollider2D _crouchingHitbox = new HitboxCollider2D(new(12, 6), new(-6, 0));
 
 	protected override void Ready()
 	{
+		base.Ready();
+
 		holdPoint = GetChild<Node2D>("Hold point");
 
 		// if (holdPoint!.parent != this) throw new System.Exception("Hold point's parent is not me, it is " + holdPoint!.parent!.name);
 
-		SetCollider(_normalHitbox);
+		collider = _normalHitbox;
 		collider!.CenterOrigin();
 
 		Respawn();
@@ -122,9 +119,24 @@ public class Player : Actor
 		CalcJump(delta);
 
 		var hitV = MoveV(vSpeed);
-		var hitX = MoveH(hSpeed + extraHSpeed);
+		var hitX = MoveH(hMoveSpeed + hSpeed);
 
-		if (position.y > Game.screenSize.y + 16) Respawn();
+		if (position.y > Game.screenSize.y + 16) OnDeath();
+	}
+
+	protected override void OnDeath()
+	{
+		Respawn();
+	}
+
+	void Respawn()
+	{
+		position = new(Game.screenSize.x / 2, 0);
+		hMoveSpeed = 0;
+		hSpeed = 0;
+		vSpeed = fallClamp * Time.tickDelta;
+
+		health = maxHealth;
 	}
 
 	void Pickup(Item item)
@@ -149,59 +161,36 @@ public class Player : Actor
 		heldItem = null;
 	}
 
-	void Respawn()
-	{
-		position = new(Game.screenSize.x / 2, 0);
-		hSpeed = 0;
-		extraHSpeed = 0;
-		vSpeed = fallClamp * Time.tickDelta;
-
-		health = maxHealth;
-	}
-
-	public void ApplyImpulseForce(Vector2 force, bool addToVertical = false)
-	{
-		extraHSpeed += force.x * Time.tickDelta;
-		if (addToVertical)
-			vSpeed += force.y * Time.tickDelta;
-		else
-			vSpeed = force.y * Time.tickDelta;
-	}
-
-	public void Damage(int damage, Vector2 knockback, bool addToVertical = false)
-	{
-		health -= damage;
-		ApplyImpulseForce(knockback, addToVertical);
-
-		if (health <= 0) Respawn();
-	}
-
 	#region Movement
 
 	void CalcCrouch(float delta)
 	{
-		if (crouching == controls.crouch) return;
+		if (isCrouching == controls.crouch) return;
 
 		if (controls.crouch)
 		{
 			// No need to check when crouching
-			crouching = true;
-			SetCollider(_crouchingHitbox);
+			isCrouching = true;
+			collider = _crouchingHitbox;
 		}
 		else
 		{
+
 			// Check if can standup
-			crouching = false;
-			SetCollider(_normalHitbox);
+			isCrouching = false;
+			collider = _normalHitbox;
+
 			var isBlocked = CollideCheck<Ground>();
 
 			// If you can't then crouch again
 			if (isBlocked)
 			{
-				crouching = true;
-				SetCollider(_crouchingHitbox);
+				isCrouching = true;
+				collider = _crouchingHitbox;
 			}
 		}
+
+		holdPoint!.position = new(8, isCrouching ? 2 : 0);
 	}
 
 	void CalcWalk(float delta)
@@ -209,24 +198,29 @@ public class Player : Actor
 		if (controls.move != 0)
 		{
 			// Set horizontal move speed
-			hSpeed += controls.move * (hitBottom ? acceleration : accelerationAir) * delta;
+			hMoveSpeed += controls.move * (hitBottom ? acceleration : accelerationAir) * delta;
 
 			// clamped by max frame movement
-			hSpeed = Math.Clamp(hSpeed, -moveClamp * delta, moveClamp * delta) * (crouching ? 0.66f : 1f);
+			hMoveSpeed = Math.Clamp(hMoveSpeed, -moveClamp * delta, moveClamp * delta);
+
+			if (isCrouching)
+			{
+				hMoveSpeed *= crouchSpeedMult;
+			}
 		}
 		else
 		{
 			// No input. Let's slow the character down
-			hSpeed = Math.MoveTowards(hSpeed, 0, (hitBottom ? deAcceleration : deAccelerationAir) * delta);
+			hMoveSpeed = Math.MoveTowards(hMoveSpeed, 0, (hitBottom ? deAcceleration : deAccelerationAir) * delta);
 		}
 
-		extraHSpeed = Math.MoveTowards(extraHSpeed, 0, (hitBottom ? deAccelerationEx : deAccelerationExAir) * delta);
+		hSpeed = Math.MoveTowards(hSpeed, 0, (hitBottom ? deAccelerationEx : deAccelerationExAir) * delta);
 
-		if (hSpeed > 0 && hitRight || hSpeed < 0 && hitLeft)
+		if (hMoveSpeed > 0 && hitRight || hMoveSpeed < 0 && hitLeft)
 		{
 			// Don't walk through walls
+			hMoveSpeed = 0;
 			hSpeed = 0;
-			extraHSpeed = 0;
 		}
 	}
 
@@ -274,7 +268,7 @@ public class Player : Actor
 		if (_coyoteTimer > 0 && _jumpBuffer > 0)
 		{
 			_jumpBuffer = -1;
-			vSpeed = crouching ? _minJumpSpeed : _maxJumpSpeed;
+			vSpeed = isCrouching ? _minJumpSpeed : _maxJumpSpeed;
 		}
 
 		if (controls.jumpCancel && vSpeed < _minJumpSpeed)
@@ -303,7 +297,7 @@ public class Player : Actor
 		const float vCrouchOffset = 4;
 
 		var realVSpeed = vSpeed / Time.tickDelta;
-		var realHSpeed = hSpeed / Time.tickDelta;
+		var realHSpeed = hMoveSpeed / Time.tickDelta;
 
 		var vSpeedScale = realVSpeed / fallClamp;
 		var hSpeedScale = Math.Abs(realHSpeed / moveClamp);
@@ -326,10 +320,10 @@ public class Player : Actor
 		// Mix between normal tilt and falling tilt based on vertical speed
 		var tilt = Math.Lerp(normalTilt, fallingTilt, fallingSpeedScale);
 
-		if (crouching)
+		if (isCrouching)
 		{
 			offset.y += vCrouchOffset;
-			scale.y *= 0.66f;
+			scale.y *= 0.67f;
 			// tilt = 0;
 		}
 
@@ -347,7 +341,7 @@ public class Player : Actor
 
 		batch.Draw(sprite, offset, pivot, Math.Deg2Rad(tilt), scale, color, washed);
 
-		var holdOffset = new Vector2(8, crouching ? 2 : 0);
+		var holdOffset = new Vector2(8, isCrouching ? 2 : 0);
 
 		const float barWidth = 20;
 		batch.Rect(new(-barWidth / 2, -18, barWidth, 2), Color.black.translucent);

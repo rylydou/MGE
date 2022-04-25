@@ -122,6 +122,16 @@ public abstract class Node
 
 	#endregion Node Management
 
+	#region Utilities
+
+	public T CreateNewInstance<T>() where T : Node
+	{
+		var structure = Prefab.converter.CreateStructureFromObject(this, typeof(T));
+		return Prefab.converter.CreateObjectFromStructure<T>(structure);
+	}
+
+	#endregion Utilities
+
 	#region Events
 
 	void SetParents()

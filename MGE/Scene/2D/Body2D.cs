@@ -8,26 +8,31 @@ public abstract class Body2D : Node2D
 	[Prop] public bool collidable = true;
 	[Prop] public Layer layer = new Layer(1);
 
-	[Prop] public Collider2D? collider { get; private set; }
 
-	public void SetCollider(Collider2D? collider)
+	Collider2D? _collider;
+	[Prop]
+	public Collider2D? collider
 	{
-		if (this.collider == collider) return;
-
-		if (collider is not null)
+		get => _collider;
+		set
 		{
-			if (collider.node is not null)
-				throw new Exception("Set collider", "Collider already has an owner");
+			if (_collider == value) return;
 
-			collider.node = this;
+			if (value is not null)
+			{
+				if (value.node is not null)
+					throw new Exception("Set collider", "Collider already has an owner");
+
+				value.node = this;
+			}
+
+			if (_collider is not null)
+			{
+				_collider.node = null;
+			}
+
+			_collider = value;
 		}
-
-		if (this.collider is not null)
-		{
-			this.collider.node = null;
-		}
-
-		this.collider = collider;
 	}
 
 	#region Check

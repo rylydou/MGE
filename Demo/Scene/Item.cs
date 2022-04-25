@@ -20,14 +20,11 @@ public abstract class Item : Actor
 
 	public Texture? sprite;
 
-	public float hSpeed;
-	public float vSpeed;
-
 	protected override void Ready()
 	{
 		base.Ready();
 
-		SetCollider(new HitboxCollider2D(new(10, 10), new(-5, -5)));
+		collider = new HitboxCollider2D(new(10, 10), new(-5, -5));
 
 		globalPosition = new(320, -320);
 	}
@@ -55,6 +52,7 @@ public abstract class Item : Actor
 	public void Pickup(Player player)
 	{
 		holder = player;
+		collidable = false;
 	}
 
 	protected virtual void OnPickup()
@@ -66,12 +64,12 @@ public abstract class Item : Actor
 	public void Drop()
 	{
 		holder = null;
+		collidable = true;
 	}
 
 	protected virtual void OnDrop()
 	{
-		vSpeed = -96 * Time.tickDelta;
-		hSpeed = 96 * Time.tickDelta * globalScale.x;
+		ApplyImpulseForce(new Vector2(96 * globalScale.y, -96));
 	}
 
 	protected virtual void Held_Tick(float delta) { }

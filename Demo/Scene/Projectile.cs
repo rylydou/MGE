@@ -16,13 +16,13 @@ public class Projectile : Body2D
 
 	public Texture sprite = App.content.Get<Texture>("Scene/Projectile/Sprite.ase");
 
-	public List<Player> hitPlayers = new();
+	public List<Actor> hitActors = new();
 
 	protected override void Ready()
 	{
 		base.Ready();
 
-		SetCollider(new HitboxCollider2D(new(8), new(-4)));
+		collider = new HitboxCollider2D(new(8), new(-4));
 	}
 
 	protected override void Tick(float delta)
@@ -55,7 +55,7 @@ public class Projectile : Body2D
 		speed = Math.MoveTowards(speed, 0, deAcceleration * delta);
 	}
 
-	public CollisionInfo? MoveH(float h, Func<Player, bool> onHit)
+	public CollisionInfo? MoveH(float h, Func<Actor, bool> onHit)
 	{
 		var moveH = (int)System.Math.Round(h, MidpointRounding.ToEven);
 
@@ -67,13 +67,13 @@ public class Projectile : Body2D
 		{
 			var step = position + right * dir;
 
-			foreach (var player in CollideAll<Player>(step))
+			foreach (var actor in CollideAll<Actor>(step))
 			{
-				if (hitPlayers.Contains(player)) continue;
+				if (hitActors.Contains(actor)) continue;
 
-				var shouldContinue = onHit(player);
+				var shouldContinue = onHit(actor);
 				if (!shouldContinue) return null;
-				hitPlayers.Add(player);
+				hitActors.Add(actor);
 			}
 
 			var solid = CollideFirst<Solid>(step);

@@ -6,6 +6,12 @@ namespace Demo;
 
 public class Actor : Body2D
 {
+	[Prop] public int maxHealth = 100;
+	public int health;
+
+	public float hSpeed;
+	public float vSpeed;
+
 	protected bool hitTop;
 	protected bool hitBottom;
 	protected bool hitLeft;
@@ -21,7 +27,13 @@ public class Actor : Body2D
 	public bool treatNaive;
 	public bool ignoreJumpThrus;
 	public bool allowPushing = true;
-	public float liftSpeedGraceTime = 0.16f;
+
+	protected override void Ready()
+	{
+		base.Ready();
+
+		health = maxHealth;
+	}
 
 	protected override void RegisterCallbacks()
 	{
@@ -37,6 +49,33 @@ public class Actor : Body2D
 		hitLeft = CollideCheck<Ground>(position + Vector2.left);
 		hitRight = CollideCheck<Ground>(position + Vector2.right);
 	}
+
+	public void Damage(int damage, Vector2 knockback, bool addToVertical = false)
+	{
+		health -= damage;
+		ApplyImpulseForce(knockback, addToVertical);
+
+		if (health <= 0)
+		{
+			OnDeath();
+		}
+	}
+
+	public void ApplyImpulseForce(Vector2 force, bool addVertical = false)
+	{
+		hSpeed += force.x * Time.tickDelta;
+		if (addVertical)
+			vSpeed += force.y * Time.tickDelta;
+		else
+			vSpeed = force.y * Time.tickDelta;
+	}
+
+	protected virtual void OnDeath()
+	{
+		RemoveSelf();
+	}
+
+	#region Movement
 
 	public Action<CollisionInfo> onSquish = info => { };
 	public virtual void OnSquish(CollisionInfo info)
@@ -244,4 +283,6 @@ public class Actor : Body2D
 		position = position + new Vector2(x, y);
 		movementCounter -= new Vector2(x, y);
 	}
+
+	#endregion Movement
 }

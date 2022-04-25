@@ -1,8 +1,6 @@
 !Demo: 'Demo.Player'
 name: 'Player'
 
-maxHealth: 100
-
 fallSpeed: 16.0
 fallClamp: 384.0
 
@@ -11,6 +9,7 @@ deAcceleration: 48.0
 accelerationAir: 32.0
 deAccelerationAir: 16.0
 moveClamp: 196.0
+crouchSpeedMult: 0.67
 
 deAccelerationEx: 16.0
 deAccelerationExAir: 8.0

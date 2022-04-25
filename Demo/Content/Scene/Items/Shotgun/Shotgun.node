@@ -1,0 +1,28 @@
+!Demo: 'Demo.Items.Shotgun'
+name: 'Shotgun'
+
+spread: 7.5
+minSpeedVariation: 0.67
+maxSpeedVariation: 1.0
+numberOfBullets: 3
+recoilForce: 196.0
+
+projectile: {
+	!Demo: 'Demo.Projectile'
+	name: 'Bullet'
+
+	speed: 640.0
+	deAcceleration: 800.0
+	lifetime: 0.5
+
+	damage: 20
+	knockback: 96.0
+}
+
+_children: [
+	{
+		!MGE: 'MGE.Node2D'
+		name: 'Shoot point'
+		position: [ 8.0 0.0 ]
+	}
+]

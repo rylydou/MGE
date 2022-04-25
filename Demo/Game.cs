@@ -28,8 +28,8 @@ public class Game : Module
 		scene.AddChild(player2);
 		scene.AddChild(player1);
 
-		scene.AddChild(App.content.Get<Prefab>("Scene/Items/Shotgun/Item.node").CreateInstance());
-		scene.AddChild(App.content.Get<Prefab>("Scene/Items/Shotgun/Item.node").CreateInstance());
+		scene.AddChild(App.content.Get<Prefab>("Scene/Items/Shotgun/Shotgun.node").CreateInstance());
+		scene.AddChild(App.content.Get<Prefab>("Scene/Items/Shotgun/Shotgun.node").CreateInstance());
 	}
 
 	protected override void Startup()

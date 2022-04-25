@@ -4,7 +4,13 @@ namespace Demo.Items;
 
 public class Shotgun : Item
 {
-	Prefab projectile = App.content.Get<Prefab>("Scene/Items/Shotgun/Projectile.node");
+	[Prop] public float spread;
+	[Prop] public float minSpeedVariation;
+	[Prop] public float maxSpeedVariation;
+	[Prop] public float numberOfBullets;
+	[Prop] public float recoilForce;
+
+	[Prop] public Projectile? projectile;
 
 	Node2D? shootPoint;
 
@@ -21,18 +27,19 @@ public class Shotgun : Item
 		base.Use();
 
 		if (holder.OnGround())
-			holder.ApplyImpulseForce(right * -196);
+			holder.ApplyImpulseForce(right * -recoilForce);
 		else
-			holder.ApplyImpulseForce(new Vector2(-196 * right.x, -196));
+			holder.ApplyImpulseForce(new Vector2(-recoilForce * right.x, -recoilForce));
 
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < numberOfBullets; i++)
 		{
-			var proj = projectile.CreateInstance<Projectile>();
-			proj.speed *= RNG.shared.RandomFloat(0.75f, 1f);
-			proj.hitPlayers.Add(holder);
+			var proj = projectile!.CreateNewInstance<Projectile>();
 			scene!.AddChild(proj);
+
 			proj.transform = shootPoint!.GetGlobalTransform();
-			proj.rotation = Math.Deg2Rad(RNG.shared.RandomFloat(-5, 5));
+			proj.rotation = Math.Deg2Rad(RNG.shared.RandomFloat(-spread / 2, spread / 2));
+			proj.speed *= RNG.shared.RandomFloat(minSpeedVariation, maxSpeedVariation);
+			proj.hitActors.Add(holder);
 		}
 	}
 }
