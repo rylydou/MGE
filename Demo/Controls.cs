@@ -100,6 +100,8 @@ public class Controls
 		if (kb.Released(Keys.Up)) jumpCancel = true;
 		crouch = kb.Down(Keys.Down);
 		if (kb.Pressed(Keys.RightControl)) action = true;
+		if (kb.Pressed(Keys.RightShift)) action = true;
+		if (kb.Pressed(Keys.RightAlt)) action = true;
 
 		// Menu
 		navigateUp = kb.Repeated(Keys.Up);
@@ -128,10 +130,10 @@ public class Controls
 		move = Math.Abs(controller.leftStick.x) > moveThreshold
 			? Math.Sign(controller.leftStick.x)
 			: 0.0f;
-		if (controller.Pressed(Buttons.A)) jump = true;
-		if (controller.Released(Buttons.A)) jumpCancel = true;
+		if (controller.Pressed(Buttons.B)) jump = true;
+		if (controller.Released(Buttons.B)) jumpCancel = true;
 		crouch = controller.leftStick.y > crouchThreshold || controller.Axis(Axes.LeftTrigger) > triggerTreshold;
-		if (controller.Pressed(Buttons.X)) action = true;
+		if (controller.Pressed(Buttons.Y)) action = true;
 		// Don't make this spam the button
 		// if (controller.Axis(Axes.RightTrigger) > triggerTreshold) action = true;
 

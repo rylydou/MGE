@@ -89,6 +89,20 @@ public class Game : Module
 
 		_font.DrawString(Batch2D.current, str, new(8), Color.white.translucent);
 
+		/*
+		var controller = App.input.controllers[0];
+		var smallSize = 128 * 0.15f;
+
+		Batch2D.current.HollowRect(new(64, 64, 128, 128), 1, Color.white);
+		Batch2D.current.HollowRect(new(128 - smallSize / 2, 128 - smallSize / 2, smallSize, smallSize), 1, Color.red);
+
+		Batch2D.current.Line(new(128), new Vector2(128) + controller.leftStick * 64, 2, Color.red);
+		Batch2D.current.Circle(new Vector2(128) + controller.leftStick * 64, 4, 4, Color.red);
+
+		Batch2D.current.Line(new(128), new Vector2(128) + controller.rightStick * 64, 2, Color.green);
+		Batch2D.current.Circle(new Vector2(128) + controller.rightStick * 64, 4, 4, Color.green);
+		 */
+
 		Batch2D.current.Render(window);
 	}
 }
