@@ -1,5 +1,7 @@
-!Demo: 'Demo.Items.Shotgun'
+!Demo: 'Demo.Items.Gun'
 name: 'Shotgun'
+
+useCooldown: 0.5
 
 spread: 7.5
 minSpeedVariation: 0.67
@@ -15,8 +17,10 @@ projectile: {
 	deAcceleration: 800.0
 	lifetime: 0.5
 
-	damage: 20
-	knockback: 96.0
+	damage: {
+		damage: 20
+		knockback: 96.0
+	}
 }
 
 _children: [

@@ -1,6 +1,16 @@
 !Demo: 'Demo.Player'
 name: 'Player'
 
+# General
+punchDamage: {
+	damage: 10
+	knockback: 64.0
+}
+punchCooldown: 0.2
+
+useBufferLength: 0.1
+
+# Movement
 fallSpeed: 16.0
 fallClamp: 384.0
 
@@ -24,7 +34,30 @@ coyoteTime: 0.1
 _children: [
 	{
 		!MGE: 'MGE.Node2D'
-		name: 'Hold point'
+		name: 'Holder'
+
 		position: [ 8.0 0.0 ]
+	}
+	{
+		!MGE: 'MGE.Area2D'
+		name: 'Pickup area'
+
+		collider: {
+			!MGE: 'MGE.HitboxCollider2D'
+			_size: [ 48.0 48.0 ]
+			position: [ -24.0 -24.0 ]
+		}
+	}
+	{
+		!MGE: 'MGE.Area2D'
+		name: 'Punch area'
+
+		position: [ 16.0 0.0 ]
+
+		collider: {
+			!MGE: 'MGE.HitboxCollider2D'
+			_size: [ 16.0 16.0 ]
+			position: [ -8.0 -8.0 ]
+		}
 	}
 ]

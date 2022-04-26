@@ -54,10 +54,10 @@ public class Actor : Body2D
 		timeSinceLastDamage += delta;
 	}
 
-	public void Damage(int damage, Vector2 knockback, bool addToVertical = false)
+	public void Damage(int damage, Vector2 knockback)
 	{
 		health -= damage;
-		ApplyImpulseForce(knockback, addToVertical);
+		ApplyImpulseForce(knockback);
 
 		if (health <= 0)
 		{
@@ -68,13 +68,10 @@ public class Actor : Body2D
 		timeSinceLastDamage = 0;
 	}
 
-	public void ApplyImpulseForce(Vector2 force, bool addVertical = false)
+	public void ApplyImpulseForce(Vector2 force)
 	{
 		hSpeed += force.x * Time.tickDelta;
-		if (addVertical)
-			vSpeed += force.y * Time.tickDelta;
-		else
-			vSpeed = force.y * Time.tickDelta;
+		vSpeed = force.y * Time.tickDelta;
 	}
 
 	protected virtual void OnDeath()

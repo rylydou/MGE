@@ -5,11 +5,15 @@ namespace Demo;
 
 public abstract class Item : Actor
 {
+	[Prop] public float useCooldown = 0.5f;
+
 	[Prop] public float fallSpeed = 16;
 	[Prop] public float fallClamp = 384;
 
-	[Prop] public float deAcceration = 4;
-	[Prop] public float deAccerationAir = 2;
+	[Prop] public float deAcceration = 16;
+	[Prop] public float deAccerationAir = 8;
+
+	public float useCooldownTimmer;
 
 	public Player? holder { get; private set; }
 	public bool isHeld
@@ -29,9 +33,11 @@ public abstract class Item : Actor
 		globalPosition = new(320, -320);
 	}
 
-	protected override void Tick(float delta)
+	protected sealed override void Tick(float delta)
 	{
 		base.Tick(delta);
+
+		useCooldownTimmer -= delta;
 
 		if (isHeld)
 		{
@@ -43,11 +49,17 @@ public abstract class Item : Actor
 		}
 	}
 
-	[MemberNotNull(nameof(holder))]
-	public virtual void Use()
+	public bool Use()
 	{
-		if (holder is null) throw new Exception("Use item", "Holder is null, how did this even happen?");
+		if (useCooldownTimmer > 0) return false;
+		useCooldownTimmer = useCooldown;
+
+		OnUse();
+
+		return true;
 	}
+
+	protected virtual void OnUse() { }
 
 	public void Pickup(Player player)
 	{
@@ -117,7 +129,7 @@ public abstract class Item : Actor
 	{
 		if (sprite is not null)
 		{
-			batch.Draw(sprite, Vector2.zero, Color.white);
+			batch.Draw(sprite, Vector2.zero, Color.LerpClamped(Color.white, Color.black, useCooldownTimmer / useCooldown));
 		}
 	}
 }

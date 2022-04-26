@@ -6,6 +6,13 @@ namespace Demo;
 
 public class Player : Actor
 {
+	[Prop] public float useBufferLength;
+	float _useBuffer;
+
+	[Prop] public Damage punchDamage;
+	[Prop] public float punchCooldown;
+	float _punchCooldownTimmer;
+
 	[Prop] public float fallSpeed;
 	[Prop] public float fallClamp;
 
@@ -30,12 +37,12 @@ public class Player : Actor
 	[Prop] public float coyoteTime;
 	float _coyoteTimer;
 
-	[Prop] public float pickupRange;
-
 	public Texture sprite = App.content.Get<Texture>("Scene/Player/Red.ase");
 	Texture inputErrorSprite = App.content.Get<Texture>("Input Error.ase");
 
 	Node2D? holdPoint;
+	Area2D? pickupArea;
+	Area2D? punchArea;
 
 	public Controls controls = new Controls(-1);
 	public Item? heldItem;
@@ -51,9 +58,9 @@ public class Player : Actor
 	{
 		base.Ready();
 
-		holdPoint = GetChild<Node2D>("Hold point");
-
-		// if (holdPoint!.parent != this) throw new System.Exception("Hold point's parent is not me, it is " + holdPoint!.parent!.name);
+		holdPoint = GetChild<Node2D>("Holder");
+		pickupArea = GetChild<Area2D>("Pickup area");
+		punchArea = GetChild<Area2D>("Punch area");
 
 		collider = _normalHitbox;
 		collider!.CenterOrigin();
@@ -76,10 +83,14 @@ public class Player : Actor
 	{
 		base.Tick(delta);
 
+		_punchCooldownTimmer -= delta;
+
+		_useBuffer -= delta;
 		if (controls.action)
 		{
 			if (controls.crouch)
 			{
+				_useBuffer = -1;
 				// Pickup/Drop item
 				if (heldItem is not null)
 				{
@@ -89,7 +100,7 @@ public class Player : Actor
 				else
 				{
 					// Pickup item from ground
-					var item = CollideFirst<Item>();
+					var item = pickupArea!.CollideFirst<Item>();
 					if (item is not null)
 					{
 						Pickup(item);
@@ -98,18 +109,40 @@ public class Player : Actor
 			}
 			else
 			{
-				if (heldItem is not null)
-				{
-					// Use item
-					heldItem.Use();
-				}
-				else
-				{
-					// TODO  Punch
-				}
+				// Use/Punch
+				_useBuffer = useBufferLength;
 			}
 		}
 		controls.action = false;
+
+		if (_useBuffer > 0)
+		{
+			if (heldItem is not null)
+			{
+				// Use item
+				var usedItem = heldItem.Use();
+
+				// If used item then reset the use buffer
+				if (usedItem)
+				{
+					_useBuffer = -1;
+				}
+			}
+			else
+			{
+				// Can punch?
+				if (_punchCooldownTimmer < 0)
+				{
+					_punchCooldownTimmer = punchCooldown;
+					_useBuffer = -1;
+
+					foreach (var actor in punchArea!.CollideAll<Actor>())
+					{
+						punchDamage.DamageActor(actor, right);
+					}
+				}
+			}
+		}
 
 		_coyoteTimer -= delta;
 		if (hitBottom) _coyoteTimer = coyoteTime;

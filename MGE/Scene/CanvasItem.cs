@@ -37,7 +37,9 @@ public abstract class CanvasItem : Node
 		return _globalTransform;
 	}
 
+	public Vector2 up => Vector2.TransformNormal(Vector2.up, GetGlobalTransform());
 	public Vector2 right => Vector2.TransformNormal(Vector2.right, GetGlobalTransform());
+	public Vector2 one => Vector2.TransformNormal(Vector2.one, GetGlobalTransform());
 
 	public bool TryGetParentItem([MaybeNullWhen(false)] out CanvasItem pi)
 	{

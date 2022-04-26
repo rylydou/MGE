@@ -11,8 +11,7 @@ public class Projectile : Body2D
 	[Prop] public float lifetime;
 	[Prop] public float deAcceleration;
 
-	[Prop] public int damage;
-	[Prop] public float knockback;
+	[Prop] public Damage damage;
 
 	public Texture sprite = App.content.Get<Texture>("Scene/Projectile/Sprite.ase");
 
@@ -23,21 +22,25 @@ public class Projectile : Body2D
 		base.Ready();
 
 		collider = new HitboxCollider2D(new(8), new(-4));
+
+		Log.Info(transform.rotation.ToString());
+		Log.Info(transform.scale.ToString());
+		Log.Info(right.ToString());
 	}
 
 	protected override void Tick(float delta)
 	{
 		base.Tick(delta);
 
-		var hitPlayer = false;
-		var hitH = MoveH(speed * delta * scale.y, player =>
+		var hitActor = false;
+		var hitH = MoveF(speed * delta * scale.y, actor =>
 		{
-			hitPlayer = true;
-			player.Damage(damage, Vector2.right * knockback * scale.y);
+			hitActor = true;
+			damage.DamageActor(actor, scale);
 			RemoveSelf();
 			return false;
 		});
-		if (hitPlayer) return;
+		if (hitActor) return;
 
 		if (hitH.HasValue)
 		{
@@ -55,7 +58,7 @@ public class Projectile : Body2D
 		speed = Math.MoveTowards(speed, 0, deAcceleration * delta);
 	}
 
-	public CollisionInfo? MoveH(float h, Func<Actor, bool> onHit)
+	public CollisionInfo? MoveF(float h, Func<Actor, bool> onHit)
 	{
 		var moveH = (int)System.Math.Round(h, MidpointRounding.ToEven);
 

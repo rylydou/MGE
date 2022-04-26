@@ -204,7 +204,7 @@ public class StructureConverter
 			if (impliedType is null)
 				throw new Exception("Meml object doesn't define its type");
 
-			var obj = Activator.CreateInstance(impliedType);
+			var obj = Activator.CreateInstance(impliedType, true);
 			foreach (var item in value.pairs)
 			{
 				if (item.Key[0] == '!') continue;
@@ -236,7 +236,7 @@ public class StructureConverter
 				return value.values.Select(item => CreateObjectFromStructure(item, collectionType)).ToArray();
 			}
 
-			var list = (IList)Activator.CreateInstance(impliedType)!;
+			var list = (IList)Activator.CreateInstance(impliedType, true)!;
 
 			foreach (var item in value.values)
 			{

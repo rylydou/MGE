@@ -4,6 +4,8 @@ public class CircleCollider2D : Collider2D
 {
 	[Prop] public float radius;
 
+	private CircleCollider2D() : base(null) { }
+
 	public CircleCollider2D(float radius, Vector2? position = null) : base(position)
 	{
 		this.radius = radius;

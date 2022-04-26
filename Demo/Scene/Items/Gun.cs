@@ -2,7 +2,7 @@ using MGE;
 
 namespace Demo.Items;
 
-public class Shotgun : Item
+public class Gun : Item
 {
 	[Prop] public float spread;
 	[Prop] public float minSpeedVariation;
@@ -22,24 +22,22 @@ public class Shotgun : Item
 		sprite = App.content.Get<Texture>("Scene/Items/Shotgun/Sprite.ase");
 	}
 
-	public override void Use()
+	protected override void OnUse()
 	{
-		base.Use();
-
-		if (holder.OnGround())
+		if (holder!.OnGround())
 			holder.ApplyImpulseForce(right * -recoilForce);
 		else
-			holder.ApplyImpulseForce(new Vector2(-recoilForce * right.x, -recoilForce));
+			holder.ApplyImpulseForce(one * -recoilForce);
 
 		for (int i = 0; i < numberOfBullets; i++)
 		{
 			var proj = projectile!.CreateNewInstance<Projectile>();
-			scene!.AddChild(proj);
-
 			proj.transform = shootPoint!.GetGlobalTransform();
 			proj.rotation = Math.Deg2Rad(RNG.shared.RandomFloat(-spread / 2, spread / 2));
 			proj.speed *= RNG.shared.RandomFloat(minSpeedVariation, maxSpeedVariation);
 			proj.hitActors.Add(holder);
+
+			scene!.AddChild(proj);
 		}
 	}
 }

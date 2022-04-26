@@ -138,7 +138,6 @@ public struct Vector2 : IEquatable<Vector2>
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-
 	public static Vector2 TransformNormal(Vector2 position, Matrix4x4 matrix) => new(
 		position.x * matrix.M11 + position.y * matrix.M21,
 		position.x * matrix.M12 + position.y * matrix.M22

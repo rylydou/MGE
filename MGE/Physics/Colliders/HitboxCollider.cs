@@ -15,6 +15,8 @@ public class HitboxCollider2D : Collider2D
 	public override float right { get => position.x + width; set => position.x = value - width; }
 	public override float bottom { get => position.y + height; set => position.y = value - height; }
 
+	private HitboxCollider2D() : base(null) { }
+
 	public HitboxCollider2D(Vector2 size, Vector2? position = null) : base(position)
 	{
 		_size = size;

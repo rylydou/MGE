@@ -13,13 +13,13 @@ public class Scene : Node
 
 	protected override void OnChildAddedDeep(Node node)
 	{
-		if (node is Body2D body)
+		if (node is Body2D body && node is not Area2D)
 			bodies.Add(body);
 	}
 
 	protected override void OnChildRemovedDeep(Node node)
 	{
-		if (node is Body2D body)
+		if (node is Body2D body && node is not Area2D)
 			bodies.Remove(body);
 	}
 }
