@@ -4,6 +4,22 @@ namespace Demo;
 
 public class Game : Module
 {
+#nullable disable
+	public static Game instance;
+#nullable restore
+
+	public PlayerData?[] players = new PlayerData[4];
+
+	public Controls[] controls = new Controls[]
+	{
+		new Controls(-2),
+		new Controls(-1),
+		new Controls(0),
+		new Controls(1),
+		new Controls(2),
+		new Controls(3),
+	};
+
 	public static readonly Vector2Int screenSize = new(320 * 2, 180 * 2);
 	public static readonly float unitSize = 8;
 	public static readonly Vector2Int screenUnitSize = new(Mathf.CeilToInt(screenSize.x / unitSize), Mathf.CeilToInt(screenSize.y / unitSize));
@@ -20,6 +36,8 @@ public class Game : Module
 
 	public Game()
 	{
+		instance = this;
+
 		ground.mapSize = screenUnitSize;
 		ground.tileSize = unitSize;
 

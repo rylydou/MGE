@@ -57,7 +57,7 @@ public class EditorModule : Module
 		batch.Clear();
 
 		// Draw UI
-		_canvas.Draw(batch);
+		_canvas.RenderCanvas(batch);
 
 		// Clear the Window
 		App.graphics.Clear(window, new Color(22, 22, 22, 255));

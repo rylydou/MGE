@@ -4,6 +4,8 @@ namespace Demo;
 
 public class Controls
 {
+	public PlayerData? player;
+
 	public int index;
 	public string name = "Unknown";
 
@@ -15,6 +17,7 @@ public class Controls
 	public bool isArrowKeys => index == -2;
 
 	// General
+	public bool anyButton;
 	public bool pause;
 
 	// Gameplay
