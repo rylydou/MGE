@@ -30,7 +30,7 @@ public struct Vector2 : IEquatable<Vector2>
 	#region Interpolation
 
 	public static Vector2 Lerp(Vector2 current, Vector2 target, float time) => current + (target - current) * time;
-	public static Vector2 LerpClamped(Vector2 current, Vector2 target, float time) => current + (target - current) * Math.Clamp01(time);
+	public static Vector2 LerpClamped(Vector2 current, Vector2 target, float time) => current + (target - current) * Mathf.Clamp01(time);
 
 	public static Vector2 MoveTowards(Vector2 point, Vector2 target, float maxDistance)
 	{
@@ -39,7 +39,7 @@ public struct Vector2 : IEquatable<Vector2>
 
 		if (sqDist == 0 || (maxDistance >= 0 && sqDist <= maxDistance * maxDistance)) return target;
 
-		return point + direction / Math.Sqrt(sqDist) * maxDistance;
+		return point + direction / Mathf.Sqrt(sqDist) * maxDistance;
 	}
 
 	#endregion
@@ -53,9 +53,9 @@ public struct Vector2 : IEquatable<Vector2>
 	}
 
 	public static float DistanceSqr(Vector2 from, Vector2 to) => (from - to).lengthSqr;
-	public static float Distance(Vector2 from, Vector2 to) => Math.Sqrt(DistanceSqr(from, to));
+	public static float Distance(Vector2 from, Vector2 to) => Mathf.Sqrt(DistanceSqr(from, to));
 
-	public static bool DistanceEqualTo(Vector2 from, Vector2 to, float value) => Math.Approximately(DistanceSqr(from, to), value * value);
+	public static bool DistanceEqualTo(Vector2 from, Vector2 to, float value) => Mathf.Approximately(DistanceSqr(from, to), value * value);
 	public static bool DistanceLessThan(Vector2 from, Vector2 to, float value) => DistanceSqr(from, to) < value * value;
 	public static bool DistanceGreaterThan(Vector2 from, Vector2 to, float value) => DistanceSqr(from, to) > value * value;
 
@@ -63,18 +63,18 @@ public struct Vector2 : IEquatable<Vector2>
 	public static Vector2 Midpoint(Vector2 a, Vector2 b) => (a + b) / 2;
 	public static Vector2 CenterDirection(Vector2 a, Vector2 b) => (a + b).normalized;
 	public static Vector2 Direction(Vector2 point, Vector2 target) => (point - target).normalized;
-	public static Vector2 FromAngle(float angle) => new Vector2(Math.Cos(angle), Math.Sin(angle));
+	public static Vector2 FromAngle(float angle) => new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
 
 	public static float AngleTo(Vector2 point, Vector2 target) => Direction(point, target).angle;
-	public static float SignedAngle(Vector2 a, Vector2 b) => AngleBetween(a, b) * Math.Sign(Dot(a, b));
-	public static float AngleBetween(Vector2 a, Vector2 b) => Math.Acos(Math.ClampUnit(Vector2.Dot(a.normalized, b.normalized)));
-	public static float AngleFromToCW(Vector2 from, Vector2 to) => Dot(from, to) < 0f ? AngleBetween(from, to) : Math.tau - AngleBetween(from, to);
-	public static float AngleFromToCCW(Vector2 from, Vector2 to) => Dot(from, to) > 0f ? AngleBetween(from, to) : Math.tau - AngleBetween(from, to);
+	public static float SignedAngle(Vector2 a, Vector2 b) => AngleBetween(a, b) * Mathf.Sign(Dot(a, b));
+	public static float AngleBetween(Vector2 a, Vector2 b) => Mathf.Acos(Mathf.ClampUnit(Vector2.Dot(a.normalized, b.normalized)));
+	public static float AngleFromToCW(Vector2 from, Vector2 to) => Dot(from, to) < 0f ? AngleBetween(from, to) : Mathf.tau - AngleBetween(from, to);
+	public static float AngleFromToCCW(Vector2 from, Vector2 to) => Dot(from, to) > 0f ? AngleBetween(from, to) : Mathf.tau - AngleBetween(from, to);
 
 	public static Vector2 RotateAroundPoint(Vector2 center, Vector2 point, float rotationRad)
 	{
-		var cosTheta = Math.Cos(rotationRad);
-		var sinTheta = Math.Sin(rotationRad);
+		var cosTheta = Mathf.Cos(rotationRad);
+		var sinTheta = Mathf.Sin(rotationRad);
 
 		return new(
 			cosTheta * (point.x - center.x) - sinTheta * (point.y - center.y) + center.x,
@@ -84,8 +84,8 @@ public struct Vector2 : IEquatable<Vector2>
 
 	public static Vector2 RotateAroundPoint(Vector2 point, float rotationRad)
 	{
-		var cosTheta = Math.Cos(rotationRad);
-		var sinTheta = Math.Sin(rotationRad);
+		var cosTheta = Mathf.Cos(rotationRad);
+		var sinTheta = Mathf.Sin(rotationRad);
 
 		return new(
 			cosTheta * point.x - sinTheta * point.y,
@@ -214,17 +214,17 @@ public struct Vector2 : IEquatable<Vector2>
 		}
 	}
 
-	public Vector2 sign => new Vector2(Math.Sign(x), Math.Sign(y));
+	public Vector2 sign => new Vector2(Mathf.Sign(x), Mathf.Sign(y));
 
-	public Vector2 abs => new Vector2(Math.Abs(x), Math.Abs(y));
+	public Vector2 abs => new Vector2(Mathf.Abs(x), Mathf.Abs(y));
 
 	// public Vector2 xVector => new Vector2(x, 0);
 	// public Vector2 yVector => new Vector2(0, y);
 
 	public float lengthSqr => x * x + y * y;
-	public float length => Math.Sqrt(lengthSqr);
+	public float length => Mathf.Sqrt(lengthSqr);
 
-	public float angle => Math.Atan2(y, x);
+	public float angle => Mathf.Atan2(y, x);
 
 	public Vector2 turnRight => new Vector2(-y, x);
 	public Vector2 turnLeft => new Vector2(y, -x);
@@ -233,7 +233,7 @@ public struct Vector2 : IEquatable<Vector2>
 	{
 		var len = length;
 		// if (len <= 1f) return;
-		if (len > Math.epsilon)
+		if (len > Mathf.epsilon)
 			this = this / len;
 		else
 			this = zero;
@@ -241,20 +241,20 @@ public struct Vector2 : IEquatable<Vector2>
 
 	public void Clamp(float max)
 	{
-		x = Math.Clamp(x, 0, max);
-		y = Math.Clamp(y, 0, max);
+		x = Mathf.Clamp(x, 0, max);
+		y = Mathf.Clamp(y, 0, max);
 	}
 
 	public void Clamp(float min, float max)
 	{
-		x = Math.Clamp(x, min, max);
-		y = Math.Clamp(y, min, max);
+		x = Mathf.Clamp(x, min, max);
+		y = Mathf.Clamp(y, min, max);
 	}
 
 	public void Clamp(float minX, float minY, float maxX, float maxY)
 	{
-		x = Math.Clamp(x, minX, maxX);
-		y = Math.Clamp(y, minY, maxY);
+		x = Mathf.Clamp(x, minX, maxX);
+		y = Mathf.Clamp(y, minY, maxY);
 	}
 
 	public void Offset(float offsetX, float offsetY)
@@ -271,7 +271,7 @@ public struct Vector2 : IEquatable<Vector2>
 
 	public Vector2 Snap()
 	{
-		return new(Math.Round(x), Math.Round(y));
+		return new(Mathf.Round(x), Mathf.Round(y));
 	}
 
 	#region Operators
@@ -293,7 +293,7 @@ public struct Vector2 : IEquatable<Vector2>
 	{
 		var diff_x = left.x - right.x;
 		var diff_y = left.y - right.y;
-		return Math.Abs(diff_x * diff_x + diff_y * diff_y) < Math.epsilonSqrt;
+		return Mathf.Abs(diff_x * diff_x + diff_y * diff_y) < Mathf.epsilonSqrt;
 	}
 	public static bool operator !=(Vector2 left, Vector2 right) => !(left == right);
 

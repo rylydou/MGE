@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using MGE;
-using Math = MGE.Math;
 
 namespace Demo;
 
@@ -51,7 +50,7 @@ public class Projectile : Body2D
 			return;
 		}
 
-		speed = Math.MoveTowards(speed, 0, deAcceleration * delta);
+		speed = Mathf.MoveTowards(speed, 0, deAcceleration * delta);
 	}
 
 	public CollisionInfo? MoveF(float h, Func<Actor, bool> onHit)
@@ -59,7 +58,7 @@ public class Projectile : Body2D
 		var moveH = (int)System.Math.Round(h, MidpointRounding.ToEven);
 
 		var target = position + right * moveH;
-		var dir = Math.Sign(moveH);
+		var dir = Mathf.Sign(moveH);
 		var move = 0;
 
 		while (moveH != 0)
@@ -101,5 +100,11 @@ public class Projectile : Body2D
 	{
 		batch.Rect(new(0, 0, speed * Time.tickDelta * 4 * -scale.y, 1), Color.red, new(255, 0, 0, 0), Color.red, new(255, 0, 0, 0));
 		batch.Draw(sprite, Vector2.zero, Color.white);
+
+		batch.PopMatrix();
+
+		batch.Line(globalPosition, globalPosition + right * 16, 1.5f, Color.yellow);
+
+		batch.PushMatrix(Transform2D.identity);
 	}
 }

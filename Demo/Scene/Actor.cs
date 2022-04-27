@@ -1,6 +1,5 @@
 using System;
 using MGE;
-using Math = MGE.Math;
 
 namespace Demo;
 
@@ -12,17 +11,17 @@ public class Actor : Body2D
 	public float hSpeed;
 	public float vSpeed;
 
-	protected bool hitTop;
-	protected bool hitBottom;
-	protected bool hitLeft;
-	protected bool hitRight;
+	public bool hitTop;
+	public bool hitBottom;
+	public bool hitLeft;
+	public bool hitRight;
 
-	Vector2 movementCounter;
-	public Vector2 positionRemainder => movementCounter;
-	public Vector2 exactPosition => position + movementCounter;
+	Vector2 _movementCounter;
+	public Vector2 positionRemainder => _movementCounter;
+	public Vector2 exactPosition => position + _movementCounter;
 
-	public void ZeroRemainderX() => this.movementCounter.x = 0.0f;
-	public void ZeroRemainderY() => this.movementCounter.y = 0.0f;
+	public void ZeroRemainderX() => _movementCounter.x = 0.0f;
+	public void ZeroRemainderY() => _movementCounter.y = 0.0f;
 
 	public bool treatNaive;
 	public bool ignoreJumpThrus;
@@ -169,28 +168,28 @@ public class Actor : Body2D
 
 	public CollisionInfo? MoveH(float moveH, Solid? pusher = null)
 	{
-		movementCounter.x += moveH;
-		var moveH1 = (int)System.Math.Round(movementCounter.x, MidpointRounding.ToEven);
+		_movementCounter.x += moveH;
+		var moveH1 = (int)System.Math.Round(_movementCounter.x, MidpointRounding.ToEven);
 		if (moveH1 == 0)
 			return null;
-		movementCounter.x -= moveH1;
+		_movementCounter.x -= moveH1;
 		return MoveHExact(moveH1, pusher);
 	}
 
 	public CollisionInfo? MoveV(float moveV, Solid? pusher = null)
 	{
-		this.movementCounter.y += moveV;
-		var moveV1 = (int)System.Math.Round(movementCounter.y, MidpointRounding.ToEven);
+		this._movementCounter.y += moveV;
+		var moveV1 = (int)System.Math.Round(_movementCounter.y, MidpointRounding.ToEven);
 		if (moveV1 == 0)
 			return null;
-		movementCounter.y -= moveV1;
+		_movementCounter.y -= moveV1;
 		return MoveVExact(moveV1, pusher);
 	}
 
 	public CollisionInfo? MoveHExact(int moveH, Solid? pusher = null)
 	{
 		var target = position + Vector2.right * moveH;
-		var dir = Math.Sign(moveH);
+		var dir = Mathf.Sign(moveH);
 		var move = 0;
 
 		while (moveH != 0)
@@ -200,7 +199,7 @@ public class Actor : Body2D
 
 			if (solid is not null)
 			{
-				movementCounter.x = 0.0f;
+				_movementCounter.x = 0.0f;
 
 				return new CollisionInfo()
 				{
@@ -224,7 +223,7 @@ public class Actor : Body2D
 	public CollisionInfo? MoveVExact(int moveV, Solid? pusher = null)
 	{
 		var target = position + Vector2.down * (float)moveV;
-		var dir = Math.Sign(moveV);
+		var dir = Mathf.Sign(moveV);
 		var move = 0;
 
 		while (moveV != 0)
@@ -233,7 +232,7 @@ public class Actor : Body2D
 			var solid = CollideFirst<Solid>(step);
 			if (solid is not null)
 			{
-				movementCounter.y = 0.0f;
+				_movementCounter.y = 0.0f;
 
 				return new CollisionInfo()
 				{
@@ -251,7 +250,7 @@ public class Actor : Body2D
 
 				if (semisolid is not null)
 				{
-					movementCounter.y = 0.0f;
+					_movementCounter.y = 0.0f;
 
 					return new CollisionInfo()
 					{
@@ -281,11 +280,11 @@ public class Actor : Body2D
 
 	public void NaiveMove(Vector2 amount)
 	{
-		movementCounter += amount;
-		var x = Math.RoundToInt(this.movementCounter.x);
-		var y = Math.RoundToInt(this.movementCounter.y);
+		_movementCounter += amount;
+		var x = Mathf.RoundToInt(this._movementCounter.x);
+		var y = Mathf.RoundToInt(this._movementCounter.y);
 		position = position + new Vector2(x, y);
-		movementCounter -= new Vector2(x, y);
+		_movementCounter -= new Vector2(x, y);
 	}
 
 	#endregion Movement

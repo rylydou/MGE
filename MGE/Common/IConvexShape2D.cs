@@ -88,10 +88,10 @@ public static class IConvexShape2DExt
 				if (!a.AxisOverlaps(b, axis, out float amount))
 					return false;
 
-				if (Math.Abs(amount) < distance)
+				if (Mathf.Abs(amount) < distance)
 				{
 					pushout = axis * amount;
-					distance = Math.Abs(amount);
+					distance = Mathf.Abs(amount);
 				}
 			}
 		}
@@ -104,10 +104,10 @@ public static class IConvexShape2DExt
 				if (!a.AxisOverlaps(b, axis, out float amount))
 					return false;
 
-				if (Math.Abs(amount) < distance)
+				if (Mathf.Abs(amount) < distance)
 				{
 					pushout = axis * amount;
-					distance = Math.Abs(amount);
+					distance = Mathf.Abs(amount);
 				}
 			}
 		}

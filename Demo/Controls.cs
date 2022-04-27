@@ -127,8 +127,8 @@ public class Controls
 		if (!isPresent || hasError) return;
 
 		// Gameplay
-		move = Math.Abs(controller.leftStick.x) > moveThreshold
-			? Math.Sign(controller.leftStick.x)
+		move = Mathf.Abs(controller.leftStick.x) > moveThreshold
+			? Mathf.Sign(controller.leftStick.x)
 			: 0.0f;
 		if (controller.Pressed(Buttons.B)) jump = true;
 		if (controller.Released(Buttons.B)) jumpCancel = true;

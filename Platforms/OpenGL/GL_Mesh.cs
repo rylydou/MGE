@@ -164,7 +164,7 @@ internal class GL_Mesh : Mesh.Platform
 				// ex. a marix4x4 actually takes up 4 (size 16)
 				for (int i = 0, loc = 0; i < (int)element.components; i += 4, loc++)
 				{
-					var components = Math.Min((int)element.components - i, 4);
+					var components = Mathf.Min((int)element.components - i, 4);
 					var location = (uint)(attribute.location + loc);
 
 					GL.EnableVertexAttribArray(location);

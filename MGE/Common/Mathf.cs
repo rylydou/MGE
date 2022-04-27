@@ -5,7 +5,7 @@ using MathF = System.MathF;
 
 namespace MGE;
 
-public static class Math
+public static class Mathf
 {
 	#region Constants
 
@@ -104,8 +104,8 @@ public static class Math
 
 	public static float Round(float value) => MathF.Round(value);
 	public static int RoundToInt(float value) => (int)MathF.Round(value);
-	public static float Round(float value, float snapInterval) => Math.Round(value / snapInterval) * snapInterval;
-	public static int RoundToInt(float value, float snapInterval) => (int)(Math.Round(value / snapInterval) * snapInterval);
+	public static float Round(float value, float snapInterval) => Mathf.Round(value / snapInterval) * snapInterval;
+	public static int RoundToInt(float value, float snapInterval) => (int)(Mathf.Round(value / snapInterval) * snapInterval);
 
 	public static float Trunc(float value) => MathF.Truncate(value);
 	public static int TruncToInt(float value) => (int)MathF.Truncate(value);
@@ -207,8 +207,8 @@ public static class Math
 	public static float InverseLerp(float a, float b, float value) => (value - a) / (b - a);
 	public static float InverseLerpClamped(float a, float b, float value) => Clamp01((value - a) / (b - a));
 
-	public static float Eerp(float a, float b, float t) => Math.Pow(a, 1 - t) * Math.Pow(b, t);
-	public static float InverseEerp(float a, float b, float v) => Math.Log(a / v) / Math.Log(a / b);
+	public static float Eerp(float a, float b, float t) => Mathf.Pow(a, 1 - t) * Mathf.Pow(b, t);
+	public static float InverseEerp(float a, float b, float v) => Mathf.Log(a / v) / Mathf.Log(a / b);
 
 	public static float Remap(float iMin, float iMax, float oMin, float oMax, float value) => Lerp(oMin, oMax, InverseLerp(iMin, iMax, value));
 	public static float RemapClamped(float iMin, float iMax, float oMin, float oMax, float value) => Lerp(oMin, oMax, InverseLerpClamped(iMin, iMax, value));
@@ -222,14 +222,14 @@ public static class Math
 
 	public static float MoveTowards(float current, float target, float maxDelta)
 	{
-		if (Math.Abs(target - current) <= maxDelta) return target;
-		return current + Math.Sign(target - current) * maxDelta;
+		if (Mathf.Abs(target - current) <= maxDelta) return target;
+		return current + Mathf.Sign(target - current) * maxDelta;
 	}
 
 	public static float SmoothDamp(float current, float target, ref float currentVelocity, float smoothTime, float deltaTime, float maxSpeed = float.PositiveInfinity)
 	{
 		// Based on Game Programming Gems 4 Chapter 1.10
-		smoothTime = Math.Max(0.0001f, smoothTime);
+		smoothTime = Mathf.Max(0.0001f, smoothTime);
 		var omega = 2f / smoothTime;
 
 		var x = omega * deltaTime;
@@ -239,7 +239,7 @@ public static class Math
 
 		// Clamp maximum speed
 		var maxChange = maxSpeed * smoothTime;
-		change = Math.Clamp(change, -maxChange, maxChange);
+		change = Mathf.Clamp(change, -maxChange, maxChange);
 		target = current - change;
 
 		var temp = (currentVelocity + omega * change) * deltaTime;

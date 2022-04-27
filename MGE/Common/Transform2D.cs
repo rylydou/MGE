@@ -26,18 +26,18 @@ public struct Transform2D : IEquatable<Transform2D>
 	/// <summary>
 	/// The rotation of this transformation matrix.
 	/// </summary>
-	/// <value>Getting is equivalent to calling <see cref="Math.Atan2(float, float)"/> with the values of <see cref="x"/>.</value>
+	/// <value>Getting is equivalent to calling <see cref="Mathf.Atan2(float, float)"/> with the values of <see cref="x"/>.</value>
 	public float rotation
 	{
 		get
 		{
-			return Math.Atan2(x.y, x.x);
+			return Mathf.Atan2(x.y, x.x);
 		}
 		set
 		{
 			Vector2 scale = this.scale;
-			x.x = y.y = Math.Cos(value);
-			x.y = y.x = Math.Sin(value);
+			x.x = y.y = Mathf.Cos(value);
+			x.y = y.x = Mathf.Sin(value);
 			y.x *= -1;
 			this.scale = scale;
 		}
@@ -51,7 +51,7 @@ public struct Transform2D : IEquatable<Transform2D>
 	{
 		get
 		{
-			float detSign = Math.Sign(BasisDeterminant());
+			float detSign = Mathf.Sign(BasisDeterminant());
 			return new Vector2(x.length, detSign * y.length);
 		}
 		set
@@ -207,12 +207,12 @@ public struct Transform2D : IEquatable<Transform2D>
 		Vector2 s2 = transform.scale;
 
 		// Slerp rotation
-		var v1 = new Vector2(Math.Cos(r1), Math.Sin(r1));
-		var v2 = new Vector2(Math.Cos(r2), Math.Sin(r2));
+		var v1 = new Vector2(Mathf.Cos(r1), Mathf.Sin(r1));
+		var v2 = new Vector2(Mathf.Cos(r2), Mathf.Sin(r2));
 
 		float dot = Vector2.Dot(v1, v2);
 
-		dot = Math.Clamp(dot, -1.0f, 1.0f);
+		dot = Mathf.Clamp(dot, -1.0f, 1.0f);
 
 		Vector2 v;
 
@@ -223,9 +223,9 @@ public struct Transform2D : IEquatable<Transform2D>
 		}
 		else
 		{
-			float angle = weight * Math.Acos(dot);
+			float angle = weight * Mathf.Acos(dot);
 			Vector2 v3 = (v2 - (v1 * dot)).normalized;
-			v = (v1 * Math.Cos(angle)) + (v3 * Math.Sin(angle));
+			v = (v1 * Mathf.Cos(angle)) + (v3 * Mathf.Sin(angle));
 		}
 
 		// Extract parameters
@@ -233,7 +233,7 @@ public struct Transform2D : IEquatable<Transform2D>
 		Vector2 p2 = transform.origin;
 
 		// Construct matrix
-		var res = new Transform2D(Math.Atan2(v.y, v.x), Vector2.Lerp(p1, p2, weight));
+		var res = new Transform2D(Mathf.Atan2(v.y, v.x), Vector2.Lerp(p1, p2, weight));
 		Vector2 scale = Vector2.Lerp(s1, s2, weight);
 		res.x *= scale;
 		res.y *= scale;
@@ -427,8 +427,8 @@ public struct Transform2D : IEquatable<Transform2D>
 	/// <param name="origin">The origin vector, or column index 2.</param>
 	public Transform2D(float rotation, Vector2 origin)
 	{
-		x.x = y.y = Math.Cos(rotation);
-		x.y = y.x = Math.Sin(rotation);
+		x.x = y.y = Mathf.Cos(rotation);
+		x.y = y.x = Mathf.Sin(rotation);
 		y.x *= -1;
 		this.origin = origin;
 	}

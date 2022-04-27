@@ -380,7 +380,7 @@ public class Noise
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	static float FastAbs(float f) => f < 0 ? -f : f;
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	static float FastSqrt(float f) => (float)Math.Sqrt(f);
+	static float FastSqrt(float f) => (float)Mathf.Sqrt(f);
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	static int FastFloor(float f) => f >= 0 ? (int)f : (int)f - 1;
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

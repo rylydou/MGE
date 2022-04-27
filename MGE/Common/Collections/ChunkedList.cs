@@ -43,7 +43,7 @@ public class ChunkedList<T> : IEnumerable<T> where T : struct
 
 	public ChunkedList(uint capacity)
 	{
-		array = new T[Math.CeilToPowerOf2(capacity)];
+		array = new T[Mathf.CeilToPowerOf2(capacity)];
 	}
 
 	public T this[int index] { get => array[index]; set => array[index] = value; }
@@ -91,7 +91,7 @@ public class ChunkedList<T> : IEnumerable<T> where T : struct
 	{
 		if (array.Length < capacity)
 		{
-			var tmp = new T[Math.CeilToPowerOf2((uint)(capacity + 1u))];
+			var tmp = new T[Mathf.CeilToPowerOf2((uint)(capacity + 1u))];
 			// Debug.Log($"Chunked list expanded from {array.Length} to {tmp.Length}");
 			array.CopyTo(tmp, 0);
 			array = tmp;

@@ -33,7 +33,7 @@ public class Gun : Item
 		{
 			var proj = projectile!.CreateNewInstance<Projectile>();
 			proj.transform = shootPoint!.GetGlobalTransform();
-			proj.rotation = Math.Deg2Rad(RNG.shared.RandomFloat(-spread / 2, spread / 2));
+			proj.rotation = Mathf.Deg2Rad(RNG.shared.RandomFloat(-spread / 2, spread / 2));
 			proj.speed *= RNG.shared.RandomFloat(minSpeedVariation, maxSpeedVariation);
 			proj.hitActors.Add(holder);
 

@@ -242,7 +242,7 @@ public class Player : Actor
 
 	void CalcWalk(float delta)
 	{
-		_moveClamp = Math.MoveTowards(
+		_moveClamp = Mathf.MoveTowards(
 			_moveClamp,
 			isCrouching ? crouchMoveClamp : moveClamp,
 			(isCrouching ? moveClampDeAceleration : moveClampAceleration) * delta
@@ -255,15 +255,15 @@ public class Player : Actor
 			hMoveSpeed += controls.move * (hitBottom ? acceleration : accelerationAir) * delta;
 
 			// clamped by max frame movement
-			hMoveSpeed = Math.Clamp(hMoveSpeed, -_moveClamp * delta, _moveClamp * delta);
+			hMoveSpeed = Mathf.Clamp(hMoveSpeed, -_moveClamp * delta, _moveClamp * delta);
 		}
 		else
 		{
 			// No input. Let's slow the character down
-			hMoveSpeed = Math.MoveTowards(hMoveSpeed, 0, (hitBottom ? deAcceleration : deAccelerationAir) * delta);
+			hMoveSpeed = Mathf.MoveTowards(hMoveSpeed, 0, (hitBottom ? deAcceleration : deAccelerationAir) * delta);
 		}
 
-		hSpeed = Math.MoveTowards(hSpeed, 0, (hitBottom ? deAccelerationEx : deAccelerationExAir) * delta);
+		hSpeed = Mathf.MoveTowards(hSpeed, 0, (hitBottom ? deAccelerationEx : deAccelerationExAir) * delta);
 
 		if (hMoveSpeed > 0 && hitRight || hMoveSpeed < 0 && hitLeft)
 		{
@@ -304,8 +304,8 @@ public class Player : Actor
 
 	void CalcJump(float delta)
 	{
-		_minJumpSpeed = -Math.Sqrt(2 * (fallSpeed * delta) * minJumpHeight);
-		_maxJumpSpeed = -Math.Sqrt(2 * (fallSpeed * delta) * maxJumpHeight);
+		_minJumpSpeed = -Mathf.Sqrt(2 * (fallSpeed * delta) * minJumpHeight);
+		_maxJumpSpeed = -Mathf.Sqrt(2 * (fallSpeed * delta) * maxJumpHeight);
 
 		_jumpBuffer -= delta;
 		if (controls.jump)
@@ -349,25 +349,25 @@ public class Player : Actor
 		var realHSpeed = hMoveSpeed / Time.tickDelta;
 
 		var vSpeedScale = realVSpeed / fallClamp;
-		var hSpeedScale = Math.Abs(realHSpeed / moveClamp);
+		var hSpeedScale = Mathf.Abs(realHSpeed / moveClamp);
 
-		var fallingSpeedScale = Math.Clamp01(vSpeedScale);
+		var fallingSpeedScale = Mathf.Clamp01(vSpeedScale);
 
-		var hopWave = Math.Sin((float)Time.duration.TotalSeconds * Math.pi * hopsPerSecond) / 2 + 1;
+		var hopWave = Mathf.Sin((float)Time.duration.TotalSeconds * Mathf.pi * hopsPerSecond) / 2 + 1;
 
-		var offset = new Vector2(0, vTiltOffset * Math.Abs(hSpeedScale) + vFallingOffset * fallingSpeedScale);
+		var offset = new Vector2(0, vTiltOffset * Mathf.Abs(hSpeedScale) + vFallingOffset * fallingSpeedScale);
 
 		// Move the pivot behind when moving and hop
 		var pivot = new Vector2(centerX * hSpeedScale * hopWave, centerY);
 
 		// Stretch the player when falling
-		var stretch = Math.Abs(vSpeedScale) * stretchFactor;
+		var stretch = Mathf.Abs(vSpeedScale) * stretchFactor;
 		var scale = new Vector2(1 - stretch, 1 + stretch);
 
 		var normalTilt = hSpeedScale * normalTiltAngle;
 		var fallingTilt = hSpeedScale * fallingTiltAngle;
 		// Mix between normal tilt and falling tilt based on vertical speed
-		var tilt = Math.Lerp(normalTilt, fallingTilt, fallingSpeedScale);
+		var tilt = Mathf.Lerp(normalTilt, fallingTilt, fallingSpeedScale);
 
 		if (isCrouching)
 		{
@@ -385,11 +385,11 @@ public class Player : Actor
 			washed = true;
 		}
 
-		batch.Draw(sprite, offset, pivot, Math.Deg2Rad(tilt), scale, color, washed);
+		batch.Draw(sprite, offset, pivot, Mathf.Deg2Rad(tilt), scale, color, washed);
 
 		if (!controls.isPresent || controls.hasError)
 		{
-			batch.Draw(inputErrorSprite, new(0, -24), new(0, -24), Time.SineWave(-Math.pi / 6, Math.pi / 8, 1f, 0f), Vector2.one, Color.white);
+			batch.Draw(inputErrorSprite, new(0, -24), new(0, -24), Time.SineWave(-Mathf.pi / 6, Mathf.pi / 8, 1f, 0f), Vector2.one, Color.white);
 		}
 
 		var holdOffset = new Vector2(8, isCrouching ? 2 : 0);

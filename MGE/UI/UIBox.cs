@@ -117,7 +117,7 @@ public class UIBox : UIContainer
 
 						if (widget.resizing[dir] == UIResizing.FillContainer)
 						{
-							widget._rect[dir + 2] = Math.Max(remainingSpace / filledWidgets.Count, 0);
+							widget._rect[dir + 2] = Mathf.Max(remainingSpace / filledWidgets.Count, 0);
 						}
 
 						widget.ParentChangedMeasure();

@@ -151,17 +151,17 @@ public struct Quad2D : IConvexShape2D
 		max = float.MinValue;
 
 		var dot = Vector2.Dot(a, axis);
-		min = Math.Min(dot, min);
-		max = Math.Max(dot, max);
+		min = Mathf.Min(dot, min);
+		max = Mathf.Max(dot, max);
 		dot = Vector2.Dot(b, axis);
-		min = Math.Min(dot, min);
-		max = Math.Max(dot, max);
+		min = Mathf.Min(dot, min);
+		max = Mathf.Max(dot, max);
 		dot = Vector2.Dot(c, axis);
-		min = Math.Min(dot, min);
-		max = Math.Max(dot, max);
+		min = Mathf.Min(dot, min);
+		max = Mathf.Max(dot, max);
 		dot = Vector2.Dot(d, axis);
-		min = Math.Min(dot, min);
-		max = Math.Max(dot, max);
+		min = Mathf.Min(dot, min);
+		max = Mathf.Max(dot, max);
 	}
 
 	public int points => 4;
@@ -195,10 +195,10 @@ public struct Quad2D : IConvexShape2D
 	public Rect BoundingRect()
 	{
 		var bounds = new Rect();
-		bounds.x = Math.Min(_a.x, Math.Min(_b.x, Math.Min(_c.x, _d.x)));
-		bounds.y = Math.Min(_a.y, Math.Min(_b.y, Math.Min(_c.y, _d.y)));
-		bounds.width = Math.Max(_a.x, Math.Max(_b.x, Math.Max(_c.x, _d.x))) - bounds.x;
-		bounds.height = Math.Max(_a.y, Math.Max(_b.y, Math.Max(_c.y, _d.y))) - bounds.y;
+		bounds.x = Mathf.Min(_a.x, Mathf.Min(_b.x, Mathf.Min(_c.x, _d.x)));
+		bounds.y = Mathf.Min(_a.y, Mathf.Min(_b.y, Mathf.Min(_c.y, _d.y)));
+		bounds.width = Mathf.Max(_a.x, Mathf.Max(_b.x, Mathf.Max(_c.x, _d.x))) - bounds.x;
+		bounds.height = Mathf.Max(_a.y, Mathf.Max(_b.y, Mathf.Max(_c.y, _d.y))) - bounds.y;
 		return bounds;
 	}
 

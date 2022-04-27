@@ -24,11 +24,11 @@ public struct Vector2Int : IEquatable<Vector2Int>
 	{
 		var diff_x = from.x - to.x;
 		var diff_y = from.y - to.y;
-		return (int)Math.Sqrt(diff_x * diff_x + diff_y * diff_y);
+		return (int)Mathf.Sqrt(diff_x * diff_x + diff_y * diff_y);
 	}
 
-	public static Vector2Int Min(Vector2Int a, Vector2Int b) => new Vector2Int(Math.Min(a.x, b.x), Math.Min(a.y, b.y));
-	public static Vector2Int Max(Vector2Int a, Vector2Int b) => new Vector2Int(Math.Max(a.x, b.x), Math.Max(a.y, b.y));
+	public static Vector2Int Min(Vector2Int a, Vector2Int b) => new Vector2Int(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y));
+	public static Vector2Int Max(Vector2Int a, Vector2Int b) => new Vector2Int(Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
 
 	////////////////////////////////////////////////////////////
 
@@ -79,32 +79,32 @@ public struct Vector2Int : IEquatable<Vector2Int>
 
 	////////////////////////////////////////////////////////////
 
-	public Vector2Int sign { get => new Vector2Int(Math.Sign(x), Math.Sign(y)); }
+	public Vector2Int sign { get => new Vector2Int(Mathf.Sign(x), Mathf.Sign(y)); }
 
 	public int sqrMagnitude { get => x * x + y * y; }
-	public float magnitude { get => Math.Sqrt(sqrMagnitude); }
+	public float magnitude { get => Mathf.Sqrt(sqrMagnitude); }
 
-	public int max { get => Math.Max(x, y); }
-	public int min { get => Math.Min(x, y); }
+	public int max { get => Mathf.Max(x, y); }
+	public int min { get => Mathf.Min(x, y); }
 
 	////////////////////////////////////////////////////////////
 
 	public void Clamp(int max)
 	{
-		x = Math.Clamp(x, 0, max);
-		y = Math.Clamp(y, 0, max);
+		x = Mathf.Clamp(x, 0, max);
+		y = Mathf.Clamp(y, 0, max);
 	}
 
 	public void Clamp(int min, int max)
 	{
-		x = Math.Clamp(x, min, max);
-		y = Math.Clamp(y, min, max);
+		x = Mathf.Clamp(x, min, max);
+		y = Mathf.Clamp(y, min, max);
 	}
 
 	public void Clamp(int minX, int minY, int maxX, int maxY)
 	{
-		x = Math.Clamp(x, minX, maxX);
-		y = Math.Clamp(y, minY, maxY);
+		x = Mathf.Clamp(x, minX, maxX);
+		y = Mathf.Clamp(y, minY, maxY);
 	}
 
 	public void Offset(int offsetX, int offsetY)

@@ -242,7 +242,7 @@ internal class GLFW_Input : Input
 						var current = GetGamepadAxis(index, axis);
 						var next = gamepadState.Axes[i];
 
-						if (Math.Abs(current - next) > AXIS_EPSILON)
+						if (Mathf.Abs(current - next) > AXIS_EPSILON)
 							OnGamepadAxis(index, axis, next);
 					}
 				}
@@ -274,7 +274,7 @@ internal class GLFW_Input : Input
 							var current = GetJoystickAxis(index, axis);
 							var next = axes[i];
 
-							if (Math.Abs(current - next) > AXIS_EPSILON)
+							if (Mathf.Abs(current - next) > AXIS_EPSILON)
 								OnJoystickAxis(index, axis, next);
 						}
 					}

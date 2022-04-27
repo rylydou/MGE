@@ -258,7 +258,7 @@ namespace MGE
 					stackalloc PackingNode[nodeCount] :
 					new PackingNode[nodeCount]);
 
-			var padding = Math.Max(0, this.padding);
+			var padding = Mathf.Max(0, this.padding);
 
 			// using pointer operations here was faster
 			fixed (PackingNode* nodes = buffer)

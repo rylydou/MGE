@@ -463,8 +463,8 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 			{
 				var scissor = pass.scissor ?? new RectInt(0, 0, pass.target.renderWidth, pass.target.renderHeight);
 				scissor.y = pass.target.renderHeight - scissor.y - scissor.height;
-				scissor.width = Math.Max(0, scissor.width);
-				scissor.height = Math.Max(0, scissor.height);
+				scissor.width = Mathf.Max(0, scissor.width);
+				scissor.height = Mathf.Max(0, scissor.height);
 
 				if (updateAll || lastPass.scissor != scissor || contextMeta.forceScissorUpdate)
 				{

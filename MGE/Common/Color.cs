@@ -306,7 +306,7 @@ public struct Color : IEquatable<Color>
 	/// <returns></returns>
 	public static Color LerpClamped(Color a, Color b, float amount)
 	{
-		amount = Math.Clamp01(amount);
+		amount = Mathf.Clamp01(amount);
 
 		return new(
 			(int)(a.r + (b.r - a.r) * amount),

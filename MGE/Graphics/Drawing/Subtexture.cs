@@ -115,8 +115,8 @@ namespace MGE
 
 			result.Source = RectInt.Intersect(clip + source.position + frame.position, source);
 
-			result.Frame.x = Math.Min(0, frame.x + clip.x);
-			result.Frame.y = Math.Min(0, frame.y + clip.y);
+			result.Frame.x = Mathf.Min(0, frame.x + clip.x);
+			result.Frame.y = Mathf.Min(0, frame.y + clip.y);
 			result.Frame.width = clip.width;
 			result.Frame.height = clip.height;
 

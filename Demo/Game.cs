@@ -6,7 +6,7 @@ public class Game : Module
 {
 	public static readonly Vector2Int screenSize = new(320 * 2, 180 * 2);
 	public static readonly float unitSize = 8;
-	public static readonly Vector2Int screenUnitSize = new(Math.CeilToInt(screenSize.x / unitSize), Math.CeilToInt(screenSize.y / unitSize));
+	public static readonly Vector2Int screenUnitSize = new(Mathf.CeilToInt(screenSize.x / unitSize), Mathf.CeilToInt(screenSize.y / unitSize));
 
 	Scene scene = new();
 	Player player1 = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();

@@ -400,8 +400,8 @@ public class Batch2D
 
 		for (float d = startD; d < dist; d += dashLength * 2f)
 		{
-			var a = from + axis * Math.Max(d, 0f);
-			var b = from + axis * Math.Min(d + dashLength, dist);
+			var a = from + axis * Mathf.Max(d, 0f);
+			var b = from + axis * Mathf.Min(d + dashLength, dist);
 			Quad(a + perp, b + perp, b - perp, a - perp, color);
 		}
 	}
@@ -758,10 +758,10 @@ public class Batch2D
 	public void RoundedRect(in Rect rect, float r0, float r1, float r2, float r3, Color color)
 	{
 		// clamp
-		r0 = Math.Min(Math.Min(Math.Max(0, r0), rect.width / 2f), rect.height / 2f);
-		r1 = Math.Min(Math.Min(Math.Max(0, r1), rect.width / 2f), rect.height / 2f);
-		r2 = Math.Min(Math.Min(Math.Max(0, r2), rect.width / 2f), rect.height / 2f);
-		r3 = Math.Min(Math.Min(Math.Max(0, r3), rect.width / 2f), rect.height / 2f);
+		r0 = Mathf.Min(Mathf.Min(Mathf.Max(0, r0), rect.width / 2f), rect.height / 2f);
+		r1 = Mathf.Min(Mathf.Min(Mathf.Max(0, r1), rect.width / 2f), rect.height / 2f);
+		r2 = Mathf.Min(Mathf.Min(Mathf.Max(0, r2), rect.width / 2f), rect.height / 2f);
+		r3 = Mathf.Min(Mathf.Min(Mathf.Max(0, r3), rect.width / 2f), rect.height / 2f);
 
 		if (r0 <= 0 && r1 <= 0 && r2 <= 0 && r3 <= 0)
 		{
@@ -888,25 +888,25 @@ public class Batch2D
 
 			// top-left corner
 			if (r0 > 0)
-				SemiCircle(r0_br, up, -left, r0, Math.Max(3, (int)(r0 / 4)), color);
+				SemiCircle(r0_br, up, -left, r0, Mathf.Max(3, (int)(r0 / 4)), color);
 			else
 				Quad(r0_tl, r0_tr, r0_br, r0_bl, color);
 
 			// top-right corner
 			if (r1 > 0)
-				SemiCircle(r1_bl, up, right, r1, Math.Max(3, (int)(r1 / 4)), color);
+				SemiCircle(r1_bl, up, right, r1, Mathf.Max(3, (int)(r1 / 4)), color);
 			else
 				Quad(r1_tl, r1_tr, r1_br, r1_bl, color);
 
 			// bottom-right corner
 			if (r2 > 0)
-				SemiCircle(r2_tl, right, down, r2, Math.Max(3, (int)(r2 / 4)), color);
+				SemiCircle(r2_tl, right, down, r2, Mathf.Max(3, (int)(r2 / 4)), color);
 			else
 				Quad(r2_tl, r2_tr, r2_br, r2_bl, color);
 
 			// bottom-left corner
 			if (r3 > 0)
-				SemiCircle(r3_tr, down, left, r3, Math.Max(3, (int)(r3 / 4)), color);
+				SemiCircle(r3_tr, down, left, r3, Mathf.Max(3, (int)(r3 / 4)), color);
 			else
 				Quad(r3_tl, r3_tr, r3_br, r3_bl, color);
 		}
@@ -971,8 +971,8 @@ public class Batch2D
 	{
 		if (t > 0)
 		{
-			var tx = Math.Min(t, rect.width / 2f);
-			var ty = Math.Min(t, rect.height / 2f);
+			var tx = Mathf.Min(t, rect.width / 2f);
+			var ty = Mathf.Min(t, rect.height / 2f);
 
 			Rect(rect.x, rect.y, rect.width, ty, color);
 			Rect(rect.x, rect.bottom - ty, rect.width, ty, color);
@@ -1380,7 +1380,7 @@ public class Batch2D
 			{
 				var color = (odd ? a : b);
 				if (color.a > 0)
-					Rect(x, y, Math.Min(bounds.right - x, cellWidth), Math.Min(bounds.bottom - y, cellHeight), color);
+					Rect(x, y, Mathf.Min(bounds.right - x, cellWidth), Mathf.Min(bounds.bottom - y, cellHeight), color);
 
 				odd = !odd;
 				cells++;

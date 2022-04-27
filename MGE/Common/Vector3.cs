@@ -32,13 +32,13 @@ public struct Vector3
 	{
 		float result;
 		DistanceSquared(ref value1, ref value2, out result);
-		return Math.Sqrt(result);
+		return Mathf.Sqrt(result);
 	}
 
 	public static void Distance(ref Vector3 value1, ref Vector3 value2, out float result)
 	{
 		DistanceSquared(ref value1, ref value2, out result);
-		result = Math.Sqrt(result);
+		result = Mathf.Sqrt(result);
 	}
 
 	public static Vector3 Cross(Vector3 vector1, Vector3 vector2)
@@ -62,14 +62,14 @@ public struct Vector3
 
 	public static Vector3 Normalize(Vector3 value)
 	{
-		float factor = Math.Sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
+		float factor = Mathf.Sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
 		factor = 1f / factor;
 		return new Vector3(value.x * factor, value.y * factor, value.z * factor);
 	}
 
 	public static void Normalize(ref Vector3 value, out Vector3 result)
 	{
-		var factor = Math.Sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
+		var factor = Mathf.Sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
 		factor = 1f / factor;
 		result.x = value.x * factor;
 		result.y = value.y * factor;
@@ -90,11 +90,11 @@ public struct Vector3
 	}
 
 	public float sqrMagnitude { get => x * x + y * y + z * z; }
-	public float magnitude { get => Math.Sqrt(sqrMagnitude); }
+	public float magnitude { get => Mathf.Sqrt(sqrMagnitude); }
 
 	public void Normalize()
 	{
-		float factor = Math.Sqrt(x * x + y * y + z * z);
+		float factor = Mathf.Sqrt(x * x + y * y + z * z);
 		factor = 1f / factor;
 		x *= factor;
 		y *= factor;

@@ -536,12 +536,12 @@ namespace MGE
 			if (cel.layer.blendMode < BlendModes.Length)
 				blend = BlendModes[cel.layer.blendMode];
 
-			for (int sx = Math.Max(0, -cel.x), right = Math.Min(cel.width, frame.sprite.width - cel.x); sx < right; sx++)
+			for (int sx = Mathf.Max(0, -cel.x), right = Mathf.Min(cel.width, frame.sprite.width - cel.x); sx < right; sx++)
 			{
 				int dx = cel.x + sx;
 				int dy = cel.y * frame.sprite.width;
 
-				for (int sy = Math.Max(0, -cel.y), bottom = Math.Min(cel.height, frame.sprite.height - cel.y); sy < bottom; sy++, dy += frame.sprite.width)
+				for (int sy = Mathf.Max(0, -cel.y), bottom = Mathf.Min(cel.height, frame.sprite.height - cel.y); sy < bottom; sy++, dy += frame.sprite.width)
 				{
 					if (dx + dy >= 0 && dx + dy < pxLen)
 						blend(ref frame.bitmap.pixels[dx + dy], cel.pixels[sx + sy * cel.width], opacity);

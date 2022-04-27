@@ -28,7 +28,7 @@ public class GridCollider2D : Collider2D
 			if (mapStr[i] == '\n')
 			{
 				currentY++;
-				longest = Math.Max(currentX, longest);
+				longest = Mathf.Max(currentX, longest);
 				currentX = 0;
 			}
 			else currentX++;
@@ -83,22 +83,22 @@ public class GridCollider2D : Collider2D
 		// Left
 		for (int x = 0; x < left; x++)
 			for (int y = 0; y < newHeight; y++)
-				newData[x, y] = data[0, Math.Clamp(y - up, 0, data.rows - 1)];
+				newData[x, y] = data[0, Mathf.Clamp(y - up, 0, data.rows - 1)];
 
 		// Right
 		for (int x = newWidth - right; x < newWidth; x++)
 			for (int y = 0; y < newHeight; y++)
-				newData[x, y] = data[data.columns - 1, Math.Clamp(y - up, 0, data.rows - 1)];
+				newData[x, y] = data[data.columns - 1, Mathf.Clamp(y - up, 0, data.rows - 1)];
 
 		// Top
 		for (int y = 0; y < up; y++)
 			for (int x = 0; x < newWidth; x++)
-				newData[x, y] = data[Math.Clamp(x - left, 0, data.columns - 1), 0];
+				newData[x, y] = data[Mathf.Clamp(x - left, 0, data.columns - 1), 0];
 
 		// Bottom
 		for (int y = newHeight - down; y < newHeight; y++)
 			for (int x = 0; x < newWidth; x++)
-				newData[x, y] = data[Math.Clamp(x - left, 0, data.columns - 1), data.rows - 1];
+				newData[x, y] = data[Mathf.Clamp(x - left, 0, data.columns - 1), data.rows - 1];
 
 		data = newData;
 	}
@@ -310,7 +310,7 @@ public class GridCollider2D : Collider2D
 		from /= new Vector2(cellSize, cellSize);
 		to /= new Vector2(cellSize, cellSize);
 
-		var steep = Math.Abs(to.y - from.y) > Math.Abs(to.x - from.x);
+		var steep = Mathf.Abs(to.y - from.y) > Mathf.Abs(to.x - from.x);
 		if (steep)
 		{
 			var temp = from.x;
@@ -330,7 +330,7 @@ public class GridCollider2D : Collider2D
 		}
 
 		var error = 0f;
-		var deltaError = Math.Abs(to.y - from.y) / (to.x - from.x);
+		var deltaError = Mathf.Abs(to.y - from.y) / (to.x - from.x);
 		var yStep = (from.y < to.y) ? 1 : -1;
 		var y = (int)from.y;
 		var toX = (int)to.x;

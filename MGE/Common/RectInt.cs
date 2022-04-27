@@ -24,10 +24,10 @@ public struct RectInt : IEquatable<RectInt>
 	{
 		if (a.Overlaps(b))
 		{
-			var right = Math.Min(a.x + a.width, b.x + b.width);
-			var left = Math.Max(a.x, b.x);
-			var top = Math.Max(a.y, b.y);
-			var bottom = Math.Min(a.y + a.height, b.y + b.height);
+			var right = Mathf.Min(a.x + a.width, b.x + b.width);
+			var left = Mathf.Max(a.x, b.x);
+			var top = Mathf.Max(a.y, b.y);
+			var bottom = Mathf.Min(a.y + a.height, b.y + b.height);
 			result = new(left, top, right - left, bottom - top);
 		}
 		else

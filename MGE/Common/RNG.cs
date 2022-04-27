@@ -8,7 +8,7 @@ public class RNG
 
 	Random rng;
 
-	public RNG() : this(Math.Abs(Guid.NewGuid().GetHashCode())) { }
+	public RNG() : this(Mathf.Abs(Guid.NewGuid().GetHashCode())) { }
 	public RNG(int seed) => rng = new(seed);
 
 	public int RandomInt() => rng.Next();
@@ -26,12 +26,12 @@ public class RNG
 	public float RandomSign() => RandomBool() ? 1f : -1f;
 	public int RandomSignInt() => RandomBool() ? 1 : -1;
 
-	public float RandomAngle() => RandomFloat(Math.tau);
+	public float RandomAngle() => RandomFloat(Mathf.tau);
 
 	public Vector2 RandomUnitVector()
 	{
 		var angle = RandomAngle();
-		return new((float)Math.Cos(angle), (float)Math.Sin(angle));
+		return new((float)Mathf.Cos(angle), (float)Mathf.Sin(angle));
 	}
 
 	public Color RandomColor() => new(RandomFloat(), RandomFloat(), RandomFloat(), 1.0f);

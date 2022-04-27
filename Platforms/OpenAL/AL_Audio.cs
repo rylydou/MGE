@@ -69,7 +69,7 @@ public class AL_Audio : Audio
 
 	internal static float ConvertPitch(float pitch)
 	{
-		return (float)Math.Pow(2, pitch);
+		return (float)Mathf.Pow(2, pitch);
 	}
 
 	public override void PlaySoundEffect(SoundEffect soundEffect, float volume, float pitch, float pan)

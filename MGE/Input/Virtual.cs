@@ -69,7 +69,7 @@ public class VirtualAxis
 
 		public float Value(bool deadzone)
 		{
-			if (!deadzone || Math.Abs(input.controllers[index].Axis(axis)) >= this.deadzone)
+			if (!deadzone || Mathf.Abs(input.controllers[index].Axis(axis)) >= this.deadzone)
 				return input.controllers[index].Axis(axis) * (positive ? 1 : -1);
 			return 0f;
 		}
@@ -78,7 +78,7 @@ public class VirtualAxis
 		{
 			get
 			{
-				if (Math.Abs(input.controllers[index].Axis(axis)) < deadzone)
+				if (Mathf.Abs(input.controllers[index].Axis(axis)) < deadzone)
 					return 0;
 				return input.controllers[index].Timestamp(axis);
 			}
@@ -125,7 +125,7 @@ public class VirtualAxis
 		{
 			foreach (var input in nodes)
 				value += input.Value(deadzone);
-			value = Math.ClampUnit(value);
+			value = Mathf.ClampUnit(value);
 		}
 		else if (overlapBehavior == Overlaps.TakeNewer)
 		{
@@ -135,7 +135,7 @@ public class VirtualAxis
 				var time = nodes[i].timestamp;
 				var val = nodes[i].Value(deadzone);
 
-				if (time > 0 && Math.Abs(val) > EPSILON && time > timestamp)
+				if (time > 0 && Mathf.Abs(val) > EPSILON && time > timestamp)
 				{
 					value = val;
 					timestamp = time;
@@ -150,7 +150,7 @@ public class VirtualAxis
 				var time = nodes[i].timestamp;
 				var val = nodes[i].Value(deadzone);
 
-				if (time > 0 && Math.Abs(val) > EPSILON && time < timestamp)
+				if (time > 0 && Mathf.Abs(val) > EPSILON && time < timestamp)
 				{
 					value = val;
 					timestamp = time;
@@ -341,8 +341,8 @@ public class VirtualButton
 		{
 			get
 			{
-				if (Math.Abs(threshold) <= AXIS_EPSILON)
-					return Math.Abs(input.controllers[index].Axis(axis)) > AXIS_EPSILON;
+				if (Mathf.Abs(threshold) <= AXIS_EPSILON)
+					return Mathf.Abs(input.controllers[index].Axis(axis)) > AXIS_EPSILON;
 
 				if (threshold < 0)
 					return input.controllers[index].Axis(axis) <= threshold;
@@ -355,8 +355,8 @@ public class VirtualButton
 		{
 			get
 			{
-				if (Math.Abs(threshold) <= AXIS_EPSILON)
-					return Math.Abs(input.lastState.controllers[index].Axis(axis)) > AXIS_EPSILON && Math.Abs(input.controllers[index].Axis(axis)) < AXIS_EPSILON;
+				if (Mathf.Abs(threshold) <= AXIS_EPSILON)
+					return Mathf.Abs(input.lastState.controllers[index].Axis(axis)) > AXIS_EPSILON && Mathf.Abs(input.controllers[index].Axis(axis)) < AXIS_EPSILON;
 
 				if (threshold < 0)
 					return input.lastState.controllers[index].Axis(axis) <= threshold && input.controllers[index].Axis(axis) > threshold;
@@ -372,8 +372,8 @@ public class VirtualButton
 
 		bool Pressed()
 		{
-			if (Math.Abs(threshold) <= AXIS_EPSILON)
-				return (Math.Abs(input.lastState.controllers[index].Axis(axis)) < AXIS_EPSILON && Math.Abs(input.controllers[index].Axis(axis)) > AXIS_EPSILON);
+			if (Mathf.Abs(threshold) <= AXIS_EPSILON)
+				return (Mathf.Abs(input.lastState.controllers[index].Axis(axis)) < AXIS_EPSILON && Mathf.Abs(input.controllers[index].Axis(axis)) > AXIS_EPSILON);
 
 			if (threshold < 0)
 				return (input.lastState.controllers[index].Axis(axis) > threshold && input.controllers[index].Axis(axis) <= threshold);

@@ -21,7 +21,7 @@ public static class IProjectable2DExt
 		a.Project(axis, out float min0, out float max0);
 		b.Project(axis, out float min1, out float max1);
 
-		if (Math.Abs(min1 - max0) < Math.Abs(max1 - min0))
+		if (Mathf.Abs(min1 - max0) < Mathf.Abs(max1 - min0))
 			amount = min1 - max0;
 		else
 			amount = max1 - min0;

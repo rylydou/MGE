@@ -65,8 +65,8 @@ public class Controller
 	internal void Connect(string name, uint buttonCount, uint axisCount, bool isGamepad)
 	{
 		this.name = name;
-		buttons = (int)Math.Min(buttonCount, MAX_BUTTONS);
-		axes = (int)Math.Min(axisCount, MAX_AXIS);
+		buttons = (int)Mathf.Min(buttonCount, MAX_BUTTONS);
+		axes = (int)Mathf.Min(axisCount, MAX_AXIS);
 		this.isGamepad = isGamepad;
 		connected = true;
 	}

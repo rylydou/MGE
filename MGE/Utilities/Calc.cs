@@ -153,9 +153,9 @@ public static class Calc
 	public static float Approach(float from, float target, float amount)
 	{
 		if (from > target)
-			return Math.Max(from - amount, target);
+			return Mathf.Max(from - amount, target);
 		else
-			return Math.Min(from + amount, target);
+			return Mathf.Min(from + amount, target);
 	}
 
 	public static Vector2 Approach(Vector2 from, Vector2 target, float amount)
@@ -179,12 +179,12 @@ public static class Calc
 
 	public static int Clamp(int value, int min, int max)
 	{
-		return Math.Min(Math.Max(value, min), max);
+		return Mathf.Min(Mathf.Max(value, min), max);
 	}
 
 	public static float Clamp(float value, float min, float max)
 	{
-		return Math.Min(Math.Max(value, min), max);
+		return Mathf.Min(Mathf.Max(value, min), max);
 	}
 
 	public static float YoYo(float value)
@@ -202,7 +202,7 @@ public static class Calc
 
 	public static float SineMap(float counter, float newMin, float newMax)
 	{
-		return Map((float)Math.Sin(counter), -1, 1, newMin, newMax);
+		return Map((float)Mathf.Sin(counter), -1, 1, newMin, newMax);
 	}
 
 	public static float ClampedMap(float val, float min, float max, float newMin = 0, float newMax = 1)
@@ -228,7 +228,7 @@ public static class Calc
 	public static float AngleApproach(float val, float target, float maxMove)
 	{
 		var diff = AngleDiff(val, target);
-		if (Math.Abs(diff) < maxMove)
+		if (Mathf.Abs(diff) < maxMove)
 			return target;
 		return val + Clamp(diff, -maxMove, maxMove);
 	}
@@ -649,7 +649,7 @@ public static class Calc
 		var v = lineB - lineA;
 		var w = closestTo - lineA;
 		var time = Vector2.Dot(w, v) / Vector2.Dot(v, v);
-		time = Math.Clamp(time, 0, 1);
+		time = Mathf.Clamp(time, 0, 1);
 
 		return lineA + v * time;
 	}
@@ -659,7 +659,7 @@ public static class Calc
 		if ((Vector2Int)start == (Vector2Int)end) yield return end;
 
 		var t = start;
-		var frac = 1 / Math.Sqrt(Math.Pow(end.x - start.x, 2) + Math.Pow(end.y - start.y, 2));
+		var frac = 1 / Mathf.Sqrt(Mathf.Pow(end.x - start.x, 2) + Mathf.Pow(end.y - start.y, 2));
 		var ctr = 0.0f;
 
 		while ((int)t.x != (int)end.x || (int)t.y != (int)end.y)

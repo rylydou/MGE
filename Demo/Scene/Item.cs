@@ -107,7 +107,7 @@ public abstract class Item : Actor
 		}
 
 		// Movement
-		hSpeed = Math.MoveTowards(hSpeed, 0, (hitBottom ? deAcceration : deAccerationAir) * delta);
+		hSpeed = Mathf.MoveTowards(hSpeed, 0, (hitBottom ? deAcceration : deAccerationAir) * delta);
 
 		if (hitLeft && hSpeed < 0) hSpeed = 0;
 		if (hitRight && hSpeed > 0) hSpeed = 0;
