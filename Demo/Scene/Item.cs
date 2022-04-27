@@ -30,7 +30,7 @@ public abstract class Item : Actor
 
 		collider = new HitboxCollider2D(new(10, 10), new(-5, -5));
 
-		globalPosition = new(320, -320);
+		globalPosition = new(400, 0);
 	}
 
 	protected sealed override void Tick(float delta)
@@ -81,7 +81,7 @@ public abstract class Item : Actor
 
 	protected virtual void OnDrop()
 	{
-		ApplyImpulseForce(new Vector2(96 * globalScale.y, -96));
+		ApplyImpulseForce(new(96 * globalScale.y, -96));
 	}
 
 	protected virtual void Held_Tick(float delta) { }

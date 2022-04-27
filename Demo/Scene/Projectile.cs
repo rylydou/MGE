@@ -22,10 +22,6 @@ public class Projectile : Body2D
 		base.Ready();
 
 		collider = new HitboxCollider2D(new(8), new(-4));
-
-		Log.Info(transform.rotation.ToString());
-		Log.Info(transform.scale.ToString());
-		Log.Info(right.ToString());
 	}
 
 	protected override void Tick(float delta)
@@ -36,7 +32,7 @@ public class Projectile : Body2D
 		var hitH = MoveF(speed * delta * scale.y, actor =>
 		{
 			hitActor = true;
-			damage.DamageActor(actor, scale);
+			damage.DamageActor(actor, Vector2.right * scale.y);
 			RemoveSelf();
 			return false;
 		});

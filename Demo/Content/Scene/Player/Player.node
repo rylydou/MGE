@@ -4,7 +4,7 @@ name: 'Player'
 # General
 punchDamage: {
 	damage: 10
-	knockback: 64.0
+	knockback: 80.0
 }
 punchCooldown: 0.2
 
@@ -18,8 +18,10 @@ acceleration: 48.0
 deAcceleration: 48.0
 accelerationAir: 32.0
 deAccelerationAir: 16.0
-moveClamp: 196.0
-crouchSpeedMult: 0.67
+moveClamp: 192.0
+crouchMoveClamp: 96.0
+moveClampAceleration: 768
+moveClampDeAceleration: 384
 
 deAccelerationEx: 16.0
 deAccelerationExAir: 8.0
@@ -52,12 +54,12 @@ _children: [
 		!MGE: 'MGE.Area2D'
 		name: 'Punch area'
 
-		position: [ 16.0 0.0 ]
+		position: [ 8.0 0.0 ]
 
 		collider: {
 			!MGE: 'MGE.HitboxCollider2D'
-			_size: [ 16.0 16.0 ]
-			position: [ -8.0 -8.0 ]
+			_size: [ 32.0 16.0 ]
+			position: [ -16.0 -8.0 ]
 		}
 	}
 ]

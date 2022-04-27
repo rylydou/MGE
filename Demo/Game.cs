@@ -14,7 +14,7 @@ public class Game : Module
 	Player player3 = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
 	Ground ground = new();
 
-	Font _font = App.content.Get<Font>("Fonts/Inter/Regular.ttf");
+	Font _font = App.content.Get<Font>("Fonts/Montserrat/Bold.ttf");
 
 	FrameBuffer _framebuffer = new(screenSize.x, screenSize.y);
 
@@ -85,6 +85,9 @@ public class Game : Module
 
 		var str =
 			$"{Time.fps} fps" + '\n' +
+			$"M: {player2.hMoveSpeed / Time.tickDelta:F0}" + '\n' +
+			$"H: {player2.hSpeed / Time.tickDelta:F0}" + '\n' +
+			$"V: {player2.vSpeed / Time.tickDelta:F0}" + '\n' +
 		"";
 
 		_font.DrawString(Batch2D.current, str, new(8), Color.white.translucent);

@@ -75,7 +75,7 @@ public class Font
 	/// <param name="position"></param>
 	/// <param name="color"></param>
 	/// <param name="fontSize">The font size in pixels (1pt = 1.33px)</param>
-	public void DrawString(Batch2D batch, string text, Vector2 position, Color color, int fontSize = 18)
+	public void DrawString(Batch2D batch, string text, Vector2 position, Color color, int fontSize = 24)
 	{
 		renderer.batch = batch;
 		fontSystem.GetFont(fontSize).DrawText(renderer, text, position, color);
@@ -89,7 +89,7 @@ public class Font
 	/// <param name="position"></param>
 	/// <param name="color"></param>
 	/// <param name="fontSize">The font size in pixels (1pt = 1.33px)</param>
-	public void DrawString(Batch2D batch, StringBuilder text, Vector2 position, Color color, int fontSize = 18)
+	public void DrawString(Batch2D batch, StringBuilder text, Vector2 position, Color color, int fontSize = 24)
 	{
 		renderer.batch = batch;
 		fontSystem.GetFont(fontSize).DrawText(renderer, text, position, color);

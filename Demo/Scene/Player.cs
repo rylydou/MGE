@@ -21,7 +21,10 @@ public class Player : Actor
 	[Prop] public float accelerationAir;
 	[Prop] public float deAccelerationAir;
 	[Prop] public float moveClamp;
-	[Prop] public float crouchSpeedMult;
+	[Prop] public float crouchMoveClamp;
+	float _moveClamp;
+	[Prop] public float moveClampAceleration;
+	[Prop] public float moveClampDeAceleration;
 
 	[Prop] public float deAccelerationEx;
 	[Prop] public float deAccelerationExAir;
@@ -138,7 +141,15 @@ public class Player : Actor
 
 					foreach (var actor in punchArea!.CollideAll<Actor>())
 					{
-						punchDamage.DamageActor(actor, right);
+						if (actor == this) continue;
+
+						punchDamage.DamageActor(actor, right + up);
+
+						// Give a player a double jump because getting comboed is not fun
+						if (actor is Player player)
+						{
+							player._coyoteTimer = player.coyoteTime * 2;
+						}
 					}
 				}
 			}
@@ -231,18 +242,20 @@ public class Player : Actor
 
 	void CalcWalk(float delta)
 	{
+		_moveClamp = Math.MoveTowards(
+			_moveClamp,
+			isCrouching ? crouchMoveClamp : moveClamp,
+			(isCrouching ? moveClampDeAceleration : moveClampAceleration) * delta
+		);
+
+
 		if (controls.move != 0)
 		{
 			// Set horizontal move speed
 			hMoveSpeed += controls.move * (hitBottom ? acceleration : accelerationAir) * delta;
 
 			// clamped by max frame movement
-			hMoveSpeed = Math.Clamp(hMoveSpeed, -moveClamp * delta, moveClamp * delta);
-
-			if (isCrouching)
-			{
-				hMoveSpeed *= crouchSpeedMult;
-			}
+			hMoveSpeed = Math.Clamp(hMoveSpeed, -_moveClamp * delta, _moveClamp * delta);
 		}
 		else
 		{
@@ -368,7 +381,7 @@ public class Player : Actor
 
 		if (timeSinceLastDamage < 0.1f)
 		{
-			color = RNG.shared.RandomBool() ? Color.white : Color.red;
+			color = RNG.shared.RandomBool() ? Color.white : Color.black;
 			washed = true;
 		}
 
