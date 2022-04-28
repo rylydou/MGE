@@ -8,10 +8,7 @@
       "preLaunchTask": "Build Demo",
       "program": "${workspaceFolder}/Demo/bin/Debug/Demo.dll",
       "args": [],
-      "env": {
-        "MGE_APPDATA": "${workspaceFolder}/Demo/appdata",
-        "MGE_CONTENT": "${workspaceFolder}/Demo/Content"
-      },
+      "env": {},
       "cwd": "${workspaceFolder}/Demo",
       "console": "internalConsole",
       "stopAtEntry": false,
@@ -33,10 +30,7 @@
       "preLaunchTask": "Build Editor",
       "program": "${workspaceFolder}/Editor/bin/Debug/MGE.Editor.dll",
       "args": [],
-      "env": {
-        "MGE_APPDATA": "${workspaceFolder}/Editor/appdata",
-        "MGE_CONTENT": "${workspaceFolder}/Editor/Content"
-      },
+      "env": {},
       "cwd": "${workspaceFolder}/Editor",
       "console": "internalConsole",
       "stopAtEntry": false,

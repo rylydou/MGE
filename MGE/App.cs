@@ -305,6 +305,6 @@ public static class App
 
 	public static File GetLibrary(string libraryName)
 	{
-		return Folder.here.GetFile($"Runtimes/{libraryName}/{App.shortEnvName}.{App.libraryExtention}");
+		return Folder.parentFolder.GetFile($"Runtimes/{libraryName}/{App.shortEnvName}.{App.libraryExtention}");
 	}
 }

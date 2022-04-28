@@ -187,6 +187,9 @@ public class Batch2D
 			if (_currentBatchInsert == _batches.Count && _currentBatch.elements > 0)
 				RenderBatch(_currentBatch, matrix);
 		}
+
+		// Implied clear
+		Clear();
 	}
 
 	void RenderBatch(in Batch batch, in Matrix4x4 matrix)

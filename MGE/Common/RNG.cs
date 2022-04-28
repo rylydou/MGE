@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace MGE;
 
@@ -35,4 +36,14 @@ public class RNG
 	}
 
 	public Color RandomColor() => new(RandomFloat(), RandomFloat(), RandomFloat(), 1.0f);
+
+	public T RandomItem<T>(T[] list)
+	{
+		return list[rng.Next(list.Length)];
+	}
+
+	public T RandomItem<T>(IList<T> list)
+	{
+		return list[rng.Next(list.Count)];
+	}
 }

@@ -1,5 +1,3 @@
-// TODO  Implement better crouching physics
-
 using MGE;
 
 namespace Demo;
@@ -41,7 +39,6 @@ public class Player : Actor
 	float _coyoteTimer;
 
 	public Texture sprite = App.content.Get<Texture>("Scene/Player/Red.ase");
-	Texture inputErrorSprite = App.content.Get<Texture>("Input Error.ase");
 
 	Node2D? holdPoint;
 	Area2D? pickupArea;
@@ -166,7 +163,7 @@ public class Player : Actor
 		var hitV = MoveV(vSpeed);
 		var hitX = MoveH(hMoveSpeed + hSpeed);
 
-		if (position.y > Game.screenSize.y + 16) OnDeath();
+		if (position.y > Game.gameScreenSize.y + 16) OnDeath();
 	}
 
 	protected override void OnDeath()
@@ -176,7 +173,7 @@ public class Player : Actor
 
 	void Respawn()
 	{
-		position = new(Game.screenSize.x / 2, 0);
+		position = new(Game.gameScreenSize.x / 2, 0);
 		hMoveSpeed = 0;
 		hSpeed = 0;
 		vSpeed = fallClamp * Time.tickDelta;
@@ -386,11 +383,6 @@ public class Player : Actor
 		}
 
 		batch.Draw(sprite, offset, pivot, Mathf.Deg2Rad(tilt), scale, color, washed);
-
-		if (!controls.isPresent || controls.hasError)
-		{
-			batch.Draw(inputErrorSprite, new(0, -24), new(0, -24), Time.SineWave(-Mathf.pi / 6, Mathf.pi / 8, 1f, 0f), Vector2.one, Color.white);
-		}
 
 		var holdOffset = new Vector2(8, isCrouching ? 2 : 0);
 

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Demo.Screens;
 using MGE;
 
 namespace Demo;
@@ -8,9 +10,16 @@ public class Game : Module
 	public static Game instance;
 #nullable restore
 
-	public PlayerData?[] players = new PlayerData[4];
+	public static Color[] playerColors = new Color[] {
+		new(0xEF4A3A),
+		new(0x2E77A4),
+		new(0x6BA841),
+		new(0xD46092),
+	};
 
-	public Controls[] controls = new Controls[]
+	public static PlayerData?[] players = new PlayerData[4];
+
+	public static Controls[] controls = new Controls[]
 	{
 		new Controls(-2),
 		new Controls(-1),
@@ -20,47 +29,40 @@ public class Game : Module
 		new Controls(3),
 	};
 
-	public static readonly Vector2Int screenSize = new(320 * 2, 180 * 2);
-	public static readonly float unitSize = 8;
-	public static readonly Vector2Int screenUnitSize = new(Mathf.CeilToInt(screenSize.x / unitSize), Mathf.CeilToInt(screenSize.y / unitSize));
+	public static AutoDictionary<string, Skin> skins = new(s => s.name);
 
-	Scene scene = new();
-	Player player1 = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
-	Player player2 = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
-	Player player3 = App.content.Get<Prefab>("Scene/Player/Player.node").CreateInstance<Player>();
-	Ground ground = new();
+	public static Font font = App.content.Get<Font>("Fonts/Montserrat/Bold.ttf");
 
-	Font _font = App.content.Get<Font>("Fonts/Montserrat/Bold.ttf");
+	public static GameScreen screen = new PlayerSetupScreen();
 
-	FrameBuffer _framebuffer = new(screenSize.x, screenSize.y);
+	public static readonly Vector2Int gameScreenSize = new(320 * 2, 180 * 2);
+
+	public static Scene scene = new();
+
+	public static FrameBuffer gameFramebuffer = new(gameScreenSize.x, gameScreenSize.y);
 
 	public Game()
 	{
 		instance = this;
 
-		ground.mapSize = screenUnitSize;
-		ground.tileSize = unitSize;
+		LoadSkins(Folder.here / "Skins");
+	}
 
-		scene.AddChild(ground);
-		scene.AddChild(player3);
-		scene.AddChild(player2);
-		scene.AddChild(player1);
+	void LoadSkins(Folder folder)
+	{
+		var aseLoader = new MGE.Loaders.AsepriteTextureLoader();
 
-		scene.AddChild(App.content.Get<Prefab>("Scene/Items/Shotgun/Shotgun.node").CreateInstance());
-		scene.AddChild(App.content.Get<Prefab>("Scene/Items/Shotgun/Shotgun.node").CreateInstance());
+		foreach (var file in folder.GetFiles("*.ase"))
+		{
+			var tex = (Texture)aseLoader.Load(file, string.Empty);
+			var skin = new Skin(file.name, tex);
+			skins.Add(skin);
+			Log.Info("Loaded skin: " + file);
+		}
 	}
 
 	protected override void Startup()
 	{
-		player1.controls.index = 0;
-		player1.sprite = App.content.Get<Texture>("Scene/Player/Chicken.ase");
-
-		player2.controls.index = -1;
-		player2.sprite = App.content.Get<Texture>("Scene/Player/Amogus.ase");
-
-		player3.controls.index = -2;
-		player3.sprite = App.content.Get<Texture>("Scene/Player/Red.ase");
-
 		App.window.onRender += Render;
 
 		App.window.SetAspectRatio(new(320, 180));
@@ -83,46 +85,29 @@ public class Game : Module
 
 		var topColor = new Color(0x3978a8);
 		var bottomColor = new Color(0x394778);
-		Batch2D.current.Rect(new(screenSize), topColor, topColor, bottomColor, bottomColor);
+		Batch2D.current.Rect(new(gameScreenSize), topColor, topColor, bottomColor, bottomColor);
+
+		screen.Update(delta);
 
 		scene.onUpdate(delta);
+
+		Batch2D.current.Render(gameFramebuffer);
 	}
 
 	protected override void Tick(float delta)
 	{
+		screen.Tick(delta);
+
 		scene.onTick(delta);
 	}
 
 	void Render(Window window)
 	{
-		Batch2D.current.Render(_framebuffer);
-		Batch2D.current.Clear();
+		// Draw game framebuffer onto window
+		Batch2D.current.Image(gameFramebuffer, Vector2.zero, window.size / gameScreenSize, Vector2.zero, 0, Color.white);
 
-		var screenScale = window.size / screenSize;
-		Batch2D.current.Image(_framebuffer, Vector2.zero, screenScale, Vector2.zero, 0, Color.white);
-
-		var str =
-			$"{Time.fps} fps" + '\n' +
-			$"M: {player2.hMoveSpeed / Time.tickDelta:F0}" + '\n' +
-			$"H: {player2.hSpeed / Time.tickDelta:F0}" + '\n' +
-			$"V: {player2.vSpeed / Time.tickDelta:F0}" + '\n' +
-		"";
-
-		_font.DrawString(Batch2D.current, str, new(8), Color.white.translucent);
-
-		/*
-		var controller = App.input.controllers[0];
-		var smallSize = 128 * 0.15f;
-
-		Batch2D.current.HollowRect(new(64, 64, 128, 128), 1, Color.white);
-		Batch2D.current.HollowRect(new(128 - smallSize / 2, 128 - smallSize / 2, smallSize, smallSize), 1, Color.red);
-
-		Batch2D.current.Line(new(128), new Vector2(128) + controller.leftStick * 64, 2, Color.red);
-		Batch2D.current.Circle(new Vector2(128) + controller.leftStick * 64, 4, 4, Color.red);
-
-		Batch2D.current.Line(new(128), new Vector2(128) + controller.rightStick * 64, 2, Color.green);
-		Batch2D.current.Circle(new Vector2(128) + controller.rightStick * 64, 4, 4, Color.green);
-		 */
+		// Render screen
+		screen.Render(Batch2D.current);
 
 		Batch2D.current.Render(window);
 	}

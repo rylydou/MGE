@@ -26,6 +26,31 @@ public struct File : IEquatable<File>
 
 	public readonly string path;
 
+	public string name
+	{
+		get
+		{
+			var length = path.Length;
+			var start = 0;
+			var end = length;
+			for (int i = length; --i >= 0;)
+			{
+				var ch = path[i];
+				if (ch == '.')
+				{
+					end = i;
+					continue;
+				}
+				if (ch == '/')
+				{
+					start = i + 1;
+					break;
+				}
+			}
+			return path.Substring(start, end - start);
+		}
+	}
+
 	public string extension
 	{
 		get

@@ -28,7 +28,7 @@ public class Content : AppModule
 
 	public Content()
 	{
-		contentFolder = Environment.GetEnvironmentVariable("MGE_CONTENT") ?? Folder.here / "Content";
+		contentFolder = Folder.here / "Content";
 		contentPacksFolder = Folder.data / "Content Packs";
 	}
 

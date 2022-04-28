@@ -14,9 +14,15 @@ public struct Folder : IEquatable<Folder>
 	{
 		root = "";
 		user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+		parentFolder = AppDomain.CurrentDomain.BaseDirectory ?? throw new Exception();
 
-		data = Environment.GetEnvironmentVariable("MGE_APPDATA") ?? new Folder(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)) / App.name;
-		here = AppDomain.CurrentDomain.BaseDirectory ?? throw new Exception();
+#if DEBUG
+		here = Environment.CurrentDirectory;
+		data = new Folder(Environment.CurrentDirectory) / "appdata";
+#else
+		here = parentFolder;
+		data = new Folder(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)) / App.name;
+#endif
 	}
 
 	/// <summary>
@@ -52,9 +58,14 @@ public struct Folder : IEquatable<Folder>
 	/// </remarks>
 	public static readonly Folder data;
 	/// <summary>
-	/// The folder where the application is located.
+	/// The folder where the application is located or parentFolder if in debug mode.
 	/// </summary>
 	public static readonly Folder here;
+
+	/// <summary>
+	/// The folder where the application is located, even in debug mode.
+	/// </summary>
+	public static readonly Folder parentFolder;
 
 	#endregion
 

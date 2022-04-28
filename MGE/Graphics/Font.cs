@@ -1,4 +1,5 @@
-using System;
+// TODO  Fix font rendering on diffrent scales
+
 using System.Text;
 using FontStashSharp;
 using FontStashSharp.Interfaces;
@@ -17,13 +18,13 @@ public class Font
 			return texture;
 		}
 
-		public global::System.Drawing.Point GetTextureSize(object obj)
+		public System.Drawing.Point GetTextureSize(object obj)
 		{
 			var texture = (Texture)obj;
 			return new(texture.width, texture.height);
 		}
 
-		public void SetTextureData(object obj, global::System.Drawing.Rectangle bounds, byte[] data)
+		public void SetTextureData(object obj, System.Drawing.Rectangle bounds, byte[] data)
 		{
 			var texture = (Texture)obj;
 			texture.SetData(new(bounds.X, bounds.Y, bounds.Width, bounds.Height), data);
@@ -37,7 +38,7 @@ public class Font
 
 		public Batch2D? batch;
 
-		public void Draw(object obj, global::System.Numerics.Vector2 pos, global::System.Drawing.Rectangle? src, global::System.Drawing.Color color, float rotation, global::System.Numerics.Vector2 origin, global::System.Numerics.Vector2 scale, float depth)
+		public void Draw(object obj, System.Numerics.Vector2 pos, System.Drawing.Rectangle? src, global::System.Drawing.Color color, float rotation, System.Numerics.Vector2 origin, System.Numerics.Vector2 scale, float depth)
 		{
 			if (!src.HasValue) throw new Exception();
 
@@ -67,34 +68,19 @@ public class Font
 		fontSystem.CurrentAtlasFull += (sender, args) => throw new Exception("Ran out of space in the font texture atlas");
 	}
 
-	/// <summary>
-	///
-	/// </summary>
-	/// <param name="batch"></param>
-	/// <param name="text"></param>
-	/// <param name="position"></param>
-	/// <param name="color"></param>
-	/// <param name="fontSize">The font size in pixels (1pt = 1.33px)</param>
 	public void DrawString(Batch2D batch, string text, Vector2 position, Color color, int fontSize = 24)
 	{
 		renderer.batch = batch;
 		fontSystem.GetFont(fontSize).DrawText(renderer, text, position, color);
 	}
 
-	/// <summary>
-	///
-	/// </summary>
-	/// <param name="batch"></param>
-	/// <param name="text"></param>
-	/// <param name="position"></param>
-	/// <param name="color"></param>
-	/// <param name="fontSize">The font size in pixels (1pt = 1.33px)</param>
-	public void DrawString(Batch2D batch, StringBuilder text, Vector2 position, Color color, int fontSize = 24)
+	public Vector2 MeasureString(string text, int fontSize = 24)
 	{
-		renderer.batch = batch;
-		fontSystem.GetFont(fontSize).DrawText(renderer, text, position, color);
+		return fontSystem.GetFont(fontSize).MeasureString(text);
 	}
 
-	public Vector2 MeasureString(string text, int fontSize = 18) => fontSystem.GetFont(fontSize).MeasureString(text);
-	public Vector2 MeasureString(StringBuilder text, int fontSize = 18) => fontSystem.GetFont(fontSize).MeasureString(text);
+	public Vector2 MeasureString(StringBuilder text, int fontSize = 24)
+	{
+		return fontSystem.GetFont(fontSize).MeasureString(text);
+	}
 }
