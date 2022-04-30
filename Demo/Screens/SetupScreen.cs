@@ -4,7 +4,7 @@ using MGE.UI;
 
 namespace Demo.Screens;
 
-public class PlayerSetupScreen : GameScreen
+public class SetupScreen : GameScreen
 {
 	public Vector2 canvasSize = new(320, 180);
 
@@ -12,9 +12,13 @@ public class PlayerSetupScreen : GameScreen
 
 	Font _font = App.content.Get<Font>("Fonts/Montserrat/Bold.ttf");
 
-	public PlayerSetupScreen()
+	public SetupScreen()
 	{
 		canvas.fixedSize = canvasSize;
+	}
+
+	public override void Start()
+	{
 	}
 
 	public override void Tick(float delta)
@@ -28,9 +32,10 @@ public class PlayerSetupScreen : GameScreen
 			controls.Update();
 		}
 
-		for (int pid = 0; pid < Game.players.Length; pid++)
+		for (int i = 0; i < Game.players.Length; i++)
 		{
-			var player = Game.players[pid];
+			var player = Game.players[i];
+
 			if (player is null)
 			{
 				// Loop over unassigned controllers
@@ -44,7 +49,7 @@ public class PlayerSetupScreen : GameScreen
 						player = new PlayerData();
 						player.controls = controls;
 						controls.player = player;
-						Game.players[pid] = player;
+						Game.players[i] = player;
 
 						break;
 					}
@@ -55,6 +60,7 @@ public class PlayerSetupScreen : GameScreen
 				if (player.controls is null)
 				{
 					// TODO  Setup controls if controls are missing
+					Log.Info($"Player {i + 1} does not have controls");
 					continue;
 				}
 
@@ -83,7 +89,7 @@ public class PlayerSetupScreen : GameScreen
 					{
 						// Remove the owner from the controls
 						player.controls.player = null;
-						Game.players[pid] = null;
+						Game.players[i] = null;
 					}
 				}
 			}

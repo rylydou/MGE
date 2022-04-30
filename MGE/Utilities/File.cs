@@ -41,7 +41,7 @@ public struct File : IEquatable<File>
 					end = i;
 					continue;
 				}
-				if (ch == '/')
+				if (ch == '/' || ch == '\\')
 				{
 					start = i + 1;
 					break;
@@ -60,7 +60,7 @@ public struct File : IEquatable<File>
 			{
 				var ch = path[i];
 				if (ch == '.') return path.Substring(i + 1, length - i - 1);
-				if (ch == '/') break;
+				if (ch == '/' || ch == '\\') break;
 			}
 			return string.Empty;
 		}

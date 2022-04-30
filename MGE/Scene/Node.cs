@@ -114,6 +114,14 @@ public abstract class Node
 		node.parent = null;
 	}
 
+	public void RemoveAllChildren()
+	{
+		foreach (var child in GetChildren<Node>().ToArray())
+		{
+			RemoveChild(child);
+		}
+	}
+
 	public void RemoveSelf()
 	{
 		if (parent is null) throw new Exception("Remove self", "Node is not a child of anything");

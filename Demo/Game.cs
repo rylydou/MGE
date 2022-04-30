@@ -33,7 +33,7 @@ public class Game : Module
 
 	public static Font font = App.content.Get<Font>("Fonts/Montserrat/Bold.ttf");
 
-	public static GameScreen screen = new PlayerSetupScreen();
+	public static GameScreen screen = new SetupScreen();
 
 	public static readonly Vector2Int gameScreenSize = new(320 * 2, 180 * 2);
 
