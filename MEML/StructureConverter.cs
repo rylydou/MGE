@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
@@ -28,6 +29,18 @@ public class ObjectMember
 
 public class StructureConverter
 {
+	const DynamicallyAccessedMemberTypes dynamicallyAccessedMemberTypes =
+		DynamicallyAccessedMemberTypes.PublicFields |
+		DynamicallyAccessedMemberTypes.PublicProperties |
+		DynamicallyAccessedMemberTypes.PublicConstructors |
+		DynamicallyAccessedMemberTypes.PublicParameterlessConstructor |
+		DynamicallyAccessedMemberTypes.PublicMethods |
+		DynamicallyAccessedMemberTypes.NonPublicFields |
+		DynamicallyAccessedMemberTypes.NonPublicProperties |
+		DynamicallyAccessedMemberTypes.NonPublicConstructors |
+		DynamicallyAccessedMemberTypes.NonPublicMethods
+	;
+
 	public delegate void OnUnusedValue(string name);
 	public OnUnusedValue onUnusedValue = (name) => Trace.TraceWarning($"Unused value: {name}");
 
@@ -175,12 +188,13 @@ public class StructureConverter
 		return null;
 	}
 
-	public T CreateObjectFromStructure<T>(StructureValue value)
+	public T CreateObjectFromStructure<T>(StructureValue value, params object?[] args)
 	{
-		return (T)CreateObjectFromStructure(value, typeof(T))!;
+		return (T)CreateObjectFromStructure(value, typeof(T), args)!;
 	}
-	public object? CreateObjectFromStructure(StructureValue value, Type? impliedType = null)
+	public object? CreateObjectFromStructure(StructureValue value, Type? impliedType = null, params object?[] args)
 	{
+		// Try to use the explict converter
 		if (impliedType is not null)
 		{
 			if (_converters.TryGetValue(impliedType, out var converter))
@@ -189,36 +203,54 @@ public class StructureConverter
 			}
 		}
 
+		// No explict converter exists? Then do it automatically...
+
 		if (value.type == StructureType.Object)
 		{
+			// Create an object
+
+			// Find the !Assembly: 'Namespace.Type' in the object, it should be the first key value
 			var firstPair = value.pairs.First();
 			if (firstPair.Key[0] == '!')
 			{
 				var asmName = firstPair.Key.Remove(0, 1);
 				var fullTypeName = firstPair.Value.String;
 
+				// Convert the string to a type
 				impliedType = typeFinder(asmName, fullTypeName) ??
 					throw new Exception($"Connot find type '{fullTypeName}' from '{asmName}'");
 			}
 
+			// If no type is found then give up
 			if (impliedType is null)
 				throw new Exception("Meml object doesn't define its type");
 
-			var obj = Activator.CreateInstance(impliedType, true);
+			// Create an instance of the object using the constructor and arguments
+			var obj = Activator.CreateInstance(impliedType, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.CreateInstance, null, args, null);
+
+			// Loop over all the pairs in the structure
 			foreach (var item in value.pairs)
 			{
+				// Skip over 'meta' pairs
 				if (item.Key[0] == '!') continue;
 
+				// Find the member with the name in the type
 				var members = impliedType.GetMember(item.Key, suggestedBindingFlags);
+
+				// If there are no members with that name then give up, or if there are too many then freakout
 				if (members.Length != 1)
 				{
 					onUnusedValue(item.Key);
 					continue;
 				}
 
+				// Abstract away field vs property nonseance
 				var variable = memberConverter(members[0]) ?? throw new Exception();
 
+				// Convert the value in the pair
 				var memberValue = CreateObjectFromStructure(item.Value, variable.type);
+
+				// Set the member to the value
 				variable.setValue(obj, memberValue);
 			}
 
@@ -227,29 +259,41 @@ public class StructureConverter
 
 		if (value.type == StructureType.Array)
 		{
+			// Create an array
+
+			// The array must have a implied type to know content type
 			if (impliedType is null) throw new NotSupportedException();
 
+			// Get the content type
 			var collectionType = GetCollectionElementType(impliedType);
 
 			if (impliedType.IsArray)
 			{
+				// If it is an array then thats easy,
+				//  convert the elements to an object the return that.
 				return value.values.Select(item => CreateObjectFromStructure(item, collectionType)).ToArray();
 			}
 
+			// Or else then it is a list
+
+			// Create the list
 			var list = (IList)Activator.CreateInstance(impliedType, true)!;
 
+			// Add the converted elements to the list
 			foreach (var item in value.values)
 			{
-				list.Add(CreateObjectFromStructure(item));
+				list.Add(CreateObjectFromStructure(item, null, args));
 			}
 
 			return list;
 		}
 
+		// Return the primitive
 		return value.underlyingValue;
 	}
 
-	public void PopulateObjectFromStructure(ref object obj, in StructureValue value)
+	// TODO  Implement
+	public void PopulateObjectFromStructure(ref object obj, in StructureValue value, params object?[] args)
 	{
 		var type = obj.GetType();
 
@@ -266,7 +310,7 @@ public class StructureConverter
 
 			var variable = memberConverter(members[0]) ?? throw new Exception();
 
-			var memberValue = CreateObjectFromStructure(item.Value, variable.type);
+			var memberValue = CreateObjectFromStructure(item.Value, variable.type, args);
 			variable.setValue(obj, memberValue);
 		}
 	}

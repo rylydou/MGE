@@ -38,13 +38,12 @@ public class Player : Actor
 	[Prop] public float coyoteTime;
 	float _coyoteTimer;
 
-	public Texture sprite = App.content.Get<Texture>("Scene/Player/Red.ase");
+	public PlayerData data { get; init; }
 
 	Node2D? holdPoint;
 	Area2D? pickupArea;
 	Area2D? punchArea;
 
-	public Controls controls = new Controls(-1);
 	public Item? heldItem;
 
 	public float hMoveSpeed;
@@ -53,6 +52,11 @@ public class Player : Actor
 
 	HitboxCollider2D _normalHitbox = new HitboxCollider2D(new(12, 12), new(-6, -6));
 	HitboxCollider2D _crouchingHitbox = new HitboxCollider2D(new(12, 6), new(-6, 0));
+
+	public Player(PlayerData data)
+	{
+		this.data = data;
+	}
 
 	protected override void Ready()
 	{
@@ -70,12 +74,12 @@ public class Player : Actor
 
 	protected override void Update(float delta)
 	{
-		controls.Update();
+		data.controls.Update();
 		var kb = App.input.keyboard;
 
-		if (controls.move != 0)
+		if (data.controls.move != 0)
 		{
-			scale = new(controls.move, 1);
+			scale = new(data.controls.move, 1);
 		}
 	}
 
@@ -86,9 +90,9 @@ public class Player : Actor
 		_punchCooldownTimmer -= delta;
 
 		_useBuffer -= delta;
-		if (controls.action)
+		if (data.controls.action)
 		{
-			if (controls.crouch)
+			if (data.controls.crouch)
 			{
 				_useBuffer = -1;
 				// Pickup/Drop item
@@ -113,7 +117,7 @@ public class Player : Actor
 				_useBuffer = useBufferLength;
 			}
 		}
-		controls.action = false;
+		data.controls.action = false;
 
 		if (_useBuffer > 0)
 		{
@@ -209,9 +213,9 @@ public class Player : Actor
 
 	void CalcCrouch(float delta)
 	{
-		if (isCrouching == controls.crouch) return;
+		if (isCrouching == data.controls.crouch) return;
 
-		if (controls.crouch)
+		if (data.controls.crouch)
 		{
 			// No need to check when crouching
 			isCrouching = true;
@@ -246,10 +250,10 @@ public class Player : Actor
 		);
 
 
-		if (controls.move != 0)
+		if (data.controls.move != 0)
 		{
 			// Set horizontal move speed
-			hMoveSpeed += controls.move * (hitBottom ? acceleration : accelerationAir) * delta;
+			hMoveSpeed += data.controls.move * (hitBottom ? acceleration : accelerationAir) * delta;
 
 			// clamped by max frame movement
 			hMoveSpeed = Mathf.Clamp(hMoveSpeed, -_moveClamp * delta, _moveClamp * delta);
@@ -305,11 +309,11 @@ public class Player : Actor
 		_maxJumpSpeed = -Mathf.Sqrt(2 * (fallSpeed * delta) * maxJumpHeight);
 
 		_jumpBuffer -= delta;
-		if (controls.jump)
+		if (data.controls.jump)
 		{
 			_jumpBuffer = jumpBufferLength;
 		}
-		controls.jump = false;
+		data.controls.jump = false;
 
 		if (_coyoteTimer > 0 && _jumpBuffer > 0)
 		{
@@ -317,11 +321,11 @@ public class Player : Actor
 			vSpeed = isCrouching ? _minJumpSpeed : _maxJumpSpeed;
 		}
 
-		if (controls.jumpCancel && vSpeed < _minJumpSpeed)
+		if (data.controls.jumpCancel && vSpeed < _minJumpSpeed)
 		{
 			vSpeed = _minJumpSpeed;
 		}
-		controls.jumpCancel = false;
+		data.controls.jumpCancel = false;
 	}
 
 	#endregion Movement
@@ -382,7 +386,7 @@ public class Player : Actor
 			washed = true;
 		}
 
-		batch.Draw(sprite, offset, pivot, Mathf.Deg2Rad(tilt), scale, color, washed);
+		batch.Draw(data.skin.texture, offset, pivot, Mathf.Deg2Rad(tilt), scale, color, washed);
 
 		var holdOffset = new Vector2(8, isCrouching ? 2 : 0);
 

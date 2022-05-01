@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Demo.Screens;
 using MGE;
 
@@ -6,6 +6,11 @@ namespace Demo;
 
 public class Game : Module
 {
+	static Game()
+	{
+		ChangeScreen(new SetupScreen());
+	}
+
 #nullable disable
 	public static Game instance;
 #nullable restore
@@ -30,16 +35,22 @@ public class Game : Module
 	};
 
 	public static AutoDictionary<string, Skin> skins = new(s => s.name);
-
 	public static Font font = App.content.Get<Font>("Fonts/Montserrat/Bold.ttf");
 
-	public static GameScreen screen = new SetupScreen();
-
 	public static readonly Vector2Int gameScreenSize = new(320 * 2, 180 * 2);
+	public static FrameBuffer gameFramebuffer = new(gameScreenSize.x, gameScreenSize.y);
 
 	public static Scene scene = new();
+	public static GameScreen screen { get; private set; }
 
-	public static FrameBuffer gameFramebuffer = new(gameScreenSize.x, gameScreenSize.y);
+	[MemberNotNull(nameof(screen))]
+	public static void ChangeScreen(GameScreen screen)
+	{
+		scene.RemoveAllChildren();
+
+		Game.screen = screen;
+		screen.Start();
+	}
 
 	public Game()
 	{
@@ -56,7 +67,7 @@ public class Game : Module
 		{
 			var tex = (Texture)aseLoader.Load(file, string.Empty);
 			var skin = new Skin(file.name, tex);
-			skins.Add(skin);
+			skins.Set(skin);
 			Log.Info("Loaded skin: " + file);
 		}
 	}

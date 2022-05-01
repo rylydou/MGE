@@ -21,6 +21,8 @@ public class AutoDictionary<TKey, TValue> : ICollection<TValue> where TKey : not
 	public ICollection<TValue> Values => _dictionary.Values;
 
 	public void Add(TValue item) => _dictionary.Add(_getKey(item), item);
+	public void Set(TValue item) => _dictionary.Set(_getKey(item), item);
+
 	public bool Remove(TValue item) => _dictionary.Remove(_getKey(item));
 	public void Clear() => _dictionary.Clear();
 

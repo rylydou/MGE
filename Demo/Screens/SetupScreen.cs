@@ -75,7 +75,17 @@ public class SetupScreen : GameScreen
 
 				if (player.controls.confirm)
 				{
-					player.isReady = true;
+					if (player.isReady)
+					{
+						// TEMP Start game
+						Game.ChangeScreen(new PlayingScreen());
+						return;
+					}
+					else
+					{
+						// Ready up
+						player.isReady = true;
+					}
 				}
 
 				if (player.controls.back)

@@ -3,7 +3,7 @@ namespace Demo;
 public class PlayerData
 {
 	public Skin skin;
-	public Controls? controls;
+	public Controls controls;
 
 	public Player? player;
 
@@ -12,5 +12,6 @@ public class PlayerData
 	public PlayerData()
 	{
 		skin = Game.skins["_Template"];
+		controls = new Controls(0);
 	}
 }

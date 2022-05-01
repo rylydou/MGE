@@ -23,13 +23,13 @@ public class Prefab
 		_prefab = prefab;
 	}
 
-	public Node CreateInstance()
+	public Node CreateInstance(params object?[] args)
 	{
-		return converter.CreateObjectFromStructure<Node>(_prefab) ?? throw new Exception("Create instance of prefab", "Prefab data is null");
+		return converter.CreateObjectFromStructure<Node>(_prefab, args) ?? throw new Exception("Create instance of prefab", "Prefab data is null");
 	}
 
-	public T CreateInstance<T>()
+	public T CreateInstance<T>(params object?[] args)
 	{
-		return converter.CreateObjectFromStructure<T>(_prefab);
+		return converter.CreateObjectFromStructure<T>(_prefab, args);
 	}
 }

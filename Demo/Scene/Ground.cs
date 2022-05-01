@@ -42,7 +42,21 @@ public class Ground : Solid
 	{
 		tilemap = new GridCollider2D(mapSize, tileSize);
 		collider = tilemap;
-		tilemap.SetRect(24, mapSize.y - 16 - 4, mapSize.x - 48, 4, true);
+
+		var noise = new Noise();
+
+		var zoom = 4f;
+		var topBias = +1.00f;
+		var bottomBias = -0.00f;
+
+		for (int y = 0; y < mapSize.y; y++)
+		{
+			for (int x = 0; x < mapSize.x; x++)
+			{
+				var bias = Mathf.Lerp(topBias, bottomBias, (float)y / mapSize.y);
+				tilemap.data[x, y] = noise.GetNoise(x * zoom, y * zoom) > bias;
+			}
+		}
 	}
 
 	protected override void Update(float delta)
