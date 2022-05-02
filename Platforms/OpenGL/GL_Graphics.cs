@@ -167,6 +167,14 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 		return new ShaderSource(vertexSource, fragmentSource);
 	}
 
+	protected override ShaderSource CreateShaderSourceMSDF()
+	{
+		var vertexSource = Util.EmbeddedResourceText("Resources/batch2d.vert");
+		var fragmentSource = Util.EmbeddedResourceText("Resources/msdf.frag");
+
+		return new ShaderSource(vertexSource, fragmentSource);
+	}
+
 	protected override void ClearInternal(RenderTarget target, Clear flags, Color color, float depth, int stencil, RectInt viewport)
 	{
 		if (target is Window window)

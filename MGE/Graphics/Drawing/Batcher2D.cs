@@ -1119,6 +1119,20 @@ public class Batch2D
 				new Vector2(tx0, ty1), color, washed);
 	}
 
+	public void Image(Texture texture, in Rect clip, in Rect dest, Color color, bool washed = false)
+	{
+		var tx0 = clip.x / texture.width;
+		var ty0 = clip.y / texture.height;
+		var tx1 = clip.right / texture.width;
+		var ty1 = clip.bottom / texture.height;
+
+		SetTexture(texture);
+		Quad(
+			dest.topLeft, dest.topRight, dest.bottomRight, dest.bottomLeft,
+			new(tx0, ty0), new(tx1, ty0), new(tx1, ty1), new(tx0, ty1),
+		color, washed);
+	}
+
 	public void Image(Texture texture, in Rect clip, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, Color color, bool washed = false)
 	{
 		var was = matrixStack;

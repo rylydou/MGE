@@ -157,4 +157,6 @@ public abstract class Graphics : AppModule
 	/// Gets the Shader Source for the Batch2D
 	/// </summary>
 	protected internal abstract ShaderSource CreateShaderSourceBatch2D();
+
+	protected internal abstract ShaderSource CreateShaderSourceMSDF();
 }

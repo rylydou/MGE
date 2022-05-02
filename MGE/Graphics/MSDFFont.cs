@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MGE;
@@ -39,7 +40,7 @@ public class MSDFFontDef
 	public class Common
 	{
 		[Save] public int lineHeight;
-		[Save] public int b;
+		[Save] public int baseline;
 		[Save] public int scaleW;
 		[Save] public int scaleH;
 		[Save] public int pages;
@@ -74,6 +75,15 @@ public class MSDFFontDef
 
 public class MSDFFont
 {
+	static Material msdfMat;
+
+	static MSDFFont()
+	{
+		var shader = new Shader(App.graphics.CreateShaderSourceMSDF());
+		msdfMat = new Material(shader);
+		msdfMat["u_pxRange"].SetFloat(4f);
+	}
+
 	public Texture texture;
 	public MSDFFontDef def;
 
@@ -83,24 +93,61 @@ public class MSDFFont
 		this.def = def;
 	}
 
-	public void DrawString(Batch2D batch, string text, Vector2 position, int scale)
+	public void DrawString(Batch2D batch, IEnumerable<char> text, Vector2 position, Color color, float fontSize)
 	{
+		batch.SetMaterial(msdfMat);
+
+		var scale = fontSize / def.info.size;
+
 		var x = 0;
+		var y = 0;
 
-		for (int i = 0; i < text.Length; i++)
+		var prevChar = ' ';
+		foreach (var ch in text)
 		{
-			var ch = text[i];
-			if (!char.IsLetterOrDigit(ch)) continue;
+			if (char.IsControl(ch))
+			{
+				switch (ch)
+				{
+					case '\n':
+						x = 0;
+						y += def.common.lineHeight;
+						break;
+				}
+			}
+			else
+			{
+				var glyph = def.chars.FirstOrDefault(c => c.id == ch);
+				var unknown = false;
+				if (glyph is null)
+				{
+					unknown = true;
+					glyph = def.chars[0];
+				}
 
-			var id = (int)ch;
+				var kerning = def.kernings.FirstOrDefault(k => k.first == prevChar && k.second == ch);
+				if (kerning is not null)
+				{
+					x += kerning.amount;
+				}
 
-			var glyph = def.chars.First(c => c.id == id);
+				var clip = new RectInt(glyph.x, glyph.y, glyph.width, glyph.height);
 
-			var rect = new RectInt(glyph.x, glyph.y, glyph.width, glyph.height);
+				var xx = glyph.xoffset;
+				var yy = glyph.yoffset;
 
-			batch.Image(texture, rect, new(position.x + x, position.y), new(scale), Vector2.zero, 0, Color.white);
+				var pos = new Vector2(position.x + (x + xx) * scale, position.y + (y + yy) * scale);
+				var rect = new Rect(pos.x, pos.y, glyph.width * scale, glyph.height * scale);
 
-			x += rect.width;
+				if (unknown) batch.HollowRect(rect, 2, color);
+				else batch.Image(texture, clip, rect, color);
+
+				x += glyph.xadvance;
+			}
+
+			prevChar = ch;
 		}
+
+		batch.SetMaterial(batch.defaultMaterial);
 	}
 }

@@ -17,13 +17,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="Resources\batch2d.frag" />
 		<None Remove="Resources\batch2d.vert" />
+		<None Remove="Resources\batch2d.frag" />
+		<None Remove="Resources\msdf.frag" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="Resources\batch2d.frag" />
 		<EmbeddedResource Include="Resources\batch2d.vert" />
+		<EmbeddedResource Include="Resources\batch2d.frag" />
+		<EmbeddedResource Include="Resources\msdf.frag" />
 	</ItemGroup>
 
 	<ItemGroup>
