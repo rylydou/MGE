@@ -4,6 +4,6 @@ public class PrefabLoader : IContentLoader
 {
 	public object Load(File file, string path)
 	{
-		return new Prefab(file.ReadMemlStructure());
+		return new Prefab(file.ReadMemlRaw());
 	}
 }

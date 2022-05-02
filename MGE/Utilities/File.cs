@@ -81,24 +81,21 @@ public struct File : IEquatable<File>
 	public string[] ReadLines() => FileIO.ReadAllLines(path);
 	public byte[] ReadBytes() => FileIO.ReadAllBytes(path);
 
-	public T ReadMeml<T>()
-	{
-		var type = typeof(T);
-		var value = ReadMeml(type);
-		return (T)(value ?? throw new NotImplementedException());
-	}
-	public object? ReadMeml(Type? impliedType = null) => _converter.CreateObjectFromStructure(new MemlTextReader(OpenReadText()).ReadObject(), impliedType);
+	public T ReadMeml<T>() => (T)(ReadMeml(typeof(T)) ?? throw new NotImplementedException());
+	public object? ReadMeml(Type? impliedType = null) => _converter.CreateObjectFromStructure(ReadMemlRaw(), impliedType);
+	public StructureValue ReadMemlRaw() => new MemlTextReader(OpenReadText()).ReadObject();
 
-	public StructureValue ReadMemlStructure()
-	{
-		return new MemlTextReader(OpenReadText()).ReadObject();
-	}
+	public T ReadJson<T>() => (T)(ReadJson(typeof(T)) ?? throw new NotImplementedException());
+	public object? ReadJson(Type? impliedType = null) => _converter.CreateObjectFromStructure(new JsonTextReader(OpenReadText()).ReadObject(), impliedType);
+	public StructureValue ReadJsonRaw() => new JsonTextReader(OpenReadText()).ReadObject();
 
 	public void WriteText(string? text) => FileIO.WriteAllText(path, text);
 	public void WriteLines(string[] lines) => FileIO.WriteAllLines(path, lines);
 	public void WriteBytes(byte[] bytes) => FileIO.WriteAllBytes(path, bytes);
 
 	public void WriteMeml(object? obj, Type? impliedType = null) => new MemlTextWriter(OpenWrite()).Write(_converter.CreateStructureFromObject(obj, impliedType));
+
+	public void WriteJson(StructureValue value) => new JsonTextWriter(OpenWriteText()).Write(value);
 
 	public void AppendText(string? text) => FileIO.AppendAllText(path, text);
 	public void AppendLines(string[] lines) => FileIO.AppendAllLines(path, lines);

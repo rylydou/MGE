@@ -144,7 +144,7 @@ public class StructureConverter
 		if (obj is ICollection collection)
 		{
 			var structArray = new StructureArray();
-			var contentType = type.IsArray ? type.GetElementType() : GetCollectionElementType(type);
+			var contentType = type.IsArray ? type.GetElementType() : GetElementType(type);
 
 			foreach (var item in collection)
 			{
@@ -173,8 +173,13 @@ public class StructureConverter
 		return memlObject;
 	}
 
-	static Type? GetCollectionElementType(Type type)
+	static Type? GetElementType(Type type)
 	{
+		if (type.IsArray)
+		{
+			return type.GetElementType();
+		}
+
 		var etype = typeof(IList<>);
 
 		foreach (var bt in type.GetInterfaces())
@@ -217,8 +222,11 @@ public class StructureConverter
 				var fullTypeName = firstPair.Value.String;
 
 				// Convert the string to a type
-				impliedType = typeFinder(asmName, fullTypeName) ??
+				var foundType = typeFinder(asmName, fullTypeName) ??
 					throw new Exception($"Connot find type '{fullTypeName}' from '{asmName}'");
+
+				if (foundType is not null)
+					impliedType = foundType;
 			}
 
 			// If no type is found then give up
@@ -265,14 +273,22 @@ public class StructureConverter
 			if (impliedType is null) throw new NotSupportedException();
 
 			// Get the content type
-			var collectionType = GetCollectionElementType(impliedType);
+			var elementType = GetElementType(impliedType);
 
 			if (impliedType.IsArray)
 			{
 				// If it is an array then thats easy,
 				//  convert the elements to an object the return that.
-				return value.values.Select(item => CreateObjectFromStructure(item, collectionType)).ToArray();
+
+				var arr = Array.CreateInstance(elementType ?? throw new Exception(), value.count);
+				for (int i = 0; i < value.count; i++)
+				{
+					arr.SetValue(CreateObjectFromStructure(value[i], elementType), i);
+				}
+
+				return arr;
 			}
+
 
 			// Or else then it is a list
 
@@ -282,7 +298,7 @@ public class StructureConverter
 			// Add the converted elements to the list
 			foreach (var item in value.values)
 			{
-				list.Add(CreateObjectFromStructure(item, null, args));
+				list.Add(CreateObjectFromStructure(item, elementType, args));
 			}
 
 			return list;
