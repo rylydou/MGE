@@ -89,13 +89,22 @@ public struct File : IEquatable<File>
 	public object? ReadJson(Type? impliedType = null) => _converter.CreateObjectFromStructure(new JsonTextReader(OpenReadText()).ReadObject(), impliedType);
 	public StructureValue ReadJsonRaw() => new JsonTextReader(OpenReadText()).ReadObject();
 
+	public T ReadBinary<T>() => (T)(ReadJson(typeof(T)) ?? throw new NotImplementedException());
+	public object? ReadBinary(Type? impliedType = null) => _converter.CreateObjectFromStructure(new MemlBinaryReader(OpenRead()).ReadObject(), impliedType);
+	public StructureValue ReadBinaryRaw() => new JsonTextReader(OpenReadText()).ReadObject();
+
 	public void WriteText(string? text) => FileIO.WriteAllText(path, text);
 	public void WriteLines(string[] lines) => FileIO.WriteAllLines(path, lines);
 	public void WriteBytes(byte[] bytes) => FileIO.WriteAllBytes(path, bytes);
 
 	public void WriteMeml(object? obj, Type? impliedType = null) => new MemlTextWriter(OpenWrite()).Write(_converter.CreateStructureFromObject(obj, impliedType));
+	public void WriteMeml(StructureValue value) => new MemlTextWriter(OpenWriteText()).Write(value);
 
+	public void WriteJson(object? obj, Type? impliedType = null) => new JsonTextWriter(OpenWrite()).Write(_converter.CreateStructureFromObject(obj, impliedType));
 	public void WriteJson(StructureValue value) => new JsonTextWriter(OpenWriteText()).Write(value);
+
+	public void WriteBinary(object? obj, Type? impliedType = null) => new MemlBinaryWriter(OpenWrite()).Write(_converter.CreateStructureFromObject(obj, impliedType));
+	public void WriteBinary(StructureValue value) => new MemlBinaryWriter(OpenWrite()).Write(value);
 
 	public void AppendText(string? text) => FileIO.AppendAllText(path, text);
 	public void AppendLines(string[] lines) => FileIO.AppendAllLines(path, lines);

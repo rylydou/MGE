@@ -34,14 +34,12 @@ public class Game : Module
 		new Controls(3),
 	};
 
-	public static AutoDictionary<string, Skin> skins = new(s => s.name);
-
+	public static Rect renderRect;
 	public static readonly Vector2Int gameScreenSize = new(320 * 2, 180 * 2);
 	public static FrameBuffer gameFramebuffer = new(gameScreenSize.x, gameScreenSize.y);
 
 	public static Scene scene = new();
 	public static GameScreen screen { get; private set; }
-
 	[MemberNotNull(nameof(screen))]
 	public static void ChangeScreen(GameScreen screen)
 	{
@@ -51,13 +49,7 @@ public class Game : Module
 		screen.Start();
 	}
 
-	public Game()
-	{
-		instance = this;
-
-		LoadSkins(Folder.here / "Skins");
-	}
-
+	public static AutoDictionary<string, Skin> skins = new(s => s.name);
 	void LoadSkins(Folder folder)
 	{
 		var aseLoader = new MGE.Loaders.AsepriteTextureLoader();
@@ -71,12 +63,19 @@ public class Game : Module
 		}
 	}
 
+	public Game()
+	{
+		instance = this;
+
+		LoadSkins(Folder.here / "Skins");
+	}
+
 	protected override void Startup()
 	{
 		App.window.onRender += Render;
 
-		App.window.SetAspectRatio(new(320, 180));
-		App.window.SetMinSize(new(320, 180));
+		// App.window.SetAspectRatio(new(320, 180));
+		// App.window.SetMinSize(new(320, 180));
 	}
 
 	protected override void Shutdown()
@@ -92,6 +91,8 @@ public class Game : Module
 			App.window.fullscreen = !App.window.fullscreen;
 			return;
 		}
+
+		renderRect = Rect.Fit(gameScreenSize, new Rect(App.window.size));
 
 		var topColor = new Color(0x3978a8);
 		var bottomColor = new Color(0x394778);
@@ -114,7 +115,7 @@ public class Game : Module
 	void Render(Window window)
 	{
 		// Draw game framebuffer onto window
-		Batch2D.current.Image(gameFramebuffer, Vector2.zero, window.size / gameScreenSize, Vector2.zero, 0, Color.white);
+		Batch2D.current.Image(gameFramebuffer, renderRect, Color.white);
 
 		// Render screen
 		screen.Render(Batch2D.current);

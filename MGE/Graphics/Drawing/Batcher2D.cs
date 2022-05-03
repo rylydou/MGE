@@ -1049,19 +1049,27 @@ public class Batch2D
 		Quad(pos0, pos1, pos2, pos3, uv0, uv1, uv2, uv3, color, washed);
 	}
 
-	public void Image(Texture texture, Color color, bool washed = false)
+	public void Image(Texture texture, in Rect dest, Color color, bool washed = false)
 	{
 		SetTexture(texture);
 		Quad(
-				new Vector2(0, 0),
-				new Vector2(texture.width, 0),
-				new Vector2(texture.width, texture.height),
-				new Vector2(0, texture.height),
-				new Vector2(0, 0),
-				Vector2.right,
-				new Vector2(1, 1),
-				Vector2.down,
-				color, washed);
+			dest.topLeft, dest.topRight, dest.bottomRight, dest.bottomLeft,
+			Vector2.zero, Vector2.right, Vector2.downRight, Vector2.down,
+		color, washed);
+	}
+
+	public void Image(Texture texture, in Rect clip, in Rect dest, Color color, bool washed = false)
+	{
+		var tx0 = clip.x / texture.width;
+		var ty0 = clip.y / texture.height;
+		var tx1 = clip.right / texture.width;
+		var ty1 = clip.bottom / texture.height;
+
+		SetTexture(texture);
+		Quad(
+			dest.topLeft, dest.topRight, dest.bottomRight, dest.bottomLeft,
+			new(tx0, ty0), new(tx1, ty0), new(tx1, ty1), new(tx0, ty1),
+		color, washed);
 	}
 
 	public void Image(Texture texture, in Vector2 position, Color color, bool washed = false)
@@ -1119,20 +1127,6 @@ public class Batch2D
 				new Vector2(tx0, ty1), color, washed);
 	}
 
-	public void Image(Texture texture, in Rect clip, in Rect dest, Color color, bool washed = false)
-	{
-		var tx0 = clip.x / texture.width;
-		var ty0 = clip.y / texture.height;
-		var tx1 = clip.right / texture.width;
-		var ty1 = clip.bottom / texture.height;
-
-		SetTexture(texture);
-		Quad(
-			dest.topLeft, dest.topRight, dest.bottomRight, dest.bottomLeft,
-			new(tx0, ty0), new(tx1, ty0), new(tx1, ty1), new(tx0, ty1),
-		color, washed);
-	}
-
 	public void Image(Texture texture, in Rect clip, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, Color color, bool washed = false)
 	{
 		var was = matrixStack;
@@ -1157,15 +1151,6 @@ public class Batch2D
 				color, washed);
 
 		matrixStack = was;
-	}
-
-	public void Image(Subtexture subtex, Color color, bool washed = false)
-	{
-		SetTexture(subtex.texture);
-		Quad(
-				subtex.drawCoords[0], subtex.drawCoords[1], subtex.drawCoords[2], subtex.drawCoords[3],
-				subtex.texCoords[0], subtex.texCoords[1], subtex.texCoords[2], subtex.texCoords[3],
-				color, washed);
 	}
 
 	public void Image(Subtexture subtex, in Vector2 position, Color color, bool washed = false)

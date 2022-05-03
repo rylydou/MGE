@@ -794,7 +794,7 @@ public struct Transform2D : IEquatable<Transform2D>
 		Vector2 toX = transform.x * rect.size.x;
 		Vector2 toY = transform.y * rect.size.y;
 
-		return new Rect(pos, rect.size).Expand(pos + toX).Expand(pos + toY).Expand(pos + toX + toY);
+		return new Rect(pos, rect.size).Encapsulate(pos + toX).Encapsulate(pos + toY).Encapsulate(pos + toX + toY);
 	}
 
 	/// <summary>
@@ -810,7 +810,7 @@ public struct Transform2D : IEquatable<Transform2D>
 		Vector2 to2 = new Vector2(rect.position.x + rect.size.x, rect.position.y + rect.size.y) * transform;
 		Vector2 to3 = new Vector2(rect.position.x + rect.size.x, rect.position.y) * transform;
 
-		return new Rect(pos, rect.size).Expand(to1).Expand(to2).Expand(to3);
+		return new Rect(pos, rect.size).Encapsulate(to1).Encapsulate(to2).Encapsulate(to3);
 	}
 
 	/// <summary>
@@ -854,12 +854,12 @@ public struct Transform2D : IEquatable<Transform2D>
 	/// Note: Due to floating-point precision errors, consider using
 	/// <see cref="IsEqualApprox"/> instead, which is more reliable.
 	/// </summary>
-	/// <param name="left">The left transform.</param>
-	/// <param name="right">The right transform.</param>
+	/// <param name="a">The left transform.</param>
+	/// <param name="b">The right transform.</param>
 	/// <returns>Whether or not the transforms are exactly equal.</returns>
-	public static bool operator ==(Transform2D left, Transform2D right)
+	public static bool operator ==(Transform2D a, Transform2D b)
 	{
-		return left.Equals(right);
+		return a.Equals(b);
 	}
 
 	/// <summary>
@@ -867,12 +867,12 @@ public struct Transform2D : IEquatable<Transform2D>
 	/// Note: Due to floating-point precision errors, consider using
 	/// <see cref="IsEqualApprox"/> instead, which is more reliable.
 	/// </summary>
-	/// <param name="left">The left transform.</param>
-	/// <param name="right">The right transform.</param>
+	/// <param name="a">The left transform.</param>
+	/// <param name="b">The right transform.</param>
 	/// <returns>Whether or not the transforms are not equal.</returns>
-	public static bool operator !=(Transform2D left, Transform2D right)
+	public static bool operator !=(Transform2D a, Transform2D b)
 	{
-		return !left.Equals(right);
+		return !a.Equals(b);
 	}
 
 	public static explicit operator Matrix3x2(Transform2D t)

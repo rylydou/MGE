@@ -7,8 +7,9 @@ public struct Vector2Int : IEquatable<Vector2Int>
 {
 	public static readonly Vector2Int zero = new Vector2Int(0, 0);
 	public static readonly Vector2Int one = new Vector2Int(1, 1);
-	public static readonly Vector2Int up = new Vector2Int(0, 1);
-	public static readonly Vector2Int down = new Vector2Int(0, -1);
+
+	public static readonly Vector2Int up = new Vector2Int(0, -1);
+	public static readonly Vector2Int down = new Vector2Int(0, 1);
 	public static readonly Vector2Int left = new Vector2Int(-1, 0);
 	public static readonly Vector2Int right = new Vector2Int(1, 0);
 
@@ -141,14 +142,11 @@ public struct Vector2Int : IEquatable<Vector2Int>
 
 	public static implicit operator Vector2Int(Vector2 vector) => new((int)vector.x, (int)vector.y);
 
-	public static implicit operator global::System.Drawing.Point(Vector2Int vector) => new(vector.x, vector.y);
-	public static implicit operator Vector2Int(global::System.Drawing.Point vector) => new(vector.X, vector.Y);
+	public static implicit operator System.Drawing.Point(Vector2Int vector) => new(vector.x, vector.y);
+	public static implicit operator Vector2Int(System.Drawing.Point vector) => new(vector.X, vector.Y);
 
 	public static implicit operator (int, int)(Vector2Int vector) => (vector.x, vector.y);
 	public static implicit operator Vector2Int((int, int) vector) => new(vector.Item1, vector.Item2);
-
-	// public static implicit operator OpenTK.Mathematics.Vector2i(Vector2Int vector) => new(vector.x, vector.y);
-	// public static implicit operator Vector2Int(OpenTK.Mathematics.Vector2i vector) => new(vector.X, vector.Y);
 
 	////////////////////////////////////////////////////////////
 

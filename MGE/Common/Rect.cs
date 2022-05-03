@@ -230,34 +230,29 @@ public struct Rect : IEquatable<Rect>
 		_height += amount * 2;
 	}
 
-	/// <summary>
-	/// Returns this <see cref="Rect2"/> expanded to include a given point.
-	/// </summary>
-	/// <param name="to">The point to include.</param>
-	/// <returns>The expanded <see cref="Rect2"/>.</returns>
-	public Rect Expand(Vector2 to)
+	public Rect Encapsulate(Vector2 point)
 	{
 		Rect expanded = this;
 
 		Vector2 begin = expanded.position;
 		Vector2 end = expanded.position + expanded.size;
 
-		if (to.x < begin.x)
+		if (point.x < begin.x)
 		{
-			begin.x = to.x;
+			begin.x = point.x;
 		}
-		if (to.y < begin.y)
+		if (point.y < begin.y)
 		{
-			begin.y = to.y;
+			begin.y = point.y;
 		}
 
-		if (to.x > end.x)
+		if (point.x > end.x)
 		{
-			end.x = to.x;
+			end.x = point.x;
 		}
-		if (to.y > end.y)
+		if (point.y > end.y)
 		{
-			end.y = to.y;
+			end.y = point.y;
 		}
 
 		expanded.position = begin;
@@ -285,8 +280,8 @@ public struct Rect : IEquatable<Rect>
 
 	#region Operators
 
-	public static bool operator !=(Rect lhs, Rect rhs) => !(lhs == rhs);
-	public static bool operator ==(Rect lhs, Rect rhs) => lhs.x == rhs.x && lhs.y == rhs.y && lhs.width == rhs.width && lhs.height == rhs.height;
+	public static bool operator !=(Rect a, Rect b) => !(a == b);
+	public static bool operator ==(Rect a, Rect b) => a.x == b.x && a.y == b.y && a.width == b.width && a.height == b.height;
 
 	public static Rect operator +(Rect a, Vector2 b) => new Rect(a.x + b.x, a.y + b.y, a.width, a.height);
 	public static Rect operator -(Rect a, Vector2 b) => new Rect(a.x - b.x, a.y - b.y, a.width, a.height);

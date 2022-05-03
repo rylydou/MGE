@@ -18,10 +18,10 @@ public struct Vector2 : IEquatable<Vector2>
 	public static readonly Vector2 left = new Vector2(-1, 0);
 	public static readonly Vector2 right = new Vector2(1, 0);
 
-	public static readonly Vector2 upLeft = new Vector2(-1, 1);
-	public static readonly Vector2 upRight = new Vector2(1, 1);
-	public static readonly Vector2 downLeft = new Vector2(-1, -1);
-	public static readonly Vector2 downRight = new Vector2(1, -1);
+	public static readonly Vector2 upLeft = new Vector2(-1, -1);
+	public static readonly Vector2 upRight = new Vector2(1, -1);
+	public static readonly Vector2 downLeft = new Vector2(-1, 1);
+	public static readonly Vector2 downRight = new Vector2(1, 1);
 
 	#endregion Constants
 
@@ -232,7 +232,6 @@ public struct Vector2 : IEquatable<Vector2>
 	public void Normalize()
 	{
 		var len = length;
-		// if (len <= 1f) return;
 		if (len > Mathf.epsilon)
 			this = this / len;
 		else
@@ -308,20 +307,8 @@ public struct Vector2 : IEquatable<Vector2>
 
 	#region Thirdparty
 
-	public static implicit operator global::System.Numerics.Vector2(Vector2 vector) => new(vector.x, vector.y);
-	public static implicit operator Vector2(global::System.Numerics.Vector2 vector) => new(vector.X, vector.Y);
-
-	// public static implicit operator OpenTK.Mathematics.Vector2(Vector2 vector) => new(vector.x, vector.y);
-	// public static implicit operator Vector2(OpenTK.Mathematics.Vector2 vector) => new(vector.X, vector.Y);
-
-	// public static implicit operator OpenTK.Mathematics.Vector3(Vector2 vector) => new(vector.x, vector.y, 0);
-	// public static implicit operator Vector2(OpenTK.Mathematics.Vector3 vector) => new(vector.X, vector.Y);
-
-	// public static implicit operator tainicom.Aether.Physics2D.Common.Vector2(Vector2 vector) => new(vector.x, vector.y);
-	// public static implicit operator Vector2(tainicom.Aether.Physics2D.Common.Vector2 vector) => new(vector.X, vector.Y);
-
-	// public static implicit operator tainicom.Aether.Physics2D.Common.Vector3(Vector2 vector) => new(vector.x, vector.y, 0);
-	// public static implicit operator Vector2(tainicom.Aether.Physics2D.Common.Vector3 vector) => new(vector.X, vector.Y);
+	public static implicit operator System.Numerics.Vector2(Vector2 vector) => new(vector.x, vector.y);
+	public static implicit operator Vector2(System.Numerics.Vector2 vector) => new(vector.X, vector.Y);
 
 	#endregion Thirdparty
 
