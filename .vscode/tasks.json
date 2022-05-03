@@ -15,19 +15,6 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Build MSDFTest",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "build",
-        "${workspaceFolder}/MSDFTest/MSDFTest.csproj",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary",
-        "--nologo"
-      ],
-      "problemMatcher": "$msCompile"
-    },
-    {
       "label": "Build Editor",
       "command": "dotnet",
       "type": "process",

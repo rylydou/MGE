@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace MGE;
 
-public class MSDFFontDef
+public class SDFFontDef
 {
 	public class Char
 	{
@@ -73,11 +73,11 @@ public class MSDFFontDef
 	[Save] public Kernings[] kernings = Array.Empty<Kernings>();
 }
 
-public class MSDFFont
+public class Font
 {
 	static Material msdfMat;
 
-	static MSDFFont()
+	static Font()
 	{
 		var shader = new Shader(App.graphics.CreateShaderSourceMSDF());
 		msdfMat = new Material(shader);
@@ -85,9 +85,9 @@ public class MSDFFont
 	}
 
 	public Texture texture;
-	public MSDFFontDef def;
+	public SDFFontDef def;
 
-	public MSDFFont(Texture texture, MSDFFontDef def)
+	public Font(Texture texture, SDFFontDef def)
 	{
 		this.texture = texture;
 		this.def = def;
@@ -111,7 +111,7 @@ public class MSDFFont
 				{
 					case '\n':
 						x = 0;
-						y += def.common.lineHeight;
+						y += (int)(def.common.lineHeight * 1.15f);
 						break;
 				}
 			}

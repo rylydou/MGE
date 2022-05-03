@@ -17,9 +17,9 @@ public class Game : Module
 
 	public static Color[] playerColors = new Color[] {
 		new(0xEF4A3A),
-		new(0x2E77A4),
+		new(0x3385B8),
 		new(0x6BA841),
-		new(0xD46092),
+		new(0xCD6093),
 	};
 
 	public static PlayerData?[] players = new PlayerData[4];
@@ -35,7 +35,6 @@ public class Game : Module
 	};
 
 	public static AutoDictionary<string, Skin> skins = new(s => s.name);
-	public static Font font = App.content.Get<Font>("Fonts/Montserrat/Bold.ttf");
 
 	public static readonly Vector2Int gameScreenSize = new(320 * 2, 180 * 2);
 	public static FrameBuffer gameFramebuffer = new(gameScreenSize.x, gameScreenSize.y);

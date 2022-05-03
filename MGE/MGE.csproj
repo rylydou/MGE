@@ -19,7 +19,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FontStashSharp" Version="1.0.4" />
 		<PackageReference Include="StbImageSharp" Version="2.27.8" />
 		<PackageReference Include="StbImageWriteSharp" Version="1.13.5" />
 	</ItemGroup>
