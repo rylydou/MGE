@@ -10,7 +10,7 @@ public class SetupScreen : GameScreen
 
 	public UICanvas canvas = new();
 
-	Font _font = App.content.Get<Font>("Fonts/Regular.json");
+	SDFFont _font = App.content.Get<SDFFont>("Fonts/Regular.json");
 
 	public SetupScreen()
 	{
@@ -140,7 +140,7 @@ public class SetupScreen : GameScreen
 
 				batch.Draw(player.skin.texture, new(x + cardWidth / 2, (canvasSize.y - cardHeight - cardGap * 2) / 2), Color.white);
 
-				_font.DrawString(batch, player.controls!.name, new(x + cardGap, canvasSize.y - cardHeight), fg, 4);
+				batch.DrawString(_font, player.controls!.name, new(x + cardGap, canvasSize.y - cardHeight), fg, 4);
 			}
 			x += cardWidth + cardGap;
 		}

@@ -1215,6 +1215,45 @@ public class Batch2D
 
 	#region Text
 
+	public void DrawString(IFont font, IEnumerable<char> text, Vector2 position, Color color, float fontSize)
+	{
+		var x = 0;
+		var y = 0;
+
+		var prevChar = ' ';
+
+		font.BeginRender(this, fontSize, out var scale);
+		foreach (var ch in text)
+		{
+			if (char.IsControl(ch))
+			{
+				switch (ch)
+				{
+					case '\n':
+						x = 0;
+						y += (int)(font.lineHeight * 1.15f);
+						break;
+				}
+			}
+			else
+			{
+				if (!font.TryGetGlyphMetrics(ch, out var metric)) continue;
+
+				if (font.TryGetKerning(prevChar, ch, out var amount))
+				{
+					x += amount;
+				}
+
+				font.RenderChar(this, ch, position.x, position.y + y * scale, scale, color);
+
+				x += metric.advance;
+			}
+
+			prevChar = ch;
+		}
+		font.AfterRender(this);
+	}
+
 	// public void Text(Font font, string text, Color color)
 	// {
 	// 	Text(font, text.AsSpan(), color);

@@ -7,8 +7,8 @@ public class SDFFontLoader : IContentLoader
 		var tex = new Texture(file.path + ".png");
 		tex.filter = TextureFilter.Linear;
 
-		var def = file.ReadJson<SDFFontDef>();
+		var def = file.ReadJsonRaw();
 
-		return new Font(tex, def);
+		return new SDFFont(tex, def);
 	}
 }

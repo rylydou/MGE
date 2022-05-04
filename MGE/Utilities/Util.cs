@@ -41,15 +41,15 @@ public static class Util
 	{
 		var _ = new StructureConverter();
 
-		_.RegisterConverter<Vector2>(_ => new StructureArray(_.x, _.y), _ => new Vector2(_[0].Float, _[1].Float));
-		_.RegisterConverter<Vector2Int>(_ => new StructureArray(_.x, _.y), _ => new Vector2Int(_[0].Int, _[1].Int));
+		_.RegisterConverter<Vector2>(_ => new StructureArray(_.x, _.y), _ => new Vector2(_[0], _[1]));
+		_.RegisterConverter<Vector2Int>(_ => new StructureArray(_.x, _.y), _ => new Vector2Int(_[0], _[1]));
 
-		_.RegisterConverter<Vector3>(_ => new StructureArray(_.x, _.y, _.z), _ => new Vector3(_[0].Float, _[1].Float, _[2].Float));
+		_.RegisterConverter<Vector3>(_ => new StructureArray(_.x, _.y, _.z), _ => new Vector3(_[0], _[1], _[2]));
 
-		_.RegisterConverter<Rect>(_ => new StructureArray(_.x, _.y, _.width, _.height), _ => new Rect(_[0].Float, _[1].Float, _[2].Float, _[3].Float));
-		_.RegisterConverter<RectInt>(_ => new StructureArray(_.x, _.y, _.width, _.height), _ => new RectInt(_[0].Int, _[1].Int, _[2].Int, _[3].Int));
+		_.RegisterConverter<Rect>(_ => new StructureArray(_.x, _.y, _.width, _.height), _ => new Rect(_[0], _[1], _[2], _[3]));
+		_.RegisterConverter<RectInt>(_ => new StructureArray(_.x, _.y, _.width, _.height), _ => new RectInt(_[0], _[1], _[2], _[3]));
 
-		_.RegisterConverter<Color>(_ => "#" + _.ToHexStringRGBA(), _ => Color.FromHexStringRGBA(_.String));
+		_.RegisterConverter<Color>(_ => "#" + _.ToHexStringRGBA(), _ => Color.FromHexStringRGBA(_));
 
 		return _;
 	}

@@ -70,7 +70,7 @@ public abstract class Windowing : AppModule
 		var configFile = Folder.data.GetFile("config.meml");
 		if (configFile.exists)
 		{
-			_prefPrimaryMonitor = configFile.ReadMemlRaw()["primaryMonitor"].Int;
+			_prefPrimaryMonitor = configFile.ReadMemlRaw()["primaryMonitor"];
 		}
 
 		windows = new ReadOnlyCollection<Window>(_windows);

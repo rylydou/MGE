@@ -105,6 +105,7 @@ public class MemlTextReader : IDataReader, IDisposable
 							StepChar(out next);
 							_builder.Append(next switch
 							{
+								// TODO  Fix
 								'n' => _builder.Append('\n'),
 								'r' => _builder.Append('\r'),
 								't' => _builder.Append('\t'),

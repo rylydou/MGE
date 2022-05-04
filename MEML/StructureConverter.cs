@@ -219,7 +219,7 @@ public class StructureConverter
 			if (firstPair.Key[0] == '!')
 			{
 				var asmName = firstPair.Key.Remove(0, 1);
-				var fullTypeName = firstPair.Value.String;
+				var fullTypeName = firstPair.Value.@string;
 
 				// Convert the string to a type
 				var foundType = typeFinder(asmName, fullTypeName) ??
@@ -305,7 +305,7 @@ public class StructureConverter
 		}
 
 		// Return the primitive
-		return value.underlyingValue;
+		return value.rawValue;
 	}
 
 	// TODO  Implement

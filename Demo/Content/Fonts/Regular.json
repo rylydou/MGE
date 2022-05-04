@@ -4,7 +4,7 @@
     {
       "id": 124,
       "index": 98,
-      "c": "|",
+      "char": "|",
       "width": 8,
       "height": 49,
       "xoffset": 2,
@@ -18,7 +18,7 @@
     {
       "id": 106,
       "index": 80,
-      "c": "j",
+      "char": "j",
       "width": 16,
       "height": 48,
       "xoffset": -6,
@@ -32,7 +32,7 @@
     {
       "id": 87,
       "index": 61,
-      "c": "W",
+      "char": "W",
       "width": 46,
       "height": 36,
       "xoffset": -1,
@@ -46,7 +46,7 @@
     {
       "id": 81,
       "index": 55,
-      "c": "Q",
+      "char": "Q",
       "width": 35,
       "height": 45,
       "xoffset": 0,
@@ -60,7 +60,7 @@
     {
       "id": 36,
       "index": 10,
-      "c": "$",
+      "char": "$",
       "width": 22,
       "height": 44,
       "xoffset": 1,
@@ -74,7 +74,7 @@
     {
       "id": 40,
       "index": 14,
-      "c": "(",
+      "char": "(",
       "width": 14,
       "height": 43,
       "xoffset": 1,
@@ -88,7 +88,7 @@
     {
       "id": 41,
       "index": 15,
-      "c": ")",
+      "char": ")",
       "width": 15,
       "height": 43,
       "xoffset": -2,
@@ -102,7 +102,7 @@
     {
       "id": 91,
       "index": 65,
-      "c": "[",
+      "char": "[",
       "width": 12,
       "height": 43,
       "xoffset": 2,
@@ -116,7 +116,7 @@
     {
       "id": 93,
       "index": 67,
-      "c": "]",
+      "char": "]",
       "width": 12,
       "height": 43,
       "xoffset": -1,
@@ -130,7 +130,7 @@
     {
       "id": 123,
       "index": 97,
-      "c": "{",
+      "char": "{",
       "width": 15,
       "height": 43,
       "xoffset": 0,
@@ -144,7 +144,7 @@
     {
       "id": 125,
       "index": 99,
-      "c": "}",
+      "char": "}",
       "width": 15,
       "height": 43,
       "xoffset": -1,
@@ -158,7 +158,7 @@
     {
       "id": 47,
       "index": 21,
-      "c": "/",
+      "char": "/",
       "width": 23,
       "height": 41,
       "xoffset": -3,
@@ -172,7 +172,7 @@
     {
       "id": 92,
       "index": 66,
-      "c": "\\",
+      "char": "\\",
       "width": 23,
       "height": 41,
       "xoffset": -3,
@@ -186,7 +186,7 @@
     {
       "id": 64,
       "index": 38,
-      "c": "@",
+      "char": "@",
       "width": 40,
       "height": 40,
       "xoffset": 2,
@@ -200,7 +200,7 @@
     {
       "id": 37,
       "index": 11,
-      "c": "%",
+      "char": "%",
       "width": 38,
       "height": 37,
       "xoffset": 0,
@@ -214,7 +214,7 @@
     {
       "id": 98,
       "index": 72,
-      "c": "b",
+      "char": "b",
       "width": 25,
       "height": 38,
       "xoffset": 2,
@@ -228,7 +228,7 @@
     {
       "id": 100,
       "index": 74,
-      "c": "d",
+      "char": "d",
       "width": 25,
       "height": 38,
       "xoffset": 0,
@@ -242,7 +242,7 @@
     {
       "id": 102,
       "index": 76,
-      "c": "f",
+      "char": "f",
       "width": 18,
       "height": 38,
       "xoffset": -1,
@@ -256,7 +256,7 @@
     {
       "id": 103,
       "index": 77,
-      "c": "g",
+      "char": "g",
       "width": 25,
       "height": 38,
       "xoffset": 0,
@@ -270,7 +270,7 @@
     {
       "id": 104,
       "index": 78,
-      "c": "h",
+      "char": "h",
       "width": 23,
       "height": 38,
       "xoffset": 2,
@@ -284,7 +284,7 @@
     {
       "id": 107,
       "index": 81,
-      "c": "k",
+      "char": "k",
       "width": 23,
       "height": 38,
       "xoffset": 2,
@@ -298,7 +298,7 @@
     {
       "id": 108,
       "index": 82,
-      "c": "l",
+      "char": "l",
       "width": 8,
       "height": 38,
       "xoffset": 2,
@@ -312,7 +312,7 @@
     {
       "id": 112,
       "index": 86,
-      "c": "p",
+      "char": "p",
       "width": 25,
       "height": 38,
       "xoffset": 2,
@@ -326,7 +326,7 @@
     {
       "id": 113,
       "index": 87,
-      "c": "q",
+      "char": "q",
       "width": 25,
       "height": 38,
       "xoffset": 0,
@@ -340,7 +340,7 @@
     {
       "id": 38,
       "index": 12,
-      "c": "&",
+      "char": "&",
       "width": 37,
       "height": 37,
       "xoffset": 1,
@@ -354,7 +354,7 @@
     {
       "id": 48,
       "index": 22,
-      "c": "0",
+      "char": "0",
       "width": 25,
       "height": 37,
       "xoffset": 0,
@@ -368,7 +368,7 @@
     {
       "id": 51,
       "index": 25,
-      "c": "3",
+      "char": "3",
       "width": 23,
       "height": 37,
       "xoffset": 1,
@@ -382,7 +382,7 @@
     {
       "id": 54,
       "index": 28,
-      "c": "6",
+      "char": "6",
       "width": 24,
       "height": 37,
       "xoffset": 0,
@@ -396,7 +396,7 @@
     {
       "id": 56,
       "index": 30,
-      "c": "8",
+      "char": "8",
       "width": 24,
       "height": 37,
       "xoffset": 0,
@@ -410,7 +410,7 @@
     {
       "id": 57,
       "index": 31,
-      "c": "9",
+      "char": "9",
       "width": 24,
       "height": 37,
       "xoffset": 0,
@@ -424,7 +424,7 @@
     {
       "id": 63,
       "index": 37,
-      "c": "?",
+      "char": "?",
       "width": 19,
       "height": 37,
       "xoffset": 1,
@@ -438,7 +438,7 @@
     {
       "id": 67,
       "index": 41,
-      "c": "C",
+      "char": "C",
       "width": 28,
       "height": 37,
       "xoffset": 0,
@@ -452,7 +452,7 @@
     {
       "id": 71,
       "index": 45,
-      "c": "G",
+      "char": "G",
       "width": 30,
       "height": 37,
       "xoffset": 0,
@@ -466,7 +466,7 @@
     {
       "id": 77,
       "index": 51,
-      "c": "M",
+      "char": "M",
       "width": 37,
       "height": 36,
       "xoffset": 2,
@@ -480,7 +480,7 @@
     {
       "id": 79,
       "index": 53,
-      "c": "O",
+      "char": "O",
       "width": 34,
       "height": 37,
       "xoffset": 0,
@@ -494,7 +494,7 @@
     {
       "id": 83,
       "index": 57,
-      "c": "S",
+      "char": "S",
       "width": 24,
       "height": 37,
       "xoffset": 1,
@@ -508,7 +508,7 @@
     {
       "id": 105,
       "index": 79,
-      "c": "i",
+      "char": "i",
       "width": 9,
       "height": 37,
       "xoffset": 1,
@@ -522,7 +522,7 @@
     {
       "id": 109,
       "index": 83,
-      "c": "m",
+      "char": "m",
       "width": 37,
       "height": 27,
       "xoffset": 2,
@@ -536,7 +536,7 @@
     {
       "id": 121,
       "index": 95,
-      "c": "y",
+      "char": "y",
       "width": 26,
       "height": 37,
       "xoffset": -2,
@@ -550,7 +550,7 @@
     {
       "id": 33,
       "index": 7,
-      "c": "!",
+      "char": "!",
       "width": 9,
       "height": 36,
       "xoffset": 2,
@@ -564,7 +564,7 @@
     {
       "id": 49,
       "index": 23,
-      "c": "1",
+      "char": "1",
       "width": 22,
       "height": 36,
       "xoffset": 2,
@@ -578,7 +578,7 @@
     {
       "id": 50,
       "index": 24,
-      "c": "2",
+      "char": "2",
       "width": 24,
       "height": 36,
       "xoffset": 0,
@@ -592,7 +592,7 @@
     {
       "id": 52,
       "index": 26,
-      "c": "4",
+      "char": "4",
       "width": 27,
       "height": 36,
       "xoffset": -2,
@@ -606,7 +606,7 @@
     {
       "id": 53,
       "index": 27,
-      "c": "5",
+      "char": "5",
       "width": 22,
       "height": 36,
       "xoffset": 2,
@@ -620,7 +620,7 @@
     {
       "id": 55,
       "index": 29,
-      "c": "7",
+      "char": "7",
       "width": 25,
       "height": 36,
       "xoffset": 0,
@@ -634,7 +634,7 @@
     {
       "id": 65,
       "index": 39,
-      "c": "A",
+      "char": "A",
       "width": 33,
       "height": 36,
       "xoffset": -2,
@@ -648,7 +648,7 @@
     {
       "id": 66,
       "index": 40,
-      "c": "B",
+      "char": "B",
       "width": 24,
       "height": 36,
       "xoffset": 2,
@@ -662,7 +662,7 @@
     {
       "id": 68,
       "index": 42,
-      "c": "D",
+      "char": "D",
       "width": 30,
       "height": 36,
       "xoffset": 2,
@@ -676,7 +676,7 @@
     {
       "id": 69,
       "index": 43,
-      "c": "E",
+      "char": "E",
       "width": 21,
       "height": 36,
       "xoffset": 2,
@@ -690,7 +690,7 @@
     {
       "id": 70,
       "index": 44,
-      "c": "F",
+      "char": "F",
       "width": 20,
       "height": 36,
       "xoffset": 2,
@@ -704,7 +704,7 @@
     {
       "id": 72,
       "index": 46,
-      "c": "H",
+      "char": "H",
       "width": 28,
       "height": 36,
       "xoffset": 2,
@@ -718,7 +718,7 @@
     {
       "id": 73,
       "index": 47,
-      "c": "I",
+      "char": "I",
       "width": 14,
       "height": 36,
       "xoffset": -1,
@@ -732,7 +732,7 @@
     {
       "id": 74,
       "index": 48,
-      "c": "J",
+      "char": "J",
       "width": 16,
       "height": 36,
       "xoffset": -2,
@@ -746,7 +746,7 @@
     {
       "id": 75,
       "index": 49,
-      "c": "K",
+      "char": "K",
       "width": 27,
       "height": 36,
       "xoffset": 2,
@@ -760,7 +760,7 @@
     {
       "id": 76,
       "index": 50,
-      "c": "L",
+      "char": "L",
       "width": 21,
       "height": 36,
       "xoffset": 2,
@@ -774,7 +774,7 @@
     {
       "id": 78,
       "index": 52,
-      "c": "N",
+      "char": "N",
       "width": 30,
       "height": 36,
       "xoffset": 2,
@@ -788,7 +788,7 @@
     {
       "id": 80,
       "index": 54,
-      "c": "P",
+      "char": "P",
       "width": 24,
       "height": 36,
       "xoffset": 2,
@@ -802,7 +802,7 @@
     {
       "id": 82,
       "index": 56,
-      "c": "R",
+      "char": "R",
       "width": 27,
       "height": 36,
       "xoffset": 2,
@@ -816,7 +816,7 @@
     {
       "id": 84,
       "index": 58,
-      "c": "T",
+      "char": "T",
       "width": 26,
       "height": 36,
       "xoffset": -1,
@@ -830,7 +830,7 @@
     {
       "id": 85,
       "index": 59,
-      "c": "U",
+      "char": "U",
       "width": 28,
       "height": 36,
       "xoffset": 2,
@@ -844,7 +844,7 @@
     {
       "id": 86,
       "index": 60,
-      "c": "V",
+      "char": "V",
       "width": 32,
       "height": 36,
       "xoffset": -2,
@@ -858,7 +858,7 @@
     {
       "id": 88,
       "index": 62,
-      "c": "X",
+      "char": "X",
       "width": 30,
       "height": 36,
       "xoffset": -1,
@@ -872,7 +872,7 @@
     {
       "id": 89,
       "index": 63,
-      "c": "Y",
+      "char": "Y",
       "width": 29,
       "height": 36,
       "xoffset": -2,
@@ -886,7 +886,7 @@
     {
       "id": 90,
       "index": 64,
-      "c": "Z",
+      "char": "Z",
       "width": 28,
       "height": 36,
       "xoffset": -1,
@@ -900,7 +900,7 @@
     {
       "id": 119,
       "index": 93,
-      "c": "w",
+      "char": "w",
       "width": 36,
       "height": 27,
       "xoffset": -1,
@@ -914,7 +914,7 @@
     {
       "id": 116,
       "index": 90,
-      "c": "t",
+      "char": "t",
       "width": 18,
       "height": 34,
       "xoffset": -1,
@@ -928,7 +928,7 @@
     {
       "id": 35,
       "index": 9,
-      "c": "#",
+      "char": "#",
       "width": 29,
       "height": 33,
       "xoffset": -1,
@@ -942,7 +942,7 @@
     {
       "id": 59,
       "index": 33,
-      "c": ";",
+      "char": ";",
       "width": 11,
       "height": 33,
       "xoffset": -1,
@@ -956,7 +956,7 @@
     {
       "id": 58,
       "index": 32,
-      "c": ":",
+      "char": ":",
       "width": 9,
       "height": 28,
       "xoffset": 0,
@@ -970,7 +970,7 @@
     {
       "id": 97,
       "index": 71,
-      "c": "a",
+      "char": "a",
       "width": 22,
       "height": 28,
       "xoffset": 0,
@@ -984,7 +984,7 @@
     {
       "id": 99,
       "index": 73,
-      "c": "c",
+      "char": "c",
       "width": 21,
       "height": 28,
       "xoffset": 0,
@@ -998,7 +998,7 @@
     {
       "id": 101,
       "index": 75,
-      "c": "e",
+      "char": "e",
       "width": 24,
       "height": 28,
       "xoffset": 0,
@@ -1012,7 +1012,7 @@
     {
       "id": 111,
       "index": 85,
-      "c": "o",
+      "char": "o",
       "width": 27,
       "height": 28,
       "xoffset": 0,
@@ -1026,7 +1026,7 @@
     {
       "id": 115,
       "index": 89,
-      "c": "s",
+      "char": "s",
       "width": 19,
       "height": 28,
       "xoffset": 0,
@@ -1040,7 +1040,7 @@
     {
       "id": 110,
       "index": 84,
-      "c": "n",
+      "char": "n",
       "width": 23,
       "height": 27,
       "xoffset": 2,
@@ -1054,7 +1054,7 @@
     {
       "id": 114,
       "index": 88,
-      "c": "r",
+      "char": "r",
       "width": 16,
       "height": 27,
       "xoffset": 2,
@@ -1068,7 +1068,7 @@
     {
       "id": 117,
       "index": 91,
-      "c": "u",
+      "char": "u",
       "width": 23,
       "height": 27,
       "xoffset": 1,
@@ -1082,7 +1082,7 @@
     {
       "id": 118,
       "index": 92,
-      "c": "v",
+      "char": "v",
       "width": 26,
       "height": 27,
       "xoffset": -2,
@@ -1096,7 +1096,7 @@
     {
       "id": 120,
       "index": 94,
-      "c": "x",
+      "char": "x",
       "width": 24,
       "height": 27,
       "xoffset": -1,
@@ -1110,7 +1110,7 @@
     {
       "id": 122,
       "index": 96,
-      "c": "z",
+      "char": "z",
       "width": 23,
       "height": 27,
       "xoffset": -1,
@@ -1124,7 +1124,7 @@
     {
       "id": 60,
       "index": 34,
-      "c": "<",
+      "char": "<",
       "width": 23,
       "height": 26,
       "xoffset": 4,
@@ -1138,7 +1138,7 @@
     {
       "id": 62,
       "index": 36,
-      "c": ">",
+      "char": ">",
       "width": 23,
       "height": 26,
       "xoffset": 4,
@@ -1152,7 +1152,7 @@
     {
       "id": 126,
       "index": 100,
-      "c": "~",
+      "char": "~",
       "width": 26,
       "height": 11,
       "xoffset": 3,
@@ -1166,7 +1166,7 @@
     {
       "id": 43,
       "index": 17,
-      "c": "+",
+      "char": "+",
       "width": 25,
       "height": 25,
       "xoffset": 3,
@@ -1180,7 +1180,7 @@
     {
       "id": 61,
       "index": 35,
-      "c": "=",
+      "char": "=",
       "width": 25,
       "height": 17,
       "xoffset": 3,
@@ -1194,7 +1194,7 @@
     {
       "id": 94,
       "index": 68,
-      "c": "^",
+      "char": "^",
       "width": 25,
       "height": 23,
       "xoffset": 3,
@@ -1208,7 +1208,7 @@
     {
       "id": 95,
       "index": 69,
-      "c": "_",
+      "char": "_",
       "width": 23,
       "height": 7,
       "xoffset": -2,
@@ -1222,7 +1222,7 @@
     {
       "id": 42,
       "index": 16,
-      "c": "*",
+      "char": "*",
       "width": 20,
       "height": 20,
       "xoffset": 0,
@@ -1236,7 +1236,7 @@
     {
       "id": 45,
       "index": 19,
-      "c": "-",
+      "char": "-",
       "width": 16,
       "height": 7,
       "xoffset": 1,
@@ -1250,7 +1250,7 @@
     {
       "id": 44,
       "index": 18,
-      "c": ",",
+      "char": ",",
       "width": 10,
       "height": 15,
       "xoffset": -1,
@@ -1264,7 +1264,7 @@
     {
       "id": 34,
       "index": 8,
-      "c": "\"",
+      "char": "\"",
       "width": 14,
       "height": 14,
       "xoffset": 2,
@@ -1278,7 +1278,7 @@
     {
       "id": 39,
       "index": 13,
-      "c": "'",
+      "char": "'",
       "width": 8,
       "height": 14,
       "xoffset": 1,
@@ -1292,7 +1292,7 @@
     {
       "id": 96,
       "index": 70,
-      "c": "`",
+      "char": "`",
       "width": 13,
       "height": 11,
       "xoffset": 0,
@@ -1306,7 +1306,7 @@
     {
       "id": 46,
       "index": 20,
-      "c": ".",
+      "char": ".",
       "width": 9,
       "height": 9,
       "xoffset": 0,
@@ -1320,7 +1320,7 @@
     {
       "id": 32,
       "index": 3,
-      "c": " ",
+      "char": " ",
       "width": 0,
       "height": 0,
       "xoffset": -2,
@@ -1405,7 +1405,7 @@
       "`",
       "a",
       "b",
-      "c",
+      "char",
       "d",
       "e",
       "f",
@@ -1443,7 +1443,7 @@
   },
   "common": {
     "lineHeight": 45,
-    "baseline": 36,
+    "base": 36,
     "scaleW": 512,
     "scaleH": 512,
     "pages": 1,

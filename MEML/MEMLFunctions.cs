@@ -135,73 +135,73 @@ public static class DataReaderAndWriterFunctions
 					return;
 
 				case StructureType.Bool:
-					writer.Value(value.Bool);
+					writer.Value(value.@bool);
 					return;
 
 				case StructureType.String:
-					writer.Value(value.String);
+					writer.Value(value.@string);
 					return;
 
 				default:
 					{
 						if (value is StructureValue<bool> Bool)
 						{
-							writer.Value(Bool.Bool);
+							writer.Value(Bool.@bool);
 							return;
 						}
 						else if (value is StructureValue<decimal> Decimal)
 						{
-							writer.Value(Decimal.Decimal);
+							writer.Value(Decimal.@decimal);
 							return;
 						}
 						else if (value is StructureValue<float> Float)
 						{
-							writer.Value(Float.Float);
+							writer.Value(Float.@float);
 							return;
 						}
 						else if (value is StructureValue<double> Double)
 						{
-							writer.Value(Double.Double);
+							writer.Value(Double.@double);
 							return;
 						}
 						else if (value is StructureValue<byte> Byte)
 						{
-							writer.Value(Byte.Byte);
+							writer.Value(Byte.@byte);
 							return;
 						}
 						else if (value is StructureValue<char> Char)
 						{
-							writer.Value(Char.Char);
+							writer.Value(Char.@char);
 							return;
 						}
 						else if (value is StructureValue<short> Short)
 						{
-							writer.Value(Short.Short);
+							writer.Value(Short.@short);
 							return;
 						}
 						else if (value is StructureValue<ushort> UShort)
 						{
-							writer.Value(UShort.UShort);
+							writer.Value(UShort.@ushort);
 							return;
 						}
 						else if (value is StructureValue<int> Int)
 						{
-							writer.Value(Int.Int);
+							writer.Value(Int.@int);
 							return;
 						}
 						else if (value is StructureValue<uint> UInt)
 						{
-							writer.Value(UInt.UInt);
+							writer.Value(UInt.@uint);
 							return;
 						}
 						else if (value is StructureValue<long> Long)
 						{
-							writer.Value(Long.Long);
+							writer.Value(Long.@long);
 							return;
 						}
 						else if (value is StructureValue<ulong> ULong)
 						{
-							writer.Value(ULong.ULong);
+							writer.Value(ULong.@ulong);
 							return;
 						}
 					}
@@ -209,7 +209,7 @@ public static class DataReaderAndWriterFunctions
 				case StructureType.Binary:
 					if (value is StructureValue<byte[]> Bytes)
 					{
-						writer.Value(Bytes.Bytes);
+						writer.Value(Bytes.bytes);
 						return;
 					}
 					break;

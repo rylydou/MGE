@@ -10,18 +10,18 @@ public class StructureObject : StructureValue<Dictionary<string, StructureValue>
 	{
 		get
 		{
-			if (Value.TryGetValue(key, out var value))
-				return value;
+			if (value.TryGetValue(key, out var item))
+				return item;
 			return StructureValueNull._null;
 		}
 		set
 		{
-			Value[key] = value;
+			base.value[key] = value;
 		}
 	}
 
-	public override IEnumerable<string> keys => Value.Keys;
-	public override IEnumerable<StructureValue> values => Value.Values;
-	public override IEnumerable<KeyValuePair<string, StructureValue>> pairs => Value;
-	public override int count => Value.Count;
+	public override IEnumerable<string> keys => value.Keys;
+	public override IEnumerable<StructureValue> values => value.Values;
+	public override IEnumerable<KeyValuePair<string, StructureValue>> pairs => value;
+	public override int count => value.Count;
 }
