@@ -1244,7 +1244,7 @@ public class Batch2D
 					x += amount;
 				}
 
-				font.RenderChar(this, ch, position.x, position.y + y * scale, scale, color);
+				font.RenderChar(this, ch, position.x + x * scale, position.y + y * scale, scale, color);
 
 				x += metric.advance;
 			}

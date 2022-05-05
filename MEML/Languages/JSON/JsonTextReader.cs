@@ -91,12 +91,12 @@ public class JsonTextReader : IDataReader, IDisposable
 							StepChar(out next);
 							_builder.Append(next switch
 							{
-								'n' => _builder.Append('\n'),
-								'r' => _builder.Append('\r'),
-								't' => _builder.Append('\t'),
-								'v' => _builder.Append('\v'),
-								'"' => _builder.Append('"'),
-								'\\' => _builder.Append('\\'),
+								'n' => '\n',
+								'r' => '\r',
+								't' => '\t',
+								'v' => '\v',
+								'"' => '"',
+								'\\' => '\\',
 								_ => throw new Exception($"'\\{next}' is not a valid escape sequence @{_position}"),
 							});
 							continue;
