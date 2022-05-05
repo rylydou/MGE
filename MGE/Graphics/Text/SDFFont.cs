@@ -38,7 +38,7 @@ public class SDFFont : IFont
 	readonly int _baseGlyphSize;
 
 	readonly Dictionary<char, GlyphInfo> _glyphs = new();
-	readonly Dictionary<char, GlyphMetrics> _mertics = new();
+	readonly Dictionary<char, (int width, int advance)> _mertics = new();
 	readonly Dictionary<(char first, char second), int> _kernings = new();
 
 	public SDFFont(Texture texture, StructureValue def)
@@ -57,11 +57,7 @@ public class SDFFont : IFont
 		{
 			var ch = item["char"];
 
-			var metric = new GlyphMetrics(
-				width: item["width"],
-				advance: item["xadvance"]
-			);
-			_mertics.Add(ch, metric);
+			_mertics.Add(ch, (width: item["width"], advance: item["xadvance"]));
 
 			var glyph = new GlyphInfo(item);
 			_glyphs.Add(ch, glyph);
@@ -73,9 +69,17 @@ public class SDFFont : IFont
 		}
 	}
 
-	public bool TryGetGlyphMetrics(char ch, [MaybeNullWhen(false)] out GlyphMetrics metric)
+	public bool TryGetGlyphMetrics(char ch, [MaybeNullWhen(false)] out int width, out int advance)
 	{
-		return _mertics.TryGetValue(ch, out metric);
+		if (_mertics.TryGetValue(ch, out var glyph))
+		{
+			(width, advance) = glyph;
+			return true;
+		}
+
+		width = 0;
+		advance = 0;
+		return false;
 	}
 
 	public bool TryGetKerning(char first, char second, out int amount)
@@ -83,12 +87,12 @@ public class SDFFont : IFont
 		return _kernings.TryGetValue((first, second), out amount);
 	}
 
-	public void BeginRender(Batch2D batch, float fontSize, out float scale)
+	public float GetScale(float fontSize) => fontSize / _baseGlyphSize;
+
+	public void BeginRender(Batch2D batch)
 	{
 		batch.SetMaterial(_material);
 		// batch.SetTexture(_texture);
-
-		scale = fontSize / _baseGlyphSize;
 	}
 
 	public void AfterRender(Batch2D batch)

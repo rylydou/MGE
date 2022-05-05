@@ -112,7 +112,6 @@ public class SetupScreen : GameScreen
 		var fg = new Color(0x343032);
 
 		var scale = (Vector2)App.window.size / canvasSize;
-		// Log.Info(((Vector2)App.window.size / canvasSize).ToString());
 		batch.PushMatrix(Vector2.zero, scale, Vector2.zero, 0);
 		batch.Rect(new(canvasSize), bg);
 
@@ -140,7 +139,7 @@ public class SetupScreen : GameScreen
 
 				batch.Draw(player.skin.texture, new(x + cardWidth / 2, (canvasSize.y - cardHeight - cardGap * 2) / 2), Color.white);
 
-				batch.DrawString(_font, player.controls!.name, new(x + cardGap, canvasSize.y - cardHeight), fg, 4);
+				batch.DrawString(_font, player.controls!.name, new(x, canvasSize.y - cardHeight - cardGap, cardWidth, cardHeight), TextAlignment.Center, fg, 4);
 			}
 			x += cardWidth + cardGap;
 		}

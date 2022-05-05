@@ -4,7 +4,7 @@ namespace MGE.UI;
 
 public class UIBox : UIContainer
 {
-	UIDirection _direction;
+	[Prop] UIDirection _direction;
 	public UIDirection direction
 	{
 		get => _direction;
@@ -17,7 +17,7 @@ public class UIBox : UIContainer
 		}
 	}
 
-	Vector2<UIAlignment> _alignment;
+	[Prop] Vector2<UIAlignment> _alignment;
 	public Vector2<UIAlignment> alignment
 	{
 		get => _alignment;
@@ -30,7 +30,7 @@ public class UIBox : UIContainer
 		}
 	}
 
-	int _spacing;
+	[Prop] int _spacing;
 	public int spacing
 	{
 		get => _spacing;

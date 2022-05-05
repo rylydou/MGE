@@ -4,7 +4,7 @@ namespace MGE.UI;
 
 public abstract class UIContainer : UIWidget
 {
-	Thickness _padding;
+	[Prop] Thickness _padding;
 	public Thickness padding
 	{
 		get => _padding;
@@ -19,7 +19,7 @@ public abstract class UIContainer : UIWidget
 
 	public RectInt contentRect { get => _rect - _padding; }
 
-	public List<UIWidget> widgets { get; } = new();
+	[Prop] public List<UIWidget> widgets = new();
 
 	protected override void OnAttached()
 	{

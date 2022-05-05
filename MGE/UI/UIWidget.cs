@@ -4,14 +4,17 @@ public abstract class UIWidget
 {
 	public UIStyle baseStyle = new();
 
-	public string? id;
+	[Prop] public Color foregroundColor;
+	[Prop] public Color backgroundColor;
+
+	[Prop] public string? id;
 
 	public UIContainer? parent { get; private set; }
 	public UICanvas? canvas { get; internal set; }
 
 	#region Layout
 
-	Vector2<UIResizing> _resizing;
+	[Prop] Vector2<UIResizing> _resizing;
 	public Vector2<UIResizing> resizing
 	{
 		get => _resizing;
@@ -24,7 +27,7 @@ public abstract class UIWidget
 		}
 	}
 
-	Vector2Int _fixedSize;
+	[Prop] Vector2Int _fixedSize;
 	public Vector2Int fixedSize
 	{
 		get => _fixedSize;
@@ -55,7 +58,7 @@ public abstract class UIWidget
 		}
 	}
 
-	Vector2Int _position;
+	[Prop] Vector2Int _position;
 	public Vector2Int position
 	{
 		get => _position;

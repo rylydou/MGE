@@ -255,8 +255,8 @@ public struct RectInt : IEquatable<RectInt>
 
 	#region Thirdparty
 
-	public static implicit operator global::System.Drawing.Rectangle(RectInt rect) => new(rect.x, rect.y, rect.width, rect.height);
-	public static implicit operator RectInt(global::System.Drawing.Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
+	public static implicit operator System.Drawing.Rectangle(RectInt rect) => new(rect.x, rect.y, rect.width, rect.height);
+	public static implicit operator RectInt(System.Drawing.Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 
 	#endregion Thirdparty
 
@@ -264,7 +264,7 @@ public struct RectInt : IEquatable<RectInt>
 
 	#region Overrides
 
-	public override string ToString() => $"{{ {x}, {y}; {width} x {height} }}";
+	public override string ToString() => $"({x}, {y}; {width}, {height})";
 	public string ToString(string format) => string.Format(format, x, y, width, height);
 
 	public override int GetHashCode() => HashCode.Combine(x, y, width, height);
