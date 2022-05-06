@@ -23,6 +23,12 @@ public class PlayingScreen : GameScreen
 			player.player = playerNode;
 			Game.scene.AddChild(playerNode);
 		}
+
+		var gun = App.content.Get<Prefab>("Scene/Items/Shotgun/Shotgun.node");
+		Game.scene.AddChild(gun.CreateInstance());
+		Game.scene.AddChild(gun.CreateInstance());
+		Game.scene.AddChild(gun.CreateInstance());
+		Game.scene.AddChild(gun.CreateInstance());
 	}
 
 	public override void Tick(float delta)

@@ -117,7 +117,10 @@ public static class App
 
 		Log.System($"Version: {version}");
 		Log.System($"Platform: {RuntimeInformation.OSDescription} ({RuntimeInformation.OSArchitecture})");
-		Log.System($"MGE: {RuntimeInformation.FrameworkDescription}");
+		Log.System($".NET: {RuntimeInformation.FrameworkDescription}");
+
+		Log.System($"Memory: {GC.GetGCMemoryInfo().TotalAvailableMemoryBytes / 1048576}MB");
+
 
 #if DEBUG
 		Launch();

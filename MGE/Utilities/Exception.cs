@@ -23,4 +23,8 @@ public class Exception : System.Exception
 	public Exception(string failedAction, string reason)
 	: base($"Failed to {failedAction} - {reason}")
 	{ }
+
+	public Exception(string failedAction, string reason, string possibleCauseses)
+	: base($"Failed to {failedAction} - {reason}\n\t{possibleCauseses}")
+	{ }
 }

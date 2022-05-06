@@ -130,15 +130,24 @@ public abstract class Node
 
 	#endregion Node Management
 
-	#region Utilities
+	#region Signal Management
 
-	public T CreateNewInstance<T>() where T : Node
+	List<(Action signal, Action callback)> _externalSignals = new();
+
+	public void ConnectSignal(Action signal, Action callback)
 	{
-		var structure = Prefab.converter.CreateStructureFromObject(this, typeof(T));
-		return Prefab.converter.CreateObjectFromStructure<T>(structure);
+		signal += callback;
+		_externalSignals.Add((signal, callback));
 	}
 
-	#endregion Utilities
+	public void DisconnectSignal(Action signal, Action callback)
+	{
+		signal = signal - callback
+			?? throw new Exception("Cannot remove callback from signal", "Removing this callback leads to the signal being null", "This might be because an empty callback like '() => { }' is being removed");
+		_externalSignals.Remove((signal, callback));
+	}
+
+	#endregion Signal Management
 
 	#region Events
 
@@ -272,4 +281,14 @@ public abstract class Node
 	protected virtual void Update(float delta) { }
 
 	#endregion Loops
+
+	#region Utilities
+
+	public T CreateNewInstance<T>() where T : Node
+	{
+		var structure = Prefab.converter.CreateStructureFromObject(this, typeof(T));
+		return Prefab.converter.CreateObjectFromStructure<T>(structure);
+	}
+
+	#endregion Utilities
 }

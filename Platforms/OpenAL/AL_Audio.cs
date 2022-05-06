@@ -29,9 +29,11 @@ public class AL_Audio : Audio
 		// Get the default audio device
 		device = ALC.alcOpenDevice(""); // ALC.CheckError(device, "Failed open default audio device");
 		audioEnabled = ALC.alcGetError(device) == ALCError.NoError;
-		Log.System("Sound " + (audioEnabled ? "on" : "off"));
-
-		if (!audioEnabled) return;
+		if (!audioEnabled)
+		{
+			Log.System("Sound off");
+			return;
+		}
 
 		// Create a context using this device
 		context = ALC.alcCreateContext(device, new int[0]); ALC.CheckError(device, "Failed create a context from defualt device");
@@ -45,8 +47,8 @@ public class AL_Audio : Audio
 
 		// Log info
 		Log.System(ALC.alcGetString(device, ALCGetString.CaptureDeviceSpecifier));
-		Log.System(ALC.alcGetString(device, ALCGetString.Extensions));
-		Log.System(AL.alGetString(ALGetString.Extensions));
+		// Log.System(ALC.alcGetString(device, ALCGetString.Extensions));
+		// Log.System(AL.alGetString(ALGetString.Extensions));
 
 		// Pool all sources
 		_allSources = new int[MAX_SOURCES];

@@ -53,8 +53,9 @@ public class Ground : Solid
 		{
 			for (int x = 0; x < mapSize.x; x++)
 			{
+				var v = noise.GetNoise(x * zoom, y * zoom);
 				var bias = Mathf.Lerp(topBias, bottomBias, (float)y / mapSize.y);
-				tilemap.data[x, y] = noise.GetNoise(x * zoom, y * zoom) > bias;
+				tilemap.data[x, y] = v > bias;
 			}
 		}
 	}

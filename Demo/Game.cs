@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Demo.Screens;
 using MGE;
 
@@ -117,23 +118,33 @@ public class Game : Module
 
 	void Render(Window window)
 	{
+		var batch = Batch2D.current;
+
 		// Draw game framebuffer onto window
-		Batch2D.current.Image(gameFramebuffer, renderRect, Color.white);
+		batch.Image(gameFramebuffer, renderRect, Color.white);
 
 		// Render screen
 		screen.Render(Batch2D.current);
 
-		Batch2D.current.DrawString(_font,
-			$"Total={(double)GC.GetTotalMemory(false) / 1048576:F4} MB\n" +
-			$"Allocated={(double)GC.GetTotalAllocatedBytes() / 1048576:F4} MB\n" +
-			$"Working Set={(double)Environment.WorkingSet / 1048576:F4} MB\n" +
-			$"GC Pause= {GC.GetGCMemoryInfo().PauseTimePercentage:F4}%\n" +
-			$"GC Fragmented= {GC.GetGCMemoryInfo().FragmentedBytes / 1048576:F4}MB\n" +
-			$"GC Heap= {GC.GetGCMemoryInfo().HeapSizeBytes / 1048576:F4}MB\n" +
-			$"GC Heap Committed= {GC.GetGCMemoryInfo().TotalCommittedBytes / 1048576:F4}MB\n" +
-			$"GC Available= {GC.GetGCMemoryInfo().TotalAvailableMemoryBytes / 1048576:F4}MB\n" +
-		"", new(8), Color.white, 16);
+		var profiler = App.profiler;
 
-		Batch2D.current.Render(window);
+		batch.Rect(new(0, 0, 200, 100), new(0x000000, 127));
+		for (int i = 0; i < App.profiler.frametime.Length; i++)
+		{
+			var height = (float)(profiler.frametime[i] * 100);
+			batch.Rect(i * 2, 0, 1, height, i == profiler.frametimePosition ? Color.white : new(0x6BA841));
+		}
+		batch.DrawString(_font, $"{1.0 / profiler.currentFrametime:F0} fps", new(4, 4), Color.white, 16);
+
+		var max = App.profiler.memAvailable.Max();
+		batch.Rect(new(200 + 2, 0, 200, 100), new(0x000000, 127));
+		for (int i = 0; i < App.profiler.memUsage.Length; i++)
+		{
+			var height = (float)((double)App.profiler.memUsage[i] / max * 100);
+			batch.Rect(200 + 2 + i * 2, 0, 1, height, i == App.profiler.memPosition ? Color.white : new(0x3385B8));
+		}
+		batch.DrawString(_font, $"{(double)profiler.currentMemUsage / 1048576:F2}MB / {profiler.currentMemAvailable / 1048576}MB", new(200 + 2 + 4, 4), Color.white, 16);
+
+		batch.Render(window);
 	}
 }

@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 
 namespace MGE;
 
@@ -50,6 +52,15 @@ static class Extentions
 		}
 	}
 
+	/// <summary>
+	/// Adds a value to the dictionary, if it already exists then change that value.
+	/// </summary>
+	/// <param name="dict"></param>
+	/// <param name="key"></param>
+	/// <param name="value"></param>
+	/// <typeparam name="TKey"></typeparam>
+	/// <typeparam name="TValue"></typeparam>
+	/// <returns>true and new item was added to the dictionary, false if a value was changed.</returns>
 	public static bool Set<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value) where TKey : notnull
 	{
 		if (!dict.TryAdd(key, value))
@@ -60,15 +71,55 @@ static class Extentions
 		return true;
 	}
 
-	// public static TValue GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue defaultValue) where TKey : notnull
-	// {
-	// 	if (dict.TryGetValue(key, out var value)) return value;
-	// 	return defaultValue;
-	// }
-
-	public static void Set(this object obj, string propertyName, object value)
+	public static bool TryGet(this object obj, string propertyName, out object? value)
 	{
-		var member = obj.GetType().GetMember(propertyName);
+		var member = obj.GetType().GetMember(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.GetProperty)[0];
+
+		if (member is FieldInfo field)
+		{
+			value = field.GetValue(obj);
+			return true;
+		}
+		else if (member is PropertyInfo prop)
+		{
+			value = prop.GetValue(obj);
+			return true;
+		}
+
+		value = null;
+		return false;
+	}
+
+	public static bool TrySet(this object obj, string propertyName, object value)
+	{
+		var member = obj.GetType().GetMember(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.GetProperty | BindingFlags.SetProperty).FirstOrDefault();
+
+		if (member is FieldInfo field)
+		{
+			field.SetValue(obj, value);
+			return true;
+		}
+		else if (member is PropertyInfo prop)
+		{
+			prop.SetValue(obj, value);
+			return true;
+		}
+
+		return false;
+	}
+
+	public static bool TryCall(this object obj, string methodName, object?[] args, out object? returnValue)
+	{
+		var method = obj.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod, args.Select(arg => arg?.GetType() ?? typeof(object)).ToArray());
+
+		if (method is null)
+		{
+			returnValue = null;
+			return false;
+		}
+
+		returnValue = method.Invoke(obj, args);
+		return true;
 	}
 
 	public static IEnumerable<Body2D> WhereInLayer(this IEnumerable<Body2D> list, Layer layer)

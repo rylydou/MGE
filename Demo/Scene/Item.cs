@@ -30,7 +30,7 @@ public abstract class Item : Actor
 
 		collider = new HitboxCollider2D(new(10, 10), new(-5, -5));
 
-		globalPosition = new(400, 0);
+		globalPosition = new(320 + RNG.shared.RandomInt(-60, 60), 0);
 	}
 
 	protected sealed override void Tick(float delta)
