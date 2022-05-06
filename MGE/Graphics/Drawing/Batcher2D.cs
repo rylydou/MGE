@@ -1224,7 +1224,7 @@ public class Batch2D
 
 	public void DrawString(IFont font, ReadOnlySpan<char> text, Vector2 position, Color color, float fontSize, float lineSpacing = 1.15f)
 	{
-		DrawString(font, font.BuildString(text), position, color, fontSize, lineSpacing);
+		DrawString(font, font.BuildString(text), position, color, font.GetScale(fontSize), lineSpacing);
 	}
 
 	public void DrawString(IFont font, StringBuildInfo str, Vector2 position, Color color, float scale, float lineSpacing = 1.15f)

@@ -16,6 +16,9 @@ App.modules.Register<AL_Audio>();
 // Content Module
 App.modules.Register<Content>();
 
+// Profiler Module
+App.modules.Register<Profiler>();
+
 // Register the custom Game Module to run your code
 App.modules.Register<Game>();
 

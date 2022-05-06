@@ -54,6 +54,11 @@ public static class App
 	public static Content content => modules.Get<Content>();
 
 	/// <summary>
+	/// Get the Profiler Module
+	/// </summary>
+	public static Profiler profiler => modules.Get<Profiler>();
+
+	/// <summary>
 	/// Gets the System Input
 	/// </summary>
 	public static Input input => windowing.input;

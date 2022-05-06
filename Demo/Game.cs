@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Demo.Screens;
 using MGE;
@@ -63,6 +64,8 @@ public class Game : Module
 		}
 	}
 
+	SDFFont _font = App.content.Get<SDFFont>("Fonts/Regular.json");
+
 	public Game()
 	{
 		instance = this;
@@ -119,6 +122,17 @@ public class Game : Module
 
 		// Render screen
 		screen.Render(Batch2D.current);
+
+		Batch2D.current.DrawString(_font,
+			$"Total={(double)GC.GetTotalMemory(false) / 1048576:F4} MB\n" +
+			$"Allocated={(double)GC.GetTotalAllocatedBytes() / 1048576:F4} MB\n" +
+			$"Working Set={(double)Environment.WorkingSet / 1048576:F4} MB\n" +
+			$"GC Pause= {GC.GetGCMemoryInfo().PauseTimePercentage:F4}%\n" +
+			$"GC Fragmented= {GC.GetGCMemoryInfo().FragmentedBytes / 1048576:F4}MB\n" +
+			$"GC Heap= {GC.GetGCMemoryInfo().HeapSizeBytes / 1048576:F4}MB\n" +
+			$"GC Heap Committed= {GC.GetGCMemoryInfo().TotalCommittedBytes / 1048576:F4}MB\n" +
+			$"GC Available= {GC.GetGCMemoryInfo().TotalAvailableMemoryBytes / 1048576:F4}MB\n" +
+		"", new(8), Color.white, 16);
 
 		Batch2D.current.Render(window);
 	}
