@@ -112,7 +112,7 @@ public static class App
 	public static void Start(string title, int width, int height, WindowFlags flags = WindowFlags.ScaleToMonitor, Action? callback = null)
 	{
 		// I think that this is the best for games
-		GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
+		// GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
 
 		if (running) throw new Exception("App is already running");
 		if (exiting) throw new Exception("App is still exiting");

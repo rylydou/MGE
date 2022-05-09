@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Demo.Screens;
@@ -51,7 +52,7 @@ public class Game : Module
 		screen.Start();
 	}
 
-	public static AutoDictionary<string, Skin> skins = new(s => s.name);
+	public static List<PlayerSkin> skins = new();
 	void LoadSkins(Folder folder)
 	{
 		var aseLoader = new MGE.Loaders.AsepriteTextureLoader();
@@ -59,8 +60,8 @@ public class Game : Module
 		foreach (var file in folder.GetFiles("*.ase"))
 		{
 			var tex = (Texture)aseLoader.Load(file, string.Empty);
-			var skin = new Skin(file.name, tex);
-			skins.Set(skin);
+			var skin = new PlayerSkin(file.name, tex);
+			skins.Add(skin);
 			Log.Info("Loaded skin: " + file);
 		}
 	}

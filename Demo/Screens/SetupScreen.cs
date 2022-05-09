@@ -73,6 +73,16 @@ public class SetupScreen : GameScreen
 				{
 				}
 
+				if (player.controls.navigateLeft)
+				{
+					player.skinIndex = (player.skinIndex - 1) % Game.skins.Count;
+				}
+
+				if (player.controls.navigateLeft)
+				{
+					player.skinIndex = (player.skinIndex + 1) % Game.skins.Count;
+				}
+
 				if (player.controls.confirm)
 				{
 					if (player.isReady)

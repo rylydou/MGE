@@ -12,13 +12,16 @@ public class Gun : Item
 
 	[Prop] public Projectile? projectile;
 
-	Node2D? shootPoint;
+	Prefab? _projPrefab;
+	Node2D? _shootPoint;
 
 	protected override void Ready()
 	{
 		base.Ready();
 
-		shootPoint = GetChild<Node2D>("Shoot point");
+		_projPrefab = projectile!.CreatePrefab();
+
+		_shootPoint = GetChild<Node2D>("Shoot point");
 		sprite = App.content.Get<Texture>("Scene/Items/Shotgun/Sprite.ase");
 	}
 
@@ -31,8 +34,8 @@ public class Gun : Item
 
 		for (int i = 0; i < numberOfBullets; i++)
 		{
-			var proj = projectile!.CreateNewInstance<Projectile>();
-			proj.transform = shootPoint!.GetGlobalTransform();
+			var proj = _projPrefab!.CreateInstance<Projectile>();
+			proj.transform = _shootPoint!.GetGlobalTransform();
 			proj.rotation = Mathf.Deg2Rad(RNG.shared.RandomFloat(-spread / 2, spread / 2));
 			proj.speed *= RNG.shared.RandomFloat(minSpeedVariation, maxSpeedVariation);
 			proj.hitActors.Add(holder);

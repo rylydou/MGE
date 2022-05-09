@@ -23,7 +23,7 @@ public class Node2D : CanvasItem
 
 			_localInvalid = false;
 			GlobalInvalid();
-			if (isInScene) onTransformChanged();
+			if (scene is not null) onTransformChanged();
 		}
 	}
 	public override Transform2D GetTransform()
@@ -52,7 +52,7 @@ public class Node2D : CanvasItem
 
 			_localInvalid = true;
 			GlobalInvalid();
-			if (isInScene) onTransformChanged();
+			if (scene is not null) onTransformChanged();
 		}
 	}
 
@@ -69,7 +69,7 @@ public class Node2D : CanvasItem
 
 			_localInvalid = true;
 			GlobalInvalid();
-			if (isInScene) onTransformChanged();
+			if (scene is not null) onTransformChanged();
 		}
 	}
 
@@ -86,7 +86,7 @@ public class Node2D : CanvasItem
 
 			_localInvalid = true;
 			GlobalInvalid();
-			if (isInScene) onTransformChanged();
+			if (scene is not null) onTransformChanged();
 		}
 	}
 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace MGE;
@@ -19,12 +18,8 @@ public abstract class Node
 
 	public Node? parent { get; private set; }
 
-	public Scene? scene => this is Scene meAsScene ? meAsScene : parent?.scene;
-	public bool isInScene
-	{
-		[MemberNotNullWhen(true, nameof(scene))]
-		get => scene is not null;
-	}
+	// vscode freaks out when I do "this as Scene ?? parent?.scene" for some reason
+	public Scene? scene => this is Scene s ? s : parent?.scene;
 
 	bool _initialized = false;
 
@@ -95,7 +90,7 @@ public abstract class Node
 
 		node.parent = this;
 		_children.Add(node);
-		if (isInScene)
+		if (scene is not null)
 		{
 			node.onEnterScene();
 		}
@@ -107,7 +102,7 @@ public abstract class Node
 		if (node.parent != this) throw new Exception("Remove child", "Parent doesn't own the child");
 
 		_children.Remove(node);
-		if (isInScene)
+		if (scene is not null)
 		{
 			node.onExitScene();
 		}
@@ -137,34 +132,42 @@ public abstract class Node
 	public void ConnectSignal(Action signal, Action callback)
 	{
 		signal += callback;
-		_externalSignals.Add((signal, callback));
+
+		if (signal.Target != this)
+		{
+			_externalSignals.Add((signal, callback));
+		}
 	}
 
 	public void DisconnectSignal(Action signal, Action callback)
 	{
 		signal = signal - callback
 			?? throw new Exception("Cannot remove callback from signal", "Removing this callback leads to the signal being null", "This might be because an empty callback like '() => { }' is being removed");
-		_externalSignals.Remove((signal, callback));
+
+		if (signal.Target != this)
+		{
+			_externalSignals.Remove((signal, callback));
+		}
 	}
 
 	#endregion Signal Management
 
 	#region Events
 
-	void SetParents()
+	void RegisterSelfAsParentForChildren()
 	{
 		foreach (var child in _children)
 		{
 			if (child.parent is not null) continue;
 
 			child.parent = this;
-			child.SetParents();
+			child.RegisterSelfAsParentForChildren();
 		}
 	}
 
 	protected virtual void RegisterCallbacks()
 	{
-		SetParents();
+		RegisterSelfAsParentForChildren();
 
 		onReady += () =>
 		{
@@ -174,10 +177,7 @@ public abstract class Node
 
 		onEnterScene += () =>
 		{
-			foreach (var child in _children)
-			{
-				child.parent = this;
-			}
+			RegisterSelfAsParentForChildren();
 
 			if (!_initialized)
 			{
@@ -196,10 +196,10 @@ public abstract class Node
 			parent!.onChildRemoved(this);
 			OnExitScene();
 			GetChildren<Node>().ToArray().ForEach(child =>
-				{
-					child.onExitScene();
-					child.parent = null;
-				});
+			{
+				child.onExitScene();
+				child.parent = null;
+			});
 		};
 
 		onChildAdded += node =>
@@ -284,11 +284,10 @@ public abstract class Node
 
 	#region Utilities
 
-	public T CreateNewInstance<T>() where T : Node
-	{
-		var structure = Prefab.converter.CreateStructureFromObject(this, typeof(T));
-		return Prefab.converter.CreateObjectFromStructure<T>(structure);
-	}
+	public Prefab CreatePrefab() => new Prefab(Prefab.converter.CreateStructureFromObject(this, GetType()));
+
+	public Node CreateInstance() => CreatePrefab().CreateInstance();
+	public T CreateInstance<T>() where T : Node => CreatePrefab().CreateInstance<T>();
 
 	#endregion Utilities
 }

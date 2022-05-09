@@ -24,7 +24,7 @@ public class PlayingScreen : GameScreen
 			Game.scene.AddChild(playerNode);
 		}
 
-		var gun = App.content.Get<Prefab>("Scene/Items/Shotgun/Shotgun.node");
+		var gun = App.content.Get<Items.Gun>("Scene/Items/Shotgun/Shotgun.node");
 		Game.scene.AddChild(gun.CreateInstance());
 		Game.scene.AddChild(gun.CreateInstance());
 		Game.scene.AddChild(gun.CreateInstance());
