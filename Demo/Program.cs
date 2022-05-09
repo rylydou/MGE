@@ -16,11 +16,11 @@ App.modules.Register<AL_Audio>();
 // Content Module
 App.modules.Register<Content>();
 
-// Profiler Module
-App.modules.Register<Profiler>();
-
 // Register the custom Game Module to run your code
 App.modules.Register<Game>();
 
+// Profiler Module
+App.modules.Register<Profiler>();
+
 // Start the Application with a single 1280x720 Window
-App.Start("MGE ²  Party game", 1280, 720, WindowFlags.ScaleToMonitor);
+App.Start("MGE Party Game", 1280, 720, WindowFlags.ScaleToMonitor);

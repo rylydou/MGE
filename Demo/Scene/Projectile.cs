@@ -98,13 +98,7 @@ public class Projectile : Body2D
 
 	protected override void Render(Batch2D batch)
 	{
-		batch.Rect(new(0, 0, speed * Time.tickDelta * 4 * -scale.y, 1), Color.red, new(255, 0, 0, 0), Color.red, new(255, 0, 0, 0));
+		batch.Rect(new(0, 0, speed * Time.tickDelta * 4 * -scale.y, 1), Color.yellow, new(255, 0, 0, 0), new(255, 0, 0, 0), Color.yellow);
 		batch.Draw(sprite, Vector2.zero, Color.white);
-
-		batch.PopMatrix();
-
-		batch.Line(globalPosition, globalPosition + right * 16, 1.5f, Color.yellow);
-
-		batch.PushMatrix(Transform2D.identity);
 	}
 }

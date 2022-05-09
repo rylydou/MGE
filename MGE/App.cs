@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -110,6 +111,9 @@ public static class App
 	/// </summary>
 	public static void Start(string title, int width, int height, WindowFlags flags = WindowFlags.ScaleToMonitor, Action? callback = null)
 	{
+		// I think that this is the best for games
+		GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
+
 		if (running) throw new Exception("App is already running");
 		if (exiting) throw new Exception("App is still exiting");
 
@@ -120,7 +124,6 @@ public static class App
 		Log.System($".NET: {RuntimeInformation.FrameworkDescription}");
 
 		Log.System($"Memory: {GC.GetGCMemoryInfo().TotalAvailableMemoryBytes / 1048576}MB");
-
 
 #if DEBUG
 		Launch();

@@ -1,3 +1,5 @@
+@import url(assets/iosevka-custom/iosevka-custom.css);
+
 $base: var(--bs);
 $background: var(--bg);
 $accent: var(--ac);
@@ -9,6 +11,9 @@ $fgTime: 500ms;
 
 $page-width: 780px;
 $sidebar-width: 280px;
+
+$normal: "Open Sans";
+$monospace: "Iosevka Custom Web";
 
 body#dark {
 	--bs: #161616;
@@ -29,12 +34,6 @@ body#light {
 @font-face {
 	font-family: "Open Sans";
 	src: url('/assets/fonts/open-sans.ttf');
-	font-display: swap;
-}
-
-@font-face {
-	font-family: "Iosevka";
-	src: url('/assets/fonts/iosevka.ttf');
 	font-display: swap;
 }
 

@@ -106,7 +106,8 @@ public class Game : Module
 
 		scene.onUpdate(delta);
 
-		Batch2D.current.Render(gameFramebuffer);
+		var info = Batch2D.current.Render(gameFramebuffer);
+		App.profiler.batch2DRenderInfo = info;
 	}
 
 	protected override void Tick(float delta)
@@ -125,25 +126,6 @@ public class Game : Module
 
 		// Render screen
 		screen.Render(Batch2D.current);
-
-		var profiler = App.profiler;
-
-		batch.Rect(new(0, 0, 200, 100), new(0x000000, 127));
-		for (int i = 0; i < App.profiler.frametime.Length; i++)
-		{
-			var height = (float)(profiler.frametime[i] * 100);
-			batch.Rect(i * 2, 0, 1, height, i == profiler.frametimePosition ? Color.white : new(0x6BA841));
-		}
-		batch.DrawString(_font, $"{1.0 / profiler.currentFrametime:F0} fps", new(4, 4), Color.white, 16);
-
-		var max = App.profiler.memAvailable.Max();
-		batch.Rect(new(200 + 2, 0, 200, 100), new(0x000000, 127));
-		for (int i = 0; i < App.profiler.memUsage.Length; i++)
-		{
-			var height = (float)((double)App.profiler.memUsage[i] / max * 100);
-			batch.Rect(200 + 2 + i * 2, 0, 1, height, i == App.profiler.memPosition ? Color.white : new(0x3385B8));
-		}
-		batch.DrawString(_font, $"{(double)profiler.currentMemUsage / 1048576:F2}MB / {profiler.currentMemAvailable / 1048576}MB", new(200 + 2 + 4, 4), Color.white, 16);
 
 		batch.Render(window);
 	}

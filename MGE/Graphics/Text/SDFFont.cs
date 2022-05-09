@@ -97,7 +97,7 @@ public class SDFFont : IFont
 
 	public void AfterRender(Batch2D batch)
 	{
-		batch.SetMaterial(batch.defaultMaterial);
+		batch.SetMaterial(null);
 	}
 
 	public void RenderChar(Batch2D batch, char ch, float x, float y, float scale, Color color)

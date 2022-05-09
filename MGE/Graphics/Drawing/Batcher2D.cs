@@ -1,13 +1,9 @@
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace MGE;
 
@@ -142,20 +138,25 @@ public class Batch2D
 
 	#region Rendering
 
-	public void Render(RenderTarget target)
+	public Batch2DRenderInfo Render(RenderTarget target)
 	{
 		var matrix = Matrix4x4.CreateOrthographicOffCenter(0, target.renderWidth, target.renderHeight, 0, 0, float.MaxValue);
-		Render(target, matrix);
+		return Render(target, matrix);
 	}
 
-	public void Render(RenderTarget target, Color clearColor)
+	public Batch2DRenderInfo Render(RenderTarget target, Color clearColor)
 	{
 		App.graphics.Clear(target, clearColor);
-		Render(target);
+		return Render(target);
 	}
 
-	public void Render(RenderTarget target, Matrix4x4 matrix, RectInt? viewport = null, Color? clearColor = null)
+	public Batch2DRenderInfo Render(RenderTarget target, Matrix4x4 matrix, RectInt? viewport = null, Color? clearColor = null)
 	{
+		var info = new Batch2DRenderInfo(triangleCount, vertexCount, indexCount, batchCount);
+
+		var sw = new Stopwatch();
+		sw.Start();
+
 		if (clearColor is not null)
 			App.graphics.Clear(target, clearColor.Value);
 
@@ -192,6 +193,11 @@ public class Batch2D
 
 		// Implied clear
 		Clear();
+
+		sw.Stop();
+		info.time = sw.Elapsed;
+
+		return info;
 	}
 
 	void RenderBatch(in Batch batch, in Matrix4x4 matrix)
