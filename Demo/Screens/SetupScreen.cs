@@ -75,12 +75,12 @@ public class SetupScreen : GameScreen
 
 				if (player.controls.navigateLeft)
 				{
-					player.skinIndex = (player.skinIndex - 1) % Game.skins.Count;
+					player.skinIndex = Mathf.Wrap(player.skinIndex - 1, Game.skins.Count);
 				}
 
-				if (player.controls.navigateLeft)
+				if (player.controls.navigateRight)
 				{
-					player.skinIndex = (player.skinIndex + 1) % Game.skins.Count;
+					player.skinIndex = Mathf.Wrap(player.skinIndex + 1, Game.skins.Count);
 				}
 
 				if (player.controls.confirm)

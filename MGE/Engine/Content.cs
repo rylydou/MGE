@@ -7,12 +7,12 @@ namespace MGE;
 
 public interface IContentLoader
 {
-	object Load(File file, string path);
+	object Load(File file, string filename);
 }
 
 public class Content : AppModule
 {
-	public delegate T Load<T>(File file, string location);
+	public delegate T Load<T>(File file, string filename);
 
 	public readonly Folder contentFolder;
 	public readonly Folder contentPacksFolder;
@@ -83,7 +83,7 @@ public class Content : AppModule
 		foreach (var item in contentIndex)
 		{
 			var filePath = item.Value;
-			var fileName = item.Key;
+			var filename = item.Key;
 
 			if (filePath.path.EndsWith(".load")) continue;
 
@@ -95,25 +95,25 @@ public class Content : AppModule
 
 			var sw = new Stopwatch();
 			sw.Start();
-			var value = loader.Load(filePath, fileName);
+			var value = loader.Load(filePath, filename);
 			sw.Stop();
 			// {loader.GetType().FullName,-42}
-			Log.Trace($"{fileName,-64} {sw.ElapsedMilliseconds}ms" + (sw.ElapsedMilliseconds >= 100 ? " <-- Slow" : ""));
+			Log.Trace($"{filename,-64} {sw.ElapsedMilliseconds}ms" + (sw.ElapsedMilliseconds >= 100 ? " <-- Slow" : ""));
 
-			preloadedAssets.Add(fileName, value);
+			preloadedAssets.Add(filename, value);
 		}
 
 		Log.EndStopwatch();
 	}
 
-	public T Get<T>(string location) where T : class
+	public T Get<T>(string filename) where T : class
 	{
-		return (T)(preloadedAssets[location] ?? throw new Exception());
+		return (T)(preloadedAssets[filename] ?? throw new Exception());
 	}
 
-	public bool Get<T>(string location, [MaybeNullWhen(false)] out T asset) where T : class
+	public bool Get<T>(string filename, [MaybeNullWhen(false)] out T asset) where T : class
 	{
-		if (!preloadedAssets.TryGetValue(location, out var obj))
+		if (!preloadedAssets.TryGetValue(filename, out var obj))
 		{
 			asset = null;
 			return false;

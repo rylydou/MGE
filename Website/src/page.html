@@ -23,62 +23,78 @@
 	</script>
 
 	<div class="page">
-		<div class="navbar">
-			<a class="button" href="/">
-				<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-					<path fill-rule="evenodd" clip-rule="evenodd"
-						d="M8 0L15 4V12L8 16L1 12L1 4L8 0ZM4.05416 4.56417L8 2.3094L11.9458 4.56417L8 6.8423L4.05416 4.56417ZM3.02073 6.28292V10.8453L6.98964 13.1132V8.57437L3.02073 6.28292Z" />
-				</svg>
-				MGE
-			</a>
 
-			<a href="/docs" class="button">Docs</a>
-
-			<a href="/api" class="button">API</a>
-
-			<div class="flex-separator"></div>
-
-			<a href="https://github.com/CiberTurtle/MGE" target="_blank" class="button"><svg width="16" height="16"
-					viewBox="0 0 16 16" fill="none">
-					<path fill-rule="evenodd" clip-rule="evenodd"
-						d="M8 0C3.581 0 0 3.672 0 8.203c0 3.624 2.292 6.698 5.471 7.783.4.075.546-.178.546-.396 0-.194-.007-.71-.01-1.395-2.226.496-2.695-1.1-2.695-1.1-.364-.947-.889-1.2-.889-1.2-.726-.508.055-.498.055-.498.803.058 1.225.846 1.225.846.714 1.253 1.873.89 2.329.68.073-.529.279-.89.508-1.095-1.777-.207-3.644-.911-3.644-4.054 0-.896.311-1.628.823-2.201-.082-.208-.357-1.042.078-2.171 0 0 .672-.22 2.2.84A7.465 7.465 0 0 1 8 3.968c.68.003 1.364.094 2.003.276 1.527-1.062 2.198-.841 2.198-.841.436 1.13.162 1.963.08 2.17.512.574.822 1.306.822 2.202 0 3.15-1.87 3.844-3.653 4.047.287.253.543.754.543 1.52 0 1.096-.01 1.98-.01 2.25 0 .219.144.474.55.394C13.71 14.898 16 11.825 16 8.203 16 3.673 12.418 0 8 0Z"
-						fill="currentColor" />
-				</svg></a>
-
-			<button id="theme-toggle" style="float: right;" onclick="isLight=!isLight;setTheme();">
-
-				<svg class="light" width="16" height="16" viewBox="0 0 16 16" fill="none">
-					<circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="2" />
-					<path d="M8 1v1m0 12v1m6-7h1M2 8H1m11.5 4.5.5.5M3.5 3.5 3 3m9.5.5L13 3m-9.5 9.5L3 13" stroke="currentColor"
-						stroke-width="2" stroke-linecap="round" />
-				</svg>
-
-				<svg class="dark" width="16" height="16" viewBox="0 0 16 16" fill="none">
-					<path d="M14 11c.11 0 .22-.002.33-.006A7.002 7.002 0 1 1 5.005 1.67 9 9 0 0 0 14 11Z" stroke="currentColor"
-						stroke-width="2" />
-				</svg>
-
-			</button>
-		</div>
-
-		<article>
-			<header>
-				<h1 id="title">{{PAGE TITLE}}</h1>
-			</header>
+		<div id="sidebar">
 
 			<details id="toc" open>
 				<summary>Sitemap</summary>
 			</details>
 
-			<div id="main-content">{{PAGE CONTENT}}</div>
-		</article>
-
-		<div class="footer">
-			<a href="" target="_blank" id="edit" class="button">Edit</a>
-			<div class="flex-separator"></div>
-			<!-- People who have js disabled prob also have a shortcut to scroll to the top -->
-			<button onclick="window.scrollTo(0, 0)">Back to top</button>
 		</div>
+
+		<div id="content">
+
+			<div class="navbar">
+				<a class="button" href="/">
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+						<path fill-rule="evenodd" clip-rule="evenodd"
+							d="M8 0L15 4V12L8 16L1 12L1 4L8 0ZM4.05416 4.56417L8 2.3094L11.9458 4.56417L8 6.8423L4.05416 4.56417ZM3.02073 6.28292V10.8453L6.98964 13.1132V8.57437L3.02073 6.28292Z" />
+					</svg>
+					MGE
+				</a>
+
+				<a href="/docs" class="button">Docs</a>
+
+				<a href="/api" class="button">API</a>
+
+				<div class="flex-separator"></div>
+
+				<a href="https://github.com/CiberTurtle/MGE" target="_blank" class="button"><svg width="16" height="16"
+						viewBox="0 0 16 16" fill="none">
+						<path fill-rule="evenodd" clip-rule="evenodd"
+							d="M8 0C3.581 0 0 3.672 0 8.203c0 3.624 2.292 6.698 5.471 7.783.4.075.546-.178.546-.396 0-.194-.007-.71-.01-1.395-2.226.496-2.695-1.1-2.695-1.1-.364-.947-.889-1.2-.889-1.2-.726-.508.055-.498.055-.498.803.058 1.225.846 1.225.846.714 1.253 1.873.89 2.329.68.073-.529.279-.89.508-1.095-1.777-.207-3.644-.911-3.644-4.054 0-.896.311-1.628.823-2.201-.082-.208-.357-1.042.078-2.171 0 0 .672-.22 2.2.84A7.465 7.465 0 0 1 8 3.968c.68.003 1.364.094 2.003.276 1.527-1.062 2.198-.841 2.198-.841.436 1.13.162 1.963.08 2.17.512.574.822 1.306.822 2.202 0 3.15-1.87 3.844-3.653 4.047.287.253.543.754.543 1.52 0 1.096-.01 1.98-.01 2.25 0 .219.144.474.55.394C13.71 14.898 16 11.825 16 8.203 16 3.673 12.418 0 8 0Z"
+							fill="currentColor" />
+					</svg></a>
+
+				<button id="theme-toggle" style="float: right;" onclick="isLight=!isLight;setTheme();">
+
+					<svg class="light" width="16" height="16" viewBox="0 0 16 16" fill="none">
+						<circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="2" />
+						<path d="M8 1v1m0 12v1m6-7h1M2 8H1m11.5 4.5.5.5M3.5 3.5 3 3m9.5.5L13 3m-9.5 9.5L3 13" stroke="currentColor"
+							stroke-width="2" stroke-linecap="round" />
+					</svg>
+
+					<svg class="dark" width="16" height="16" viewBox="0 0 16 16" fill="none">
+						<path d="M14 11c.11 0 .22-.002.33-.006A7.002 7.002 0 1 1 5.005 1.67 9 9 0 0 0 14 11Z" stroke="currentColor"
+							stroke-width="2" />
+					</svg>
+
+				</button>
+			</div>
+
+			<article>
+				<header>
+					<h1 id="title">{{PAGE TITLE}}</h1>
+				</header>
+
+				<div id="main-content">{{PAGE CONTENT}}</div>
+			</article>
+
+			<div class="footer">
+				<a href="" target="_blank" id="edit" class="button">Edit</a>
+				<div class="flex-separator"></div>
+				<!-- People who have js disabled prob also have a shortcut to scroll to the top -->
+				<button onclick="window.scrollTo(0, 0)">Back to top</button>
+			</div>
+
+		</div>
+
+		<div id="sidebar">
+
+			IN THIS ARTICLE
+
+		</div>
+
 	</div>
 
 	<script>
