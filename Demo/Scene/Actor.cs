@@ -45,11 +45,6 @@ public class Actor : Body2D
 
 	protected override void Tick(float delta)
 	{
-		hitTop = CollideCheck<Ground>(position + Vector2.up);
-		hitBottom = CollideCheck<Ground>(position + Vector2.down);
-		hitLeft = CollideCheck<Ground>(position + Vector2.left);
-		hitRight = CollideCheck<Ground>(position + Vector2.right);
-
 		timeSinceLastDamage += delta;
 	}
 
@@ -171,23 +166,34 @@ public class Actor : Body2D
 		_movementCounter.x += moveH;
 		var moveH1 = (int)System.Math.Round(_movementCounter.x, MidpointRounding.ToEven);
 		if (moveH1 == 0)
+		{
+			hitLeft = false;
+			hitRight = false;
 			return null;
+		}
 		_movementCounter.x -= moveH1;
 		return MoveHExact(moveH1, pusher);
 	}
 
 	public CollisionInfo? MoveV(float moveV, Solid? pusher = null)
 	{
-		this._movementCounter.y += moveV;
+		_movementCounter.y += moveV;
 		var moveV1 = (int)System.Math.Round(_movementCounter.y, MidpointRounding.ToEven);
 		if (moveV1 == 0)
+		{
+			hitTop = false;
+			hitBottom = false;
 			return null;
+		}
 		_movementCounter.y -= moveV1;
 		return MoveVExact(moveV1, pusher);
 	}
 
 	public CollisionInfo? MoveHExact(int moveH, Solid? pusher = null)
 	{
+		hitLeft = false;
+		hitRight = false;
+
 		var target = position + Vector2.right * moveH;
 		var dir = Mathf.Sign(moveH);
 		var move = 0;
@@ -200,6 +206,8 @@ public class Actor : Body2D
 			if (solid is not null)
 			{
 				_movementCounter.x = 0.0f;
+				if (dir > 0) hitRight = true;
+				else hitLeft = true;
 
 				return new CollisionInfo()
 				{
@@ -222,6 +230,9 @@ public class Actor : Body2D
 
 	public CollisionInfo? MoveVExact(int moveV, Solid? pusher = null)
 	{
+		hitTop = false;
+		hitBottom = false;
+
 		var target = position + Vector2.down * (float)moveV;
 		var dir = Mathf.Sign(moveV);
 		var move = 0;
@@ -233,6 +244,8 @@ public class Actor : Body2D
 			if (solid is not null)
 			{
 				_movementCounter.y = 0.0f;
+				if (dir > 0) hitBottom = true;
+				else hitTop = true;
 
 				return new CollisionInfo()
 				{
@@ -251,6 +264,7 @@ public class Actor : Body2D
 				if (semisolid is not null)
 				{
 					_movementCounter.y = 0.0f;
+					hitBottom = true;
 
 					return new CollisionInfo()
 					{

@@ -164,8 +164,8 @@ public class Player : Actor
 		CalcGravity(delta);
 		CalcJump(delta);
 
-		var hitV = MoveV(vSpeed);
-		var hitX = MoveH(hMoveSpeed + hSpeed);
+		MoveV(vSpeed + (hitBottom ? 1 : 0));
+		MoveH(hMoveSpeed + hSpeed - (hitLeft ? 1 : 0) + (hitRight ? 1 : 0));
 
 		if (position.y > Game.gameScreenSize.y + 16) OnDeath();
 	}
@@ -228,7 +228,7 @@ public class Player : Actor
 			isCrouching = false;
 			collider = _normalHitbox;
 
-			var isBlocked = CollideCheck<Ground>();
+			var isBlocked = CollideCheck<Solid>();
 
 			// If you can't then crouch again
 			if (isBlocked)

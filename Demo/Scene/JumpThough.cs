@@ -3,7 +3,7 @@ using MGE;
 
 namespace Demo;
 
-public class Ground : Solid
+public class JumpThough : Semisolid
 {
 	public Vector2Int mapSize;
 	public float tileSize;
@@ -33,7 +33,7 @@ public class Ground : Solid
 
 	Vector2 lastTileMousePosition;
 
-	Texture _tileset = App.content.Get<Texture>("Scene/Ground/Grass.ase");
+	Texture _tileset = App.content.Get<Texture>("Scene/Ground/Platform.ase");
 
 	Vector2 worldMousePosition;
 	Vector2 tileMousePosition;
@@ -42,22 +42,6 @@ public class Ground : Solid
 	{
 		tilemap = new GridCollider2D(mapSize, tileSize);
 		collider = tilemap;
-
-		var noise = new Noise();
-
-		var zoom = 4f;
-		var topBias = +1.00f;
-		var bottomBias = -0.00f;
-
-		for (int y = 0; y < mapSize.y; y++)
-		{
-			for (int x = 0; x < mapSize.x; x++)
-			{
-				var v = noise.GetNoise(x * zoom, y * zoom);
-				var bias = Mathf.Lerp(topBias, bottomBias, (float)y / mapSize.y);
-				tilemap.data[x, y] = v > bias;
-			}
-		}
 	}
 
 	protected override void Update(float delta)
@@ -67,7 +51,7 @@ public class Ground : Solid
 		tileMousePosition = worldMousePosition / tileSize;
 		tileMousePosition = new(Mathf.Clamp(tileMousePosition.x, 0, mapSize.x - 1), Mathf.Clamp(tileMousePosition.y, 0, mapSize.y - 1));
 
-		if (!App.input.keyboard.alt)
+		if (App.input.keyboard.alt)
 		{
 			if (App.input.mouse.Down(MouseButtons.Left))
 				SetTiles(tileMousePosition, lastTileMousePosition, !App.input.keyboard.shift);
