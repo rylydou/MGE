@@ -1,22 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using Demo.Screens;
-using MGE;
 
 namespace Demo;
 
-public class Game : Module
+public static class Game
 {
 	static Game()
 	{
 		ChangeScreen(new SetupScreen());
 	}
-
-#nullable disable
-	public static Game instance;
-#nullable restore
 
 	public static Color[] playerColors = new Color[] {
 		new(0xEF4A3A),
@@ -38,9 +29,7 @@ public class Game : Module
 	};
 
 	public static Rect renderRect;
-	public static readonly Vector2Int gameScreenSize = new(320 * 2, 180 * 2);
-	public static FrameBuffer gameFramebuffer = new(gameScreenSize.x, gameScreenSize.y);
-
+	public static readonly Vector2Int screenSize = new(320 * 2, 180 * 2);
 	public static Scene scene = new();
 	public static GameScreen screen { get; private set; }
 	[MemberNotNull(nameof(screen))]
@@ -53,7 +42,7 @@ public class Game : Module
 	}
 
 	public static List<PlayerSkin> skins = new();
-	void LoadSkins(Folder folder)
+	public static void LoadSkins(Folder folder)
 	{
 		var aseLoader = new MGE.Loaders.AsepriteTextureLoader();
 
@@ -64,70 +53,5 @@ public class Game : Module
 			skins.Add(skin);
 			Log.Info("Loaded skin: " + file);
 		}
-	}
-
-	SDFFont _font = App.content.Get<SDFFont>("Fonts/Regular.json");
-
-	public Game()
-	{
-		instance = this;
-
-		LoadSkins(Folder.here / "Skins");
-	}
-
-	protected override void Startup()
-	{
-		App.window.onRender += Render;
-
-		// App.window.SetAspectRatio(new(320, 180));
-		// App.window.SetMinSize(new(320, 180));
-	}
-
-	protected override void Shutdown()
-	{
-		App.window.onRender -= Render;
-	}
-
-	protected override void Update(float delta)
-	{
-		var kb = App.input.keyboard;
-		if (kb.Pressed(Keys.F11) || (kb.Pressed(Keys.RightAlt) && kb.Pressed(Keys.Enter)))
-		{
-			App.window.fullscreen = !App.window.fullscreen;
-			return;
-		}
-
-		renderRect = Rect.Fit(gameScreenSize, new Rect(App.window.size));
-
-		var topColor = new Color(0x3978a8);
-		var bottomColor = new Color(0x394778);
-		Batch2D.current.Rect(new(gameScreenSize), topColor, topColor, bottomColor, bottomColor);
-
-		screen.Update(delta);
-
-		scene.onUpdate(delta);
-
-		var info = Batch2D.current.Render(gameFramebuffer);
-		App.profiler.batch2DRenderInfo = info;
-	}
-
-	protected override void Tick(float delta)
-	{
-		screen.Tick(delta);
-
-		scene.onTick(delta);
-	}
-
-	void Render(Window window)
-	{
-		var batch = Batch2D.current;
-
-		// Draw game framebuffer onto window
-		batch.Image(gameFramebuffer, renderRect, Color.white);
-
-		// Render screen
-		screen.Render(Batch2D.current);
-
-		batch.Render(window);
 	}
 }

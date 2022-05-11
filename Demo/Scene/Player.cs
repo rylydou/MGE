@@ -167,7 +167,7 @@ public class Player : Actor
 		MoveV(vSpeed + (hitBottom ? 1 : 0));
 		MoveH(hMoveSpeed + hSpeed - (hitLeft ? 1 : 0) + (hitRight ? 1 : 0));
 
-		if (position.y > Game.gameScreenSize.y + 16) OnDeath();
+		if (position.y > Game.screenSize.y + 16) OnDeath();
 	}
 
 	protected override void OnDeath()
@@ -177,7 +177,7 @@ public class Player : Actor
 
 	void Respawn()
 	{
-		position = new(Game.gameScreenSize.x / 2, 0);
+		position = new(Game.screenSize.x / 2, 0);
 		hMoveSpeed = 0;
 		hSpeed = 0;
 		vSpeed = fallClamp * Time.tickDelta;

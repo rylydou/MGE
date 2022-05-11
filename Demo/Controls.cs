@@ -141,10 +141,10 @@ public class Controls
 		// if (controller.Axis(Axes.RightTrigger) > triggerTreshold) action = true;
 
 		// Menu
-		navigateUp = controller.Repeated(Buttons.Up);
-		navigateDown = controller.Repeated(Buttons.Down);
-		navigateLeft = controller.Repeated(Buttons.Left);
-		navigateRight = controller.Repeated(Buttons.Right);
+		navigateUp = controller.Repeated(Buttons.Up, 0.5f, 0.5f);
+		navigateDown = controller.Repeated(Buttons.Down, 0.5f, 0.5f);
+		navigateLeft = controller.Repeated(Buttons.Left, 0.5f, 0.5f);
+		navigateRight = controller.Repeated(Buttons.Right, 0.5f, 0.5f);
 
 		confirm = controller.Pressed(Buttons.A);
 		back = controller.Pressed(Buttons.B);

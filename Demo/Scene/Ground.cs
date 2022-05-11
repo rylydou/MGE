@@ -62,7 +62,7 @@ public class Ground : Solid
 
 	protected override void Update(float delta)
 	{
-		var screenScale = App.window.size / Game.gameScreenSize;
+		var screenScale = App.window.size / Game.screenSize;
 		worldMousePosition = App.window.renderMouse / screenScale;
 		tileMousePosition = worldMousePosition / tileSize;
 		tileMousePosition = new(Mathf.Clamp(tileMousePosition.x, 0, mapSize.x - 1), Mathf.Clamp(tileMousePosition.y, 0, mapSize.y - 1));

@@ -8,26 +8,11 @@ public class JumpThough : Semisolid
 	public Vector2Int mapSize;
 	public float tileSize;
 
-	public Dictionary<(bool top, bool right, bool bottom, bool left), Vector2Int> lut = new(){
-		{(false, true, true, false), new(0, 0)},
-		{(false, true, true, true), new(1, 0)},
-		{(false, false, true, true), new(2, 0)},
-		{(false, false, true, false), new(3, 0)},
-
-		{(true, true, true, false), new(0, 1)},
-		{(true, true, true, true), new(1, 1)},
-		{(true, false, true, true), new(2, 1)},
-		{(true, false, true, false), new(3, 1)},
-
-		{(true, true, false, false), new(0, 2)},
-		{(true, true, false, true), new(1, 2)},
-		{(true, false, false, true), new(2, 2)},
-		{(true, false, false, false), new(3, 2)},
-
-		{(false, true, false, false), new(0, 3)},
-		{(false, true, false, true), new(1, 3)},
-		{(false, false, false, true), new(2, 3)},
-		{(false, false, false, false), new(3, 3)},
+	public Dictionary<(bool left, bool right), Vector2Int> lut = new(){
+		{(false, true), new(0, 0)},
+		{(true, false), new(1, 0)},
+		{(true, true), new(0, 1)},
+		{(false, false), new(1, 1)},
 	};
 	GridCollider2D? tilemap;
 
@@ -46,7 +31,7 @@ public class JumpThough : Semisolid
 
 	protected override void Update(float delta)
 	{
-		var screenScale = App.window.size / Game.gameScreenSize;
+		var screenScale = App.window.size / Game.screenSize;
 		worldMousePosition = App.window.renderMouse / screenScale;
 		tileMousePosition = worldMousePosition / tileSize;
 		tileMousePosition = new(Mathf.Clamp(tileMousePosition.x, 0, mapSize.x - 1), Mathf.Clamp(tileMousePosition.y, 0, mapSize.y - 1));
@@ -72,30 +57,20 @@ public class JumpThough : Semisolid
 
 	protected override void Render(Batch2D batch)
 	{
-		var pos = (Vector2Int)tileMousePosition * tileSize;
-		var guideColor = new Color(255, 255, 255, 25);
-
-		batch.Rect(new(0, pos.y + tileSize / 2, mapSize.x * tileSize, 1), guideColor);
-		batch.Rect(new(pos.x + tileSize / 2, 0, 1, mapSize.y * tileSize), guideColor);
-
 		for (int x = 0; x < mapSize.x; x++)
 		{
 			for (int y = 0; y < mapSize.y; y++)
 			{
 				if (tilemap!.data[x, y])
 				{
-					(bool top, bool right, bool bottom, bool left) key = new();
-					key.top = (y == 0) ? true : tilemap.data[x, y - 1];
-					key.right = (x == mapSize.x - 1) ? true : tilemap.data[x + 1, y];
-					key.bottom = (y == mapSize.y - 1) ? true : tilemap.data[x, y + 1];
+					(bool left, bool right) key = new();
 					key.left = (x == 0) ? true : tilemap.data[x - 1, y];
+					key.right = (x == mapSize.x - 1) ? true : tilemap.data[x + 1, y];
 
 					var src = new RectInt(lut[key] * 8, 8, 8);
 					batch.Image(_tileset, src, new Vector2(x, y) * tileSize, Color.white);
 				}
 			}
 		}
-
-		batch.HollowRect(new(pos, tileSize), 1, Color.green.translucent);
 	}
 }

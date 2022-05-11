@@ -11,13 +11,13 @@ public class PlayingScreen : GameScreen
 		// Spawn ground
 		var ground = new Ground();
 		ground.tileSize = 8;
-		ground.mapSize = Game.gameScreenSize / 8 + 0.5f;
+		ground.mapSize = Game.screenSize / 8 + 0.5f;
 		Game.scene.AddChild(ground);
 
 		// Spawn jumpthough
 		var jumpthough = new JumpThough();
 		jumpthough.tileSize = 8;
-		jumpthough.mapSize = Game.gameScreenSize / 8 + 0.5f;
+		jumpthough.mapSize = Game.screenSize / 8 + 0.5f;
 		Game.scene.AddChild(jumpthough);
 
 		// Spawn players
