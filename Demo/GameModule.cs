@@ -20,6 +20,7 @@ public class GameModule : Module
 		instance = this;
 
 		Game.LoadSkins(Folder.here / "Skins");
+		Game.LoadSkins(Folder.data / "Skins");
 	}
 
 	protected override void Startup()

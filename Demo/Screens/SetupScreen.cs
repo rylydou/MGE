@@ -1,5 +1,3 @@
-using System.Linq;
-using MGE;
 using MGE.UI;
 
 namespace Demo.Screens;
@@ -27,29 +25,26 @@ public class SetupScreen : GameScreen
 
 	public override void Update(float delta)
 	{
-		foreach (var controls in Game.controls)
-		{
-			controls.Update();
-		}
-
 		for (int i = 0; i < Game.players.Length; i++)
 		{
-			var player = Game.players[i];
+			var data = Game.players[i];
 
-			if (player is null)
+			if (data is null)
 			{
 				// Loop over unassigned controllers
 				foreach (var controls in Game.controls.Where(c => c.player is null))
 				{
 
 					// If a button is pressed
-					if (controls.confirm)
+					if (controls.anyButton.pressed)
 					{
+						controls.anyButton.ConsumeBuffer();
+
 						// Join a new player
-						player = new PlayerData();
-						player.controls = controls;
-						controls.player = player;
-						Game.players[i] = player;
+						data = new PlayerData();
+						data.controls = controls;
+						controls.player = data;
+						Game.players[i] = data;
 
 						break;
 					}
@@ -57,7 +52,7 @@ public class SetupScreen : GameScreen
 			}
 			else
 			{
-				if (player.controls is null)
+				if (data.controls is null)
 				{
 					// TODO  Setup controls if controls are missing
 					Log.Info($"Player {i + 1} does not have controls");
@@ -65,27 +60,29 @@ public class SetupScreen : GameScreen
 				}
 
 				// Update player inputs
-				if (player.controls.navigateDown)
+				if (data.controls.navigateDown.repeated)
 				{
 				}
 
-				if (player.controls.navigateUp)
+				if (data.controls.navigateUp.repeated)
 				{
 				}
 
-				if (player.controls.navigateLeft)
+				if (data.controls.navigateLeft.repeated)
 				{
-					player.skinIndex = Mathf.Wrap(player.skinIndex - 1, Game.skins.Count);
+					data.skinIndex = Mathf.Wrap(data.skinIndex - 1, Game.skins.Count);
 				}
 
-				if (player.controls.navigateRight)
+				if (data.controls.navigateRight.repeated)
 				{
-					player.skinIndex = Mathf.Wrap(player.skinIndex + 1, Game.skins.Count);
+					data.skinIndex = Mathf.Wrap(data.skinIndex + 1, Game.skins.Count);
 				}
 
-				if (player.controls.confirm)
+				if (data.controls.confirm.pressed)
 				{
-					if (player.isReady)
+					data.controls.anyButton.ConsumeBuffer();
+
+					if (data.isReady)
 					{
 						// TEMP Start game
 						Game.ChangeScreen(new PlayingScreen());
@@ -94,21 +91,23 @@ public class SetupScreen : GameScreen
 					else
 					{
 						// Ready up
-						player.isReady = true;
+						data.isReady = true;
 					}
 				}
 
-				if (player.controls.back)
+				if (data.controls.back.pressed)
 				{
-					if (player.isReady)
+					data.controls.anyButton.ConsumeBuffer();
+
+					if (data.isReady)
 					{
 						// Unready the player
-						player.isReady = false;
+						data.isReady = false;
 					}
 					else
 					{
 						// Remove the owner from the controls
-						player.controls.player = null;
+						data.controls.player = null;
 						Game.players[i] = null;
 					}
 				}
@@ -132,13 +131,13 @@ public class SetupScreen : GameScreen
 		var x = cardGap;
 		for (int i = 0; i < 4; i++)
 		{
-			var player = Game.players[i];
+			var data = Game.players[i];
 			var color = Game.playerColors[i];
 
-			if (player is not null)
+			if (data is not null)
 			{
 				var cardRect = new Rect(x, canvasSize.y - cardHeight - cardGap, cardWidth, cardHeight);
-				if (player.isReady)
+				if (data.isReady)
 				{
 					batch.Rect(cardRect, color);
 				}
@@ -147,9 +146,9 @@ public class SetupScreen : GameScreen
 					batch.HollowRect(cardRect, 2, color);
 				}
 
-				batch.Draw(player.skin.texture, new(x + cardWidth / 2, (canvasSize.y - cardHeight - cardGap * 2) / 2), Color.white);
+				batch.Draw(data.skin.texture, new(x + cardWidth / 2, (canvasSize.y - cardHeight - cardGap * 2) / 2), Color.white);
 
-				batch.DrawString(_font, player.controls!.name, new(x, canvasSize.y - cardHeight - cardGap, cardWidth, cardHeight), TextAlignment.Center, fg, 4);
+				batch.DrawString(_font, data.controls!.name, new(x, canvasSize.y - cardHeight - cardGap, cardWidth, cardHeight), TextAlignment.Center, fg, 4);
 			}
 			x += cardWidth + cardGap;
 		}

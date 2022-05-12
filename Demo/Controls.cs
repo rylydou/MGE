@@ -1,152 +1,117 @@
-using MGE;
-
 namespace Demo;
 
 public class Controls
 {
 	public PlayerData? player;
 
-	public int index;
+	public int id;
 	public string name = "Unknown";
 
 	public bool isPresent;
 	public bool hasError;
-	public bool isGamepad => index >= 0;
-	public bool isKeyboard => index == -1 || index == -2;
-	public bool isWASD => index == -1;
-	public bool isArrowKeys => index == -2;
+	public bool isGamepad => id >= 0;
+	public bool isKeyboard => id == -1 || id == -2;
+	public bool isWASD => id == -1;
+	public bool isArrowKeys => id == -2;
 
 	// General
-	public bool anyButton;
-	public bool pause;
+	public VirtualButton anyButton = new(App.input);
+
+	public VirtualButton pause = new(App.input);
 
 	// Gameplay
-	public float move;
-	public bool jump;
-	public bool jumpCancel;
-	public bool crouch;
-	public bool action;
-	public bool altAction;
+	public VirtualAxis move = new(App.input);
+	public VirtualButton jump = new(App.input, 0.1f);
+	public VirtualButton crouch = new(App.input);
+	public VirtualButton action = new(App.input, 0.1f);
+	public VirtualButton altAction = new(App.input, 0.1f);
 
 	// Menu
-	public bool navigateUp;
-	public bool navigateDown;
-	public bool navigateLeft;
-	public bool navigateRight;
+	public VirtualStick navigation = new(App.input, 0.15f);
+	public VirtualButton navigateLeft = new(App.input, 0.1f);
+	public VirtualButton navigateRight = new(App.input, 0.1f);
+	public VirtualButton navigateUp = new(App.input, 0.1f);
+	public VirtualButton navigateDown = new(App.input, 0.1f);
 
-	public bool confirm;
-	public bool back;
+	public VirtualButton confirm = new(App.input, 0.1f);
+	public VirtualButton back = new(App.input, 0.1f);
 
 	public Controls(int id)
 	{
-		this.index = id;
-	}
+		this.id = id;
 
-	public void Update()
-	{
-		switch (index)
+		switch (this.id)
 		{
-			// WASD
-			case -1:
-				GetWASD();
-				break;
-
-			// Arrow keys
-			case -2:
-				GetArrowKeys();
-				break;
-
-			default:
-				GetController(App.input.controllers[index]);
-				break;
+			case -2: InitArrowKeys(); break;
+			case -1: InitWASD(); break;
+			case >= 0: InitController(this.id); break;
+			default: throw new Exception("Unknowen controller id #" + this.id);
 		}
 	}
 
-	void GetWASD()
+	void InitArrowKeys()
 	{
-		name = "WASD";
+		anyButton.Add(Keys.Enter);
 
-		var kb = App.input.keyboard;
+		pause.Add(Keys.Delete);
 
-		isPresent = true;
-		hasError = false;
+		move.Add(Keys.Left, Keys.Right);
+		jump.Add(Keys.Up);
+		crouch.Add(Keys.Down);
+		action.Add(Keys.RightShift, Keys.RightControl);
+		action.Add(Keys.RightAlt, Keys.End);
 
-		// Gameplay
-		move = (kb.Down(Keys.D) ? 1 : 0) - (kb.Down(Keys.A) ? 1 : 0);
-		if (kb.Pressed(Keys.W)) jump = true;
-		if (kb.Released(Keys.W)) jumpCancel = true;
-		crouch = kb.Down(Keys.S);
-		if (kb.Pressed(Keys.E)) action = true;
+		navigation.Add(Keys.Left, Keys.Right, Keys.Up, Keys.Down);
+		navigateLeft.Add(Keys.Left);
+		navigateRight.Add(Keys.Right);
+		navigateUp.Add(Keys.Up);
+		navigateDown.Add(Keys.Down);
 
-		// Menu
-		navigateUp = kb.Repeated(Keys.W);
-		navigateDown = kb.Repeated(Keys.S);
-		navigateLeft = kb.Repeated(Keys.A);
-		navigateRight = kb.Repeated(Keys.D);
-
-		confirm = kb.Pressed(Keys.E);
-		back = kb.Pressed(Keys.Q);
+		confirm.Add(Keys.Enter);
+		back.Add(Keys.Backspace);
 	}
 
-	void GetArrowKeys()
+	void InitWASD()
 	{
-		name = "Arrow Keys";
+		anyButton.Add(Keys.Space);
 
-		var kb = App.input.keyboard;
+		pause.Add(Keys.Escape);
 
-		isPresent = true;
-		hasError = false;
+		move.Add(Keys.A, Keys.D);
+		jump.Add(Keys.W);
+		crouch.Add(Keys.S);
+		action.Add(Keys.E);
+		altAction.Add(Keys.R);
 
-		// Gameplay
-		move = (kb.Down(Keys.Right) ? 1 : 0) - (kb.Down(Keys.Left) ? 1 : 0);
-		if (kb.Pressed(Keys.Up)) jump = true;
-		if (kb.Released(Keys.Up)) jumpCancel = true;
-		crouch = kb.Down(Keys.Down);
-		if (kb.Pressed(Keys.RightControl)) action = true;
-		if (kb.Pressed(Keys.RightShift)) action = true;
-		if (kb.Pressed(Keys.RightAlt)) action = true;
+		navigation.Add(Keys.A, Keys.D, Keys.W, Keys.S);
+		navigateLeft.Add(Keys.A);
+		navigateRight.Add(Keys.D);
+		navigateUp.Add(Keys.W);
+		navigateDown.Add(Keys.S);
 
-		// Menu
-		navigateUp = kb.Repeated(Keys.Up);
-		navigateDown = kb.Repeated(Keys.Down);
-		navigateLeft = kb.Repeated(Keys.Left);
-		navigateRight = kb.Repeated(Keys.Right);
-
-		confirm = kb.Pressed(Keys.Enter);
-		back = kb.Pressed(Keys.Backspace);
+		confirm.Add(Keys.E, Keys.Space);
+		back.Add(Keys.Q, Keys.Escape);
 	}
 
-	void GetController(Controller controller)
+	void InitController(int index)
 	{
-		name = controller.name;
+		anyButton.Add(id, Buttons.A, Buttons.Start);
 
-		const float moveThreshold = 0.15f;
-		const float crouchThreshold = 0.15f;
-		const float triggerTreshold = 0.15f;
+		pause.Add(id, Buttons.Start);
 
-		isPresent = controller.connected;
-		hasError = !controller.isGamepad;
+		move.Add(id, Axes.LeftX).Add(id, Buttons.Left, Buttons.Right);
+		jump.Add(id, Buttons.A);
+		crouch.Add(id, Axes.RightY, 0.15f).Add(id, Axes.LeftTrigger, 0.15f);
+		action.Add(id, Buttons.Y);
+		altAction.Add(id, Buttons.X);
 
-		if (!isPresent || hasError) return;
+		navigation.Add(id, Axes.LeftX, Axes.LeftY, 0.15f, 0.15f).Add(id, Buttons.Left, Buttons.Right, Buttons.Up, Buttons.Down);
+		navigateLeft.Add(id, Axes.LeftX, -0.15f).Add(id, Buttons.Left);
+		navigateRight.Add(id, Axes.LeftX, 0.15f).Add(id, Buttons.Right);
+		navigateUp.Add(id, Axes.LeftY, -0.15f).Add(id, Buttons.Up);
+		navigateDown.Add(id, Axes.LeftY, 0.15f).Add(id, Buttons.Down);
 
-		// Gameplay
-		move = Mathf.Abs(controller.leftStick.x) > moveThreshold
-			? Mathf.Sign(controller.leftStick.x)
-			: 0.0f;
-		if (controller.Pressed(Buttons.B)) jump = true;
-		if (controller.Released(Buttons.B)) jumpCancel = true;
-		crouch = controller.leftStick.y > crouchThreshold || controller.Axis(Axes.LeftTrigger) > triggerTreshold;
-		if (controller.Pressed(Buttons.Y)) action = true;
-		// Don't make this spam the button
-		// if (controller.Axis(Axes.RightTrigger) > triggerTreshold) action = true;
-
-		// Menu
-		navigateUp = controller.Repeated(Buttons.Up, 0.5f, 0.5f);
-		navigateDown = controller.Repeated(Buttons.Down, 0.5f, 0.5f);
-		navigateLeft = controller.Repeated(Buttons.Left, 0.5f, 0.5f);
-		navigateRight = controller.Repeated(Buttons.Right, 0.5f, 0.5f);
-
-		confirm = controller.Pressed(Buttons.A);
-		back = controller.Pressed(Buttons.B);
+		confirm.Add(id, Buttons.A);
+		back.Add(id, Buttons.B);
 	}
 }

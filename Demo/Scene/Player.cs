@@ -4,9 +4,6 @@ namespace Demo;
 
 public class Player : Actor
 {
-	[Prop] public float useBufferLength;
-	float _useBuffer;
-
 	[Prop] public Damage punchDamage;
 	[Prop] public float punchCooldown;
 	float _punchCooldownTimmer;
@@ -33,8 +30,6 @@ public class Player : Actor
 	float _maxJumpSpeed;
 	[Prop] public float bonkSpeed;
 
-	[Prop] public float jumpBufferLength;
-	float _jumpBuffer;
 	[Prop] public float coyoteTime;
 	float _coyoteTimer;
 
@@ -74,12 +69,11 @@ public class Player : Actor
 
 	protected override void Update(float delta)
 	{
-		data.controls.Update();
 		var kb = App.input.keyboard;
 
-		if (data.controls.move != 0)
+		if (data.controls.move.intValue != 0)
 		{
-			scale = new(data.controls.move, 1);
+			scale = new(data.controls.move.intValue, 1);
 		}
 	}
 
@@ -89,12 +83,12 @@ public class Player : Actor
 
 		_punchCooldownTimmer -= delta;
 
-		_useBuffer -= delta;
-		if (data.controls.action)
+		if (data.controls.action.pressed)
 		{
-			if (data.controls.crouch)
+			if (data.controls.crouch.down)
 			{
-				_useBuffer = -1;
+				data.controls.action.ConsumeBuffer();
+
 				// Pickup/Drop item
 				if (heldItem is not null)
 				{
@@ -114,42 +108,37 @@ public class Player : Actor
 			else
 			{
 				// Use/Punch
-				_useBuffer = useBufferLength;
-			}
-		}
-		data.controls.action = false;
 
-		if (_useBuffer > 0)
-		{
-			if (heldItem is not null)
-			{
-				// Use item
-				var usedItem = heldItem.Use();
-
-				// If used item then reset the use buffer
-				if (usedItem)
+				if (heldItem is not null)
 				{
-					_useBuffer = -1;
-				}
-			}
-			else
-			{
-				// Can punch?
-				if (_punchCooldownTimmer < 0)
-				{
-					_punchCooldownTimmer = punchCooldown;
-					_useBuffer = -1;
+					// Use item
+					var usedItem = heldItem.Use();
 
-					foreach (var actor in punchArea!.CollideAll<Actor>())
+					// If used item then reset the use buffer
+					if (usedItem)
 					{
-						if (actor == this) continue;
+						data.controls.action.ConsumeBuffer();
+					}
+				}
+				else
+				{
+					// Can punch?
+					if (_punchCooldownTimmer < 0)
+					{
+						_punchCooldownTimmer = punchCooldown;
+						data.controls.action.ConsumeBuffer();
 
-						punchDamage.DamageActor(actor, right + up);
-
-						// Give a player a double jump because getting comboed is not fun
-						if (actor is Player player)
+						foreach (var actor in punchArea!.CollideAll<Actor>())
 						{
-							player._coyoteTimer = player.coyoteTime * 2;
+							if (actor == this) continue;
+
+							punchDamage.DamageActor(actor, right + up);
+
+							// Give a player a double jump because getting comboed is not fun
+							if (actor is Player player)
+							{
+								player._coyoteTimer = player.coyoteTime * 2;
+							}
 						}
 					}
 				}
@@ -213,9 +202,9 @@ public class Player : Actor
 
 	void CalcCrouch(float delta)
 	{
-		if (isCrouching == data.controls.crouch) return;
+		if (isCrouching == data.controls.crouch.down) return;
 
-		if (data.controls.crouch)
+		if (data.controls.crouch.down)
 		{
 			// No need to check when crouching
 			isCrouching = true;
@@ -250,10 +239,10 @@ public class Player : Actor
 		);
 
 
-		if (data.controls.move != 0)
+		if (data.controls.move.intValue != 0)
 		{
 			// Set horizontal move speed
-			hMoveSpeed += data.controls.move * (hitBottom ? acceleration : accelerationAir) * delta;
+			hMoveSpeed += data.controls.move.intValue * (hitBottom ? acceleration : accelerationAir) * delta;
 
 			// clamped by max frame movement
 			hMoveSpeed = Mathf.Clamp(hMoveSpeed, -_moveClamp * delta, _moveClamp * delta);
@@ -308,24 +297,17 @@ public class Player : Actor
 		_minJumpSpeed = -Mathf.Sqrt(2 * (fallSpeed * delta) * minJumpHeight);
 		_maxJumpSpeed = -Mathf.Sqrt(2 * (fallSpeed * delta) * maxJumpHeight);
 
-		_jumpBuffer -= delta;
-		if (data.controls.jump)
+		if (_coyoteTimer > 0 && data.controls.jump.pressed)
 		{
-			_jumpBuffer = jumpBufferLength;
-		}
-		data.controls.jump = false;
-
-		if (_coyoteTimer > 0 && _jumpBuffer > 0)
-		{
-			_jumpBuffer = -1;
+			data.controls.jump.ConsumeBuffer();
 			vSpeed = isCrouching ? _minJumpSpeed : _maxJumpSpeed;
 		}
 
-		if (data.controls.jumpCancel && vSpeed < _minJumpSpeed)
+		if (data.controls.jump.released && vSpeed < _minJumpSpeed)
 		{
+			data.controls.jump.ConsumeBuffer();
 			vSpeed = _minJumpSpeed;
 		}
-		data.controls.jumpCancel = false;
 	}
 
 	#endregion Movement
