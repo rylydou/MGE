@@ -42,12 +42,12 @@ public abstract class Input
 	/// <summary>
 	/// Default delay before a key or button starts repeating
 	/// </summary>
-	public float repeatDelay = 0.4f;
+	public float repeatDelay = 0.150f; // Default on windows
 
 	/// <summary>
 	/// Default interval that the repeat is triggered, in seconds
 	/// </summary>
-	public float repeatInterval = 0.03f;
+	public float repeatInterval = 1f / 10; // Default on windows
 
 	internal List<WeakReference<VirtualButton>> virtualButtons = new List<WeakReference<VirtualButton>>();
 
@@ -284,7 +284,7 @@ public class InputState
 	{
 		for (int i = 0; i < controllers.Count; i++)
 		{
-			if (controllers[i].connected)
+			if (controllers[i].isConnected)
 				controllers[i].Step();
 		}
 		keyboard.Step();
@@ -295,7 +295,7 @@ public class InputState
 	{
 		for (int i = 0; i < controllers.Count; i++)
 		{
-			if (other.controllers[i].connected || (controllers[i].connected != other.controllers[i].connected))
+			if (other.controllers[i].isConnected || (controllers[i].isConnected != other.controllers[i].isConnected))
 				controllers[i].Copy(other.controllers[i]);
 		}
 

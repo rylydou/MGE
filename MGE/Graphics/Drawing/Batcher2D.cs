@@ -30,7 +30,7 @@ public class Batch2D
 		public byte wash;
 		public byte fill;
 
-		public Vertex(Vector2 position, Vector2 texcoord, Color color, int mult, int wash, int fill)
+		public Vertex(Vector2 position, Vector2 texcoord, in Color color, int mult, int wash, int fill)
 		{
 			pos = position;
 			tex = texcoord;
@@ -390,14 +390,14 @@ public class Batch2D
 
 	#region Line
 
-	public void Line(Vector2 from, Vector2 to, float thickness, Color color)
+	public void Line(Vector2 from, Vector2 to, float thickness, in Color color)
 	{
 		var normal = (to - from).normalized;
 		var perp = new Vector2(-normal.y, normal.x) * thickness * .5f;
 		Quad(from + perp, from - perp, to - perp, to + perp, color);
 	}
 
-	public void DashedLine(Vector2 from, Vector2 to, float thickness, Color color, float dashLength, float offsetPercent)
+	public void DashedLine(Vector2 from, Vector2 to, float thickness, in Color color, float dashLength, float offsetPercent)
 	{
 		var diff = to - from;
 		var dist = diff.length;
@@ -421,7 +421,7 @@ public class Batch2D
 
 	#region Quad
 
-	public void Quad(in Quad2D quad, Color color)
+	public void Quad(in Quad2D quad, in Color color)
 	{
 		Quad(quad.a, quad.b, quad.c, quad.d, color);
 	}
@@ -688,7 +688,7 @@ public class Batch2D
 
 	#region Rect
 
-	public void Rect(in Rect rect, Color color)
+	public void Rect(in Rect rect, in Color color)
 	{
 		Quad(
 				new Vector2(rect.x, rect.y),
@@ -698,7 +698,7 @@ public class Batch2D
 				color);
 	}
 
-	public void Rect(in Vector2 position, in Vector2 size, Color color)
+	public void Rect(in Vector2 position, in Vector2 size, in Color color)
 	{
 		Quad(
 				position,
@@ -708,7 +708,7 @@ public class Batch2D
 				color);
 	}
 
-	public void Rect(float x, float y, float width, float height, Color color)
+	public void Rect(float x, float y, float width, float height, in Color color)
 	{
 		Quad(
 				new Vector2(x, y),
@@ -751,22 +751,22 @@ public class Batch2D
 
 	#region Rounded Rect
 
-	public void RoundedRect(float x, float y, float width, float height, float r0, float r1, float r2, float r3, Color color)
+	public void RoundedRect(float x, float y, float width, float height, float r0, float r1, float r2, float r3, in Color color)
 	{
 		RoundedRect(new Rect(x, y, width, height), r0, r1, r2, r3, color);
 	}
 
-	public void RoundedRect(float x, float y, float width, float height, float radius, Color color)
+	public void RoundedRect(float x, float y, float width, float height, float radius, in Color color)
 	{
 		RoundedRect(new Rect(x, y, width, height), radius, radius, radius, radius, color);
 	}
 
-	public void RoundedRect(in Rect rect, float radius, Color color)
+	public void RoundedRect(in Rect rect, float radius, in Color color)
 	{
 		RoundedRect(rect, radius, radius, radius, radius, color);
 	}
 
-	public void RoundedRect(in Rect rect, float r0, float r1, float r2, float r3, Color color)
+	public void RoundedRect(in Rect rect, float r0, float r1, float r2, float r3, in Color color)
 	{
 		// clamp
 		r0 = Mathf.Min(Mathf.Min(Mathf.Max(0, r0), rect.width / 2f), rect.height / 2f);
@@ -928,7 +928,7 @@ public class Batch2D
 
 	#region Circle
 
-	public void SemiCircle(Vector2 center, float startRadians, float endRadians, float radius, int steps, Color color)
+	public void SemiCircle(Vector2 center, float startRadians, float endRadians, float radius, int steps, in Color color)
 	{
 		SemiCircle(center, startRadians, endRadians, radius, steps, color, color);
 	}
@@ -945,7 +945,7 @@ public class Batch2D
 		}
 	}
 
-	public void Circle(Vector2 center, float radius, int steps, Color color)
+	public void Circle(Vector2 center, float radius, int steps, in Color color)
 	{
 		Circle(center, radius, steps, color, color);
 	}
@@ -962,7 +962,7 @@ public class Batch2D
 		}
 	}
 
-	public void HollowCircle(Vector2 center, float radius, float thickness, int steps, Color color)
+	public void HollowCircle(Vector2 center, float radius, float thickness, int steps, in Color color)
 	{
 		var last = Calc.AngleToVector(0, radius);
 
@@ -978,7 +978,7 @@ public class Batch2D
 
 	#region Hollow Rect
 
-	public void HollowRect(in Rect rect, float t, Color color)
+	public void HollowRect(in Rect rect, float t, in Color color)
 	{
 		if (t > 0)
 		{
@@ -996,7 +996,7 @@ public class Batch2D
 
 	#region Image
 
-	public void Draw(Texture texture, Vector2 position, Color color, bool washed = false)
+	public void Draw(Texture texture, Vector2 position, in Color color, bool washed = false)
 	{
 		SetTexture(texture);
 		var halfWidth = (float)texture.width / 2;
@@ -1013,7 +1013,7 @@ public class Batch2D
 		color, washed);
 	}
 
-	public void Draw(Texture texture, Vector2 position, Vector2 pivot, float rotation, Vector2 scale, Color color, bool washed = false)
+	public void Draw(Texture texture, Vector2 position, Vector2 pivot, float rotation, Vector2 scale, in Color color, bool washed = false)
 	{
 		var halfWidth = (float)texture.width / 2;
 		var halfHeight = (float)texture.height / 2;
@@ -1057,7 +1057,7 @@ public class Batch2D
 		Quad(pos0, pos1, pos2, pos3, uv0, uv1, uv2, uv3, color, washed);
 	}
 
-	public void Image(Texture texture, in Rect dest, Color color, bool washed = false)
+	public void Image(Texture texture, in Rect dest, in Color color, bool washed = false)
 	{
 		SetTexture(texture);
 		Quad(
@@ -1066,7 +1066,7 @@ public class Batch2D
 		color, washed);
 	}
 
-	public void Image(Texture texture, in Rect clip, in Rect dest, Color color, bool washed = false)
+	public void Image(Texture texture, in Rect clip, in Rect dest, in Color color, bool washed = false)
 	{
 		var tx0 = clip.x / texture.width;
 		var ty0 = clip.y / texture.height;
@@ -1080,7 +1080,7 @@ public class Batch2D
 		color, washed);
 	}
 
-	public void Image(Texture texture, in Vector2 position, Color color, bool washed = false)
+	public void Image(Texture texture, in Vector2 position, in Color color, bool washed = false)
 	{
 		SetTexture(texture);
 		Quad(
@@ -1095,7 +1095,7 @@ public class Batch2D
 				color, washed);
 	}
 
-	public void Image(Texture texture, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, Color color, bool washed = false)
+	public void Image(Texture texture, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, in Color color, bool washed = false)
 	{
 		var was = matrixStack;
 
@@ -1116,7 +1116,7 @@ public class Batch2D
 		matrixStack = was;
 	}
 
-	public void Image(Texture texture, in Rect clip, in Vector2 position, Color color, bool washed = false)
+	public void Image(Texture texture, in Rect clip, in Vector2 position, in Color color, bool washed = false)
 	{
 		var tx0 = clip.x / texture.width;
 		var ty0 = clip.y / texture.height;
@@ -1135,7 +1135,7 @@ public class Batch2D
 				new Vector2(tx0, ty1), color, washed);
 	}
 
-	public void Image(Texture texture, in Rect clip, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, Color color, bool washed = false)
+	public void Image(Texture texture, in Rect clip, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, in Color color, bool washed = false)
 	{
 		var was = matrixStack;
 
@@ -1161,7 +1161,7 @@ public class Batch2D
 		matrixStack = was;
 	}
 
-	public void Image(Subtexture subtex, in Vector2 position, Color color, bool washed = false)
+	public void Image(Subtexture subtex, in Vector2 position, in Color color, bool washed = false)
 	{
 		SetTexture(subtex.texture);
 		Quad(position + subtex.drawCoords[0], position + subtex.drawCoords[1], position + subtex.drawCoords[2], position + subtex.drawCoords[3],
@@ -1169,7 +1169,7 @@ public class Batch2D
 				color, washed);
 	}
 
-	public void Image(Subtexture subtex, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, Color color, bool washed = false)
+	public void Image(Subtexture subtex, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, in Color color, bool washed = false)
 	{
 		var was = matrixStack;
 
@@ -1184,7 +1184,7 @@ public class Batch2D
 		matrixStack = was;
 	}
 
-	public void Image(Subtexture subtex, in Rect clip, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, Color color, bool washed = false)
+	public void Image(Subtexture subtex, in Rect clip, in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, in Color color, bool washed = false)
 	{
 		var (source, frame) = subtex.GetClip(clip);
 		var tex = subtex.texture;
@@ -1223,17 +1223,17 @@ public class Batch2D
 
 	#region Text
 
-	public void DrawString(IFont font, string text, Vector2 position, Color color, float fontSize, float lineHeight = 1.15f)
+	public void DrawString(IFont font, string text, Vector2 position, in Color color, float fontSize, float lineHeight = 1.15f)
 	{
 		DrawString(font, text.AsSpan(), position, color, fontSize, lineHeight);
 	}
 
-	public void DrawString(IFont font, ReadOnlySpan<char> text, Vector2 position, Color color, float fontSize, float lineSpacing = 1.15f)
+	public void DrawString(IFont font, ReadOnlySpan<char> text, Vector2 position, in Color color, float fontSize, float lineSpacing = 1.15f)
 	{
 		DrawString(font, font.BuildString(text), position, color, font.GetScale(fontSize), lineSpacing);
 	}
 
-	public void DrawString(IFont font, StringBuildInfo str, Vector2 position, Color color, float scale, float lineSpacing = 1.15f)
+	public void DrawString(IFont font, StringBuildInfo str, Vector2 position, in Color color, float scale, float lineSpacing = 1.15f)
 	{
 		var y = 0;
 
@@ -1250,7 +1250,7 @@ public class Batch2D
 		font.AfterRender(this);
 	}
 
-	public void DrawString(IFont font, ReadOnlySpan<char> text, Rect rect, TextAlignment textAlignment, Color color, float fontSize, float lineSpacing = 1.15f)
+	public void DrawString(IFont font, ReadOnlySpan<char> text, Rect rect, TextAlignment textAlignment, in Color color, float fontSize, float lineSpacing = 1.15f)
 	{
 		var position = rect.position;
 

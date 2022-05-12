@@ -27,14 +27,13 @@ public class SetupScreen : GameScreen
 	{
 		for (int i = 0; i < Game.players.Length; i++)
 		{
-			var data = Game.players[i];
+			ref var data = ref Game.players[i];
 
 			if (data is null)
 			{
 				// Loop over unassigned controllers
 				foreach (var controls in Game.controls.Where(c => c.player is null))
 				{
-
 					// If a button is pressed
 					if (controls.anyButton.pressed)
 					{
@@ -44,7 +43,6 @@ public class SetupScreen : GameScreen
 						data = new PlayerData();
 						data.controls = controls;
 						controls.player = data;
-						Game.players[i] = data;
 
 						break;
 					}
@@ -80,7 +78,7 @@ public class SetupScreen : GameScreen
 
 				if (data.controls.confirm.pressed)
 				{
-					data.controls.anyButton.ConsumeBuffer();
+					data.controls.confirm.ConsumeBuffer();
 
 					if (data.isReady)
 					{
@@ -97,7 +95,7 @@ public class SetupScreen : GameScreen
 
 				if (data.controls.back.pressed)
 				{
-					data.controls.anyButton.ConsumeBuffer();
+					data.controls.back.ConsumeBuffer();
 
 					if (data.isReady)
 					{

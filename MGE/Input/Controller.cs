@@ -50,7 +50,7 @@ public class Controller
 	public readonly Input input;
 
 	public string name { get; set; } = "Unknown";
-	public bool connected { get; set; } = false;
+	public bool isConnected { get; set; } = false;
 	public bool isGamepad { get; set; } = false;
 	public int buttons { get; set; } = 0;
 	public int axes { get; set; } = 0;
@@ -68,13 +68,13 @@ public class Controller
 		buttons = (int)Mathf.Min(buttonCount, MAX_BUTTONS);
 		axes = (int)Mathf.Min(axisCount, MAX_AXIS);
 		this.isGamepad = isGamepad;
-		connected = true;
+		isConnected = true;
 	}
 
 	internal void Disconnect()
 	{
 		name = "Unknown";
-		connected = false;
+		isConnected = false;
 		isGamepad = false;
 		buttons = 0;
 		axes = 0;
@@ -96,7 +96,7 @@ public class Controller
 	internal void Copy(Controller other)
 	{
 		name = other.name;
-		connected = other.connected;
+		isConnected = other.isConnected;
 		isGamepad = other.isGamepad;
 		buttons = other.buttons;
 		axes = other.axes;

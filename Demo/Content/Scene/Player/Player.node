@@ -8,8 +8,6 @@ punchDamage: {
 }
 punchCooldown: 0.2
 
-useBufferLength: 0.1
-
 # Movement
 fallSpeed: 16.0
 fallClamp: 384.0
@@ -30,7 +28,6 @@ minJumpHeight: 16.0
 maxJumpHeight: 40.0
 bonkSpeed: 64.0
 
-jumpBufferLength: 0.1
 coyoteTime: 0.1
 
 _children: [

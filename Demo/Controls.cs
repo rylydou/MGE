@@ -5,14 +5,33 @@ public class Controls
 	public PlayerData? player;
 
 	public int id;
-	public string name = "Unknown";
+	public string name => id switch
+	{
+		-2 => "Arrowkeys",
+		-1 => "WASD",
+		>= 0 and <= 32 => App.input.controllers[id].name,
+		_ => "Unknown",
+	};
 
-	public bool isPresent;
-	public bool hasError;
-	public bool isGamepad => id >= 0;
-	public bool isKeyboard => id == -1 || id == -2;
+	public bool isPresent => id switch
+	{
+		-2 => true,
+		-1 => true,
+		>= 0 and <= 32 => App.input.controllers[id].isConnected,
+		_ => false,
+	};
+	public bool hasError => id switch
+	{
+		-2 => false,
+		-1 => false,
+		>= 0 and <= 32 => !App.input.controllers[id].isGamepad,
+		_ => true,
+	};
+
+	public bool isGamepad => id >= 0 && id <= 32;
 	public bool isWASD => id == -1;
 	public bool isArrowKeys => id == -2;
+	public bool isKeyboard => isWASD || isArrowKeys;
 
 	// General
 	public VirtualButton anyButton = new(App.input);
@@ -28,13 +47,13 @@ public class Controls
 
 	// Menu
 	public VirtualStick navigation = new(App.input, 0.15f);
-	public VirtualButton navigateLeft = new(App.input, 0.1f);
-	public VirtualButton navigateRight = new(App.input, 0.1f);
-	public VirtualButton navigateUp = new(App.input, 0.1f);
-	public VirtualButton navigateDown = new(App.input, 0.1f);
+	public VirtualButton navigateLeft = new(App.input);
+	public VirtualButton navigateRight = new(App.input);
+	public VirtualButton navigateUp = new(App.input);
+	public VirtualButton navigateDown = new(App.input);
 
-	public VirtualButton confirm = new(App.input, 0.1f);
-	public VirtualButton back = new(App.input, 0.1f);
+	public VirtualButton confirm = new(App.input);
+	public VirtualButton back = new(App.input);
 
 	public Controls(int id)
 	{
@@ -44,8 +63,8 @@ public class Controls
 		{
 			case -2: InitArrowKeys(); break;
 			case -1: InitWASD(); break;
-			case >= 0: InitController(this.id); break;
-			default: throw new Exception("Unknowen controller id #" + this.id);
+			case >= 0 and <= 32: InitController(this.id); break;
+			default: throw new Exception("Unknown controls id #" + this.id);
 		}
 	}
 
@@ -73,7 +92,7 @@ public class Controls
 
 	void InitWASD()
 	{
-		anyButton.Add(Keys.Space);
+		anyButton.Add(Keys.E, Keys.Space);
 
 		pause.Add(Keys.Escape);
 

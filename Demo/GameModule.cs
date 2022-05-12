@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using Demo.Screens;
-using MGE;
-
 namespace Demo;
 
 public class GameModule : Module
