@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using MGE;
-
 namespace Demo;
 
 public class JumpThough : Semisolid

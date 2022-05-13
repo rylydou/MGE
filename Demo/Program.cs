@@ -1,5 +1,4 @@
 ﻿using Demo;
-using MGE;
 using MGE.GLFW;
 using MGE.OpenAL;
 using MGE.OpenGL;

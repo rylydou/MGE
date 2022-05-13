@@ -1,6 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using MGE;
-
 namespace Demo;
 
 public abstract class Item : Actor

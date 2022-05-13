@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using MGE;
-
 namespace Demo;
 
 public abstract class Platform : Body2D

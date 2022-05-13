@@ -1,5 +1,3 @@
-using MGE;
-
 namespace Demo;
 
 public struct CollisionInfo

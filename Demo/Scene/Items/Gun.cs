@@ -1,5 +1,3 @@
-using MGE;
-
 namespace Demo.Items;
 
 public class Gun : Item
