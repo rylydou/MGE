@@ -1,3 +1,5 @@
+#nullable disable
+
 namespace Demo;
 
 public abstract class Item : Actor
@@ -12,14 +14,9 @@ public abstract class Item : Actor
 
 	public float useCooldownTimmer;
 
-	public Player? holder { get; private set; }
-	public bool isHeld
-	{
-		[MemberNotNullWhen(true, nameof(holder))]
-		get => holder is not null;
-	}
+	public Player holder { get; private set; }
 
-	public Texture? sprite;
+	public Texture sprite;
 
 	protected override void Ready()
 	{
@@ -36,7 +33,7 @@ public abstract class Item : Actor
 
 		useCooldownTimmer -= delta;
 
-		if (isHeld)
+		if (holder is not null)
 		{
 			Held_Tick(delta);
 		}

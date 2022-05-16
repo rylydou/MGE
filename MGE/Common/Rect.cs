@@ -298,8 +298,8 @@ public struct Rect : IEquatable<Rect>
 
 	#region Thirdparty
 
-	public static implicit operator global::System.Drawing.Rectangle(Rect rect) => new((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
-	public static implicit operator Rect(global::System.Drawing.Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
+	public static implicit operator System.Drawing.Rectangle(Rect rect) => new((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	public static implicit operator Rect(System.Drawing.Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 
 	#endregion Thirdparty
 

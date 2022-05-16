@@ -1,3 +1,5 @@
+#nullable disable
+
 using System;
 
 namespace Demo;
@@ -160,7 +162,7 @@ public class Actor : Body2D
 		return hit;
 	}
 
-	public CollisionInfo? MoveH(float moveH, Solid? pusher = null)
+	public CollisionInfo? MoveH(float moveH, Solid pusher = null)
 	{
 		_movementCounter.x += moveH;
 		var moveH1 = (int)System.Math.Round(_movementCounter.x, MidpointRounding.ToEven);
@@ -174,7 +176,7 @@ public class Actor : Body2D
 		return MoveHExact(moveH1, pusher);
 	}
 
-	public CollisionInfo? MoveV(float moveV, Solid? pusher = null)
+	public CollisionInfo? MoveV(float moveV, Solid pusher = null)
 	{
 		_movementCounter.y += moveV;
 		var moveV1 = (int)System.Math.Round(_movementCounter.y, MidpointRounding.ToEven);
@@ -188,7 +190,7 @@ public class Actor : Body2D
 		return MoveVExact(moveV1, pusher);
 	}
 
-	public CollisionInfo? MoveHExact(int moveH, Solid? pusher = null)
+	public CollisionInfo? MoveHExact(int moveH, Solid pusher = null)
 	{
 		hitLeft = false;
 		hitRight = false;
@@ -227,7 +229,7 @@ public class Actor : Body2D
 		return null;
 	}
 
-	public CollisionInfo? MoveVExact(int moveV, Solid? pusher = null)
+	public CollisionInfo? MoveVExact(int moveV, Solid pusher = null)
 	{
 		hitTop = false;
 		hitBottom = false;

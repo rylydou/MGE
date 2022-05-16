@@ -1,3 +1,5 @@
+#nullable disable
+
 namespace Demo;
 
 public class Player : Actor
@@ -33,11 +35,11 @@ public class Player : Actor
 
 	public PlayerData data { get; init; }
 
-	Node2D? holdPoint;
-	Area2D? pickupArea;
-	Area2D? punchArea;
+	Node2D holdPoint;
+	Area2D pickupArea;
+	Area2D punchArea;
 
-	public Item? heldItem;
+	public Item heldItem;
 
 	public float hMoveSpeed;
 
@@ -60,7 +62,7 @@ public class Player : Actor
 		punchArea = GetChild<Area2D>("Punch area");
 
 		collider = _normalHitbox;
-		collider!.CenterOrigin();
+		collider.CenterOrigin();
 
 		Respawn();
 	}
@@ -96,7 +98,7 @@ public class Player : Actor
 				else
 				{
 					// Pickup item from ground
-					var item = pickupArea!.CollideFirst<Item>();
+					var item = pickupArea.CollideFirst<Item>();
 					if (item is not null)
 					{
 						Pickup(item);
@@ -126,7 +128,7 @@ public class Player : Actor
 						_punchCooldownTimmer = punchCooldown;
 						data.controls.action.ConsumeBuffer();
 
-						foreach (var actor in punchArea!.CollideAll<Actor>())
+						foreach (var actor in punchArea.CollideAll<Actor>().ToArray())
 						{
 							if (actor == this) continue;
 
@@ -180,7 +182,7 @@ public class Player : Actor
 
 		heldItem = item;
 		heldItem.RemoveSelf();
-		holdPoint!.AddChild(heldItem);
+		holdPoint.AddChild(heldItem);
 		heldItem.position = Vector2.zero;
 		heldItem.Pickup(this);
 	}
@@ -190,7 +192,7 @@ public class Player : Actor
 		if (heldItem is null) throw new System.Exception();
 
 		heldItem.RemoveSelf();
-		scene!.AddChild(heldItem);
+		scene.AddChild(heldItem);
 		heldItem.position = globalPosition;
 		heldItem.Drop();
 		heldItem = null;
@@ -225,7 +227,7 @@ public class Player : Actor
 			}
 		}
 
-		holdPoint!.position = new(8, isCrouching ? 2 : 0);
+		holdPoint.position = new(8, isCrouching ? 2 : 0);
 	}
 
 	void CalcWalk(float delta)
@@ -374,6 +376,6 @@ public class Player : Actor
 		batch.Rect(new(-barWidth / 2, -18, barWidth, 2), Color.black.translucent);
 		batch.Rect(new(-barWidth / 2, -18, (float)health / maxHealth * barWidth, 2), Color.green);
 
-		// collider!.Render(batch);
+		// collider.Render(batch);
 	}
 }

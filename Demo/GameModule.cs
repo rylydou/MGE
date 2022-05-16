@@ -1,3 +1,5 @@
+#nullable disable
+
 namespace Demo;
 
 public class GameModule : Module

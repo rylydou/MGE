@@ -8,6 +8,8 @@ namespace MGE;
 [Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct Vector2 : IEquatable<Vector2>
 {
+	#region Static
+
 	#region Constants
 
 	public static readonly Vector2 zero = new Vector2(0, 0);
@@ -25,8 +27,6 @@ public struct Vector2 : IEquatable<Vector2>
 
 	#endregion Constants
 
-	#region Static
-
 	#region Interpolation
 
 	public static Vector2 Lerp(Vector2 current, Vector2 target, float time) => current + (target - current) * time;
@@ -43,6 +43,8 @@ public struct Vector2 : IEquatable<Vector2>
 	}
 
 	#endregion
+
+	#region Utilities
 
 	public static float Dot(Vector2 a, Vector2 b) => a.x * b.x + a.y * b.y;
 	public static Vector2 PerpendicularDir(Vector2 inDir) => new(-inDir.y, inDir.x);
@@ -155,6 +157,49 @@ public struct Vector2 : IEquatable<Vector2>
 		(normal.x * transform.x.y) + (normal.y * transform.y.y)
 	);
 
+	#endregion Utilities
+
+	#region Conversion
+
+	public static implicit operator Vector2(Vector2Int vector) => new(vector.x, vector.y);
+
+	public static implicit operator (float, float)(Vector2 vector) => (vector.x, vector.y);
+	public static implicit operator Vector2((float, float) vector) => new(vector.Item1, vector.Item2);
+
+	#region Thirdparty
+
+	public static implicit operator System.Numerics.Vector2(Vector2 vector) => new(vector.x, vector.y);
+	public static implicit operator Vector2(System.Numerics.Vector2 vector) => new(vector.X, vector.Y);
+
+	#endregion Thirdparty
+
+	#endregion Conversion
+
+	#region Operators
+
+	public static Vector2 operator +(Vector2 left, Vector2 right) => new(left.x + right.x, left.y + right.y);
+	public static Vector2 operator -(Vector2 left, Vector2 right) => new(left.x - right.x, left.y - right.y);
+	public static Vector2 operator *(Vector2 left, Vector2 right) => new(left.x * right.x, left.y * right.y);
+	public static Vector2 operator /(Vector2 left, Vector2 right) => new(left.x / right.x, left.y / right.y);
+
+	public static Vector2 operator -(Vector2 vector) => new(-vector.x, -vector.y);
+
+	public static Vector2 operator +(Vector2 left, float right) => new(left.x + right, left.y + right);
+	public static Vector2 operator -(Vector2 left, float right) => new(left.x - right, left.y - right);
+	public static Vector2 operator *(Vector2 left, float right) => new(left.x * right, left.y * right);
+	public static Vector2 operator *(float left, Vector2 right) => new(right.x * left, right.y * left);
+	public static Vector2 operator /(Vector2 left, float right) => new(left.x / right, left.y / right);
+
+	public static bool operator ==(Vector2 left, Vector2 right)
+	{
+		var diff_x = left.x - right.x;
+		var diff_y = left.y - right.y;
+		return Mathf.Abs(diff_x * diff_x + diff_y * diff_y) < Mathf.epsilonSqrt;
+	}
+	public static bool operator !=(Vector2 left, Vector2 right) => !(left == right);
+
+	#endregion
+
 	#endregion Static
 
 	#region Instance
@@ -218,9 +263,6 @@ public struct Vector2 : IEquatable<Vector2>
 
 	public Vector2 abs => new Vector2(Mathf.Abs(x), Mathf.Abs(y));
 
-	// public Vector2 xVector => new Vector2(x, 0);
-	// public Vector2 yVector => new Vector2(0, y);
-
 	public float lengthSqr => x * x + y * y;
 	public float length => Mathf.Sqrt(lengthSqr);
 
@@ -228,6 +270,8 @@ public struct Vector2 : IEquatable<Vector2>
 
 	public Vector2 turnRight => new Vector2(-y, x);
 	public Vector2 turnLeft => new Vector2(y, -x);
+
+	#region Methods
 
 	public void Normalize()
 	{
@@ -273,46 +317,7 @@ public struct Vector2 : IEquatable<Vector2>
 		return new(Mathf.Round(x), Mathf.Round(y));
 	}
 
-	#region Operators
-
-	public static Vector2 operator +(Vector2 left, Vector2 right) => new(left.x + right.x, left.y + right.y);
-	public static Vector2 operator -(Vector2 left, Vector2 right) => new(left.x - right.x, left.y - right.y);
-	public static Vector2 operator *(Vector2 left, Vector2 right) => new(left.x * right.x, left.y * right.y);
-	public static Vector2 operator /(Vector2 left, Vector2 right) => new(left.x / right.x, left.y / right.y);
-
-	public static Vector2 operator -(Vector2 vector) => new(-vector.x, -vector.y);
-
-	public static Vector2 operator +(Vector2 left, float right) => new(left.x + right, left.y + right);
-	public static Vector2 operator -(Vector2 left, float right) => new(left.x - right, left.y - right);
-	public static Vector2 operator *(Vector2 left, float right) => new(left.x * right, left.y * right);
-	public static Vector2 operator *(float left, Vector2 right) => new(right.x * left, right.y * left);
-	public static Vector2 operator /(Vector2 left, float right) => new(left.x / right, left.y / right);
-
-	public static bool operator ==(Vector2 left, Vector2 right)
-	{
-		var diff_x = left.x - right.x;
-		var diff_y = left.y - right.y;
-		return Mathf.Abs(diff_x * diff_x + diff_y * diff_y) < Mathf.epsilonSqrt;
-	}
-	public static bool operator !=(Vector2 left, Vector2 right) => !(left == right);
-
-	#endregion
-
-	#region Conversion
-
-	public static implicit operator Vector2(Vector2Int vector) => new(vector.x, vector.y);
-
-	public static implicit operator (float, float)(Vector2 vector) => (vector.x, vector.y);
-	public static implicit operator Vector2((float, float) vector) => new(vector.Item1, vector.Item2);
-
-	#region Thirdparty
-
-	public static implicit operator System.Numerics.Vector2(Vector2 vector) => new(vector.x, vector.y);
-	public static implicit operator Vector2(System.Numerics.Vector2 vector) => new(vector.X, vector.Y);
-
-	#endregion Thirdparty
-
-	#endregion Conversion
+	#endregion Methods
 
 	#region Overrides
 

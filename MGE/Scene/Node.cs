@@ -16,12 +16,16 @@ public abstract class Node
 
 	[HiddenProp] public List<Node> _children = new();
 
-	public Node? parent { get; private set; }
+#nullable enable
+	public Node parent { get; private set; } = null!;
+#nullable restore
 
-	// vscode freaks out when I do "this as Scene ?? parent?.scene" for some reason
-	public Scene? scene => this is Scene s ? s : parent?.scene;
+#nullable enable
+	public Scene scene => this is Scene s ? s : parent?.scene!;
+#nullable restore
 
 	bool _initialized = false;
+	// TODO  Implement _destroyed
 
 	#region Node Querying
 
@@ -106,7 +110,7 @@ public abstract class Node
 		{
 			node.onExitScene();
 		}
-		node.parent = null;
+		node.parent = null!;
 	}
 
 	public void RemoveAllChildren()
@@ -198,7 +202,7 @@ public abstract class Node
 			GetChildren<Node>().ToArray().ForEach(child =>
 			{
 				child.onExitScene();
-				child.parent = null;
+				child.parent = null!;
 			});
 		};
 
