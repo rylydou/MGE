@@ -24,8 +24,7 @@ public abstract class Node
 	public Scene scene => this is Scene s ? s : parent?.scene!;
 #nullable restore
 
-	bool _initialized = false;
-	// TODO  Implement _destroyed
+	bool _initialized;
 
 	#region Node Querying
 
@@ -176,7 +175,12 @@ public abstract class Node
 		onReady += () =>
 		{
 			Ready();
-			GetChildren<Node>().ToArray().ForEach(child => child.onReady());
+			GetChildren<Node>().ToArray().ForEach(c =>
+			{
+				if (c.parent != this) return;
+
+				c.onReady();
+			});
 		};
 
 		onEnterScene += () =>
@@ -192,17 +196,24 @@ public abstract class Node
 
 			parent!.onChildAdded(this);
 			OnEnterScene();
-			GetChildren<Node>().ToArray().ForEach(child => child.onEnterScene());
+			GetChildren<Node>().ToArray().ForEach(c =>
+			{
+				if (c.parent != this) return;
+
+				c.onEnterScene();
+			});
 		};
 
 		onExitScene += () =>
 		{
 			parent!.onChildRemoved(this);
 			OnExitScene();
-			GetChildren<Node>().ToArray().ForEach(child =>
+			GetChildren<Node>().ToArray().ForEach(c =>
 			{
-				child.onExitScene();
-				child.parent = null!;
+				if (c.parent != this) return;
+
+				c.onExitScene();
+				c.parent = null!;
 			});
 		};
 
@@ -233,13 +244,23 @@ public abstract class Node
 		onTick += delta =>
 		{
 			Tick(delta);
-			GetChildren<Node>().ToArray().ForEach(c => c.onTick(delta));
+			GetChildren<Node>().ToArray().ForEach(c =>
+			{
+				if (c.parent != this) return;
+
+				c.onTick(delta);
+			});
 		};
 
 		onUpdate += delta =>
 		{
 			Update(delta);
-			GetChildren<Node>().ToArray().ForEach(c => c.onUpdate(delta));
+			GetChildren<Node>().ToArray().ForEach(c =>
+			{
+				if (c.parent != this) return;
+
+				c.onUpdate(delta);
+			});
 		};
 	}
 

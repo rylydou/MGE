@@ -187,15 +187,25 @@ public class Player : Actor
 		heldItem.Pickup(this);
 	}
 
+	public void DisownHelditem()
+	{
+		if (heldItem is null) throw new System.Exception();
+
+		heldItem.DisownFromParent();
+		heldItem.RemoveSelf();
+		parent.AddChild(heldItem);
+		heldItem.position = position;
+		heldItem = null;
+	}
+
 	void DropHeldItem()
 	{
 		if (heldItem is null) throw new System.Exception();
 
-		heldItem.RemoveSelf();
-		scene.AddChild(heldItem);
-		heldItem.position = globalPosition;
-		heldItem.Drop();
-		heldItem = null;
+		var item = heldItem;
+
+		DisownHelditem();
+		item.Drop();
 	}
 
 	#region Movement
@@ -212,7 +222,6 @@ public class Player : Actor
 		}
 		else
 		{
-
 			// Check if can standup
 			isCrouching = false;
 			collider = _normalHitbox;

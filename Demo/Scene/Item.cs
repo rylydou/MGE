@@ -23,8 +23,6 @@ public abstract class Item : Actor
 		base.Ready();
 
 		collider = new HitboxCollider2D(new(10, 10), new(-5, -5));
-
-		globalPosition = new(320 + RNG.shared.RandomInt(-60, 60), 0);
 	}
 
 	protected sealed override void Tick(float delta)
@@ -46,14 +44,17 @@ public abstract class Item : Actor
 	public bool Use()
 	{
 		if (useCooldownTimmer > 0) return false;
-		useCooldownTimmer = useCooldown;
 
-		OnUse();
+		if (OnUse())
+		{
+			useCooldownTimmer = useCooldown;
+			return true;
+		}
 
-		return true;
+		return false;
 	}
 
-	protected virtual void OnUse() { }
+	protected virtual bool OnUse() => false;
 
 	public void Pickup(Player player)
 	{
@@ -67,15 +68,22 @@ public abstract class Item : Actor
 		hSpeed = 0;
 	}
 
-	public void Drop()
+	public void DisownFromParent()
 	{
 		holder = null;
 		collidable = true;
 	}
 
+	public void Drop()
+	{
+		DisownFromParent();
+
+		OnDrop();
+	}
+
 	protected virtual void OnDrop()
 	{
-		ApplyImpulseForce(new(96 * globalScale.y, -96));
+		ApplyImpulseForce(new(96 * globalScale.x, -96));
 	}
 
 	protected virtual void Held_Tick(float delta) { }

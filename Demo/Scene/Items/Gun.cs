@@ -25,7 +25,7 @@ public partial class Gun : Item
 		sprite = App.content.Get<Texture>("Scene/Items/Shotgun/Sprite.ase");
 	}
 
-	protected override void OnUse()
+	protected override bool OnUse()
 	{
 		if (holder.OnGround())
 			holder.ApplyImpulseForce(right * -recoilForce);
@@ -42,5 +42,7 @@ public partial class Gun : Item
 
 			scene.AddChild(proj);
 		}
+
+		return true;
 	}
 }

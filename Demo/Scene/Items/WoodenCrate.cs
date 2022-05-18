@@ -11,9 +11,27 @@ public class WoodenCrate : Item
 		sprite = App.content.Get<Texture>("Scene/Items/Wooden Crate/Sprite.ase");
 	}
 
+	protected override void Ready()
+	{
+		base.Ready();
+
+		globalPosition = new(RNG.shared.RandomInt(Game.screenSize.x), 0);
+	}
+
+	protected override bool OnUse()
+	{
+		holder.DisownHelditem();
+
+		ApplyImpulseForce(new(256 * globalScale.x, -96));
+
+		return false;
+	}
+
 	protected override void OnDeath()
 	{
-		parent.AddChild(item.CreateInstance());
+		var itemInstance = item.CreateInstance<Item>();
+		itemInstance.position = position;
+		parent.AddChild(itemInstance);
 
 		base.OnDeath();
 	}
