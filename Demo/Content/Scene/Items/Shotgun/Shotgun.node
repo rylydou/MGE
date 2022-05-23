@@ -1,6 +1,8 @@
 !Demo: 'Demo.Items.Gun'
 name: 'Shotgun'
 
+sprite: '@res://./Sprite.ase'
+
 useCooldown: 0.5
 
 spread: 7.5

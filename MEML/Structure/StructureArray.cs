@@ -6,11 +6,11 @@ namespace MEML;
 /// <summary>
 /// A data structure encapsulating an Array
 /// </summary>
-public class StructureArray : StructureValue<List<StructureValue>>, IEnumerable
+public class MemlArray : MemlValue<List<MemlValue>>, IEnumerable
 {
-	public StructureArray() : base(StructureType.Array, new List<StructureValue>()) { }
+	public MemlArray() : base(MemlType.Array, new List<MemlValue>()) { }
 
-	public StructureArray(params StructureValue[] items) : base(StructureType.Array, new List<StructureValue>())
+	public MemlArray(params MemlValue[] items) : base(MemlType.Array, new List<MemlValue>())
 	{
 		foreach (var item in items)
 		{
@@ -18,35 +18,35 @@ public class StructureArray : StructureValue<List<StructureValue>>, IEnumerable
 		}
 	}
 
-	public StructureArray(IList<string> list) : base(StructureType.Array, new List<StructureValue>())
+	public MemlArray(IList<string> list) : base(MemlType.Array, new List<MemlValue>())
 	{
 		for (int i = 0; i < list.Count; i++)
 			value.Add(list[i]);
 	}
 
-	public override StructureValue this[int index]
+	public override MemlValue this[int index]
 	{
 		get => value[index];
 		set => base.value[index] = value;
 	}
 
-	public override void Add(StructureValue value)
+	public override void Add(MemlValue value)
 	{
 		base.value.Add(value);
 	}
 
-	public override void Remove(StructureValue value)
+	public override void Remove(MemlValue value)
 	{
 		base.value.Remove(value);
 	}
 
-	public bool Contains(StructureValue value)
+	public bool Contains(MemlValue value)
 	{
 		return base.value.Contains(value);
 	}
 
 	public override int count => value.Count;
-	public override IEnumerable<StructureValue> values => value;
+	public override IEnumerable<MemlValue> values => value;
 
 	public IEnumerator GetEnumerator()
 	{

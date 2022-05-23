@@ -1,6 +1,6 @@
 ﻿namespace MEML;
 
-public enum StructureToken : byte
+public enum MemlToken : byte
 {
 	Null = 0,
 

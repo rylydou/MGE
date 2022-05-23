@@ -20,14 +20,14 @@ public class MemlBinaryWriter : IDataWriter, IDisposable
 		_writer = new BinaryWriter(stream, Encoding.UTF8);
 	}
 
-	void ContainerBegin(StructureToken token)
+	void ContainerBegin(MemlToken token)
 	{
 		_writer.Write((byte)token);
 		_containerPositionStack.Push(_writer.BaseStream.Position);
 		_writer.Write((uint)0); // byte size
 	}
 
-	void ContainerEnd(StructureToken token)
+	void ContainerEnd(MemlToken token)
 	{
 		_writer.Write((byte)token);
 
@@ -41,22 +41,22 @@ public class MemlBinaryWriter : IDataWriter, IDisposable
 
 	public void ObjectBegin()
 	{
-		ContainerBegin(StructureToken.ObjectStart);
+		ContainerBegin(MemlToken.ObjectStart);
 	}
 
 	public void ObjectEnd()
 	{
-		ContainerEnd(StructureToken.ObjectEnd);
+		ContainerEnd(MemlToken.ObjectEnd);
 	}
 
 	public void ArrayBegin()
 	{
-		ContainerBegin(StructureToken.ArrayStart);
+		ContainerBegin(MemlToken.ArrayStart);
 	}
 
 	public void ArrayEnd()
 	{
-		ContainerEnd(StructureToken.ArrayEnd);
+		ContainerEnd(MemlToken.ArrayEnd);
 	}
 
 	public void Key(string name)
@@ -64,102 +64,102 @@ public class MemlBinaryWriter : IDataWriter, IDisposable
 		if (string.IsNullOrEmpty(name))
 			throw new Exception("Object Key cannot be empty");
 
-		_writer.Write((byte)StructureToken.ObjectKey);
+		_writer.Write((byte)MemlToken.ObjectKey);
 		_writer.Write(name);
 	}
 
 	public void Null()
 	{
-		_writer.Write((byte)StructureToken.Null);
+		_writer.Write((byte)MemlToken.Null);
 	}
 
 	public void Value(bool value)
 	{
-		_writer.Write((byte)StructureToken.Bool);
+		_writer.Write((byte)MemlToken.Bool);
 		_writer.Write(value);
 	}
 
 	public void Value(byte value)
 	{
-		_writer.Write((byte)StructureToken.Byte);
+		_writer.Write((byte)MemlToken.Byte);
 		_writer.Write(value);
 	}
 
 	public void Value(sbyte value)
 	{
-		_writer.Write((byte)StructureToken.SByte);
+		_writer.Write((byte)MemlToken.SByte);
 		_writer.Write(value);
 	}
 
 	public void Value(char value)
 	{
-		_writer.Write((byte)StructureToken.Char);
+		_writer.Write((byte)MemlToken.Char);
 		_writer.Write(value);
 	}
 
 	public void Value(short value)
 	{
-		_writer.Write((byte)StructureToken.Short);
+		_writer.Write((byte)MemlToken.Short);
 		_writer.Write(value);
 	}
 
 	public void Value(ushort value)
 	{
-		_writer.Write((byte)StructureToken.UShort);
+		_writer.Write((byte)MemlToken.UShort);
 		_writer.Write(value);
 	}
 
 	public void Value(int value)
 	{
-		_writer.Write((byte)StructureToken.Int);
+		_writer.Write((byte)MemlToken.Int);
 		_writer.Write(value);
 	}
 
 	public void Value(uint value)
 	{
-		_writer.Write((byte)StructureToken.UInt);
+		_writer.Write((byte)MemlToken.UInt);
 		_writer.Write(value);
 	}
 
 	public void Value(long value)
 	{
-		_writer.Write((byte)StructureToken.Long);
+		_writer.Write((byte)MemlToken.Long);
 		_writer.Write(value);
 	}
 
 	public void Value(ulong value)
 	{
-		_writer.Write((byte)StructureToken.ULong);
+		_writer.Write((byte)MemlToken.ULong);
 		_writer.Write(value);
 	}
 
 	public void Value(decimal value)
 	{
-		_writer.Write((byte)StructureToken.Decimal);
+		_writer.Write((byte)MemlToken.Decimal);
 		_writer.Write(value);
 	}
 
 	public void Value(float value)
 	{
-		_writer.Write((byte)StructureToken.Float);
+		_writer.Write((byte)MemlToken.Float);
 		_writer.Write(value);
 	}
 
 	public void Value(double value)
 	{
-		_writer.Write((byte)StructureToken.Double);
+		_writer.Write((byte)MemlToken.Double);
 		_writer.Write(value);
 	}
 
 	public void Value(string value)
 	{
-		_writer.Write((byte)StructureToken.String);
+		_writer.Write((byte)MemlToken.String);
 		_writer.Write(value ?? "");
 	}
 
 	public void Value(ReadOnlySpan<byte> value)
 	{
-		_writer.Write((byte)StructureToken.Binary);
+		_writer.Write((byte)MemlToken.Binary);
 		_writer.Write(value.Length);
 		_writer.Write(value);
 	}

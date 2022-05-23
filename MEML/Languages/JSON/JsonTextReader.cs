@@ -10,7 +10,7 @@ namespace MEML;
 /// </summary>
 public class JsonTextReader : IDataReader, IDisposable
 {
-	public StructureToken token { get; private set; }
+	public MemlToken token { get; private set; }
 	public object? value { get; private set; }
 
 	readonly TextReader _reader;
@@ -64,20 +64,20 @@ public class JsonTextReader : IDataReader, IDisposable
 			{
 				// Object
 				case '{':
-					token = StructureToken.ObjectStart;
+					token = MemlToken.ObjectStart;
 					return true;
 				case '}':
-					if (lastToken == StructureToken.ObjectKey) throw new Exception($"Empty value @{_position}");
-					token = StructureToken.ObjectEnd;
+					if (lastToken == MemlToken.ObjectKey) throw new Exception($"Empty value @{_position}");
+					token = MemlToken.ObjectEnd;
 					return true;
 
 				// Array
 				case '[':
-					token = StructureToken.ArrayStart;
+					token = MemlToken.ArrayStart;
 					return true;
 				case ']':
-					if (lastToken == StructureToken.ObjectKey) throw new Exception($"Empty value @{_position}");
-					token = StructureToken.ArrayEnd;
+					if (lastToken == MemlToken.ObjectKey) throw new Exception($"Empty value @{_position}");
+					token = MemlToken.ArrayEnd;
 					return true;
 
 				// String
@@ -116,21 +116,21 @@ public class JsonTextReader : IDataReader, IDisposable
 					// Is key
 					if (PeekChar(out next) && next == ':')
 					{
-						if (lastToken == StructureToken.ObjectKey) throw new Exception($"Empty value @{_position}");
+						if (lastToken == MemlToken.ObjectKey) throw new Exception($"Empty value @{_position}");
 
-						token = StructureToken.ObjectKey;
+						token = MemlToken.ObjectKey;
 						value = str;
 						return true;
 					}
 
 					if (str.StartsWith("bin::"))
 					{
-						token = StructureToken.Binary;
+						token = MemlToken.Binary;
 						value = Convert.FromBase64String(str.Substring(5));
 						return true;
 					}
 
-					token = StructureToken.String;
+					token = MemlToken.String;
 					value = str;
 					return true;
 
@@ -152,9 +152,9 @@ public class JsonTextReader : IDataReader, IDisposable
 
 			switch (s)
 			{
-				case "null": token = StructureToken.Null; value = null; return true;
-				case "true": token = StructureToken.Bool; value = true; return true;
-				case "false": token = StructureToken.Bool; value = false; return true;
+				case "null": token = MemlToken.Null; value = null; return true;
+				case "true": token = MemlToken.Bool; value = true; return true;
+				case "false": token = MemlToken.Bool; value = false; return true;
 			}
 
 			if ((s[0] >= '0' && s[0] <= '9') || s[0] == '-' || s[0] == '+' || s[0] == '.')
@@ -163,14 +163,14 @@ public class JsonTextReader : IDataReader, IDisposable
 				{
 					if (float.TryParse(s, out float floatValue))
 					{
-						token = StructureToken.Float;
+						token = MemlToken.Float;
 						value = floatValue;
 						return true;
 					}
 
 					if (double.TryParse(s, out double doubleValue))
 					{
-						token = StructureToken.Double;
+						token = MemlToken.Double;
 						value = doubleValue;
 						return true;
 					}
@@ -178,21 +178,21 @@ public class JsonTextReader : IDataReader, IDisposable
 
 				if (int.TryParse(s, out int intValue))
 				{
-					token = StructureToken.Int;
+					token = MemlToken.Int;
 					value = intValue;
 					return true;
 				}
 
 				if (long.TryParse(s, out long longValue))
 				{
-					token = StructureToken.Long;
+					token = MemlToken.Long;
 					value = longValue;
 					return true;
 				}
 
 				if (ulong.TryParse(s, out ulong ulongValue))
 				{
-					token = StructureToken.ULong;
+					token = MemlToken.ULong;
 					value = ulongValue;
 					return true;
 				}

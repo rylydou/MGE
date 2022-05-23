@@ -4,17 +4,17 @@ using System.Linq;
 
 namespace MEML;
 
-public abstract class StructureValue
+public abstract class MemlValue
 {
 	/// <summary>
 	/// The Type of Structure Value
 	/// </summary>
-	public readonly StructureType type;
+	public readonly MemlType type;
 
 	/// <summary>
 	/// Creates a new Structure Value of the given type
 	/// </summary>
-	public StructureValue(StructureType type)
+	public MemlValue(MemlType type)
 	{
 		this.type = type;
 	}
@@ -52,25 +52,25 @@ public abstract class StructureValue
 	/// Gets the Structure Value of the given Key, if this is an Object
 	/// Otherwise returns a StructureNull value
 	/// </summary>
-	public abstract StructureValue this[string key] { get; set; }
+	public abstract MemlValue this[string key] { get; set; }
 
 	/// <summary>
 	/// Gets the Structure Value of the given Index, if this is an Array.
 	/// Otherwise returns a JsonNull value.
 	/// </summary>
-	public abstract StructureValue this[int index] { get; set; }
+	public abstract MemlValue this[int index] { get; set; }
 
 	/// <summary>
 	/// Adds a value if this is an Array.
 	/// Otherwise throws an InvalidOprationException
 	/// </summary>
-	public abstract void Add(StructureValue value);
+	public abstract void Add(MemlValue value);
 
 	/// <summary>
 	/// Removes a value if this is an Array.
 	/// Otherwise throws an InvalidOprationException
 	/// </summary>
-	public abstract void Remove(StructureValue value);
+	public abstract void Remove(MemlValue value);
 
 	/// <summary>
 	/// Returns an Enumerable of all the Keys, or an empty list of this is not an Object
@@ -80,12 +80,12 @@ public abstract class StructureValue
 	/// <summary>
 	/// Returns an Enumerable of all the Values, or an empty list of this is not an Object or Array
 	/// </summary>
-	public abstract IEnumerable<StructureValue> values { get; }
+	public abstract IEnumerable<MemlValue> values { get; }
 
 	/// <summary>
 	/// Returns an Enumerable of all the Keys-Value pairs, or an empty list of this is not an Object
 	/// </summary>
-	public abstract IEnumerable<KeyValuePair<string, StructureValue>> pairs { get; }
+	public abstract IEnumerable<KeyValuePair<string, MemlValue>> pairs { get; }
 
 	/// <summary>
 	/// Returns the total amount of Array Entries or Key-Value Pairs
@@ -122,55 +122,55 @@ public abstract class StructureValue
 	// 	return stream.ToArray();
 	// }
 
-	public static implicit operator StructureValue(bool value) => new StructureValue<bool>(StructureType.Bool, value);
-	public static implicit operator StructureValue(string value) => new StructureValue<string>(StructureType.String, value ?? "");
+	public static implicit operator MemlValue(bool value) => new MemlValue<bool>(MemlType.Bool, value);
+	public static implicit operator MemlValue(string value) => new MemlValue<string>(MemlType.String, value ?? "");
 
-	public static implicit operator StructureValue(byte value) => new StructureValue<byte>(StructureType.Byte, value);
-	public static implicit operator StructureValue(sbyte value) => new StructureValue<sbyte>(StructureType.SByte, value);
-	public static implicit operator StructureValue(char value) => new StructureValue<char>(StructureType.Char, value);
-	public static implicit operator StructureValue(short value) => new StructureValue<short>(StructureType.Short, value);
-	public static implicit operator StructureValue(ushort value) => new StructureValue<ushort>(StructureType.UShort, value);
-	public static implicit operator StructureValue(int value) => new StructureValue<int>(StructureType.Int, value);
-	public static implicit operator StructureValue(uint value) => new StructureValue<uint>(StructureType.UInt, value);
-	public static implicit operator StructureValue(long value) => new StructureValue<long>(StructureType.Long, value);
-	public static implicit operator StructureValue(ulong value) => new StructureValue<ulong>(StructureType.ULong, value);
+	public static implicit operator MemlValue(byte value) => new MemlValue<byte>(MemlType.Byte, value);
+	public static implicit operator MemlValue(sbyte value) => new MemlValue<sbyte>(MemlType.SByte, value);
+	public static implicit operator MemlValue(char value) => new MemlValue<char>(MemlType.Char, value);
+	public static implicit operator MemlValue(short value) => new MemlValue<short>(MemlType.Short, value);
+	public static implicit operator MemlValue(ushort value) => new MemlValue<ushort>(MemlType.UShort, value);
+	public static implicit operator MemlValue(int value) => new MemlValue<int>(MemlType.Int, value);
+	public static implicit operator MemlValue(uint value) => new MemlValue<uint>(MemlType.UInt, value);
+	public static implicit operator MemlValue(long value) => new MemlValue<long>(MemlType.Long, value);
+	public static implicit operator MemlValue(ulong value) => new MemlValue<ulong>(MemlType.ULong, value);
 
-	public static implicit operator StructureValue(float value) => new StructureValue<float>(StructureType.Float, value);
-	public static implicit operator StructureValue(double value) => new StructureValue<double>(StructureType.Double, value);
-	public static implicit operator StructureValue(decimal value) => new StructureValue<decimal>(StructureType.Decimal, value);
+	public static implicit operator MemlValue(float value) => new MemlValue<float>(MemlType.Float, value);
+	public static implicit operator MemlValue(double value) => new MemlValue<double>(MemlType.Double, value);
+	public static implicit operator MemlValue(decimal value) => new MemlValue<decimal>(MemlType.Decimal, value);
 
-	public static implicit operator StructureValue(byte[] value) => new StructureValue<byte[]>(StructureType.Binary, value);
+	public static implicit operator MemlValue(byte[] value) => new MemlValue<byte[]>(MemlType.Binary, value);
 
-	public static implicit operator bool(StructureValue value) => value.@bool;
-	public static implicit operator string(StructureValue value) => value.@string;
+	public static implicit operator bool(MemlValue value) => value.@bool;
+	public static implicit operator string(MemlValue value) => value.@string;
 
-	public static implicit operator byte(StructureValue value) => value.@byte;
-	public static implicit operator sbyte(StructureValue value) => value.@sbyte;
-	public static implicit operator char(StructureValue value) => value.@char;
-	public static implicit operator short(StructureValue value) => value.@short;
-	public static implicit operator ushort(StructureValue value) => value.@ushort;
-	public static implicit operator int(StructureValue value) => value.@int;
-	public static implicit operator uint(StructureValue value) => value.@uint;
-	public static implicit operator long(StructureValue value) => value.@long;
-	public static implicit operator ulong(StructureValue value) => value.@ulong;
+	public static implicit operator byte(MemlValue value) => value.@byte;
+	public static implicit operator sbyte(MemlValue value) => value.@sbyte;
+	public static implicit operator char(MemlValue value) => value.@char;
+	public static implicit operator short(MemlValue value) => value.@short;
+	public static implicit operator ushort(MemlValue value) => value.@ushort;
+	public static implicit operator int(MemlValue value) => value.@int;
+	public static implicit operator uint(MemlValue value) => value.@uint;
+	public static implicit operator long(MemlValue value) => value.@long;
+	public static implicit operator ulong(MemlValue value) => value.@ulong;
 
-	public static implicit operator float(StructureValue value) => value.@float;
-	public static implicit operator double(StructureValue value) => value.@double;
-	public static implicit operator decimal(StructureValue value) => value.@decimal;
+	public static implicit operator float(MemlValue value) => value.@float;
+	public static implicit operator double(MemlValue value) => value.@double;
+	public static implicit operator decimal(MemlValue value) => value.@decimal;
 
-	public static implicit operator byte[](StructureValue value) => value.bytes;
+	public static implicit operator byte[](MemlValue value) => value.bytes;
 
 }
 
 /// <summary>
 /// A Null Structure Value
 /// </summary>
-public class StructureValueNull : StructureValue
+public class MemlValueNull : MemlValue
 {
-	internal static readonly StructureValueNull _null = new StructureValueNull();
+	internal static readonly MemlValueNull _null = new MemlValueNull();
 	internal static readonly byte[] _binary = new byte[0];
 
-	public StructureValueNull() : base(StructureType.Null) { }
+	public MemlValueNull() : base(MemlType.Null) { }
 
 	public override bool @bool => false;
 	public override string @string => string.Empty;
@@ -193,23 +193,23 @@ public class StructureValueNull : StructureValue
 
 	public override object? rawValue => null;
 
-	public override void Add(StructureValue value)
+	public override void Add(MemlValue value)
 	{
 		throw new InvalidOperationException();
 	}
 
-	public override void Remove(StructureValue value)
+	public override void Remove(MemlValue value)
 	{
 		throw new InvalidOperationException();
 	}
 
-	public override StructureValue this[string key]
+	public override MemlValue this[string key]
 	{
 		get => _null;
 		set => throw new InvalidOperationException();
 	}
 
-	public override StructureValue this[int index]
+	public override MemlValue this[int index]
 	{
 		get => _null;
 		set => throw new InvalidOperationException();
@@ -217,18 +217,18 @@ public class StructureValueNull : StructureValue
 
 	public override int count => 0;
 	public override IEnumerable<string> keys => Enumerable.Empty<string>();
-	public override IEnumerable<StructureValue> values => Enumerable.Empty<StructureValue>();
-	public override IEnumerable<KeyValuePair<string, StructureValue>> pairs => Enumerable.Empty<KeyValuePair<string, StructureValue>>();
+	public override IEnumerable<MemlValue> values => Enumerable.Empty<MemlValue>();
+	public override IEnumerable<KeyValuePair<string, MemlValue>> pairs => Enumerable.Empty<KeyValuePair<string, MemlValue>>();
 }
 
 /// <summary>
 /// A Structure Value with a given C# data type
 /// </summary>
-public class StructureValue<T> : StructureValue
+public class MemlValue<T> : MemlValue
 {
 	public readonly T value;
 
-	public StructureValue(StructureType type, T value) : base(type)
+	public MemlValue(MemlType type, T value) : base(type)
 	{
 		this.value = value;
 	}
@@ -252,32 +252,32 @@ public class StructureValue<T> : StructureValue
 
 	public override byte[] bytes => (byte[])(rawValue!);
 
-	public override void Add(StructureValue value)
+	public override void Add(MemlValue value)
 	{
 		throw new InvalidOperationException();
 	}
 
-	public override void Remove(StructureValue value)
+	public override void Remove(MemlValue value)
 	{
 		throw new InvalidOperationException();
 	}
 
 	public override int count => 0;
 	public override IEnumerable<string> keys => Enumerable.Empty<string>();
-	public override IEnumerable<StructureValue> values => Enumerable.Empty<StructureValue>();
-	public override IEnumerable<KeyValuePair<string, StructureValue>> pairs => Enumerable.Empty<KeyValuePair<string, StructureValue>>();
+	public override IEnumerable<MemlValue> values => Enumerable.Empty<MemlValue>();
+	public override IEnumerable<KeyValuePair<string, MemlValue>> pairs => Enumerable.Empty<KeyValuePair<string, MemlValue>>();
 
 	public override object? rawValue => value;
 
-	public override StructureValue this[string key]
+	public override MemlValue this[string key]
 	{
-		get => StructureValueNull._null;
+		get => MemlValueNull._null;
 		set => throw new InvalidOperationException();
 	}
 
-	public override StructureValue this[int index]
+	public override MemlValue this[int index]
 	{
-		get => StructureValueNull._null;
+		get => MemlValueNull._null;
 		set => throw new InvalidOperationException();
 	}
 }

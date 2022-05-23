@@ -114,6 +114,6 @@ public abstract class Windowing : AppModule
 			}
 		}
 
-		return AppDomain.CurrentDomain.BaseDirectory!;
+		return AppDomain.CurrentDomain.BaseDirectory;
 	}
 }

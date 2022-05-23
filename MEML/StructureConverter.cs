@@ -27,7 +27,7 @@ public class ObjectMember
 	}
 }
 
-public class StructureConverter
+public class MemlConverter
 {
 	const DynamicallyAccessedMemberTypes dynamicallyAccessedMemberTypes =
 		DynamicallyAccessedMemberTypes.PublicFields |
@@ -93,25 +93,25 @@ public class StructureConverter
 			throw new Exception($"Type '{fullTypeName}' not found in '{asmName}'");
 	};
 
-	public delegate StructureValue ToStructureHandler<T>(T obj);
-	delegate StructureValue ToStructureHandler(object obj);
+	public delegate MemlValue ToStructureHandler<T>(T obj);
+	delegate MemlValue ToStructureHandler(object obj);
 
-	public delegate T ToObjectHandler<T>(StructureValue value);
-	delegate object ToObjectHandler(StructureValue value);
+	public delegate T ToObjectHandler<T>(MemlValue value);
+	delegate object ToObjectHandler(MemlValue value);
 
 	Dictionary<Type, (ToStructureHandler toStructure, ToObjectHandler toObject)> _converters = new();
 
 	public void RegisterConverter<T>(ToStructureHandler<T> toStructure, ToObjectHandler<T> toObject) where T : notnull
 	{
-		StructureValue ToStructure(object obj) => toStructure.Invoke((T)obj);
-		object ToObject(StructureValue value) => toObject.Invoke(value);
+		MemlValue ToStructure(object obj) => toStructure.Invoke((T)obj);
+		object ToObject(MemlValue value) => toObject.Invoke(value);
 
 		_converters.Add(typeof(T), (ToStructure, ToObject));
 	}
 
-	public StructureValue CreateStructureFromObject(object? obj, Type? impliedType = null)
+	public MemlValue CreateStructureFromObject(object? obj, Type? impliedType = null)
 	{
-		if (obj is null) return new StructureValueNull();
+		if (obj is null) return new MemlValueNull();
 
 		var type = obj.GetType();
 
@@ -122,28 +122,28 @@ public class StructureConverter
 
 		if (type.IsPrimitive)
 		{
-			if (obj is bool @bool) return new StructureValue<bool>(StructureType.Bool, @bool);
+			if (obj is bool @bool) return new MemlValue<bool>(MemlType.Bool, @bool);
 
-			if (obj is float @float) return new StructureValue<float>(StructureType.Float, @float);
-			if (obj is double @double) return new StructureValue<double>(StructureType.Double, @double);
-			if (obj is int @int) return new StructureValue<int>(StructureType.Int, @int);
-			if (obj is uint @uint) return new StructureValue<uint>(StructureType.UInt, @uint);
-			if (obj is byte @byte) return new StructureValue<byte>(StructureType.Byte, @byte);
-			if (obj is char @char) return new StructureValue<char>(StructureType.Char, @char);
-			if (obj is short @short) return new StructureValue<short>(StructureType.Short, @short);
-			if (obj is ushort @ushort) return new StructureValue<ushort>(StructureType.UShort, @ushort);
-			if (obj is long @long) return new StructureValue<long>(StructureType.Long, @long);
-			if (obj is ulong @ulong) return new StructureValue<ulong>(StructureType.ULong, @ulong);
+			if (obj is float @float) return new MemlValue<float>(MemlType.Float, @float);
+			if (obj is double @double) return new MemlValue<double>(MemlType.Double, @double);
+			if (obj is int @int) return new MemlValue<int>(MemlType.Int, @int);
+			if (obj is uint @uint) return new MemlValue<uint>(MemlType.UInt, @uint);
+			if (obj is byte @byte) return new MemlValue<byte>(MemlType.Byte, @byte);
+			if (obj is char @char) return new MemlValue<char>(MemlType.Char, @char);
+			if (obj is short @short) return new MemlValue<short>(MemlType.Short, @short);
+			if (obj is ushort @ushort) return new MemlValue<ushort>(MemlType.UShort, @ushort);
+			if (obj is long @long) return new MemlValue<long>(MemlType.Long, @long);
+			if (obj is ulong @ulong) return new MemlValue<ulong>(MemlType.ULong, @ulong);
 		}
 
-		if (obj is string @string) return new StructureValue<string>(StructureType.String, @string);
+		if (obj is string @string) return new MemlValue<string>(MemlType.String, @string);
 
-		if (obj is byte[] binary) return new StructureValue<byte[]>(StructureType.Binary, binary);
+		if (obj is byte[] binary) return new MemlValue<byte[]>(MemlType.Binary, binary);
 
 		// Array
 		if (obj is ICollection collection)
 		{
-			var structArray = new StructureArray();
+			var structArray = new MemlArray();
 			var contentType = type.IsArray ? type.GetElementType() : GetElementType(type);
 
 			foreach (var item in collection)
@@ -155,7 +155,7 @@ public class StructureConverter
 		}
 
 		// Object
-		var memlObject = new StructureObject();
+		var memlObject = new MemlObject();
 
 		if (type != impliedType)
 		{
@@ -193,11 +193,11 @@ public class StructureConverter
 		return null;
 	}
 
-	public T CreateObjectFromStructure<T>(StructureValue value, params object?[] args)
+	public T CreateObjectFromStructure<T>(MemlValue value, params object?[] args)
 	{
 		return (T)CreateObjectFromStructure(value, typeof(T), args)!;
 	}
-	public object? CreateObjectFromStructure(StructureValue value, Type? impliedType = null, params object?[] args)
+	public object? CreateObjectFromStructure(MemlValue value, Type? impliedType = null, params object?[] args)
 	{
 		// Try to use the explict converter
 		if (impliedType is not null)
@@ -210,7 +210,7 @@ public class StructureConverter
 
 		// No explict converter exists? Then do it automatically...
 
-		if (value.type == StructureType.Object)
+		if (value.type == MemlType.Object)
 		{
 			// Create an object
 
@@ -265,7 +265,7 @@ public class StructureConverter
 			return obj;
 		}
 
-		if (value.type == StructureType.Array)
+		if (value.type == MemlType.Array)
 		{
 			// Create an array
 
@@ -309,7 +309,7 @@ public class StructureConverter
 	}
 
 	// TODO  Implement
-	public void PopulateObjectFromStructure(ref object obj, in StructureValue value, params object?[] args)
+	public void PopulateObjectFromStructure(ref object obj, in MemlValue value, params object?[] args)
 	{
 		var type = obj.GetType();
 

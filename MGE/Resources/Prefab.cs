@@ -6,19 +6,19 @@ namespace MGE;
 
 public class Prefab
 {
-	public static StructureConverter converter;
+	public static MemlConverter converter;
 
 	static Prefab()
 	{
 		converter = Util.GetStructureConverter();
 		converter.memberFinder = (type) =>
-			type.GetMembers(StructureConverter.suggestedBindingFlags)
+			type.GetMembers(MemlConverter.suggestedBindingFlags)
 			.Where(m => m.GetCustomAttribute<PropAttribute>() is not null || m.GetCustomAttribute<HiddenPropAttribute>() is not null);
 	}
 
-	StructureValue _prefab;
+	MemlValue _prefab;
 
-	public Prefab(StructureValue prefab)
+	public Prefab(MemlValue prefab)
 	{
 		_prefab = prefab;
 	}

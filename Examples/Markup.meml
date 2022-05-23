@@ -1,0 +1,5 @@
+object: {
+	string: 'Hello world'
+	number: 123.456
+	array: [ 1 2 3 ]
+}

@@ -9,20 +9,20 @@ public static class DataReaderAndWriterFunctions
 	/// Reads an Meml Object from the Stream and returns it
 	/// </summary>
 	/// <param name="into">An optional object to read into. If null, it creates a new JsonObject</param>
-	public static StructureValue ReadObject(this IDataReader reader, StructureObject? into = null)
+	public static MemlValue ReadObject(this IDataReader reader, MemlObject? into = null)
 	{
-		var result = into ?? new StructureObject();
+		var result = into ?? new MemlObject();
 		var opened = false;
 
-		while (reader.Read() && reader.token != StructureToken.ObjectEnd)
+		while (reader.Read() && reader.token != MemlToken.ObjectEnd)
 		{
-			if (!opened && reader.token == StructureToken.ObjectStart)
+			if (!opened && reader.token == MemlToken.ObjectStart)
 			{
 				opened = true;
 				continue;
 			}
 
-			if (reader.token != StructureToken.ObjectKey) throw new Exception($"Expected Object Key");
+			if (reader.token != MemlToken.ObjectKey) throw new Exception($"Expected Object Key");
 
 			var key = reader.value as string;
 			if (string.IsNullOrEmpty(key)) throw new Exception($"Invalid Object Key");
@@ -36,7 +36,7 @@ public static class DataReaderAndWriterFunctions
 	/// <summary>
 	/// Tries to read a JsonObject from the Stream
 	/// </summary>
-	public static bool TryReadObject(this IDataReader reader, [MaybeNullWhen(false)] out StructureValue obj)
+	public static bool TryReadObject(this IDataReader reader, [MaybeNullWhen(false)] out MemlValue obj)
 	{
 		try
 		{
@@ -56,10 +56,10 @@ public static class DataReaderAndWriterFunctions
 	/// <summary>
 	/// Reads a JsonArray from the Stream
 	/// </summary>
-	public static StructureValue ReadArray(this IDataReader reader)
+	public static MemlValue ReadArray(this IDataReader reader)
 	{
-		var arr = new StructureArray();
-		while (reader.Read() && reader.token != StructureToken.ArrayEnd)
+		var arr = new MemlArray();
+		while (reader.Read() && reader.token != MemlToken.ArrayEnd)
 			arr.Add(reader.CurrentValue());
 		return arr;
 	}
@@ -67,57 +67,57 @@ public static class DataReaderAndWriterFunctions
 	/// <summary>
 	/// Reads a JsonValue from the Stream
 	/// </summary>
-	public static StructureValue ReadValue(this IDataReader reader)
+	public static MemlValue ReadValue(this IDataReader reader)
 	{
 		reader.Read();
 		return reader.CurrentValue();
 	}
 
-	public static StructureValue CurrentValue(this IDataReader reader)
+	public static MemlValue CurrentValue(this IDataReader reader)
 	{
 		switch (reader.token)
 		{
-			case StructureToken.Null: return new StructureValueNull();
+			case MemlToken.Null: return new MemlValueNull();
 
-			case StructureToken.Bool: return (bool)(reader.value!);
-			case StructureToken.String: return (string)(reader.value!);
+			case MemlToken.Bool: return (bool)(reader.value!);
+			case MemlToken.String: return (string)(reader.value!);
 
-			case StructureToken.Byte: return (byte)(reader.value!);
-			case StructureToken.SByte: return (sbyte)(reader.value!);
-			case StructureToken.Char: return (char)(reader.value!);
-			case StructureToken.Short: return (short)(reader.value!);
-			case StructureToken.UShort: return (ushort)(reader.value!);
-			case StructureToken.Int: return (int)(reader.value!);
-			case StructureToken.UInt: return (uint)(reader.value!);
-			case StructureToken.Long: return (long)(reader.value!);
-			case StructureToken.ULong: return (ulong)(reader.value!);
+			case MemlToken.Byte: return (byte)(reader.value!);
+			case MemlToken.SByte: return (sbyte)(reader.value!);
+			case MemlToken.Char: return (char)(reader.value!);
+			case MemlToken.Short: return (short)(reader.value!);
+			case MemlToken.UShort: return (ushort)(reader.value!);
+			case MemlToken.Int: return (int)(reader.value!);
+			case MemlToken.UInt: return (uint)(reader.value!);
+			case MemlToken.Long: return (long)(reader.value!);
+			case MemlToken.ULong: return (ulong)(reader.value!);
 
-			case StructureToken.Float: return (float)(reader.value!);
-			case StructureToken.Double: return (double)(reader.value!);
-			case StructureToken.Decimal: return (decimal)(reader.value!);
+			case MemlToken.Float: return (float)(reader.value!);
+			case MemlToken.Double: return (double)(reader.value!);
+			case MemlToken.Decimal: return (decimal)(reader.value!);
 
-			case StructureToken.Binary: return (byte[])(reader.value!);
+			case MemlToken.Binary: return (byte[])(reader.value!);
 
-			case StructureToken.ObjectStart: return reader.ReadObject();
+			case MemlToken.ObjectStart: return reader.ReadObject();
 
-			case StructureToken.ArrayStart: return reader.ReadArray();
+			case MemlToken.ArrayStart: return reader.ReadArray();
 
-			case StructureToken.ObjectKey:
-			case StructureToken.ObjectEnd:
-			case StructureToken.ArrayEnd:
+			case MemlToken.ObjectKey:
+			case MemlToken.ObjectEnd:
+			case MemlToken.ArrayEnd:
 				throw new Exception($"Unexpected {reader.token}");
 		}
 
-		return new StructureValueNull();
+		return new MemlValueNull();
 	}
 
-	public static void Write(this IDataWriter writer, StructureValue value)
+	public static void Write(this IDataWriter writer, MemlValue value)
 	{
 		if (value is not null)
 		{
 			switch (value.type)
 			{
-				case StructureType.Object:
+				case MemlType.Object:
 					writer.ObjectBegin();
 					foreach (var pair in value.pairs)
 					{
@@ -127,87 +127,87 @@ public static class DataReaderAndWriterFunctions
 					writer.ObjectEnd();
 					return;
 
-				case StructureType.Array:
+				case MemlType.Array:
 					writer.ArrayBegin();
 					foreach (var item in value.values)
 						writer.Write(item);
 					writer.ArrayEnd();
 					return;
 
-				case StructureType.Bool:
+				case MemlType.Bool:
 					writer.Value(value.@bool);
 					return;
 
-				case StructureType.String:
+				case MemlType.String:
 					writer.Value(value.@string);
 					return;
 
 				default:
 					{
-						if (value is StructureValue<bool> Bool)
+						if (value is MemlValue<bool> Bool)
 						{
 							writer.Value(Bool.@bool);
 							return;
 						}
-						else if (value is StructureValue<decimal> Decimal)
+						else if (value is MemlValue<decimal> Decimal)
 						{
 							writer.Value(Decimal.@decimal);
 							return;
 						}
-						else if (value is StructureValue<float> Float)
+						else if (value is MemlValue<float> Float)
 						{
 							writer.Value(Float.@float);
 							return;
 						}
-						else if (value is StructureValue<double> Double)
+						else if (value is MemlValue<double> Double)
 						{
 							writer.Value(Double.@double);
 							return;
 						}
-						else if (value is StructureValue<byte> Byte)
+						else if (value is MemlValue<byte> Byte)
 						{
 							writer.Value(Byte.@byte);
 							return;
 						}
-						else if (value is StructureValue<char> Char)
+						else if (value is MemlValue<char> Char)
 						{
 							writer.Value(Char.@char);
 							return;
 						}
-						else if (value is StructureValue<short> Short)
+						else if (value is MemlValue<short> Short)
 						{
 							writer.Value(Short.@short);
 							return;
 						}
-						else if (value is StructureValue<ushort> UShort)
+						else if (value is MemlValue<ushort> UShort)
 						{
 							writer.Value(UShort.@ushort);
 							return;
 						}
-						else if (value is StructureValue<int> Int)
+						else if (value is MemlValue<int> Int)
 						{
 							writer.Value(Int.@int);
 							return;
 						}
-						else if (value is StructureValue<uint> UInt)
+						else if (value is MemlValue<uint> UInt)
 						{
 							writer.Value(UInt.@uint);
 							return;
 						}
-						else if (value is StructureValue<long> Long)
+						else if (value is MemlValue<long> Long)
 						{
 							writer.Value(Long.@long);
 							return;
 						}
-						else if (value is StructureValue<ulong> ULong)
+						else if (value is MemlValue<ulong> ULong)
 						{
 							writer.Value(ULong.@ulong);
 							return;
 						}
 					}
 					break;
-				case StructureType.Binary:
-					if (value is StructureValue<byte[]> Bytes)
+				case MemlType.Binary:
+					if (value is MemlValue<byte[]> Bytes)
 					{
 						writer.Value(Bytes.bytes);
 						return;

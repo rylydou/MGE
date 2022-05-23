@@ -1,6 +1,6 @@
 ﻿namespace MEML;
 
-public enum StructureType
+public enum MemlType
 {
 	Null,
 

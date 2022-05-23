@@ -1,0 +1,12 @@
+vertex {
+
+}
+
+fragment {
+	sampler2d texture0;
+
+	vec4 main(stdVertex2d vert) {
+		vec4 color = texture(texture0, vert.uv);
+		return color * vert.color;
+	}
+}

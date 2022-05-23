@@ -15,7 +15,7 @@ public class SDFFont : IFont
 		public readonly int xOffset;
 		public readonly int yOffset;
 
-		public GlyphInfo(StructureValue value)
+		public GlyphInfo(MemlValue value)
 		{
 			this.x = value["x"];
 			this.y = value["y"];
@@ -41,7 +41,7 @@ public class SDFFont : IFont
 	readonly Dictionary<char, (int width, int advance)> _mertics = new();
 	readonly Dictionary<(char first, char second), int> _kernings = new();
 
-	public SDFFont(Texture texture, StructureValue def)
+	public SDFFont(Texture texture, MemlValue def)
 	{
 		this._texture = texture;
 

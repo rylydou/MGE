@@ -37,17 +37,17 @@ public static class Util
 			throw new Exception($"Type '{fullTypeName}' not found in '{assemblyName}'");
 	}
 
-	public static StructureConverter GetStructureConverter()
+	public static MemlConverter GetStructureConverter()
 	{
-		var _ = new StructureConverter();
+		var _ = new MemlConverter();
 
-		_.RegisterConverter<Vector2>(_ => new StructureArray(_.x, _.y), _ => new Vector2(_[0], _[1]));
-		_.RegisterConverter<Vector2Int>(_ => new StructureArray(_.x, _.y), _ => new Vector2Int(_[0], _[1]));
+		_.RegisterConverter<Vector2>(_ => new MemlArray(_.x, _.y), _ => new Vector2(_[0], _[1]));
+		_.RegisterConverter<Vector2Int>(_ => new MemlArray(_.x, _.y), _ => new Vector2Int(_[0], _[1]));
 
-		_.RegisterConverter<Vector3>(_ => new StructureArray(_.x, _.y, _.z), _ => new Vector3(_[0], _[1], _[2]));
+		_.RegisterConverter<Vector3>(_ => new MemlArray(_.x, _.y, _.z), _ => new Vector3(_[0], _[1], _[2]));
 
-		_.RegisterConverter<Rect>(_ => new StructureArray(_.x, _.y, _.width, _.height), _ => new Rect(_[0], _[1], _[2], _[3]));
-		_.RegisterConverter<RectInt>(_ => new StructureArray(_.x, _.y, _.width, _.height), _ => new RectInt(_[0], _[1], _[2], _[3]));
+		_.RegisterConverter<Rect>(_ => new MemlArray(_.x, _.y, _.width, _.height), _ => new Rect(_[0], _[1], _[2], _[3]));
+		_.RegisterConverter<RectInt>(_ => new MemlArray(_.x, _.y, _.width, _.height), _ => new RectInt(_[0], _[1], _[2], _[3]));
 
 		_.RegisterConverter<Color>(_ => "#" + _.ToHexStringRGBA(), _ => Color.FromHexStringRGBA(_));
 

@@ -6,7 +6,7 @@ public interface IDataReader
 	/// <summary>
 	/// The current Token
 	/// </summary>
-	StructureToken token { get; }
+	MemlToken token { get; }
 
 	/// <summary>
 	/// The current Value
