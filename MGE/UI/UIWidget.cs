@@ -1,8 +1,10 @@
+using System.Collections.Generic;
+
 namespace MGE.UI;
 
 public abstract class UIWidget
 {
-	public UIStyle baseStyle = new();
+	[Prop] public List<string> classes = new();
 
 	[Prop] public Color foregroundColor;
 	[Prop] public Color backgroundColor;

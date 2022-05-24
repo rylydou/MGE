@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using MEML;
 
 namespace MGE;
 
@@ -26,6 +27,15 @@ public class Content : AppModule
 	// Location to file
 	readonly Dictionary<string, File> unloadedAssets = new();
 
+	public IFont font = null!;
+	void LoadEmbeddedFont()
+	{
+		var fontJson = Util.EmbeddedResource("Resources/Regular.json");
+		var fontPng = Util.EmbeddedResource("Resources/Regular.json.png");
+
+		font = new SDFFont(new Texture(fontPng, "png"), new JsonTextReader(fontJson).ReadObject());
+	}
+
 	public Content()
 	{
 		contentFolder = Folder.here / "Content";
@@ -34,8 +44,9 @@ public class Content : AppModule
 
 	protected internal override void Startup()
 	{
-		ScanContent();
+		LoadEmbeddedFont();
 
+		ScanContent();
 		LoadContent();
 	}
 
@@ -43,7 +54,7 @@ public class Content : AppModule
 	{
 		contentIndex.Clear();
 
-		Log.StartStopwatch("Scaning content");
+		Log.StartStopwatch("Scanning content");
 
 		IndexContent(contentFolder);
 

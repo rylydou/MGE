@@ -2,12 +2,13 @@
 
 	<PropertyGroup>
 
+		<OutputType>Exe</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
 		<!-- <AnalysisLevel>latest-Recommended</AnalysisLevel> -->
 
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>false</ImplicitUsings>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<!-- <AllowUnsafeBlocks>true</AllowUnsafeBlocks> -->
 
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
@@ -15,20 +16,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="Resources\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Include="Resources\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="../MEML/MEML.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="StbImageSharp" Version="2.27.8" />
-		<PackageReference Include="StbImageWriteSharp" Version="1.13.5" />
+		<ProjectReference Include="../MGE/MGE.csproj" />
+		<ProjectReference Include="../Platforms/GLFW/MGE.GLFW.csproj" />
+		<ProjectReference Include="../Platforms/OpenGL/MGE.OpenGL.csproj" />
+		<ProjectReference Include="../Platforms/OpenAL/MGE.OpenAL.csproj" />
 	</ItemGroup>
 
 </Project>

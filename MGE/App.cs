@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Runtime;
 using System.Runtime.InteropServices;
 using System.Threading;
+using MEML;
+using MGE.Loaders;
 
 namespace MGE;
 
@@ -161,6 +163,7 @@ public static class App
 			modules.Startup();
 			callback?.Invoke();
 			Run();
+
 		}
 	}
 

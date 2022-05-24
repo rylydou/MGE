@@ -7,7 +7,7 @@ public class GridCollider2D : Collider2D
 {
 	[Prop] public VirtualMap<bool> data;
 
-	[Prop] public float cellSize { get; private set; }
+	[Prop] public float cellSize;
 
 	public GridCollider2D(Vector2Int mapSize, float cellSize, Vector2? position = null) : base(position)
 	{

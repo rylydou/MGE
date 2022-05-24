@@ -24,6 +24,28 @@
       }
     },
     {
+      "name": "Run UIDemo",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build UIDemo",
+      "program": "${workspaceFolder}/UIDemo/bin/Debug/UIDemo.dll",
+      "args": [],
+      "env": {},
+      "cwd": "${workspaceFolder}/UIDemo",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "logging": {
+        "browserStdOut": false,
+        "elapsedTiming": false,
+        "engineLogging": false,
+        "exceptions": false,
+        "moduleLoad": false,
+        "processExit": false,
+        "programOutput": true,
+        "threadExit": false
+      }
+    },
+    {
       "name": "Run Editor",
       "type": "coreclr",
       "request": "launch",
