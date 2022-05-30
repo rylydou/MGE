@@ -10,16 +10,32 @@ public abstract class UIContainer : UIWidget
 		get => _padding;
 		set
 		{
-			if (_padding == value) return;
-			_padding = value;
-
-			PropertiesChanged();
+			for (int i = 0; i < 2; i++)
+			{
+				if (_padding[i] != value[i] || _padding[i + 2] != value[i + 2])
+				{
+					_padding[i] = value[i];
+					_padding[i + 2] = value[i];
+					PropertiesChanged(i);
+				}
+			}
 		}
 	}
 
-	public RectInt contentRect { get => _rect - _padding; }
+	public RectInt relativeContentRect => relativeRect - _padding;
+	public RectInt absoluteContentRect => absoluteRect - _padding;
 
 	[Prop] public List<UIWidget> widgets = new();
+
+	internal override void OnPositionChanged(int dir)
+	{
+		base.OnPositionChanged(dir);
+
+		foreach (var widget in widgets)
+		{
+			widget.OnPositionChanged(dir);
+		}
+	}
 
 	protected override void OnAttached()
 	{
@@ -37,6 +53,14 @@ public abstract class UIContainer : UIWidget
 		widget.AttachTo(this);
 		OnChildAdded(widget);
 	}
+
+	public void InsertChild(int index, UIWidget widget)
+	{
+		widgets.Insert(index, widget);
+		widget.AttachTo(this);
+		OnChildAdded(widget);
+	}
+
 	protected virtual void OnChildAdded(UIWidget widget) { }
 
 	public void RemoveChild(UIWidget widget)
@@ -46,16 +70,12 @@ public abstract class UIContainer : UIWidget
 	}
 	protected virtual void OnChildRemoved(UIWidget widget) { }
 
-	internal void ChildMeasureChanged(UIWidget widget)
+	internal void ChildMeasureChanged(int dir, UIWidget widget)
 	{
-		if (!(_flashTime > 0 && _flashColor == Color.magenta))
-		{
-			_flashTime = 1f;
-			_flashColor = Color.yellow;
-		}
-		OnChildMeasureChanged(widget);
+		_flashTime[dir] = 1f;
+		OnChildMeasureChanged(dir, widget);
 	}
-	protected virtual void OnChildMeasureChanged(UIWidget widget) { }
+	protected virtual void OnChildMeasureChanged(int dir, UIWidget widget) { }
 
 	internal override void DoRender(Batch2D batch)
 	{

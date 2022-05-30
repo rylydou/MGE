@@ -77,7 +77,7 @@ internal static class GL
 
 				if (type == GLEnum.DEBUG_TYPE_ERROR)
 				{
-					throw new Exception(output);
+					throw new MGException(output);
 				}
 
 				Log.Warning($"OpenGL {typeName}, {severityName}: {output}");

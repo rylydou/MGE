@@ -3,7 +3,7 @@ using System.IO;
 
 namespace MEML;
 
-public class MemlBinaryReader : IDataReader, IDisposable
+public class MemlBinaryReader : IMemlReader, IDisposable
 {
 	readonly BinaryReader _reader;
 	readonly bool _disposeStream = true;

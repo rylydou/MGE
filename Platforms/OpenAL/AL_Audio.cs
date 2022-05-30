@@ -102,7 +102,7 @@ public class AL_Audio : Audio
 
 		lock (_availableSources!)
 		{
-			if (_availableSources.Count == 0) throw new Exception($"No sources to borrow");
+			if (_availableSources.Count == 0) throw new MGException($"No sources to borrow");
 			source = _availableSources.Dequeue();
 			_availableSources.Enqueue(source);
 		}
@@ -115,7 +115,7 @@ public class AL_Audio : Audio
 		int source;
 		lock (_availableSources!)
 		{
-			if (_availableSources.Count == 0) throw new Exception($"Reached source limit of {MAX_SOURCES}");
+			if (_availableSources.Count == 0) throw new MGException($"Reached source limit of {MAX_SOURCES}");
 
 			source = _availableSources.Dequeue();
 			_inUseSources!.Add(source);

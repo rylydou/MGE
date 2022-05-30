@@ -62,7 +62,7 @@ public static class Calc
 		{
 			0 => a,
 			1 => b,
-			_ => throw new Exception("Index was out of range!"),
+			_ => throw new MGException("Index was out of range!"),
 		};
 	}
 
@@ -73,7 +73,7 @@ public static class Calc
 			0 => a,
 			1 => b,
 			2 => c,
-			_ => throw new Exception("Index was out of range!"),
+			_ => throw new MGException("Index was out of range!"),
 		};
 	}
 
@@ -85,7 +85,7 @@ public static class Calc
 			1 => b,
 			2 => c,
 			3 => d,
-			_ => throw new Exception("Index was out of range!"),
+			_ => throw new MGException("Index was out of range!"),
 		};
 	}
 
@@ -98,7 +98,7 @@ public static class Calc
 			2 => c,
 			3 => d,
 			4 => e,
-			_ => throw new Exception("Index was out of range!"),
+			_ => throw new MGException("Index was out of range!"),
 		};
 	}
 
@@ -112,7 +112,7 @@ public static class Calc
 			3 => d,
 			4 => e,
 			5 => f,
-			_ => throw new Exception("Index was out of range!"),
+			_ => throw new MGException("Index was out of range!"),
 		};
 	}
 

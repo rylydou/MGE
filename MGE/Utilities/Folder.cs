@@ -14,7 +14,7 @@ public struct Folder : IEquatable<Folder>
 	{
 		root = "";
 		user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-		parentFolder = AppDomain.CurrentDomain.BaseDirectory ?? throw new Exception();
+		parentFolder = AppDomain.CurrentDomain.BaseDirectory ?? throw new MGException();
 
 #if DEBUG
 		here = Environment.CurrentDirectory;

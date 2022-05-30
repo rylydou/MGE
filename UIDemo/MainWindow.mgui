@@ -1,0 +1,11 @@
+MGE.UIBox #main-window {
+	direction: ttb
+
+	MGE.Box #menubar {
+		direction: ltr
+
+		MGE.UIBox .button {
+
+		}
+	}
+}

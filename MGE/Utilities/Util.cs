@@ -30,11 +30,11 @@ public static class Util
 		var asm =
 			AppDomain.CurrentDomain.GetAssemblies()
 			.SingleOrDefault(assembly => assembly.GetName().Name == assemblyName) ??
-			throw new Exception($"Assembly '{assemblyName}' not found");
+			throw new MGException($"Assembly '{assemblyName}' not found");
 
 		return
 			asm.GetType(fullTypeName) ??
-			throw new Exception($"Type '{fullTypeName}' not found in '{assemblyName}'");
+			throw new MGException($"Type '{fullTypeName}' not found in '{assemblyName}'");
 	}
 
 	public static MemlConverter GetStructureConverter()
@@ -56,7 +56,7 @@ public static class Util
 
 	public static Stream EmbeddedResource(string resourceName)
 	{
-		var assembly = Assembly.GetCallingAssembly() ?? throw new Exception();
+		var assembly = Assembly.GetCallingAssembly() ?? throw new MGException();
 		return EmbeddedResource(assembly, resourceName);
 	}
 
@@ -67,14 +67,14 @@ public static class Util
 
 		var stream = assembly.GetManifestResourceStream(path);
 		if (stream is null)
-			throw new Exception($"Embedded Resource '{resourceName}' doesn't exist");
+			throw new MGException($"Embedded Resource '{resourceName}' doesn't exist");
 
 		return stream;
 	}
 
 	public static string EmbeddedResourceText(string resourceName)
 	{
-		var assembly = Assembly.GetCallingAssembly() ?? throw new Exception();
+		var assembly = Assembly.GetCallingAssembly() ?? throw new MGException();
 
 		using var stream = EmbeddedResource(assembly, resourceName);
 		using var reader = new StreamReader(stream);

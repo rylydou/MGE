@@ -119,7 +119,7 @@ public class Content : AppModule
 
 	public T Get<T>(string filename) where T : class
 	{
-		return (T)(preloadedAssets[filename] ?? throw new Exception());
+		return (T)(preloadedAssets[filename] ?? throw new MGException());
 	}
 
 	public bool Get<T>(string filename, [MaybeNullWhen(false)] out T asset) where T : class
@@ -130,7 +130,7 @@ public class Content : AppModule
 			return false;
 		}
 
-		asset = (T)(obj ?? throw new Exception());
+		asset = (T)(obj ?? throw new MGException());
 		return true;
 	}
 }

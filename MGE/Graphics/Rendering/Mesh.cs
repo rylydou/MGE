@@ -81,7 +81,7 @@ public class Mesh : IDisposable
 	public void SetVertices<T>(ReadOnlySequence<T> vertices, VertexFormat format)
 	{
 		vertexCount = (uint)vertices.Length;
-		vertexFormat = format ?? throw new Exception("Vertex Format cannot be null");
+		vertexFormat = format ?? throw new MGException("Vertex Format cannot be null");
 
 		implementation.UploadVertices(vertices, vertexFormat);
 	}
@@ -125,7 +125,7 @@ public class Mesh : IDisposable
 	public void SetInstances<T>(ReadOnlySequence<T> vertices, VertexFormat format)
 	{
 		instanceCount = (uint)vertices.Length;
-		instanceFormat = format ?? throw new Exception("Vertex Format cannot be null");
+		instanceFormat = format ?? throw new MGException("Vertex Format cannot be null");
 
 		implementation.UploadInstances(vertices, instanceFormat);
 	}

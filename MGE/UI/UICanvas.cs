@@ -9,13 +9,6 @@ public class UICanvas : UIBox
 		canvas = this;
 	}
 
-	internal override void PropertiesChanged()
-	{
-		_rect.size = fixedSize;
-
-		base.PropertiesChanged();
-	}
-
 	public void RenderCanvas(Batch2D batch)
 	{
 		DoRender(batch);

@@ -21,7 +21,7 @@ public abstract class Body2D : Node2D
 			if (value is not null)
 			{
 				if (value.node is not null)
-					throw new Exception("Set collider", "Collider already has an owner");
+					throw new MGException("Set collider", "Collider already has an owner");
 
 				value.node = this;
 			}

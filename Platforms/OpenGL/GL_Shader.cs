@@ -49,7 +49,7 @@ internal class GL_Shader : Shader.Platform
 
 				string? errorMessage = GL.GetShaderInfoLog(shaderId);
 				if (!string.IsNullOrEmpty(errorMessage))
-					throw new Exception(errorMessage);
+					throw new MGException(errorMessage);
 
 				GL.AttachShader(ID, shaderId);
 			}
@@ -67,7 +67,7 @@ internal class GL_Shader : Shader.Platform
 
 				string? errorMessage = GL.GetShaderInfoLog(shaderId);
 				if (!string.IsNullOrEmpty(errorMessage))
-					throw new Exception(errorMessage);
+					throw new MGException(errorMessage);
 
 				GL.AttachShader(ID, shaderId);
 			}
@@ -76,7 +76,7 @@ internal class GL_Shader : Shader.Platform
 
 			string? programError = GL.GetProgramInfoLog(ID);
 			if (!string.IsNullOrEmpty(programError))
-				throw new Exception(programError);
+				throw new MGException(programError);
 
 			// get attributes
 			GL.GetProgramiv(ID, GLEnum.ACTIVE_ATTRIBUTES, out int attributeCount);

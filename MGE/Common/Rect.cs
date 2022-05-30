@@ -222,6 +222,16 @@ public struct Rect : IEquatable<Rect>
 		y += offset.y;
 	}
 
+	public Rect Offsetted(float offsetX, float offsetY)
+	{
+		return new(x + offsetX, y + offsetY, width, height);
+	}
+
+	public Rect Offsetted(Vector2 offset)
+	{
+		return new(x + offset.x, y + offset.y, width, height);
+	}
+
 	public void Expand(float amount)
 	{
 		_xMin -= amount;
@@ -230,7 +240,14 @@ public struct Rect : IEquatable<Rect>
 		_height += amount * 2;
 	}
 
-	public Rect Encapsulate(Vector2 point)
+	public Rect Expanded(float amount)
+	{
+		var rect = this;
+		rect.Expand(amount);
+		return rect;
+	}
+
+	public Rect Encapsulated(Vector2 point)
 	{
 		Rect expanded = this;
 
@@ -274,6 +291,26 @@ public struct Rect : IEquatable<Rect>
 			other = OrderMinMax(other);
 		}
 		return self.Overlaps(other);
+	}
+
+	public static Rect Lerp(Rect current, Rect target, float time)
+	{
+		return new(
+			Mathf.Lerp(current.x, target.x, time),
+			Mathf.Lerp(current.y, target.y, time),
+			Mathf.Lerp(current.width, target.width, time),
+			Mathf.Lerp(current.height, target.height, time)
+		);
+	}
+
+	public static Rect LerpClamped(Rect current, Rect target, float time)
+	{
+		return new(
+			Mathf.LerpClamped(current.x, target.x, time),
+			Mathf.LerpClamped(current.y, target.y, time),
+			Mathf.LerpClamped(current.width, target.width, time),
+			Mathf.LerpClamped(current.height, target.height, time)
+		);
 	}
 
 	#endregion Methods

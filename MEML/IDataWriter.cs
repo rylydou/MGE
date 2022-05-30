@@ -2,7 +2,7 @@
 
 namespace MEML;
 
-public interface IDataWriter
+public interface IMemlWriter
 {
 	void Key(string name);
 

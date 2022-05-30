@@ -9,7 +9,7 @@ internal class GL_Bindings
 
 	public GL_Bindings(ISystemOpenGL system)
 	{
-		this.system = system ?? throw new Exception("GL Module requires a System that implements ProcAddress");
+		this.system = system ?? throw new MGException("GL Module requires a System that implements ProcAddress");
 
 		CreateDelegate(ref glGetString!, "glGetString");
 		CreateDelegate(ref glDebugMessageCallback!, "glDebugMessageCallback");

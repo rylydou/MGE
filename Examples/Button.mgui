@@ -1,1 +1,11 @@
-[Frame padding:6 spacing:12 hsize:hug vsize:hug,28 valign:center dir:h background:#2B2B2B content=$content /]
+using MGE.UI
+
+Button : UIBox {
+	direction: Horizontal
+
+	halign: Left
+	valign: Center
+
+	padding: 6
+	spacing: 12
+}

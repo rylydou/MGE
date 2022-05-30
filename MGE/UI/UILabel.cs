@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace MGE.UI;
 
 public class UILabel : UIWidget
@@ -18,6 +16,6 @@ public class UILabel : UIWidget
 
 	protected override void Render(Batch2D batch)
 	{
-		batch.DrawString(font, text, rect, textAlignment, foregroundColor, fontSize);
+		batch.DrawString(font, text, absoluteRect, textAlignment, foregroundColor, fontSize);
 	}
 }

@@ -794,7 +794,7 @@ public struct Transform2D : IEquatable<Transform2D>
 		Vector2 toX = transform.x * rect.size.x;
 		Vector2 toY = transform.y * rect.size.y;
 
-		return new Rect(pos, rect.size).Encapsulate(pos + toX).Encapsulate(pos + toY).Encapsulate(pos + toX + toY);
+		return new Rect(pos, rect.size).Encapsulated(pos + toX).Encapsulated(pos + toY).Encapsulated(pos + toX + toY);
 	}
 
 	/// <summary>
@@ -810,7 +810,7 @@ public struct Transform2D : IEquatable<Transform2D>
 		Vector2 to2 = new Vector2(rect.position.x + rect.size.x, rect.position.y + rect.size.y) * transform;
 		Vector2 to3 = new Vector2(rect.position.x + rect.size.x, rect.position.y) * transform;
 
-		return new Rect(pos, rect.size).Encapsulate(to1).Encapsulate(to2).Encapsulate(to3);
+		return new Rect(pos, rect.size).Encapsulated(to1).Encapsulated(to2).Encapsulated(to3);
 	}
 
 	/// <summary>

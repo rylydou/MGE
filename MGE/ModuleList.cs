@@ -26,16 +26,20 @@ public class ModuleList : IEnumerable<Module>
 		Register(typeof(T));
 	}
 
+	static List<Assembly> s_assembliesDllResolversHandled = new();
+
 	/// <summary>
 	/// Registers a Module
 	/// </summary>
 	public void Register(Type type)
 	{
-		try
+		// Register dll resolvers
+		var asm = Assembly.GetAssembly(type) ?? throw new MGException("Cannot register module", "Module type is not in an assembly");
+		if (!s_assembliesDllResolversHandled.Contains(asm))
 		{
-			NativeLibrary.SetDllImportResolver(Assembly.GetAssembly(type)!, App.DllImportResolver);
+			NativeLibrary.SetDllImportResolver(asm, App.DllImportResolver);
+			s_assembliesDllResolversHandled.Add(asm);
 		}
-		catch { }
 
 		if (immediateInit)
 		{
@@ -56,7 +60,7 @@ public class ModuleList : IEnumerable<Module>
 	Module Instantiate(Type type)
 	{
 		if (!(Activator.CreateInstance(type) is Module module))
-			throw new Exception("Type must inherit from Module");
+			throw new MGException("Type must inherit from Module");
 
 		// add Module to lookup
 		while (type != typeof(Module) && type != typeof(AppModule))
@@ -89,7 +93,7 @@ public class ModuleList : IEnumerable<Module>
 	public void Remove(Module module)
 	{
 		if (!module.isRegistered)
-			throw new Exception("Module is not already registered");
+			throw new MGException("Module is not already registered");
 
 		module.Shutdown();
 		module.Disposed();
@@ -148,7 +152,7 @@ public class ModuleList : IEnumerable<Module>
 	public T Get<T>() where T : Module
 	{
 		if (!modulesByType.TryGetValue(typeof(T), out var module))
-			throw new Exception($"App is does not have a {typeof(T).Name} Module registered");
+			throw new MGException($"App is does not have a {typeof(T).Name} Module registered");
 
 		return (T)module;
 	}
@@ -159,7 +163,7 @@ public class ModuleList : IEnumerable<Module>
 	public Module Get(Type type)
 	{
 		if (!modulesByType.TryGetValue(type, out var module))
-			throw new Exception($"App is does not have a {type.Name} Module registered");
+			throw new MGException($"App is does not have a {type.Name} Module registered");
 
 		return module;
 	}

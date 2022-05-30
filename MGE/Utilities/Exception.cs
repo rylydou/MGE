@@ -1,12 +1,12 @@
 namespace MGE;
 
-public class Exception : System.Exception
+public class MGException : System.Exception
 {
-	public Exception()
+	public MGException()
 	: base("An error occurred")
 	{ }
 
-	public Exception(string message)
+	public MGException(string message)
 	: base(message)
 	{ }
 
@@ -20,11 +20,11 @@ public class Exception : System.Exception
 	/// </remarks>
 	/// <param name="failedAction">The action that failed. ex: "Create player"</param>
 	/// <param name="reason">The reason the action failed. ex: "Save data is corrupt"</param>
-	public Exception(string failedAction, string reason)
+	public MGException(string failedAction, string reason)
 	: base($"Failed to {failedAction} - {reason}")
 	{ }
 
-	public Exception(string failedAction, string reason, string possibleCauseses)
+	public MGException(string failedAction, string reason, string possibleCauseses)
 	: base($"Failed to {failedAction} - {reason}\n\t{possibleCauseses}")
 	{ }
 }

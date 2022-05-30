@@ -42,12 +42,12 @@ public abstract class Input
 	/// <summary>
 	/// Default delay before a key or button starts repeating
 	/// </summary>
-	public float repeatDelay = 0.150f; // Default on windows
+	public float repeatDelay = 0.150f;
 
 	/// <summary>
 	/// Default interval that the repeat is triggered, in seconds
 	/// </summary>
-	public float repeatInterval = 1f / 10; // Default on windows
+	public float repeatInterval = 1f / 30;
 
 	internal List<WeakReference<VirtualButton>> virtualButtons = new List<WeakReference<VirtualButton>>();
 

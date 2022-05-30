@@ -9,7 +9,7 @@ public class Optional<T>
 	{
 		get
 		{
-			if (isUnset) throw new Exception("Optional value has not been set");
+			if (isUnset) throw new MGException("Optional value has not been set");
 			return _value!;
 		}
 		set => Set(value);

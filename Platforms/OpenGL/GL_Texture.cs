@@ -43,7 +43,7 @@ internal class GL_Texture : Texture.Platform
 			TextureFormat.RGB => GLEnum.RGB,
 			TextureFormat.Color => GLEnum.RGBA,
 			TextureFormat.DepthStencil => GLEnum.DEPTH24_STENCIL8,
-			_ => throw new Exception("Invalid Texture Format"),
+			_ => throw new MGException("Invalid Texture Format"),
 		};
 
 		glFormat = texture.format switch
@@ -53,7 +53,7 @@ internal class GL_Texture : Texture.Platform
 			TextureFormat.RGB => GLEnum.RGB,
 			TextureFormat.Color => GLEnum.RGBA,
 			TextureFormat.DepthStencil => GLEnum.DEPTH_STENCIL,
-			_ => throw new Exception("Invalid Texture Format"),
+			_ => throw new MGException("Invalid Texture Format"),
 		};
 
 		glType = texture.format switch
@@ -63,7 +63,7 @@ internal class GL_Texture : Texture.Platform
 			TextureFormat.RGB => GLEnum.UNSIGNED_BYTE,
 			TextureFormat.Color => GLEnum.UNSIGNED_BYTE,
 			TextureFormat.DepthStencil => GLEnum.UNSIGNED_INT_24_8,
-			_ => throw new Exception("Invalid Texture Format"),
+			_ => throw new MGException("Invalid Texture Format"),
 		};
 
 		Initialize();

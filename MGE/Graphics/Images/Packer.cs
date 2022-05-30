@@ -248,7 +248,7 @@ namespace MGE
 
 			// make sure the largest isn't too large
 			if (_sources[0].packed.width > maxSize || _sources[0].packed.height > maxSize)
-				throw new Exception("Source image is larger than max atlas size");
+				throw new MGException("Source image is larger than max atlas size");
 
 			// TODO  why do we sometimes need more than source images * 3?
 			// for safety I've just made it 4 ... but it should really only be 3?

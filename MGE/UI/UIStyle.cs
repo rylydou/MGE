@@ -28,7 +28,7 @@ public class UIStyle
 	{
 		if (!_styles.TryGetValue(name, out var value)) return value;
 
-		if (parentStyle is null) throw new Exception("Style not found");
+		if (parentStyle is null) throw new MGException("Style not found");
 
 		return parentStyle.GetStyle(name);
 	}

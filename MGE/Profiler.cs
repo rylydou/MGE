@@ -8,13 +8,12 @@ public class Profiler : Module
 	public Batch2DRenderInfo? batch2DRenderInfo;
 
 	public bool showStats = true;
-	public IFont font = App.content.Get<IFont>("Fonts/Regular.json");
 	public Color backgroundColor = new(0x000000, 127);
 	public Color foregroundColor = new(0xFFFFFF);
 
 	public Color fpsColor = new(0x6BA841);
-	public double currentFrametime;
-	public double[] frametimeHistory = new double[256];
+	public double currentFrameTime;
+	public double[] frameTimeHistory = new double[256];
 
 	public Color memColor = new(0x3385B8);
 	public Color memColorLong = new(0x99c2dc);
@@ -45,8 +44,8 @@ public class Profiler : Module
 
 		_next++;
 
-		currentFrametime = Time.rawVariableDelta;
-		frametimeHistory[_next] = currentFrametime;
+		currentFrameTime = Time.rawVariableDelta;
+		frameTimeHistory[_next] = currentFrameTime;
 
 		memAvailable = Environment.WorkingSet;
 		currentMemUsage = GC.GetTotalMemory(false);
@@ -67,13 +66,13 @@ public class Profiler : Module
 
 		batch.Rect(new(0, 0, 512, 128), backgroundColor);
 
-		// Frametime Graph
-		// var fpsMax = frametimeHistory.Min() / 2;
+		// Frame time Graph
+		// var fpsMax = frameTimeHistory.Min() / 2;
 		// var fpsMax = 1.0 / Time.tickStepTarget / 2;
-		var fpsMax = frametimeHistory.Average() / 2;
-		for (int i = 0; i < frametimeHistory.Length; i++)
+		var fpsMax = frameTimeHistory.Average() / 2;
+		for (int i = 0; i < frameTimeHistory.Length; i++)
 		{
-			var height = (float)(fpsMax / frametimeHistory[i] * 128);
+			var height = (float)(fpsMax / frameTimeHistory[i] * 128);
 			batch.Rect(i, 0, 1, height, i == _next ? foregroundColor : fpsColor);
 		}
 
@@ -89,11 +88,11 @@ public class Profiler : Module
 			batch.Rect(256 + i, height, 1, 1, i == _next ? foregroundColor : memColorLong);
 		}
 
-		batch.DrawString(font, $"{1.0 / currentFrametime:F0}fps {1.0 / frametimeHistory.Average():F0}avg {1.0 / frametimeHistory.Max():F0}min", new(4, 4), foregroundColor, 16);
-		batch.DrawString(font, $"{(double)currentMemUsage / 1048576:F2}MB / {memAvailable / 1048576}MB", new(256 + 4, 4), foregroundColor, 16);
+		batch.DrawString(App.content.font, $"{1.0 / currentFrameTime:F0}fps {1.0 / frameTimeHistory.Average():F0}avg {1.0 / frameTimeHistory.Max():F0}min", new(4, 4), foregroundColor, 16);
+		batch.DrawString(App.content.font, $"{(double)currentMemUsage / 1048576:F2}MB / {memAvailable / 1048576}MB", new(256 + 4, 4), foregroundColor, 16);
 
 		if (batch2DRenderInfo is not null)
-			batch.DrawString(font, $"{batch2DRenderInfo.triangleCount} triangles with {batch2DRenderInfo.batchCount} batches in {batch2DRenderInfo.time.TotalMilliseconds:F4}ms", new(512 + 4, 4), foregroundColor, 16);
+			batch.DrawString(App.content.font, $"{batch2DRenderInfo.triangleCount} triangles with {batch2DRenderInfo.batchCount} batches in {batch2DRenderInfo.time.TotalMilliseconds:F4}ms", new(512 + 4, 4), foregroundColor, 16);
 
 		batch.Render(window);
 	}

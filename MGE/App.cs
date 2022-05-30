@@ -69,7 +69,7 @@ public static class App
 	/// <summary>
 	/// Gets the Primary Window
 	/// </summary>
-	public static Window window => primaryWindow ?? throw new Exception("Application has not yet created a Primary Window");
+	public static Window window => primaryWindow ?? throw new MGException("Application has not yet created a Primary Window");
 
 	/// <summary>
 	/// When set to true, this forces the entire application to use Fixed Timestep, including normal Update methods.
@@ -116,8 +116,8 @@ public static class App
 		// I think that this is the best for games
 		// GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
 
-		if (running) throw new Exception("App is already running");
-		if (exiting) throw new Exception("App is still exiting");
+		if (running) throw new MGException("App is already running");
+		if (exiting) throw new MGException("App is still exiting");
 
 		if (string.IsNullOrWhiteSpace(name)) name = title;
 
@@ -152,7 +152,7 @@ public static class App
 			modules.ApplicationStarted();
 
 			if (!modules.Has<Windowing>())
-				throw new Exception("App requires a System Module to be registered before it can Start");
+				throw new MGException("App requires a System Module to be registered before it can Start");
 
 			// our primary Window
 			primaryWindow = new Window(windowing, title, width, height, flags);

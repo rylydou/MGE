@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MEML;
 
-public class MemlBinaryWriter : IDataWriter, IDisposable
+public class MemlBinaryWriter : IMemlWriter, IDisposable
 {
 	readonly BinaryWriter _writer;
 	readonly Stack<long> _containerPositionStack = new();

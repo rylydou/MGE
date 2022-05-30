@@ -31,7 +31,7 @@ namespace MGE.GLFW
 			if (GLFW.Init() == 0)
 			{
 				GLFW.GetError(out string error);
-				throw new Exception($"GLFW Error: {error}");
+				throw new MGException($"GLFW Error: {error}");
 			}
 
 			// OpenGL Setup
@@ -146,7 +146,7 @@ namespace MGE.GLFW
 
 		protected override Window.Platform CreateWindow(string title, int width, int height, WindowFlags flags = WindowFlags.None)
 		{
-			if (Environment.CurrentManagedThreadId != mainThreadId) throw new Exception("Creating a Window must be called from the Main Thread");
+			if (Environment.CurrentManagedThreadId != mainThreadId) throw new MGException("Creating a Window must be called from the Main Thread");
 
 			// create GLFW Window
 			var ptr = CreateGlfwWindow(title, width, height, flags);
@@ -189,7 +189,7 @@ namespace MGE.GLFW
 			if (ptr == IntPtr.Zero)
 			{
 				GLFW.GetError(out string error);
-				throw new Exception($"Unable to create a new Window: {error}");
+				throw new MGException($"Unable to create a new Window: {error}");
 			}
 			_windowPointers.Add(ptr);
 
@@ -199,7 +199,7 @@ namespace MGE.GLFW
 				var vkInstance = vkGraphics.GetVulkanInstancePointer();
 				var result = GLFW.CreateWindowSurface(vkInstance, ptr, IntPtr.Zero, out var surface);
 
-				if (result != GLFW_VkResult.Success) throw new Exception($"Unable to create a Vulkan Surface, {result}");
+				if (result != GLFW_VkResult.Success) throw new MGException($"Unable to create a Vulkan Surface, {result}");
 
 				_vkSurfaces.Add(ptr, surface);
 			}

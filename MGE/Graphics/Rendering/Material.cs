@@ -67,7 +67,7 @@ public class Material
 		void AssertParameters(UniformType expected, int index)
 		{
 			if (type != expected)
-				throw new Exception($"Parameter {name} isn't a {expected}");
+				throw new MGException($"Parameter {name} isn't a {expected}");
 
 			if (index < 0 || index > length)
 				throw new IndexOutOfRangeException($"Paramater {name} Index is out range");

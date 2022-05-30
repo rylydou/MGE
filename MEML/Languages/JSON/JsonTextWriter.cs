@@ -6,7 +6,7 @@ namespace MEML;
 /// <summary>
 /// Writes Meml to a string format
 /// </summary>
-public class JsonTextWriter : IDataWriter, IDisposable
+public class JsonTextWriter : IMemlWriter, IDisposable
 {
 	public string newlineString = "\n";
 	public string tabString = "\t";

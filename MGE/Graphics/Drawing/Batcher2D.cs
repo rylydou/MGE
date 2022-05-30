@@ -980,7 +980,7 @@ public class Batch2D
 
 	public void HollowRect(in Rect rect, float t, in Color color)
 	{
-		if (t > 0)
+		if (t != 0)
 		{
 			var tx = Mathf.Min(t, rect.width / 2f);
 			var ty = Mathf.Min(t, rect.height / 2f);

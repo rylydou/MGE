@@ -227,7 +227,7 @@ public struct Vector2 : IEquatable<Vector2>
 			{
 				case 0: return x;
 				case 1: return y;
-				default: throw new IndexOutOfRangeException($"Invalid Vector2 index of {index}!");
+				default: throw new IndexOutOfRangeException($"Invalid {nameof(Vector2)} index of {index}!");
 			}
 		}
 
@@ -237,7 +237,7 @@ public struct Vector2 : IEquatable<Vector2>
 			{
 				case 0: x = value; break;
 				case 1: y = value; break;
-				default: throw new IndexOutOfRangeException($"Invalid Vector2 index of {index}!");
+				default: throw new IndexOutOfRangeException($"Invalid {nameof(Vector2)} index of {index}!");
 			}
 		}
 	}

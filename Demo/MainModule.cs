@@ -2,15 +2,15 @@
 
 namespace Demo;
 
-public class GameModule : Module
+public class MainModule : Module
 {
 #nullable disable
-	public static GameModule instance;
+	public static MainModule instance;
 #nullable restore
 
 	public FrameBuffer gameFramebuffer = new(Game.screenSize.x, Game.screenSize.y);
 
-	public GameModule()
+	public MainModule()
 	{
 		instance = this;
 

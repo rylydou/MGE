@@ -30,9 +30,9 @@ public class Bitmap
 	public Bitmap(int width, int height, Color[] pixels)
 	{
 		if (width <= 0 || height <= 0)
-			throw new Exception("Width and Height must be larger than 0");
+			throw new MGException("Width and Height must be larger than 0");
 		if (pixels.Length < width * height)
-			throw new Exception("Pixels array doesn't fit the Bitmap size");
+			throw new MGException("Pixels array doesn't fit the Bitmap size");
 
 		this.pixels = pixels;
 		this.width = width;

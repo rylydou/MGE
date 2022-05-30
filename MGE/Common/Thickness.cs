@@ -4,10 +4,33 @@ namespace MGE.UI;
 
 public struct Thickness : IEquatable<Thickness>
 {
-	public int top;
-	public int bottom;
 	public int left;
+	public int top;
 	public int right;
+	public int bottom;
+
+	public int this[int index]
+	{
+		get => index switch
+		{
+			0 => left,
+			1 => top,
+			2 => right,
+			3 => bottom,
+			_ => throw new IndexOutOfRangeException($"Invalid {nameof(Thickness)} index of {index}!"),
+		};
+		set
+		{
+			switch (index)
+			{
+				case 0: left = value; break;
+				case 1: top = value; break;
+				case 2: right = value; break;
+				case 3: bottom = value; break;
+				default: throw new IndexOutOfRangeException($"Invalid {nameof(Thickness)} index of {index}!");
+			}
+		}
+	}
 
 	public int width { get => left + right; }
 	public int height { get => top + bottom; }
@@ -28,7 +51,7 @@ public struct Thickness : IEquatable<Thickness>
 		this.right = all;
 	}
 
-	public int GetAxis(int index) => index switch
+	public int GetAlongAxis(int index) => index switch
 	{
 		0 => left + right,
 		1 => top + bottom,

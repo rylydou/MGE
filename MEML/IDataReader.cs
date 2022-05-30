@@ -1,7 +1,7 @@
 ﻿namespace MEML;
 
 // Make an interface
-public interface IDataReader
+public interface IMemlReader
 {
 	/// <summary>
 	/// The current Token

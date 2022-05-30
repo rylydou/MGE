@@ -55,7 +55,7 @@ public class FrameBuffer : RenderTarget, IDisposable
 		this.height = height;
 
 		if (width <= 0 || height <= 0)
-			throw new Exception("FrameBuffer must have a size larger than 0");
+			throw new MGException("FrameBuffer must have a size larger than 0");
 
 		implementation = graphics.CreateFrameBuffer(width, height, attachments);
 		this.attachments = new ReadOnlyCollection<Texture>(implementation.Attachments);
@@ -64,7 +64,7 @@ public class FrameBuffer : RenderTarget, IDisposable
 
 	public void Resize(int width, int height)
 	{
-		if (width <= 0 || height <= 0) throw new Exception("FrameBuffer must have a size larger than 0");
+		if (width <= 0 || height <= 0) throw new MGException("FrameBuffer must have a size larger than 0");
 
 		if (this.width != width || this.height != height)
 		{

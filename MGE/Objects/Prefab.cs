@@ -25,7 +25,7 @@ public class Prefab
 
 	public Node CreateInstance(params object?[] args)
 	{
-		return converter.CreateObjectFromStructure<Node>(_prefab, args) ?? throw new Exception("Create instance of prefab", "Prefab data is null");
+		return converter.CreateObjectFromStructure<Node>(_prefab, args) ?? throw new MGException("Create instance of prefab", "Prefab data is null");
 	}
 
 	public T CreateInstance<T>(params object?[] args)

@@ -9,7 +9,7 @@ public static class DataReaderAndWriterFunctions
 	/// Reads an Meml Object from the Stream and returns it
 	/// </summary>
 	/// <param name="into">An optional object to read into. If null, it creates a new JsonObject</param>
-	public static MemlValue ReadObject(this IDataReader reader, MemlObject? into = null)
+	public static MemlValue ReadObject(this IMemlReader reader, MemlObject? into = null)
 	{
 		var result = into ?? new MemlObject();
 		var opened = false;
@@ -36,7 +36,7 @@ public static class DataReaderAndWriterFunctions
 	/// <summary>
 	/// Tries to read a JsonObject from the Stream
 	/// </summary>
-	public static bool TryReadObject(this IDataReader reader, [MaybeNullWhen(false)] out MemlValue obj)
+	public static bool TryReadObject(this IMemlReader reader, [MaybeNullWhen(false)] out MemlValue obj)
 	{
 		try
 		{
@@ -56,7 +56,7 @@ public static class DataReaderAndWriterFunctions
 	/// <summary>
 	/// Reads a JsonArray from the Stream
 	/// </summary>
-	public static MemlValue ReadArray(this IDataReader reader)
+	public static MemlValue ReadArray(this IMemlReader reader)
 	{
 		var arr = new MemlArray();
 		while (reader.Read() && reader.token != MemlToken.ArrayEnd)
@@ -67,13 +67,13 @@ public static class DataReaderAndWriterFunctions
 	/// <summary>
 	/// Reads a JsonValue from the Stream
 	/// </summary>
-	public static MemlValue ReadValue(this IDataReader reader)
+	public static MemlValue ReadValue(this IMemlReader reader)
 	{
 		reader.Read();
 		return reader.CurrentValue();
 	}
 
-	public static MemlValue CurrentValue(this IDataReader reader)
+	public static MemlValue CurrentValue(this IMemlReader reader)
 	{
 		switch (reader.token)
 		{
@@ -111,7 +111,7 @@ public static class DataReaderAndWriterFunctions
 		return new MemlValueNull();
 	}
 
-	public static void Write(this IDataWriter writer, MemlValue value)
+	public static void Write(this IMemlWriter writer, MemlValue value)
 	{
 		if (value is not null)
 		{

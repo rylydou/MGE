@@ -16,16 +16,20 @@ public abstract class UIWidget
 
 	#region Layout
 
-	[Prop] Vector2<UIResizing> _resizing;
-	public Vector2<UIResizing> resizing
+	[Prop] Vector2<UISizing> _sizing;
+	public Vector2<UISizing> sizing
 	{
-		get => _resizing;
+		get => _sizing;
 		set
 		{
-			if (_resizing == value) return;
-			_resizing = value;
-
-			PropertiesChanged();
+			for (int i = 0; i < 2; i++)
+			{
+				if (_sizing[i] != value[i])
+				{
+					_sizing[i] = value[i];
+					PropertiesChanged(i);
+				}
+			}
 		}
 	}
 
@@ -36,55 +40,56 @@ public abstract class UIWidget
 		set
 		{
 			if (_fixedSize == value) return;
-			_fixedSize = value;
 
-			var updated = false;
-			if (_resizing.horizontal == UIResizing.Fixed)
+			for (int i = 0; i < 2; i++)
 			{
-				updated = true;
-				_rect.width = value.x;
-			}
+				// If the parent is null or sizing is set to fix or the parent is hug which treats this to act like fix
+				if (parent is null || _sizing[i] == UISizing.Fix || (_sizing[i] == UISizing.Fill && parent.sizing[i] == UISizing.Hug))
+					if (_fixedSize[i] != value[i])
+					{
+						_actualSize[i] = value[i];
+						PropertiesChanged(i);
+					}
 
-			if (_resizing.vertical == UIResizing.Fixed)
-			{
-				updated = true;
-				_rect.height = value.y;
+				_fixedSize[i] = value[i];
 			}
-
-			if (updated)
-			{
-				PropertiesChanged();
-			}
-
-			// Debug.Log(fixedSize, GetType().Name);
 		}
 	}
 
-	[Prop] Vector2Int _position;
-	public Vector2Int position
+	[Prop] Vector2Int _positionInFrame;
+	public Vector2Int positionInFrame
 	{
-		get => _position;
+		get => _positionInFrame;
 		set
 		{
-			if (_position == value) return;
-			_position = value;
+			if (_positionInFrame == value) return;
+			_positionInFrame = value;
 
 			if (parent is UIFrame || this is UICanvas)
 			{
-				_rect.position = value;
+				_relativePosition = value;
 			}
 		}
 	}
 
-	internal RectInt _rect;
-	public RectInt rect { get => _rect; }
+	Vector2Int _relativePosition;
+	public Vector2Int relativePosition => _relativePosition;
 
-	internal float _flashTime;
-	internal Color _flashColor;
+	Vector2Int _absolutePosition;
+	public Vector2Int absolutePosition => _absolutePosition;
+	// public Vector2Int absolutePosition => parent is null ? _relativePosition : parent.absolutePosition + _relativePosition;
+
+	Vector2Int _actualSize;
+	public Vector2Int actualSize => _actualSize;
+
+	public RectInt relativeRect => new(_relativePosition, _actualSize);
+	public RectInt absoluteRect => new(_absolutePosition, _actualSize);
 
 	#endregion Layout
 
 	public bool clipContent = false;
+
+	internal Vector2<float> _flashTime;
 
 	internal virtual void AttachTo(UIContainer parent)
 	{
@@ -95,54 +100,119 @@ public abstract class UIWidget
 		if (canvas is not null)
 		{
 			OnAttached();
-			parent?.ChildMeasureChanged(this);
+
+			parent?.ChildMeasureChanged(0, this);
+			parent?.ChildMeasureChanged(1, this);
 		}
 	}
 	protected virtual void OnAttached() { }
 
-	internal virtual void ParentChangedMeasure()
+	public void SetPosition(int dir, int value)
 	{
-		if (!(_flashTime > 0 && (_flashColor == Color.magenta || _flashColor == Color.yellow)))
+		if (_relativePosition[dir] == value) return;
+		_relativePosition[dir] = value;
+
+		OnPositionChanged(dir);
+	}
+
+	internal virtual void OnPositionChanged(int dir)
+	{
+		if (parent is not null)
 		{
-			_flashTime = 1f;
-			_flashColor = Color.green;
+			_absolutePosition[dir] = parent._absolutePosition[dir] + _relativePosition[dir];
 		}
-
-		OnMeasureChanged();
+		else
+		{
+			_absolutePosition[dir] = _relativePosition[dir];
+		}
 	}
 
-	internal virtual void PropertiesChanged()
+	public bool SetSize(int dir, int targetSize)
 	{
-		_flashTime = 1f;
-		_flashColor = Color.magenta;
-		parent?.ChildMeasureChanged(this);
+		if (_actualSize[dir] == targetSize) return false;
 
-		OnMeasureChanged();
+		_actualSize[dir] = targetSize;
+		_flashTime[dir] = 1f;
+
+		OnMeasureChanged(dir);
+
+		return true;
 	}
 
-	protected virtual void OnMeasureChanged() { }
+	protected bool SetMySize(int dir, int targetSize)
+	{
+		if (_actualSize[dir] == targetSize) return false;
+
+		_actualSize[dir] = targetSize;
+		_flashTime[dir] = 1f;
+
+		parent?.ChildMeasureChanged(dir, this);
+
+		return true;
+	}
+
+	internal virtual void PropertiesChanged(int dir)
+	{
+		_flashTime[dir] = 1f;
+
+		// parent?.ChildMeasureChanged(dir, this);
+		// OnMeasureChanged(dir);
+
+		if (parent is not null)
+		{
+			parent.ChildMeasureChanged(dir, this);
+		}
+		else
+		{
+			OnMeasureChanged(dir);
+		}
+	}
+
+	protected virtual void OnMeasureChanged(int dir) { }
 
 	internal virtual void DoRender(Batch2D batch)
 	{
-		_flashTime -= Time.rawDelta;
+		_flashTime[0] -= Time.rawDelta;
+		_flashTime[1] -= Time.rawDelta;
 
-		if (!rect.isProper) return;
-
-		if (canvas!.enableDebug)
-		{
-			if (this is not UICanvas)
-			{
-				batch.Rect(rect, new Color(0, 0, 0, 200));
-			}
-		}
+		if (_actualSize.x <= 0 || _actualSize.y <= 0) return;
 
 		Render(batch);
 
 		if (canvas!.enableDebug)
 		{
-			batch.HollowRect(rect, 1, Color.LerpClamped(_flashColor.WithAlpha(0), _flashColor, _flashTime));
+			if (this is not UICanvas)
+			{
+				// batch.HollowRect(absoluteRect, 1, Colors.white);
+				if (parent is UICanvas)
+				{
+					batch.Rect(absoluteRect, new(0x333333));
+				}
+				else
+				{
+					batch.Rect(absoluteRect, new(0x444444));
+					var shadowRect = new Rect(absolutePosition.x, absolutePosition.y + actualSize.y, actualSize.x, 1);
+					batch.Rect(shadowRect, Color.black.WithAlpha(64));
 
-			// Font.normal.DrawString(GetType().Name, rect.topLeft, Color.white);
+					if (absoluteRect.Contains(App.window.mouse))
+					{
+						batch.HollowRect(absoluteRect, -1, Color.white.WithAlpha(64));
+
+						if (App.input.mouse.Down(MouseButtons.Left))
+						{
+							batch.Rect(absoluteRect, new(0xffffff));
+						}
+					}
+				}
+			}
+
+			// Horizontal
+			if (_flashTime[0] > 0)
+				batch.Line(new(absoluteRect.left, absoluteRect.center.y), new(absoluteRect.right, absoluteRect.center.y), 1, Color.LerpClamped(Color.clear, Color.magenta, _flashTime[0]));
+
+			// Vertical
+			if (_flashTime[1] > 0)
+				batch.Line(new(absoluteRect.center.x, absoluteRect.top), new(absoluteRect.center.x, absoluteRect.bottom), 1, Color.LerpClamped(Color.clear, Color.magenta, _flashTime[1]));
 		}
 	}
 

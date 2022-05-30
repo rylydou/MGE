@@ -15,7 +15,7 @@ App.modules.Register<Content>();
 App.modules.Register<MainModule>();
 
 // Profiler Module
-App.modules.Register<Profiler>();
+// App.modules.Register<Profiler>();
 
 // Start the Application with a single 1280x720 Window
 App.Start("UI Demo", 1280, 720, WindowFlags.ScaleToMonitor);

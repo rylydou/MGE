@@ -194,7 +194,7 @@ namespace MGE
 				// Magic number (0xA5E0)
 				var magic = WORD();
 				if (magic != 0xA5E0)
-					throw new Exception("File is not in .ase format");
+					throw new MGException("File is not in .ase format");
 
 				// Frames / Width / Height / Color Mode
 				_frameCount = WORD();
@@ -555,7 +555,7 @@ namespace MGE
 		public void Pack(string namingFormat, Packer packer)
 		{
 			if (!namingFormat.Contains("{0}"))
-				throw new Exception("naming format must contain {0} for frame index");
+				throw new MGException("naming format must contain {0} for frame index");
 
 			int frameIndex = 0;
 			foreach (var frame in frames)

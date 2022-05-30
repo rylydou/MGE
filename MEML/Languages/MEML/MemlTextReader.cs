@@ -9,7 +9,7 @@ namespace MEML;
 /// <summary>
 /// Reads JSON from a Stream or Path
 /// </summary>
-public class MemlTextReader : IDataReader, IDisposable
+public class MemlTextReader : IMemlReader, IDisposable
 {
 	public MemlToken token { get; private set; }
 	public object? value { get; private set; }

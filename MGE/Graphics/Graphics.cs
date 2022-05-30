@@ -85,7 +85,7 @@ public abstract class Graphics : AppModule
 	public void Clear(RenderTarget target, Clear flags, Color color, float depth, int stencil, RectInt viewport)
 	{
 		if (!target.renderable)
-			throw new Exception("Render Target cannot currently be drawn to");
+			throw new MGException("Render Target cannot currently be drawn to");
 
 		var bounds = new RectInt(0, 0, target.renderWidth, target.renderHeight);
 		var clamped = RectInt.Intersect(viewport, bounds);
@@ -105,22 +105,22 @@ public abstract class Graphics : AppModule
 	public void Render(ref RenderPass pass)
 	{
 		if (!pass.target.renderable)
-			throw new Exception("Render Target cannot currently be drawn to");
+			throw new MGException("Render Target cannot currently be drawn to");
 
 		if (!(pass.target is FrameBuffer) && !(pass.target is Window))
-			throw new Exception("RenderTarget must be a Render Texture or a Window");
+			throw new MGException("RenderTarget must be a Render Texture or a Window");
 
 		if (pass.mesh is null)
-			throw new Exception("Mesh cannot be null when drawing");
+			throw new MGException("Mesh cannot be null when drawing");
 
 		if (pass.material is null)
-			throw new Exception("Material cannot be null when drawing");
+			throw new MGException("Material cannot be null when drawing");
 
 		if (pass.mesh.instanceCount > 0 && (pass.mesh.instanceFormat is null || (pass.mesh.instanceCount < pass.mesh.instanceCount)))
-			throw new Exception("Trying to draw more Instances than exist in the Mesh");
+			throw new MGException("Trying to draw more Instances than exist in the Mesh");
 
 		if (pass.mesh.indexCount < pass.meshIndexStart + pass.meshIndexCount)
-			throw new Exception("Trying to draw more Indices than exist in the Mesh");
+			throw new MGException("Trying to draw more Indices than exist in the Mesh");
 
 		if (pass.viewport is not null)
 		{

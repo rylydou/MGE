@@ -224,6 +224,23 @@ public struct RectInt : IEquatable<RectInt>
 		y += offset.y;
 	}
 
+	public RectInt Offsetted(int offsetX, int offsetY)
+	{
+		return new(x + offsetX, y + offsetY, width, height);
+	}
+
+	public RectInt Offsetted(Vector2Int offset)
+	{
+		return new(x + offset.x, y + offset.y, width, height);
+	}
+
+	public Rect Expanded(float amount)
+	{
+		var rect = (Rect)this;
+		rect.Expand(amount);
+		return rect;
+	}
+
 	public bool Contains(Vector2Int point) => (point.x >= xMin) && (point.x < xMax) && (point.y >= yMin) && (point.y < yMax);
 	public bool Contains(RectInt rect) => (rect.xMin >= xMin) && (rect.xMax < xMax) && (rect.yMin >= yMin) && (rect.yMax < yMax);
 

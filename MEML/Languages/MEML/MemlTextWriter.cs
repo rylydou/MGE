@@ -6,7 +6,7 @@ namespace MEML;
 /// <summary>
 /// Writes Meml to a string format
 /// </summary>
-public class MemlTextWriter : IDataWriter, IDisposable
+public class MemlTextWriter : IMemlWriter, IDisposable
 {
 	/// <summary>
 	/// The New Line character to use

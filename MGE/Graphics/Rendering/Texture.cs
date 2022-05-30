@@ -136,7 +136,7 @@ public class Texture : IDisposable
 		TextureFormat.RG => 2,
 		TextureFormat.RGB => 3,
 		TextureFormat.DepthStencil => 4,
-		_ => throw new Exception("Invalid Texture Format")
+		_ => throw new MGException("Invalid Texture Format")
 	});
 
 	/// <summary>
@@ -173,9 +173,9 @@ public class Texture : IDisposable
 
 	public Texture(Graphics graphics, int width, int height, TextureFormat format = TextureFormat.Color)
 	{
-		if (format == TextureFormat.None) throw new Exception("Invalid Texture Format");
+		if (format == TextureFormat.None) throw new MGException("Invalid Texture Format");
 
-		if (width <= 0 || height <= 0) throw new Exception("Texture must have a size larger than 0");
+		if (width <= 0 || height <= 0) throw new MGException("Texture must have a size larger than 0");
 
 		this._graphics = graphics;
 		this.width = width;
@@ -202,7 +202,7 @@ public class Texture : IDisposable
 	public void Resize(int width, int height)
 	{
 		if (width <= 0 || height <= 0)
-			throw new Exception("Texture must have a size larger than 0");
+			throw new MGException("Texture must have a size larger than 0");
 
 		if (this.width != width || this.height != height)
 		{
@@ -243,7 +243,7 @@ public class Texture : IDisposable
 	/// </summary>
 	public void SetData<T>(ReadOnlyMemory<T> buffer)
 	{
-		if (Marshal.SizeOf<T>() * buffer.Length < size) throw new Exception("Buffer is smaller than the Size of the Texture");
+		if (Marshal.SizeOf<T>() * buffer.Length < size) throw new MGException("Buffer is smaller than the Size of the Texture");
 
 		implementation.SetData(buffer);
 	}
@@ -253,7 +253,7 @@ public class Texture : IDisposable
 	/// </summary>
 	public void GetData<T>(Memory<T> buffer)
 	{
-		if (Marshal.SizeOf<T>() * buffer.Length < size) throw new Exception("Buffer is smaller than the Size of the Texture");
+		if (Marshal.SizeOf<T>() * buffer.Length < size) throw new MGException("Buffer is smaller than the Size of the Texture");
 
 		implementation.GetData(buffer);
 	}

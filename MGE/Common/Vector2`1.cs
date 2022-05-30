@@ -46,8 +46,7 @@ public struct Vector2<T> : IEquatable<Vector2<T>>
 	public static bool operator ==(Vector2<T> left, Vector2<T> right) => left.Equals(right);
 	public static bool operator !=(Vector2<T> left, Vector2<T> right) => !(left == right);
 
-	public override int GetHashCode()
-	{
-		return HashCode.Combine(horizontal, vertical);
-	}
+	public override int GetHashCode() => HashCode.Combine(horizontal, vertical);
+
+	public override string ToString() => $"({horizontal}, {vertical})";
 }

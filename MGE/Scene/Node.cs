@@ -89,7 +89,7 @@ public abstract class Node
 
 	public void AddChild(Node node)
 	{
-		if (node.parent is not null) throw new Exception("Add child", "Node is already a child of something");
+		if (node.parent is not null) throw new MGException("Add child", "Node is already a child of something");
 
 		node.parent = this;
 		_children.Add(node);
@@ -101,8 +101,8 @@ public abstract class Node
 
 	public void RemoveChild(Node node)
 	{
-		if (node.parent is null) throw new Exception("Remove child", "Node is not a child of anything");
-		if (node.parent != this) throw new Exception("Remove child", "Parent doesn't own the child");
+		if (node.parent is null) throw new MGException("Remove child", "Node is not a child of anything");
+		if (node.parent != this) throw new MGException("Remove child", "Parent doesn't own the child");
 
 		_children.Remove(node);
 		if (scene is not null)
@@ -122,7 +122,7 @@ public abstract class Node
 
 	public void RemoveSelf()
 	{
-		if (parent is null) throw new Exception("Remove self", "Node is not a child of anything");
+		if (parent is null) throw new MGException("Remove self", "Node is not a child of anything");
 		parent.RemoveChild(this);
 	}
 
@@ -145,7 +145,7 @@ public abstract class Node
 	public void DisconnectSignal(Action signal, Action callback)
 	{
 		signal = signal - callback
-			?? throw new Exception("Cannot remove callback from signal", "Removing this callback leads to the signal being null", "This might be because an empty callback like '() => { }' is being removed");
+			?? throw new MGException("Cannot remove callback from signal", "Removing this callback leads to the signal being null", "This might be because an empty callback like '() => { }' is being removed");
 
 		if (signal.Target != this)
 		{
@@ -309,7 +309,7 @@ public abstract class Node
 
 	#region Utilities
 
-	public Prefab CreatePrefab() => new Prefab(Prefab.converter.CreateStructureFromObject(this, GetType()));
+	public Prefab CreatePrefab() => new Prefab(Prefab.converter.CreateMemlFromObject(this, GetType()));
 
 	public Node CreateInstance() => CreatePrefab().CreateInstance();
 	public T CreateInstance<T>() where T : Node => CreatePrefab().CreateInstance<T>();

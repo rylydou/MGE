@@ -54,15 +54,15 @@ public class MemlConverter
 		BindingFlags.SetProperty;
 
 	public delegate IEnumerable<MemberInfo> GetMembers(Type type);
-	public GetMembers memberFinder = DefualtGetMembers;
-	public static IEnumerable<MemberInfo> DefualtGetMembers(Type type)
+	public GetMembers memberFinder = DefaultGetMembers;
+	public static IEnumerable<MemberInfo> DefaultGetMembers(Type type)
 	{
 		return type.GetMembers(suggestedBindingFlags);
 	}
 
 	public delegate ObjectMember? MemberConverter(MemberInfo member);
-	public MemberConverter memberConverter = DefualtMemberConverter;
-	public static ObjectMember? DefualtMemberConverter(MemberInfo member)
+	public MemberConverter memberConverter = DefaultMemberConverter;
+	public static ObjectMember? DefaultMemberConverter(MemberInfo member)
 	{
 		if (member is FieldInfo field)
 		{
@@ -109,7 +109,7 @@ public class MemlConverter
 		_converters.Add(typeof(T), (ToStructure, ToObject));
 	}
 
-	public MemlValue CreateStructureFromObject(object? obj, Type? impliedType = null)
+	public MemlValue CreateMemlFromObject(object? obj, Type? impliedType = null)
 	{
 		if (obj is null) return new MemlValueNull();
 
@@ -148,7 +148,7 @@ public class MemlConverter
 
 			foreach (var item in collection)
 			{
-				structArray.Add(CreateStructureFromObject(item, contentType));
+				structArray.Add(CreateMemlFromObject(item, contentType));
 			}
 
 			return structArray;
@@ -166,7 +166,7 @@ public class MemlConverter
 		foreach (var getter in variables)
 		{
 			var value = getter.getValue(obj);
-			var structValue = CreateStructureFromObject(value, getter.type);
+			var structValue = CreateMemlFromObject(value, getter.type);
 			memlObject[getter.name] = structValue;
 		}
 
