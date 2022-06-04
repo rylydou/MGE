@@ -360,7 +360,7 @@ namespace MGE
 						for (int p = 0; p < (end - start) + 1; p++)
 						{
 							var hasName = WORD();
-							palette[start + p] = new Color(BYTE(), BYTE(), BYTE(), BYTE()).Premultiply();
+							palette[start + p] = new Color(BYTE(), BYTE(), BYTE(), BYTE());
 
 							if (Calc.IsBitSet(hasName, 0))
 								STRING();
@@ -379,7 +379,7 @@ namespace MGE
 
 							// has color
 							if (Calc.IsBitSet(flags, 1))
-								last.userDataColor = new Color(BYTE(), BYTE(), BYTE(), BYTE()).Premultiply();
+								last.userDataColor = new Color(BYTE(), BYTE(), BYTE(), BYTE());
 						}
 					}
 					// TAG
@@ -395,7 +395,7 @@ namespace MGE
 							tag.to = WORD();
 							tag.loopDirection = (Tag.LoopDirections)BYTE();
 							SEEK(8);
-							tag.color = new Color(BYTE(), BYTE(), BYTE(), (byte)255).Premultiply();
+							tag.color = new Color(BYTE(), BYTE(), BYTE(), (byte)255);
 							SEEK(1);
 							tag.name = STRING();
 							tags.Add(tag);

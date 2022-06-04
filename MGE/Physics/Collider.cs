@@ -33,7 +33,7 @@ public abstract class Collider2D
 
 	public void Render(Batch2D batch)
 	{
-		if (!ignoreBounds) batch.HollowRect(new(position, size), -1, Color.yellow);
+		if (!ignoreBounds) batch.SetRect(new(position, size), -1, Color.yellow);
 		Render(batch, Color.green);
 	}
 	protected abstract void Render(Batch2D batch, Color color);

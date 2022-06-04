@@ -40,9 +40,9 @@ public class MainModule : Module
 			return;
 		}
 
-		var topColor = new Color(0x3978a8);
-		var bottomColor = new Color(0x394778);
-		Batch2D.current.Rect(new(Game.screenSize), topColor, topColor, bottomColor, bottomColor);
+		var topColor = new Color(0x3978A8FF);
+		var bottomColor = new Color(0x394778FF);
+		Batch2D.current.SetBox(new(Game.screenSize), topColor, topColor, bottomColor, bottomColor);
 
 		Game.screen.Update(delta);
 		Game.scene.onUpdate(delta);
@@ -62,7 +62,7 @@ public class MainModule : Module
 		var batch = Batch2D.current;
 
 		// Draw game framebuffer onto window
-		batch.Image(gameFramebuffer, new Rect(window.width, window.height), Color.white);
+		batch.DrawImage(gameFramebuffer, new Rect(window.width, window.height), Color.white);
 
 		// Render screen
 		Game.screen.Render(Batch2D.current);

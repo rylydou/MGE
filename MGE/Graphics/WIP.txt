@@ -429,177 +429,65 @@ public class Batch2D
 	public void SetQuad(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3, in Color color)
 	{
 		PushQuad();
-		ExpandVertices(_vertexCount + 4);
 
-		// POS
-		TransformVertex(ref _vertices[_vertexCount + 0].pos, v0, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 1].pos, v1, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 2].pos, v2, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 3].pos, v3, matrixStack);
-
-		// COL
-		_vertices[_vertexCount + 0].col = color;
-		_vertices[_vertexCount + 1].col = color;
-		_vertices[_vertexCount + 2].col = color;
-		_vertices[_vertexCount + 3].col = color;
-
-		// MULT
-		_vertices[_vertexCount + 0].mult = 0;
-		_vertices[_vertexCount + 1].mult = 0;
-		_vertices[_vertexCount + 2].mult = 0;
-		_vertices[_vertexCount + 3].mult = 0;
-
-		// WASH
-		_vertices[_vertexCount + 0].wash = 0;
-		_vertices[_vertexCount + 1].wash = 0;
-		_vertices[_vertexCount + 2].wash = 0;
-		_vertices[_vertexCount + 3].wash = 0;
-
-		// FILL
-		_vertices[_vertexCount + 0].fill = 255;
-		_vertices[_vertexCount + 1].fill = 255;
-		_vertices[_vertexCount + 2].fill = 255;
-		_vertices[_vertexCount + 3].fill = 255;
-
-		_vertexCount += 4;
+		ExpandVertices(4);
+		PushVertex(v0, color);
+		PushVertex(v1, color);
+		PushVertex(v2, color);
+		PushVertex(v3, color);
 	}
 
 	public void SetQuad(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3, in Vector2 t0, in Vector2 t1, in Vector2 t2, in Vector2 t3, in Color color, bool washed = false)
 	{
 		PushQuad();
-		ExpandVertices(_vertexCount + 4);
 
-		var mult = (byte)(washed ? 0 : 255);
-		var wash = (byte)(washed ? 255 : 0);
-
-		// POS
-		TransformVertex(ref _vertices[_vertexCount + 0].pos, v0, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 1].pos, v1, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 2].pos, v2, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 3].pos, v3, matrixStack);
-
-		// TEX
-		_vertices[_vertexCount + 0].tex = t0;
-		_vertices[_vertexCount + 1].tex = t1;
-		_vertices[_vertexCount + 2].tex = t2;
-		_vertices[_vertexCount + 3].tex = t3;
+		ExpandVertices(4);
+		PushVertex(v0, t0, color, washed);
+		PushVertex(v1, t1, color, washed);
+		PushVertex(v2, t2, color, washed);
+		PushVertex(v3, t3, color, washed);
 
 		if (graphics.originBottomLeft && (_currentBatch.texture?.isFrameBuffer ?? false))
-			VerticalFlipTexture(ref _vertices[_vertexCount + 0].tex, ref _vertices[_vertexCount + 1].tex, ref _vertices[_vertexCount + 2].tex, ref _vertices[_vertexCount + 3].tex);
-
-		// COL
-		_vertices[_vertexCount + 0].col = color;
-		_vertices[_vertexCount + 1].col = color;
-		_vertices[_vertexCount + 2].col = color;
-		_vertices[_vertexCount + 3].col = color;
-
-		// MULT
-		_vertices[_vertexCount + 0].mult = mult;
-		_vertices[_vertexCount + 1].mult = mult;
-		_vertices[_vertexCount + 2].mult = mult;
-		_vertices[_vertexCount + 3].mult = mult;
-
-		// WASH
-		_vertices[_vertexCount + 0].wash = wash;
-		_vertices[_vertexCount + 1].wash = wash;
-		_vertices[_vertexCount + 2].wash = wash;
-		_vertices[_vertexCount + 3].wash = wash;
-
-		// FILL
-		_vertices[_vertexCount + 0].fill = 0;
-		_vertices[_vertexCount + 1].fill = 0;
-		_vertices[_vertexCount + 2].fill = 0;
-		_vertices[_vertexCount + 3].fill = 0;
-
-		_vertexCount += 4;
+		{
+			VerticalFlipTexture(
+				ref _vertices[_vertexCount - 4].tex,
+				ref _vertices[_vertexCount - 3].tex,
+				ref _vertices[_vertexCount - 2].tex,
+				ref _vertices[_vertexCount - 1].tex
+			);
+		}
 	}
 
 	public void SetQuad(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3, Color c0, Color c1, Color c2, Color c3)
 	{
 		PushQuad();
-		ExpandVertices(_vertexCount + 4);
 
-		// POS
-		TransformVertex(ref _vertices[_vertexCount + 0].pos, v0, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 1].pos, v1, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 2].pos, v2, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 3].pos, v3, matrixStack);
-
-		// COL
-		_vertices[_vertexCount + 0].col = c0;
-		_vertices[_vertexCount + 1].col = c1;
-		_vertices[_vertexCount + 2].col = c2;
-		_vertices[_vertexCount + 3].col = c3;
-
-		// MULT
-		_vertices[_vertexCount + 0].mult = 0;
-		_vertices[_vertexCount + 1].mult = 0;
-		_vertices[_vertexCount + 2].mult = 0;
-		_vertices[_vertexCount + 3].mult = 0;
-
-		// WASH
-		_vertices[_vertexCount + 0].wash = 0;
-		_vertices[_vertexCount + 1].wash = 0;
-		_vertices[_vertexCount + 2].wash = 0;
-		_vertices[_vertexCount + 3].wash = 0;
-
-		// FILL
-		_vertices[_vertexCount + 0].fill = 255;
-		_vertices[_vertexCount + 1].fill = 255;
-		_vertices[_vertexCount + 2].fill = 255;
-		_vertices[_vertexCount + 3].fill = 255;
-
-		_vertexCount += 4;
+		ExpandVertices(4);
+		PushVertex(v0, c0);
+		PushVertex(v1, c1);
+		PushVertex(v2, c2);
+		PushVertex(v3, c3);
 	}
 
 	public void SetQuad(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3, in Vector2 t0, in Vector2 t1, in Vector2 t2, in Vector2 t3, Color c0, Color c1, Color c2, Color c3, bool washed = false)
 	{
 		PushQuad();
-		ExpandVertices(_vertexCount + 4);
 
-		var mult = (byte)(washed ? 0 : 255);
-		var wash = (byte)(washed ? 255 : 0);
-
-		// POS
-		TransformVertex(ref _vertices[_vertexCount + 0].pos, v0, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 1].pos, v1, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 2].pos, v2, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 3].pos, v3, matrixStack);
-
-		// TEX
-		_vertices[_vertexCount + 0].tex = t0;
-		_vertices[_vertexCount + 1].tex = t1;
-		_vertices[_vertexCount + 2].tex = t2;
-		_vertices[_vertexCount + 3].tex = t3;
+		ExpandVertices(4);
+		PushVertex(v0, t0, c0, washed);
+		PushVertex(v1, t1, c1, washed);
+		PushVertex(v2, t2, c2, washed);
+		PushVertex(v3, t3, c3, washed);
 
 		if (graphics.originBottomLeft && (_currentBatch.texture?.isFrameBuffer ?? false))
-			VerticalFlipTexture(ref _vertices[_vertexCount + 0].tex, ref _vertices[_vertexCount + 1].tex, ref _vertices[_vertexCount + 2].tex, ref _vertices[_vertexCount + 3].tex);
-
-		// COL
-		_vertices[_vertexCount + 0].col = c0;
-		_vertices[_vertexCount + 1].col = c1;
-		_vertices[_vertexCount + 2].col = c2;
-		_vertices[_vertexCount + 3].col = c3;
-
-		// MULT
-		_vertices[_vertexCount + 0].mult = mult;
-		_vertices[_vertexCount + 1].mult = mult;
-		_vertices[_vertexCount + 2].mult = mult;
-		_vertices[_vertexCount + 3].mult = mult;
-
-		// WASH
-		_vertices[_vertexCount + 0].wash = wash;
-		_vertices[_vertexCount + 1].wash = wash;
-		_vertices[_vertexCount + 2].wash = wash;
-		_vertices[_vertexCount + 3].wash = wash;
-
-		// FILL
-		_vertices[_vertexCount + 0].fill = 0;
-		_vertices[_vertexCount + 1].fill = 0;
-		_vertices[_vertexCount + 2].fill = 0;
-		_vertices[_vertexCount + 3].fill = 0;
-
-		_vertexCount += 4;
+		{
+			VerticalFlipTexture(
+				ref _vertices[_vertexCount - 4].tex,
+				ref _vertices[_vertexCount - 3].tex,
+				ref _vertices[_vertexCount - 2].tex,
+				ref _vertices[_vertexCount - 1].tex
+			);
+		}
 	}
 
 	#endregion
@@ -609,73 +497,21 @@ public class Batch2D
 	public void SetTriangle(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Color color)
 	{
 		PushTriangle();
-		ExpandVertices(_vertexCount + 3);
 
-		// POS
-		TransformVertex(ref _vertices[_vertexCount + 0].pos, v0, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 1].pos, v1, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 2].pos, v2, matrixStack);
-
-		// COL
-		_vertices[_vertexCount + 0].col = color;
-		_vertices[_vertexCount + 1].col = color;
-		_vertices[_vertexCount + 2].col = color;
-
-		// MULT
-		_vertices[_vertexCount + 0].mult = 0;
-		_vertices[_vertexCount + 1].mult = 0;
-		_vertices[_vertexCount + 2].mult = 0;
-		_vertices[_vertexCount + 3].mult = 0;
-
-		// WASH
-		_vertices[_vertexCount + 0].wash = 0;
-		_vertices[_vertexCount + 1].wash = 0;
-		_vertices[_vertexCount + 2].wash = 0;
-		_vertices[_vertexCount + 3].wash = 0;
-
-		// FILL
-		_vertices[_vertexCount + 0].fill = 255;
-		_vertices[_vertexCount + 1].fill = 255;
-		_vertices[_vertexCount + 2].fill = 255;
-		_vertices[_vertexCount + 3].fill = 255;
-
-		_vertexCount += 3;
+		ExpandVertices(3);
+		PushVertex(v0, color);
+		PushVertex(v1, color);
+		PushVertex(v2, color);
 	}
 
 	public void SetTriangle(in Vector2 v0, in Vector2 v1, in Vector2 v2, Color c0, Color c1, Color c2)
 	{
 		PushTriangle();
-		ExpandVertices(_vertexCount + 3);
 
-		// POS
-		TransformVertex(ref _vertices[_vertexCount + 0].pos, v0, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 1].pos, v1, matrixStack);
-		TransformVertex(ref _vertices[_vertexCount + 2].pos, v2, matrixStack);
-
-		// COL
-		_vertices[_vertexCount + 0].col = c0;
-		_vertices[_vertexCount + 1].col = c1;
-		_vertices[_vertexCount + 2].col = c2;
-
-		// MULT
-		_vertices[_vertexCount + 0].mult = 0;
-		_vertices[_vertexCount + 1].mult = 0;
-		_vertices[_vertexCount + 2].mult = 0;
-		_vertices[_vertexCount + 3].mult = 0;
-
-		// WASH
-		_vertices[_vertexCount + 0].wash = 0;
-		_vertices[_vertexCount + 1].wash = 0;
-		_vertices[_vertexCount + 2].wash = 0;
-		_vertices[_vertexCount + 3].wash = 0;
-
-		// FILL
-		_vertices[_vertexCount + 0].fill = 255;
-		_vertices[_vertexCount + 1].fill = 255;
-		_vertices[_vertexCount + 2].fill = 255;
-		_vertices[_vertexCount + 3].fill = 255;
-
-		_vertexCount += 3;
+		ExpandVertices(3);
+		PushVertex(v0, c0);
+		PushVertex(v1, c1);
+		PushVertex(v2, c2);
 	}
 
 	#endregion
@@ -760,6 +596,7 @@ public class Batch2D
 		SetRoundedRect(rect, radius, radius, radius, radius, color);
 	}
 
+	// TODO
 	public void SetRoundedRect(in Rect rect, float r0, float r1, float r2, float r3, in Color color)
 	{
 		// clamp
@@ -862,7 +699,7 @@ public class Batch2D
 
 			// set verts
 			{
-				ExpandVertices(_vertexCount + 12);
+				ExpandVertices(12);
 
 				Array.Fill(_vertices, new Vertex(Vector2.zero, Vector2.zero, color, 0, 0, 255), _vertexCount, 12);
 
@@ -972,20 +809,6 @@ public class Batch2D
 
 	#region Hollow Rect
 
-	// public void SetRect(in Rect rect, float t, in Color color)
-	// {
-	// 	if (t != 0)
-	// 	{
-	// 		var tx = Mathf.Min(t, rect.width / 2f);
-	// 		var ty = Mathf.Min(t, rect.height / 2f);
-
-	// 		SetBox(rect.x, rect.y, rect.width, ty, color);
-	// 		SetBox(rect.x, rect.bottom - ty, rect.width, ty, color);
-	// 		SetBox(rect.x, rect.y + ty, tx, rect.height - ty * 2, color);
-	// 		SetBox(rect.right - tx, rect.y + ty, tx, rect.height - ty * 2, color);
-	// 	}
-	// }
-
 	public void SetRect(in Rect rect, float lineThickness, in Color color)
 	{
 		var outerRect = rect.Expanded(lineThickness);
@@ -996,7 +819,7 @@ public class Batch2D
 		//   2  3
 		// 6      7
 
-		ExpandIndices(_indexCount + 24);
+		ExpandIndices(24);
 
 		PushIndices(0, 4, 1);
 		PushIndices(1, 5, 4);
@@ -1010,7 +833,7 @@ public class Batch2D
 		PushIndices(2, 6, 0);
 		PushIndices(0, 4, 6);
 
-		ExpandVertices(_vertexCount + 8);
+		ExpandVertices(8);
 
 		PushVertex(rect.topLeft, color);
 		PushVertex(rect.topRight, color);
@@ -1023,7 +846,6 @@ public class Batch2D
 		PushVertex(outerRect.bottomRight, color);
 
 		_currentBatch.elements += 8;
-		_dirty = true;
 	}
 
 	#endregion
@@ -1310,27 +1132,27 @@ public class Batch2D
 
 	#region Copy Arrays
 
-	/// <summary>
-	/// Copies the contents of a Vertex and Index array to this Batcher
-	/// </summary>
-	public void CopyArray(ReadOnlySpan<Vertex> vertexBuffer, ReadOnlySpan<int> indexBuffer)
-	{
-		// copy vertices over
-		ExpandVertices(_vertexCount + vertexBuffer.Length);
-		vertexBuffer.CopyTo(_vertices.AsSpan().Slice(_vertexCount));
+	// /// <summary>
+	// /// Copies the contents of a Vertex and Index array to this Batcher
+	// /// </summary>
+	// public void CopyArray(ReadOnlySpan<Vertex> vertexBuffer, ReadOnlySpan<int> indexBuffer)
+	// {
+	// 	// copy vertices over
+	// 	ExpandVertices(_vertexCount + vertexBuffer.Length);
+	// 	vertexBuffer.CopyTo(_vertices.AsSpan().Slice(_vertexCount));
 
-		// copy indices over
-		while (_indexCount + indexBuffer.Length >= _indices.Length)
-			Array.Resize(ref _indices, _indices.Length * 2);
-		for (int i = 0, n = _indexCount; i < indexBuffer.Length; i++, n++)
-			_indices[n] = _vertexCount + indexBuffer[i];
+	// 	// copy indices over
+	// 	while (_indexCount + indexBuffer.Length >= _indices.Length)
+	// 		Array.Resize(ref _indices, _indices.Length * 2);
+	// 	for (int i = 0, n = _indexCount; i < indexBuffer.Length; i++, n++)
+	// 		_indices[n] = _vertexCount + indexBuffer[i];
 
-		// increment
-		_vertexCount += vertexBuffer.Length;
-		_indexCount += indexBuffer.Length;
-		_currentBatch.elements += (uint)(vertexBuffer.Length / 3);
-		_dirty = true;
-	}
+	// 	// increment
+	// 	_vertexCount += vertexBuffer.Length;
+	// 	_indexCount += indexBuffer.Length;
+	// 	_currentBatch.elements += (uint)(vertexBuffer.Length / 3);
+	// 	_dirty = true;
+	// }
 
 	#endregion
 
@@ -1365,46 +1187,33 @@ public class Batch2D
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public void PushTriangle()
 	{
-		while (_indexCount + 3 >= _indices.Length)
-			Array.Resize(ref _indices, _indices.Length * 2);
+		ExpandIndices(3);
+		PushIndices(0, 1, 2);
 
-		_indices[_indexCount + 0] = _vertexCount + 0;
-		_indices[_indexCount + 1] = _vertexCount + 1;
-		_indices[_indexCount + 2] = _vertexCount + 2;
-
-		_indexCount += 3;
 		_currentBatch.elements++;
-		_dirty = true;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public void PushQuad()
 	{
-		int index = _indexCount;
-		int vert = _vertexCount;
+		ExpandIndices(6);
+		PushIndices(
+			0, 1, 2,
+			0, 2, 3
+		);
 
-		while (index + 6 >= _indices.Length)
-			Array.Resize(ref _indices, _indices.Length * 2);
-
-		_indices[index + 0] = vert + 0;
-		_indices[index + 1] = vert + 1;
-		_indices[index + 2] = vert + 2;
-		_indices[index + 3] = vert + 0;
-		_indices[index + 4] = vert + 2;
-		_indices[index + 5] = vert + 3;
-
-		_indexCount += 6;
 		_currentBatch.elements += 2;
-		_dirty = true;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public void ExpandVertices(int index)
+	public void ExpandVertices(int count)
 	{
+		var index = _vertexCount + count;
 		while (index >= _vertices.Length)
 		{
 			Array.Resize(ref _vertices, _vertices.Length * 2);
 		}
+		_dirty = true;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1420,7 +1229,13 @@ public class Batch2D
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public void PushVertex(Vector2 pos, Color col, byte mult = 0, byte wash = 0, byte fill = 255)
+	public void PushVertex(Vector2 pos, Vector2 tex, Color col, bool washed = false)
+	{
+		PushVertex(pos, tex, col, (byte)(washed ? 0 : 255), (byte)(washed ? 255 : 0), 255);
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public void PushVertex(Vector2 pos, Color col, byte mult, byte wash, byte fill)
 	{
 		TransformVertex(ref _vertices[_vertexCount].pos, pos, matrixStack);
 		_vertices[_vertexCount].col = col;
@@ -1428,6 +1243,12 @@ public class Batch2D
 		_vertices[_vertexCount].wash = wash;
 		_vertices[_vertexCount].fill = fill;
 		_vertexCount++;
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public void PushVertex(Vector2 pos, Color col, bool washed = false)
+	{
+		PushVertex(pos, col, (byte)(washed ? 0 : 255), (byte)(washed ? 255 : 0), 255);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1447,8 +1268,9 @@ public class Batch2D
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public void ExpandIndices(int index)
+	public void ExpandIndices(int count)
 	{
+		var index = _indexCount + count;
 		while (index >= _indices.Length)
 		{
 			Array.Resize(ref _indices, _indices.Length * 2);

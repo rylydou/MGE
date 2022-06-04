@@ -25,7 +25,7 @@ public class HitboxCollider2D : Collider2D
 	public bool Intersects(HitboxCollider2D hitbox) => absLeft < hitbox.absRight && absRight > hitbox.absLeft && absBottom > hitbox.absTop && absTop < hitbox.absBottom;
 	public bool Intersects(float x, float y, float width, float height) => absRight > x && absBottom > y && absLeft < x + width && absTop < y + height;
 
-	protected override void Render(Batch2D batch, Color color) => batch.HollowRect(new(position, size), 1, color);
+	protected override void Render(Batch2D batch, Color color) => batch.SetRect(new(position, size), 1, color);
 
 	public void SetFromRectangle(Rect rect)
 	{

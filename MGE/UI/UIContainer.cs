@@ -16,7 +16,7 @@ public abstract class UIContainer : UIWidget
 				{
 					_padding[i] = value[i];
 					_padding[i + 2] = value[i];
-					PropertiesChanged(i);
+					OnPropertiesChanged(i);
 				}
 			}
 		}
@@ -25,13 +25,13 @@ public abstract class UIContainer : UIWidget
 	public RectInt relativeContentRect => relativeRect - _padding;
 	public RectInt absoluteContentRect => absoluteRect - _padding;
 
-	[Prop] public List<UIWidget> widgets = new();
+	[Prop] public List<UIWidget> children = new();
 
 	internal override void OnPositionChanged(int dir)
 	{
 		base.OnPositionChanged(dir);
 
-		foreach (var widget in widgets)
+		foreach (var widget in children)
 		{
 			widget.OnPositionChanged(dir);
 		}
@@ -39,7 +39,7 @@ public abstract class UIContainer : UIWidget
 
 	protected override void OnAttached()
 	{
-		foreach (var widget in widgets)
+		foreach (var widget in children)
 		{
 			widget.AttachTo(this);
 		}
@@ -49,14 +49,14 @@ public abstract class UIContainer : UIWidget
 
 	public void AddChild(UIWidget widget)
 	{
-		widgets.Add(widget);
+		children.Add(widget);
 		widget.AttachTo(this);
 		OnChildAdded(widget);
 	}
 
 	public void InsertChild(int index, UIWidget widget)
 	{
-		widgets.Insert(index, widget);
+		children.Insert(index, widget);
 		widget.AttachTo(this);
 		OnChildAdded(widget);
 	}
@@ -65,14 +65,14 @@ public abstract class UIContainer : UIWidget
 
 	public void RemoveChild(UIWidget widget)
 	{
-		widgets.Remove(widget);
+		children.Remove(widget);
 		OnChildRemoved(widget);
 	}
 	protected virtual void OnChildRemoved(UIWidget widget) { }
 
 	internal void ChildMeasureChanged(int dir, UIWidget widget)
 	{
-		_flashTime[dir] = 1f;
+		_layoutFlashTime[dir] = 1f;
 		OnChildMeasureChanged(dir, widget);
 	}
 	protected virtual void OnChildMeasureChanged(int dir, UIWidget widget) { }
@@ -81,7 +81,7 @@ public abstract class UIContainer : UIWidget
 	{
 		base.DoRender(batch);
 
-		foreach (var widget in widgets)
+		foreach (var widget in children)
 		{
 			widget.DoRender(batch);
 		}

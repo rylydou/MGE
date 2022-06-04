@@ -18,7 +18,7 @@ public class CircleCollider2D : Collider2D
 	public override float right { get => position.x + radius; set => position.x = value - radius; }
 	public override float bottom { get => position.y + radius; set => position.y = value - radius; }
 
-	protected override void Render(Batch2D batch, Color color) => batch.HollowCircle(position, radius, 1, 24, color);
+	protected override void Render(Batch2D batch, Color color) => batch.SetRing(position, radius, 1, 24, color);
 
 	public override bool PointCheck(Vector2 point) => Physics.CircleVsPoint(absPosition, radius, point);
 	public override bool RectCheck(Rect rect) => Physics.RectVsCircle(rect, absPosition, radius);

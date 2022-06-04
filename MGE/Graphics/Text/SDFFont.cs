@@ -112,6 +112,6 @@ public class SDFFont : IFont
 		var pos = new Vector2(x + xx, y + yy);
 		var rect = new Rect(pos.x, pos.y, glyph.width * scale, glyph.height * scale);
 
-		batch.Image(_texture, clip, rect, color);
+		batch.DrawImage(_texture, clip, rect, color);
 	}
 }

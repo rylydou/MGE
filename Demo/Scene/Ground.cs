@@ -88,8 +88,8 @@ public class Ground : Solid
 		var pos = (Vector2Int)tileMousePosition * tileSize;
 		var guideColor = new Color(255, 255, 255, 25);
 
-		batch.Rect(new(0, pos.y + tileSize / 2, mapSize.x * tileSize, 1), guideColor);
-		batch.Rect(new(pos.x + tileSize / 2, 0, 1, mapSize.y * tileSize), guideColor);
+		batch.SetBox(new(0, pos.y + tileSize / 2, mapSize.x * tileSize, 1), guideColor);
+		batch.SetBox(new(pos.x + tileSize / 2, 0, 1, mapSize.y * tileSize), guideColor);
 
 		for (int x = 0; x < mapSize.x; x++)
 		{
@@ -104,11 +104,11 @@ public class Ground : Solid
 					key.left = (x == 0) ? true : tilemap.data[x - 1, y];
 
 					var src = new RectInt(lut[key] * 8, 8, 8);
-					batch.Image(_tileset, src, new Vector2(x, y) * tileSize, Color.white);
+					batch.DrawImage(_tileset, src, new Vector2(x, y) * tileSize, Color.white);
 				}
 			}
 		}
 
-		batch.HollowRect(new(pos, tileSize), 1, Color.green.translucent);
+		batch.SetRect(new(pos, tileSize), 1, Color.green.translucent);
 	}
 }

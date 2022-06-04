@@ -18,21 +18,22 @@ public class UIBox : UIContainer
 		}
 	}
 
-	// TODO  Implement alignments
-	// [Prop] Vector2<UIAlignment> _alignment;
-	// public Vector2<UIAlignment> alignment
-	// {
-	// 	get => _alignment;
-	// 	set
-	// 	{
-	// 		throw new System.NotImplementedException();
-
-	// 		if (_alignment == value) return;
-	// 		_alignment = value;
-
-	// 		UpdateLayout();
-	// 	}
-	// }
+	[Prop] Vector2<UIAlignment> _alignment;
+	public Vector2<UIAlignment> alignment
+	{
+		get => _alignment;
+		set
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				if (_alignment[i] != value[i])
+				{
+					_alignment[i] = value[i];
+					UpdateLayout(i);
+				}
+			}
+		}
+	}
 
 	[Prop] int _spacing;
 	public int spacing
@@ -60,7 +61,7 @@ public class UIBox : UIContainer
 	internal void UpdateLayout(int dir)
 	{
 		// if (parent is null) return;
-		if (widgets.Count == 0) return;
+		if (children.Count == 0) return;
 
 		// If this direction is the current flow direction...
 		if (dir == (int)direction)
@@ -74,30 +75,30 @@ public class UIBox : UIContainer
 				// Loop over all widgets and position them
 				var usedSpace = 0; // the space used by non fill widgets, will be used for sizing container
 				var position = padding[dir]; // an offset/counter to position the widgets
-				foreach (var widget in widgets)
+				foreach (var child in children)
 				{
 					// Set the widget's position
-					widget.SetPosition(dir, position);
+					child.SetPosition(dir, position);
 
 					var widgetSize = 0;
 
-					switch (widget.sizing[dir])
+					switch (child.sizing[dir])
 					{
 						// If the widget is hug then use its calculated size
 						case UISizing.Hug:
-							widgetSize = widget.actualSize[dir];
+							widgetSize = child.actualSize[dir];
 							break;
 						// If the widget fix then use its fixed size
 						case UISizing.Fix:
-							widgetSize = widget.fixedSize[dir];
+							widgetSize = child.fixedSize[dir];
 							break;
 						// If the widget is fill then use its fixed size and update the widget to its fixed size
 						case UISizing.Fill:
-							widgetSize = widget.fixedSize[dir];
+							widgetSize = child.fixedSize[dir];
 
 							// TODO  Try hug first, then fallback onto fix
 							// Update the fill widget to it's fix size
-							widget.SetSize(dir, widgetSize);
+							child.SetSize(dir, widgetSize);
 							break;
 					}
 
@@ -127,44 +128,44 @@ public class UIBox : UIContainer
 				var remainingSpace = actualSize[dir] - padding.GetAlongAxis(dir); // remaining space used by widgets not including fill widgets, will be used for sizing fill widgets
 
 				// Subtract space used by spacing
-				remainingSpace -= spacing * (widgets.Count - 1);
+				remainingSpace -= spacing * (children.Count - 1);
 
 				// Find all fill widgets
 				// Calculate the remaining space not ignoring fill widgets (used to distribute space among the fill widgets later)
-				foreach (var widget in widgets)
+				foreach (var child in children)
 				{
 					// If the widget is fill...
-					if (widget.sizing[dir] == UISizing.Fill)
+					if (child.sizing[dir] == UISizing.Fill)
 					{
 						// ...then add it to the list of fill widgets
-						fillWidgets.Add(widget);
+						fillWidgets.Add(child);
 					}
 					else
 					{
 						// ...otherwise then allocate space for it (subtract it from the remaining space)
-						remainingSpace -= widget.actualSize[dir];
+						remainingSpace -= child.actualSize[dir];
 					}
 				}
 
 				// Loop over all the widgets and position them
 				var pos = padding[dir]; // an offset/counter to position the widgets
 				var fillWidgetSize = fillWidgets.Count == 0 ? 0 : Mathf.Max(remainingSpace / fillWidgets.Count, 0);
-				foreach (var widget in widgets)
+				foreach (var child in children)
 				{
 					// Position the widget
-					widget.SetPosition(dir, pos);
+					child.SetPosition(dir, pos);
 
 					// If the widget fill..
-					if (widget.sizing[dir] == UISizing.Fill)
+					if (child.sizing[dir] == UISizing.Fill)
 					{
 						// ...then set the size of the widget
-						widget.SetSize(dir, fillWidgetSize);
+						child.SetSize(dir, fillWidgetSize);
 					}
 
 					// Notify the widget that the parent changed measure
 					// widget.ParentChangedMeasure();
 
-					pos += widget.actualSize[dir];
+					pos += child.actualSize[dir];
 					pos += spacing;
 				}
 			}
@@ -178,20 +179,20 @@ public class UIBox : UIContainer
 			{
 				// ...then loop over the widgets to find the desired size of the box...
 				var largestWidgetSize = 0; // the size of the largest widget
-				foreach (var widget in widgets)
+				foreach (var child in children)
 				{
 					// ...set the widget's position...
-					widget.SetPosition(dir, padding[dir]);
+					// child.SetPosition(dir, padding[dir]);
 
 					// ...if the widget is fix or hug then or the container is hug (causes fill widgets to act like fix)...
-					if (sizing[dir] == UISizing.Hug || widget.sizing[dir] != UISizing.Fill)
+					if (sizing[dir] == UISizing.Hug || child.sizing[dir] != UISizing.Fill)
 					{
-						var widgetSize = widget.sizing[dir] switch
+						var widgetSize = child.sizing[dir] switch
 						{
 							// If the widget is hug then use its calculated size
-							UISizing.Hug => widget.actualSize[dir],
+							UISizing.Hug => child.actualSize[dir],
 							// If the widget is fill or fix then use its fixed size
-							_ => widget.fixedSize[dir],
+							_ => child.fixedSize[dir],
 						};
 
 						// Update the largest size if the widget size is larger
@@ -206,16 +207,23 @@ public class UIBox : UIContainer
 			}
 
 			// Loop over all the widgets...
-			foreach (var widget in widgets)
+			foreach (var child in children)
 			{
 				// ...set the widget's position...
-				widget.SetPosition(dir, padding[dir]);
+				var childPosition = alignment[dir] switch
+				{
+					UIAlignment.Center => (actualSize[dir] - padding.GetAlongAxis(dir)) / 2,
+					UIAlignment.End => actualSize[dir] - padding.GetAlongAxis(dir),
+					_ => 0,
+				};
+				childPosition += padding[dir];
+				child.SetPosition(dir, childPosition);
 
 				// ...if the widget is fill...
-				if (widget.sizing[dir] == UISizing.Fill)
+				if (child.sizing[dir] == UISizing.Fill)
 				{
 					// ...then make it fill the widget
-					widget.SetSize(dir, actualSize[dir] - padding.GetAlongAxis(dir));
+					child.SetSize(dir, actualSize[dir] - padding.GetAlongAxis(dir));
 				}
 			}
 		}

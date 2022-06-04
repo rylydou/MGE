@@ -1,0 +1,16 @@
+base: #222222
+base_on: #FFFFFF
+
+background: #333333
+background_on: #FFFFFF
+
+surface: #444444
+surface_on: #FFFFFF
+
+primary: #3C6FC8
+primary_on: #F5FAFE
+
+error: #C7433C
+error_on: #FFF6F6
+
+shadow: #00000040

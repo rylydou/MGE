@@ -382,8 +382,8 @@ public class Player : Actor
 		var holdOffset = new Vector2(8, isCrouching ? 2 : 0);
 
 		const float barWidth = 20;
-		batch.Rect(new(-barWidth / 2, -18, barWidth, 2), Color.black.translucent);
-		batch.Rect(new(-barWidth / 2, -18, (float)health / maxHealth * barWidth, 2), Color.green);
+		batch.SetBox(new(-barWidth / 2, -18, barWidth, 2), Color.black.translucent);
+		batch.SetBox(new(-barWidth / 2, -18, (float)health / maxHealth * barWidth, 2), Color.green);
 
 		// collider.Render(batch);
 	}

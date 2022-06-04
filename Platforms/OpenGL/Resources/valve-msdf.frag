@@ -1,28 +1,28 @@
-floatdistAlphaMask = baseColor.a;
+float distAlphaMask = u_baseColor.a;
 if (
-  OUTLINE &&
-  distAlphaMask >= OUTLINEMINVALUE0 &&
-  distAlphaMask <= OUTLINEMAXVALUE1
+  u_outline &&
+  distAlphaMask >= u_outlineMinValue0 &&
+  distAlphaMask <= u_outlineMaxValue1
 ) {
   floatoFactor = 1.0;
-  if (distAlphaMask <= OUTLINEMINVALUE1) {
-    oFactor = smoothstep(OUTLINEMINVALUE0, OUTLINEMINVALUE1, distAlphaMask);
+  if (distAlphaMask <= u_outlineMinValue1) {
+    oFactor = smoothstep(u_outlineMinValue0, u_outlineMinValue1, distAlphaMask);
   } else {
-    oFactor = smoothstep(OUTLINEMAXVALUE1, OUTLINEMAXVALUE0, distAlphaMask);
+    oFactor = smoothstep(u_outlineMaxValue1, u_outlineMaxValue0, distAlphaMask);
   }
-  baseColor = lerp(baseColor, OUTLINECOLOR, oFactor);
+  u_baseColor = lerp(u_baseColor, u_outlineColor, oFactor);
 }
 
-if (SOFTEDGES) {
-  baseColor.a *= smoothstep(SOFTEDGEMIN, SOFTEDGEMAX, distAlphaMask);
+if (u_softEdges) {
+  u_baseColor.a *= smoothstep(u_softEdgeMin, u_softEdgeMax, distAlphaMask);
 } else {
-  baseColor.a = distAlphaMask >= 0.5;
+  u_baseColor.a = distAlphaMask >= 0.5;
 }
 
-if (OUTERGLOW) {
-  float4glowTexel = tex2D(BaseTextureSampler, i.baseTexCoord.xy + GLOWUVOFFSET);
+if (u_outerGlow) {
+  float4glowTexel = tex2D(BaseTextureSampler, i.baseTexCoord.xy + u_glowUvOffset);
   float4glowc =
-    OUTERGLOWCOLOR *
-    smoothstep(OUTERGLOWMINDVALUE, OUTERGLOWMAXDVALUE, glowTexel.a);
-  baseColor = lerp(glowc, baseColor, mskUsed);
+    u_outerGlowColor *
+    smoothstep(u_outerGlowMinDValue, u_outerGlowMaxDValue, glowTexel.a);
+  u_baseColor = lerp(glowc, u_baseColor, mskUsed);
 }

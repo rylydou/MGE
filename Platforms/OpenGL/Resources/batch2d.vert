@@ -16,6 +16,6 @@ void main(void)
 	gl_Position = u_matrix * vec4(a_position, 0.0, 1.0);
 
 	v_tex = a_tex;
-	v_col = a_color;
+	v_col = vec4(a_color.rgb * a_color.a, a_color.a);
 	v_type = a_type;
 }

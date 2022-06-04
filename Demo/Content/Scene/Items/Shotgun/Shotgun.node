@@ -1,7 +1,7 @@
 !Demo: 'Demo.Items.Gun'
 name: 'Shotgun'
 
-sprite: '@res://./Sprite.ase'
+# sprite: '@res://./Sprite.ase'
 
 useCooldown: 0.5
 

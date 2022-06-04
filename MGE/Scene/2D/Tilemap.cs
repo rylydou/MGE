@@ -30,7 +30,7 @@ public class Tilemap<T> : Node2D where T : struct
 				if (tile.Equals(default(T))) continue;
 
 				var rect = GetTileRect(x, y);
-				batch.HollowRect(rect, 1, Color.green);
+				batch.SetRect(rect, 1, Color.green);
 			}
 		}
 	}

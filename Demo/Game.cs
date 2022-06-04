@@ -10,10 +10,10 @@ public static class Game
 	}
 
 	public static Color[] playerColors = new Color[] {
-		new(0xEF4A3A),
-		new(0x3385B8),
-		new(0x6BA841),
-		new(0xCD6093),
+		new(0xEF4A3AFF),
+		new(0x3385B8FF),
+		new(0x6BA841FF),
+		new(0xCD6093FF),
 	};
 
 	public static PlayerData?[] players = new PlayerData[4];

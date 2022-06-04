@@ -171,6 +171,7 @@ namespace MGE.GLFW
 			GLFW.WindowHint(GLFW_Enum.VISIBLE, false);
 			GLFW.WindowHint(GLFW_Enum.FOCUS_ON_SHOW, true);
 			GLFW.WindowHint(GLFW_Enum.FOCUSED, true);
+			GLFW.WindowHint(GLFW_Enum.AUTO_ICONIFY, false);
 			GLFW.WindowHint(GLFW_Enum.TRANSPARENT_FRAMEBUFFER, flags.HasFlag(WindowFlags.Transparent));
 			GLFW.WindowHint(GLFW_Enum.SCALE_TO_MONITOR, flags.HasFlag(WindowFlags.ScaleToMonitor));
 			GLFW.WindowHint(GLFW_Enum.SAMPLES, flags.HasFlag(WindowFlags.MultiSampling) ? 4 : 0);

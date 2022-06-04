@@ -65,7 +65,7 @@ public class JumpThough : Semisolid
 					key.right = (x == mapSize.x - 1) ? true : tilemap.data[x + 1, y];
 
 					var src = new RectInt(lut[key] * 8, 8, 8);
-					batch.Image(_tileset, src, new Vector2(x, y) * tileSize, Color.white);
+					batch.DrawImage(_tileset, src, new Vector2(x, y) * tileSize, Color.white);
 				}
 			}
 		}

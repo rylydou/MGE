@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace MGE.UI;
@@ -11,10 +12,73 @@ public abstract class UIWidget
 
 	[Prop] public string? id;
 
+	public bool clipContent = false;
+
 	public UIContainer? parent { get; private set; }
 	public UICanvas? canvas { get; internal set; }
 
+	public virtual bool isIntractable => false;
+
+	public bool isHovered { get => isIntractable && canvas?.hoveredWidget == this; }
+
+	protected virtual void RegisterCallbacks()
+	{
+		onMeasureChanged += OnMeasureChanged;
+	}
+
+	#region Widget Management
+
+	internal virtual void AttachTo(UIContainer parent)
+	{
+		this.parent = parent;
+
+		canvas = parent.canvas;
+
+		if (canvas is not null)
+		{
+			OnAttached();
+
+			parent?.ChildMeasureChanged(0, this);
+			parent?.ChildMeasureChanged(1, this);
+		}
+	}
+	protected virtual void OnAttached() { }
+
+	#endregion Widget Management
+
 	#region Layout
+
+	internal Vector2<float> _layoutFlashTime;
+
+	public Vector2<UISizing> actualSizing
+	{
+		get
+		{
+			var result = new Vector2<UISizing>();
+			for (int i = 0; i < 2; i++)
+			{
+				switch (_sizing[i])
+				{
+					case UISizing.Fix:
+						result[i] = UISizing.Fix;
+						break;
+					case UISizing.Hug:
+						break;
+					case UISizing.Fill:
+						if (parent is not null && parent.sizing[i] == UISizing.Hug)
+						{
+							result[i] = UISizing.Fix;
+						}
+						else
+						{
+							result[i] = UISizing.Fill;
+						}
+						break;
+				}
+			}
+			return result;
+		}
+	}
 
 	[Prop] Vector2<UISizing> _sizing;
 	public Vector2<UISizing> sizing
@@ -26,8 +90,19 @@ public abstract class UIWidget
 			{
 				if (_sizing[i] != value[i])
 				{
+					// switch (value[i])
+					// {
+					// 	case UISizing.Fix:
+					// 		_actualSize[i] = _fixedSize[i];
+					// 		break;
+					// 	case UISizing.Hug:
+					// 		break;
+					// 	case UISizing.Fill:
+					// 		break;
+					// }
+
 					_sizing[i] = value[i];
-					PropertiesChanged(i);
+					OnPropertiesChanged(i);
 				}
 			}
 		}
@@ -48,7 +123,7 @@ public abstract class UIWidget
 					if (_fixedSize[i] != value[i])
 					{
 						_actualSize[i] = value[i];
-						PropertiesChanged(i);
+						OnPropertiesChanged(i);
 					}
 
 				_fixedSize[i] = value[i];
@@ -85,28 +160,6 @@ public abstract class UIWidget
 	public RectInt relativeRect => new(_relativePosition, _actualSize);
 	public RectInt absoluteRect => new(_absolutePosition, _actualSize);
 
-	#endregion Layout
-
-	public bool clipContent = false;
-
-	internal Vector2<float> _flashTime;
-
-	internal virtual void AttachTo(UIContainer parent)
-	{
-		this.parent = parent;
-
-		canvas = parent.canvas;
-
-		if (canvas is not null)
-		{
-			OnAttached();
-
-			parent?.ChildMeasureChanged(0, this);
-			parent?.ChildMeasureChanged(1, this);
-		}
-	}
-	protected virtual void OnAttached() { }
-
 	public void SetPosition(int dir, int value)
 	{
 		if (_relativePosition[dir] == value) return;
@@ -132,7 +185,7 @@ public abstract class UIWidget
 		if (_actualSize[dir] == targetSize) return false;
 
 		_actualSize[dir] = targetSize;
-		_flashTime[dir] = 1f;
+		_layoutFlashTime[dir] = 1f;
 
 		OnMeasureChanged(dir);
 
@@ -144,16 +197,16 @@ public abstract class UIWidget
 		if (_actualSize[dir] == targetSize) return false;
 
 		_actualSize[dir] = targetSize;
-		_flashTime[dir] = 1f;
+		_layoutFlashTime[dir] = 1f;
 
 		parent?.ChildMeasureChanged(dir, this);
 
 		return true;
 	}
 
-	internal virtual void PropertiesChanged(int dir)
+	internal virtual void OnPropertiesChanged(int dir)
 	{
-		_flashTime[dir] = 1f;
+		_layoutFlashTime[dir] = 1f;
 
 		// parent?.ChildMeasureChanged(dir, this);
 		// OnMeasureChanged(dir);
@@ -168,12 +221,15 @@ public abstract class UIWidget
 		}
 	}
 
+	public Action<int> onMeasureChanged = (dir) => { };
 	protected virtual void OnMeasureChanged(int dir) { }
+
+	#endregion Layout
 
 	internal virtual void DoRender(Batch2D batch)
 	{
-		_flashTime[0] -= Time.rawDelta;
-		_flashTime[1] -= Time.rawDelta;
+		_layoutFlashTime[0] -= Time.rawDelta;
+		_layoutFlashTime[1] -= Time.rawDelta;
 
 		if (_actualSize.x <= 0 || _actualSize.y <= 0) return;
 
@@ -183,36 +239,32 @@ public abstract class UIWidget
 		{
 			if (this is not UICanvas)
 			{
-				// batch.HollowRect(absoluteRect, 1, Colors.white);
 				if (parent is UICanvas)
 				{
-					batch.Rect(absoluteRect, new(0x333333));
+					batch.SetBox(absoluteRect, new(0x333333FF));
 				}
 				else
 				{
-					batch.Rect(absoluteRect, new(0x444444));
+					var pressed = isHovered && App.input.mouse.Down(MouseButtons.Left);
+
+					batch.SetBox(absoluteRect, pressed ? new(0xFFFFFFFF) : new(0x444444FF));
 					var shadowRect = new Rect(absolutePosition.x, absolutePosition.y + actualSize.y, actualSize.x, 1);
-					batch.Rect(shadowRect, Color.black.WithAlpha(64));
+					batch.SetBox(shadowRect, new(0x00000040));
 
-					if (absoluteRect.Contains(App.window.mouse))
+					if (isHovered)
 					{
-						batch.HollowRect(absoluteRect, -1, Color.white.WithAlpha(64));
-
-						if (App.input.mouse.Down(MouseButtons.Left))
-						{
-							batch.Rect(absoluteRect, new(0xffffff));
-						}
+						batch.SetRect(absoluteRect, -1, Color.white.WithAlpha(64));
 					}
 				}
 			}
 
 			// Horizontal
-			if (_flashTime[0] > 0)
-				batch.Line(new(absoluteRect.left, absoluteRect.center.y), new(absoluteRect.right, absoluteRect.center.y), 1, Color.LerpClamped(Color.clear, Color.magenta, _flashTime[0]));
+			if (_layoutFlashTime[0] > 0)
+				batch.SetLine(new(absoluteRect.left, absoluteRect.center.y), new(absoluteRect.right, absoluteRect.center.y), 1, Color.LerpClamped(Color.clear, Color.green, _layoutFlashTime[0]));
 
 			// Vertical
-			if (_flashTime[1] > 0)
-				batch.Line(new(absoluteRect.center.x, absoluteRect.top), new(absoluteRect.center.x, absoluteRect.bottom), 1, Color.LerpClamped(Color.clear, Color.magenta, _flashTime[1]));
+			if (_layoutFlashTime[1] > 0)
+				batch.SetLine(new(absoluteRect.center.x, absoluteRect.top), new(absoluteRect.center.x, absoluteRect.bottom), 1, Color.LerpClamped(Color.clear, Color.green, _layoutFlashTime[1]));
 		}
 	}
 

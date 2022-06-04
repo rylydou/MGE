@@ -256,7 +256,7 @@ public class GridCollider2D : Collider2D
 		for (int x = 0; x < cellsX; x++)
 			for (int y = 0; y < cellsY; y++)
 				if (data[x, y])
-					batch.HollowRect(new(left + x * cellSize, top + y * cellSize, cellSize, cellSize), 1, color);
+					batch.SetRect(new(left + x * cellSize, top + y * cellSize, cellSize, cellSize), 1, color);
 	}
 
 	// public override void Draw(Camera camera, Color color)

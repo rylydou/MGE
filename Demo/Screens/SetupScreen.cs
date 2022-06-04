@@ -115,12 +115,12 @@ public class SetupScreen : GameScreen
 
 	public override void Render(Batch2D batch)
 	{
-		var bg = new Color(0xFAB23A);
-		var fg = new Color(0x343032);
+		var bg = new Color(0xFAB23AFF);
+		var fg = new Color(0x343032FF);
 
 		var scale = (Vector2)App.window.size / canvasSize;
 		batch.PushMatrix(Vector2.zero, scale, Vector2.zero, 0);
-		batch.Rect(new(canvasSize), bg);
+		batch.SetBox(new(canvasSize), bg);
 
 		var cardGap = 4f;
 		var cardHeight = 120f - cardGap * 2;
@@ -137,11 +137,11 @@ public class SetupScreen : GameScreen
 				var cardRect = new Rect(x, canvasSize.y - cardHeight - cardGap, cardWidth, cardHeight);
 				if (data.isReady)
 				{
-					batch.Rect(cardRect, color);
+					batch.SetBox(cardRect, color);
 				}
 				else
 				{
-					batch.HollowRect(cardRect, 2, color);
+					batch.SetRect(cardRect, 2, color);
 				}
 
 				batch.Draw(data.skin.texture, new(x + cardWidth / 2, (canvasSize.y - cardHeight - cardGap * 2) / 2), Color.white);

@@ -14,18 +14,18 @@ public struct Color : IEquatable<Color>
 
 	public static readonly Color clear = new Color(0, 0, 0, 0);
 
-	public static readonly Color white = new Color(0xffffff);
-	public static readonly Color lightGray = new Color(0xc0c0c0);
-	public static readonly Color gray = new Color(0x808080);
-	public static readonly Color darkGray = new Color(0x404040);
-	public static readonly Color black = new Color(0x000000);
+	public static readonly Color white = new Color(0xFFFFFFFF);
+	public static readonly Color lightGray = new Color(0xC0C0C0FF);
+	public static readonly Color gray = new Color(0x808080FF);
+	public static readonly Color darkGray = new Color(0x404040FF);
+	public static readonly Color black = new Color(0x000000FF);
 
-	public static readonly Color red = new Color(0xff0000);
-	public static readonly Color green = new Color(0x00ff00);
-	public static readonly Color blue = new Color(0x0000ff);
-	public static readonly Color yellow = new Color(0xffff00);
-	public static readonly Color cyan = new Color(0x00ffff);
-	public static readonly Color magenta = new Color(0xff00ff);
+	public static readonly Color red = new Color(0xFF0000FF);
+	public static readonly Color green = new Color(0x00FF00FF);
+	public static readonly Color blue = new Color(0x0000FFFF);
+	public static readonly Color yellow = new Color(0xFFFF00FF);
+	public static readonly Color cyan = new Color(0x00FFFFFF);
+	public static readonly Color magenta = new Color(0xFF00FFFF);
 
 	#endregion Constants
 
@@ -150,8 +150,8 @@ public struct Color : IEquatable<Color>
 
 	#region Convertion
 
-	public static implicit operator Color(int color) => new Color(color);
 	public static implicit operator Color(uint color) => new Color(color);
+	// public static implicit operator Color(uint color) => new Color(color);
 
 	public static implicit operator Vector4(Color col) => col.ToVector4();
 	public static implicit operator Color(Vector4 vec) => new Color(vec.X, vec.Y, vec.Z, vec.W);
@@ -204,7 +204,7 @@ public struct Color : IEquatable<Color>
 	public byte r
 	{
 		get => (byte)abgr;
-		set => abgr = (abgr & 0xffffff00) | value;
+		set => abgr = (abgr & 0xFFFFFF00) | value;
 	}
 
 	/// <summary>
@@ -213,7 +213,7 @@ public struct Color : IEquatable<Color>
 	public byte g
 	{
 		get => (byte)(abgr >> 8);
-		set => abgr = (abgr & 0xffff00ff) | ((uint)value << 8);
+		set => abgr = (abgr & 0xFFFF00FF) | ((uint)value << 8);
 	}
 
 	/// <summary>
@@ -222,7 +222,7 @@ public struct Color : IEquatable<Color>
 	public byte b
 	{
 		get => (byte)(abgr >> 16);
-		set => abgr = (abgr & 0xff00ffff) | ((uint)value << 16);
+		set => abgr = (abgr & 0xFF00FFFF) | ((uint)value << 16);
 	}
 
 	/// <summary>
@@ -231,34 +231,34 @@ public struct Color : IEquatable<Color>
 	public byte a
 	{
 		get => (byte)(abgr >> 24);
-		set => abgr = (abgr & 0x00ffffff) | ((uint)value << 24);
+		set => abgr = (abgr & 0x00FFFFFF) | ((uint)value << 24);
 	}
 
 	public Color translucent => new(r, g, b, (byte)128);
 	public Color opaque => new(r, g, b, (byte)255);
 
-	/// <summary>
-	/// Creates a color given the int32 RGB data
-	/// </summary>
-	public Color(int rgb, byte alpha = 255)
-	{
-		abgr = 0;
+	// /// <summary>
+	// /// Creates a color given the int32 RGB data
+	// /// </summary>
+	// public Color(uint rgb, byte alpha = 255)
+	// {
+	// 	abgr = 0;
 
-		r = (byte)(rgb >> 16);
-		g = (byte)(rgb >> 08);
-		b = (byte)(rgb);
-		a = alpha;
-	}
+	// 	r = (byte)(rgb >> 16);
+	// 	g = (byte)(rgb >> 08);
+	// 	b = (byte)(rgb);
+	// 	a = alpha;
+	// }
 
-	public Color(int rgb, float alpha)
-	{
-		abgr = 0;
+	// public Color(uint rgb, float alpha)
+	// {
+	// 	abgr = 0;
 
-		r = (byte)((rgb >> 16) * alpha);
-		g = (byte)((rgb >> 08) * alpha);
-		b = (byte)(rgb * alpha);
-		a = (byte)(255 * alpha);
-	}
+	// 	r = (byte)((rgb >> 16) * alpha);
+	// 	g = (byte)((rgb >> 08) * alpha);
+	// 	b = (byte)(rgb * alpha);
+	// 	a = (byte)(255 * alpha);
+	// }
 
 	/// <summary>
 	/// Creates a color given the uint32 RGBA data
@@ -301,16 +301,6 @@ public struct Color : IEquatable<Color>
 	}
 
 	#region Methods
-
-	/// <summary>
-	/// Premultiplies the color value based on its Alpha component
-	/// </summary>
-	/// <returns></returns>
-	public Color Premultiply()
-	{
-		var a = this.a;
-		return new Color((byte)(r * a / 255), (byte)(g * a / 255), (byte)(b * a / 255), a);
-	}
 
 	public Color WithAlpha(byte alpha)
 	{
