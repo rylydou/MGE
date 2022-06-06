@@ -1,71 +1,71 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Run Demo",
-      "type": "coreclr",
-      "request": "launch",
-      "preLaunchTask": "Build Demo",
-      "program": "${workspaceFolder}/Demo/bin/Debug/Demo.dll",
-      "args": [],
-      "env": {},
-      "cwd": "${workspaceFolder}/Demo",
-      "console": "internalConsole",
-      "stopAtEntry": false,
-      "logging": {
-        "browserStdOut": false,
-        "elapsedTiming": false,
-        "engineLogging": false,
-        "exceptions": false,
-        "moduleLoad": false,
-        "processExit": false,
-        "programOutput": true,
-        "threadExit": false
-      }
-    },
-    {
-      "name": "Run UIDemo",
-      "type": "coreclr",
-      "request": "launch",
-      "preLaunchTask": "Build UIDemo",
-      "program": "${workspaceFolder}/UIDemo/bin/Debug/UIDemo.dll",
-      "args": [],
-      "env": {},
-      "cwd": "${workspaceFolder}/UIDemo",
-      "console": "internalConsole",
-      "stopAtEntry": false,
-      "logging": {
-        "browserStdOut": false,
-        "elapsedTiming": false,
-        "engineLogging": false,
-        "exceptions": false,
-        "moduleLoad": false,
-        "processExit": false,
-        "programOutput": true,
-        "threadExit": false
-      }
-    },
-    {
-      "name": "Run Editor",
-      "type": "coreclr",
-      "request": "launch",
-      "preLaunchTask": "Build Editor",
-      "program": "${workspaceFolder}/Editor/bin/Debug/MGE.Editor.dll",
-      "args": [],
-      "env": {},
-      "cwd": "${workspaceFolder}/Editor",
-      "console": "internalConsole",
-      "stopAtEntry": false,
-      "logging": {
-        "browserStdOut": false,
-        "elapsedTiming": false,
-        "engineLogging": false,
-        "exceptions": false,
-        "moduleLoad": false,
-        "processExit": false,
-        "programOutput": true,
-        "threadExit": false
-      }
-    }
-  ]
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Run Game",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "Build Game",
+			"program": "${workspaceFolder}/Game/bin/Debug/Game.dll",
+			"args": [],
+			"env": {},
+			"cwd": "${workspaceFolder}/Game",
+			"console": "internalConsole",
+			"stopAtEntry": false,
+			"logging": {
+				"browserStdOut": false,
+				"elapsedTiming": false,
+				"engineLogging": false,
+				"exceptions": false,
+				"moduleLoad": false,
+				"processExit": false,
+				"programOutput": true,
+				"threadExit": false
+			}
+		},
+		{
+			"name": "Run UIDemo",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "Build UIDemo",
+			"program": "${workspaceFolder}/UIDemo/bin/Debug/UIDemo.dll",
+			"args": [],
+			"env": {},
+			"cwd": "${workspaceFolder}/UIDemo",
+			"console": "internalConsole",
+			"stopAtEntry": false,
+			"logging": {
+				"browserStdOut": false,
+				"elapsedTiming": false,
+				"engineLogging": false,
+				"exceptions": false,
+				"moduleLoad": false,
+				"processExit": false,
+				"programOutput": true,
+				"threadExit": false
+			}
+		},
+		{
+			"name": "Run Editor",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "Build Editor",
+			"program": "${workspaceFolder}/Editor/bin/Debug/MGE.Editor.dll",
+			"args": [],
+			"env": {},
+			"cwd": "${workspaceFolder}/Editor",
+			"console": "internalConsole",
+			"stopAtEntry": false,
+			"logging": {
+				"browserStdOut": false,
+				"elapsedTiming": false,
+				"engineLogging": false,
+				"exceptions": false,
+				"moduleLoad": false,
+				"processExit": false,
+				"programOutput": true,
+				"threadExit": false
+			}
+		}
+	]
 }

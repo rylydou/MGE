@@ -1,44 +1,44 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Build Demo",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "build",
-        "${workspaceFolder}/Demo/Demo.csproj",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary",
-        "--nologo"
-      ],
-      "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "Build UIDemo",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "build",
-        "${workspaceFolder}/UIDemo/UIDemo.csproj",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary",
-        "--nologo"
-      ],
-      "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "Build Editor",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "build",
-        "${workspaceFolder}/Editor/MGE.Editor.csproj",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary",
-        "--nologo"
-      ],
-      "problemMatcher": "$msCompile"
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build Game",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/Game/Game.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary",
+				"--nologo"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Build UIDemo",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/UIDemo/UIDemo.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary",
+				"--nologo"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Build Editor",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/Editor/MGE.Editor.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary",
+				"--nologo"
+			],
+			"problemMatcher": "$msCompile"
+		}
+	]
 }
