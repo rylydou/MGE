@@ -345,7 +345,7 @@ public class Player : Actor
 
 		var fallingSpeedScale = Mathf.Clamp01(vSpeedScale);
 
-		var hopWave = Mathf.Sin((float)Time.duration.TotalSeconds * Mathf.pi * hopsPerSecond) / 2 + 1;
+		var hopWave = Mathf.Sin((float)Time.duration.TotalSeconds * Mathf.PI * hopsPerSecond) / 2 + 1;
 
 		var offset = new Vector2(0, vTiltOffset * Mathf.Abs(hSpeedScale) + vFallingOffset * fallingSpeedScale);
 

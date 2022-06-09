@@ -216,7 +216,7 @@ public class MainModule : Module
 			batch.SetRect(rect.Expanded(2), 1, new(0x0A84FFFF));
 		}
 
-		App.graphics.Clear(window, new Color(0x222222FF));
+		App.graphics.Clear(window, new Color(0x202020FF));
 		var renderInfo = batch.Render(window);
 		App.profiler.batch2DRenderInfo = renderInfo;
 	}

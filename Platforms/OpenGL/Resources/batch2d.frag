@@ -10,12 +10,11 @@ out vec4 o_color;
 
 void main(void)
 {
-	vec4 color = texture(u_texture, v_tex);
-
-	color = vec4(color.rgb * color.a, color.a);
+	vec4 texColor = texture(u_texture, v_tex);
+	texColor = vec4(texColor.rgb * texColor.a, texColor.a);
 
 	o_color =
-		v_type.x * color * v_col +
-		v_type.y * color.a * v_col +
+		v_type.x * texColor * v_col +
+		v_type.y * texColor.a * v_col +
 		v_type.z * v_col;
 }

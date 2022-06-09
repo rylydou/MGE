@@ -241,19 +241,19 @@ public abstract class UIWidget
 			{
 				if (parent is UICanvas)
 				{
-					batch.SetBox(absoluteRect, new(0x333333FF));
+					batch.SetBox(absoluteRect, new(0x303030FF));
 				}
 				else
 				{
 					var pressed = isHovered && App.input.mouse.Down(MouseButtons.Left);
 
-					batch.SetBox(absoluteRect, pressed ? new(0xFFFFFFFF) : new(0x444444FF));
+					batch.SetBox(absoluteRect, pressed ? new(0xFFFFFFFF) : new(0x404040FF));
 					var shadowRect = new Rect(absolutePosition.x, absolutePosition.y + actualSize.y, actualSize.x, 1);
 					batch.SetBox(shadowRect, new(0x00000040));
 
 					if (isHovered)
 					{
-						batch.SetRect(absoluteRect, -1, Color.white.WithAlpha(64));
+						batch.SetRect(absoluteRect, -1, new(0x505050FF));
 					}
 				}
 			}

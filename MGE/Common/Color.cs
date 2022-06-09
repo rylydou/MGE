@@ -150,7 +150,7 @@ public struct Color : IEquatable<Color>
 
 	#region Convertion
 
-	public static implicit operator Color(uint color) => new Color(color);
+	// public static implicit operator Color(uint color) => new Color(color);
 	// public static implicit operator Color(uint color) => new Color(color);
 
 	public static implicit operator Vector4(Color col) => col.ToVector4();

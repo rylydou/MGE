@@ -22,4 +22,4 @@ App.modules.Register<MainModule>();
 App.modules.Register<Profiler>();
 
 // Start the Application with a single 1280x720 Window
-App.Start("MGE Party Main", 1280, 720, WindowFlags.ScaleToMonitor);
+App.Start("Unnamed Party Game", 1280, 720, WindowFlags.ScaleToMonitor);
