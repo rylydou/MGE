@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace MGE.UI;
@@ -81,104 +82,131 @@ public class UIBox : UIContainer
 		// If the sizing is hug...
 		if (sizing[dir] == UISizing.Hug)
 		{
-			// ...then then there will not be remaining space so treat the sizing of fill widgets like fix
-
-			// Loop over all widgets and position them
-			var usedSpace = 0; // the space used by non fill widgets, will be used for sizing container
-			var position = padding[dir]; // an offset/counter to position the widgets
-			foreach (var child in children)
-			{
-				// Set the widget's position
-				child.SetPosition(dir, position);
-
-				var widgetSize = 0;
-
-				switch (child.sizing[dir])
-				{
-					// If the widget is hug then use its calculated size
-					case UISizing.Hug:
-						widgetSize = child.actualSize[dir];
-						break;
-					// If the widget fix then use its fixed size
-					case UISizing.Fix:
-						widgetSize = child.fixedSize[dir];
-						break;
-					// If the widget is fill then use its fixed size and update the widget to its fixed size
-					case UISizing.Fill:
-						widgetSize = child.fixedSize[dir];
-
-						// TODO  Try hug first, then fallback onto fix
-						// Update the fill widget to it's fix size
-						child.SetSize(dir, widgetSize);
-						break;
-				}
-
-				var stride = widgetSize + spacing;
-
-				position += stride;
-				usedSpace += stride;
-			}
-
-			if (usedSpace > 0)
-			{
-				// Remove the unnecessary extra spacing
-				usedSpace -= spacing;
-			}
-
-			// Add padding
-			usedSpace += padding.GetAlongAxis(dir);
-
-			// Set size of box
-			SetMySize(dir, usedSpace);
+			// ...then then there will not be remaining space so treat the sizing of fill widgets like fix and ignore alignment
+			UpdateLayoutFlowHug(dir);
 		}
 		else
 		{
-			// ...otherwise then there will be remaining space so treat the fill widgets like fill
+			// ...otherwise then there will be remaining space so treat the fill widgets like fill and take alignment into account, as long as there are no fill widgets
+			UpdateLayoutFlowFix(dir);
+		}
+	}
 
-			var fillWidgets = new List<UIWidget>(); // list of the fill widgets
-			var remainingSpace = actualSize[dir] - padding.GetAlongAxis(dir); // remaining space used by widgets not including fill widgets, will be used for sizing fill widgets
+	internal void UpdateLayoutFlowHug(int dir)
+	{
+		// Loop over all widgets and position them
+		var usedSpace = 0; // the space used by non fill widgets, will be used for sizing container
+		var position = padding[dir]; // an offset/counter to position the widgets
+		foreach (var child in children)
+		{
+			// Set the widget's position
+			child.SetPosition(dir, position);
 
-			// Subtract space used by spacing
-			remainingSpace -= spacing * (children.Count - 1);
+			var widgetSize = 0;
 
-			// Find all fill widgets
-			// Calculate the remaining space not ignoring fill widgets (used to distribute space among the fill widgets later)
-			foreach (var child in children)
+			switch (child.sizing[dir])
 			{
-				// If the widget is fill...
-				if (child.sizing[dir] == UISizing.Fill)
-				{
-					// ...then add it to the list of fill widgets
-					fillWidgets.Add(child);
-				}
-				else
-				{
-					// ...otherwise then allocate space for it (subtract it from the remaining space)
-					remainingSpace -= child.actualSize[dir];
-				}
+				// If the widget is hug then use its calculated size
+				case UISizing.Hug:
+					widgetSize = child.actualSize[dir];
+					break;
+				// If the widget fix then use its fixed size
+				case UISizing.Fix:
+					widgetSize = child.fixedSize[dir];
+					break;
+				// If the widget is fill then use its fixed size and update the widget to its fixed size
+				case UISizing.Fill:
+					widgetSize = child.fixedSize[dir];
+
+					// TODO  Try hug first, then fallback onto fix
+					// Update the fill widget to it's fix size
+					child.SetSize(dir, widgetSize);
+					break;
 			}
 
-			// Loop over all the widgets and position them
-			var pos = padding[dir]; // an offset/counter to position the widgets
-			var fillWidgetSize = fillWidgets.Count == 0 ? 0 : Mathf.Max(remainingSpace / fillWidgets.Count, 0);
-			foreach (var child in children)
+			var stride = widgetSize + spacing;
+
+			position += stride;
+			usedSpace += stride;
+		}
+
+		if (usedSpace > 0)
+		{
+			// Remove the unnecessary extra spacing
+			usedSpace -= spacing;
+		}
+
+		// Add padding
+		usedSpace += padding.GetAlongAxis(dir);
+
+		// Set size of box
+		SetMySize(dir, usedSpace);
+	}
+
+	// Handles situations where there will be a fixed amount of space.
+	// - The fill widgets will actually be treated like fill.
+	// - There will be remaining space so aligning the widgets needs to be taken into account
+	internal void UpdateLayoutFlowFix(int dir)
+	{
+		var fillWidgets = new List<UIWidget>(); // list of the fill widgets
+
+		var usedSpace = 0;
+		// Add space used by the spacing between children
+		usedSpace += spacing * (children.Count - 1);
+
+		// var remainingSpace = actualSize[dir] - padding.GetAlongAxis(dir); // remaining space used by widgets not including fill widgets, will be used for sizing fill widgets
+
+		// Subtract space used by spacing
+		// remainingSpace -= spacing * (children.Count - 1);
+
+		// Find all fill widgets
+		// Calculate the used space ignoring fill widgets (used to distribute the remaining space among the fill widgets later)
+		foreach (var child in children)
+		{
+			// If the widget is fill...
+			if (child.sizing[dir] == UISizing.Fill)
 			{
-				// Position the widget
-				child.SetPosition(dir, pos);
-
-				// If the widget fill..
-				if (child.sizing[dir] == UISizing.Fill)
-				{
-					// ...then set the size of the widget
-					child.SetSize(dir, fillWidgetSize);
-				}
-
-				// Notify the widget that the parent changed measure
-				// widget.ParentChangedMeasure();
-
-				pos += child.actualSize[dir];
-				pos += spacing;
+				// ...then add it to the list of fill widgets
+				fillWidgets.Add(child);
 			}
+			else
+			{
+				// ...otherwise then allocate space for it (add it from the used space)
+				// remainingSpace -= child.actualSize[dir];
+				usedSpace += child.actualSize[dir];
+			}
+		}
+
+
+		// Loop over all the widgets and position them
+		// If there are filled widgets then ignore alignment
+		var offset = fillWidgets.Count > 0 ? padding[dir] : alignment[dir] switch
+		{
+			UIAlignment.Start => padding[dir],
+			UIAlignment.End => actualSize[dir] - padding[dir + 2] - usedSpace,
+			UIAlignment.Center => (actualSize[dir] - usedSpace) / 2 + padding[dir] - padding[dir + 2],
+			_ => throw new NotSupportedException($"{alignment} alignment not supported along the flow axis"),
+		};
+		var remainingSpace = actualSize[dir] - padding.GetAlongAxis(dir) - usedSpace;
+		var fillWidgetSize = fillWidgets.Count == 0 ? 0 : Mathf.Max(remainingSpace / fillWidgets.Count, 0);
+
+		foreach (var child in children)
+		{
+			// Position the widget
+			child.SetPosition(dir, offset);
+
+			// If the widget fill..
+			if (child.sizing[dir] == UISizing.Fill)
+			{
+				// ...then set the size of the widget
+				child.SetSize(dir, fillWidgetSize);
+			}
+
+			// Notify the widget that the parent changed measure
+			// widget.ParentChangedMeasure();
+
+			offset += child.actualSize[dir];
+			offset += spacing;
 		}
 	}
 
@@ -222,9 +250,10 @@ public class UIBox : UIContainer
 			// ...set the widget's position...
 			var childPosition = alignment[dir] switch
 			{
-				UIAlignment.Center => (actualSize[dir] - padding.GetAlongAxis(dir)) / 2,
-				UIAlignment.End => actualSize[dir] - padding.GetAlongAxis(dir),
-				_ => 0,
+				UIAlignment.Start => 0,
+				UIAlignment.Center => (actualSize[dir] - padding.GetAlongAxis(dir) - child.actualSize[dir]) / 2,
+				UIAlignment.End => actualSize[dir] - padding.GetAlongAxis(dir) - child.actualSize[dir],
+				_ => throw new NotSupportedException($"{alignment} alignment not supported along the block axis"),
 			};
 			childPosition += padding[dir];
 			child.SetPosition(dir, childPosition);
