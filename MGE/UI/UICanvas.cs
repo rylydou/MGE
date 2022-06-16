@@ -1,5 +1,3 @@
-using System;
-
 namespace MGE.UI;
 
 public class UICanvas : UIBox
@@ -13,9 +11,18 @@ public class UICanvas : UIBox
 	float _focusTransitionTime;
 	Rect _previousFocusRect;
 
+	public override bool isIntractable => true;
+
 	public UICanvas()
 	{
 		canvas = this;
+	}
+
+	internal override void OnPropertiesChanged(int dir)
+	{
+		base.OnPropertiesChanged(dir);
+
+		SetMySize(dir, fixedSize[dir]);
 	}
 
 	public void UpdateInputs(Vector2 mousePosition, Mouse mouse, Keyboard keyboard)
@@ -23,41 +30,21 @@ public class UICanvas : UIBox
 		hoveredWidget = FindHoveredWidget(this, mousePosition);
 	}
 
-	static UIWidget? FindHoveredWidget(UIWidget widget, Vector2 mousePosition)
+	static UIWidget? FindHoveredWidget(UIWidget widget, in Vector2 mousePosition)
 	{
-		UIWidget? result = null;
-
-		var current = widget;
-		while (true)
+		if (widget is UIContainer container)
 		{
-			// The the current widget is intractable...
-			if (current.isIntractable)
+			foreach (var child in container.children)
 			{
-				// ...then it is the new result... until we find a more specific widget
-				result = current;
+				if (!child.absoluteRect.Contains(mousePosition)) continue;
+
+				var hoveredWidget = FindHoveredWidget(child, mousePosition);
+				if (hoveredWidget is not null)
+					return hoveredWidget;
 			}
-
-			if (current is UIBox box)
-			{
-				// Loop over the widgets children...
-				foreach (var child in box.children)
-				{
-					// ..if the mouse is inside the widget...
-					if (child.absoluteRect.Contains(mousePosition))
-					{
-						// ...then run this loop again checking this widget
-						current = child;
-
-						continue;
-					}
-				}
-			}
-
-			// The cursor is not hovering over any of its children so this is the hovered widget
-			break;
 		}
 
-		return result;
+		return widget.isIntractable ? widget : null;
 	}
 
 	public void Update(float delta)
@@ -71,8 +58,8 @@ public class UICanvas : UIBox
 
 		if (focusedWidget is not null)
 		{
-			var previousRect = _previousFocusRect.Expanded(3);
-			var currentRect = focusedWidget.absoluteRect.Expanded(3);
+			var previousRect = _previousFocusRect.Expanded(2);
+			var currentRect = focusedWidget.absoluteRect.Expanded(2);
 			var time = _focusTransitionTime / focusTransitionDuration;
 			var rect = Rect.LerpClamped(previousRect, currentRect, time);
 

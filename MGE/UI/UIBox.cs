@@ -68,31 +68,31 @@ public class UIBox : UIContainer
 		if (dir == (int)direction)
 		{
 			// ...then distribute the widgets
-			UpdateLayoutFlow(dir);
+			UpdateLayout_Flow(dir);
 		}
 		else
 		{
 			// ...otherwise then position the widgets (and resize them if they need it)
-			UpdateLayoutBlock(dir);
+			UpdateLayout_Block(dir);
 		}
 	}
 
-	internal void UpdateLayoutFlow(int dir)
+	internal void UpdateLayout_Flow(int dir)
 	{
 		// If the sizing is hug...
 		if (sizing[dir] == UISizing.Hug)
 		{
 			// ...then then there will not be remaining space so treat the sizing of fill widgets like fix and ignore alignment
-			UpdateLayoutFlowHug(dir);
+			UpdateLayout_Flow_Hug(dir);
 		}
 		else
 		{
 			// ...otherwise then there will be remaining space so treat the fill widgets like fill and take alignment into account, as long as there are no fill widgets
-			UpdateLayoutFlowFix(dir);
+			UpdateLayout_Flow_FixFill(dir);
 		}
 	}
 
-	internal void UpdateLayoutFlowHug(int dir)
+	internal void UpdateLayout_Flow_Hug(int dir)
 	{
 		// Loop over all widgets and position them
 		var usedSpace = 0; // the space used by non fill widgets, will be used for sizing container
@@ -113,13 +113,14 @@ public class UIBox : UIContainer
 				// If the widget fix then use its fixed size
 				case UISizing.Fix:
 					widgetSize = child.fixedSize[dir];
+					// Update fixed size just in case
+					child.SetSize(dir, child.fixedSize[dir]);
 					break;
 				// If the widget is fill then use its fixed size and update the widget to its fixed size
 				case UISizing.Fill:
-					widgetSize = child.fixedSize[dir];
-
 					// TODO  Try hug first, then fallback onto fix
-					// Update the fill widget to it's fix size
+					widgetSize = child.fixedSize[dir];
+					// Update the fill widget to its fixed size
 					child.SetSize(dir, widgetSize);
 					break;
 			}
@@ -146,7 +147,7 @@ public class UIBox : UIContainer
 	// Handles situations where there will be a fixed amount of space.
 	// - The fill widgets will actually be treated like fill.
 	// - There will be remaining space so aligning the widgets needs to be taken into account
-	internal void UpdateLayoutFlowFix(int dir)
+	internal void UpdateLayout_Flow_FixFill(int dir)
 	{
 		var fillWidgets = new List<UIWidget>(); // list of the fill widgets
 
@@ -195,11 +196,16 @@ public class UIBox : UIContainer
 			// Position the widget
 			child.SetPosition(dir, offset);
 
-			// If the widget fill..
-			if (child.sizing[dir] == UISizing.Fill)
+			// Update fix and fill widgets to their expected size
+			switch (child.sizing[dir])
 			{
-				// ...then set the size of the widget
-				child.SetSize(dir, fillWidgetSize);
+				case UISizing.Fix:
+					child.SetSize(dir, child.fixedSize[dir]);
+					break;
+
+				case UISizing.Fill:
+					child.SetSize(dir, fillWidgetSize);
+					break;
 			}
 
 			// Notify the widget that the parent changed measure
@@ -210,7 +216,7 @@ public class UIBox : UIContainer
 		}
 	}
 
-	internal void UpdateLayoutBlock(int dir)
+	internal void UpdateLayout_Block(int dir)
 	{
 		// If the box is hug...
 		if (sizing[dir] == UISizing.Hug)
@@ -247,6 +253,18 @@ public class UIBox : UIContainer
 		// Loop over all the widgets...
 		foreach (var child in children)
 		{
+			// Update fix and fill widgets to their appropriate size
+			switch (child.sizing[dir])
+			{
+				case UISizing.Fix:
+					child.SetSize(dir, child.fixedSize[dir]);
+					break;
+
+				case UISizing.Fill:
+					child.SetSize(dir, actualSize[dir] - padding.GetAlongAxis(dir));
+					break;
+			}
+
 			// ...set the widget's position...
 			var childPosition = alignment[dir] switch
 			{
@@ -257,13 +275,6 @@ public class UIBox : UIContainer
 			};
 			childPosition += padding[dir];
 			child.SetPosition(dir, childPosition);
-
-			// ...if the widget is fill...
-			if (child.sizing[dir] == UISizing.Fill)
-			{
-				// ...then make it fill the widget
-				child.SetSize(dir, actualSize[dir] - padding.GetAlongAxis(dir));
-			}
 		}
 	}
 }

@@ -176,6 +176,8 @@ public class MainModule : Module
 		canvas.RenderCanvas(batch);
 
 		var text =
+			canvas.hoveredWidget + "\n" +
+			App.window.mouse + "\n" +
 			_container.sizing + "\n" +
 			_container.fixedSize + "\n" +
 		"";

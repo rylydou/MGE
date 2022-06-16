@@ -86,4 +86,10 @@ public abstract class UIContainer : UIWidget
 			widget.DoRender(batch);
 		}
 	}
+
+	public UIWidget this[int index]
+	{
+		get => children[index];
+		set => children[index] = value;
+	}
 }

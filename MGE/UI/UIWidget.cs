@@ -17,7 +17,7 @@ public abstract class UIWidget
 	public UIContainer? parent { get; private set; }
 	public UICanvas? canvas { get; internal set; }
 
-	public virtual bool isIntractable => false;
+	public virtual bool isIntractable => true;
 
 	public bool isHovered { get => isIntractable && canvas?.hoveredWidget == this; }
 
@@ -38,8 +38,11 @@ public abstract class UIWidget
 		{
 			OnAttached();
 
-			parent?.ChildMeasureChanged(0, this);
-			parent?.ChildMeasureChanged(1, this);
+			OnPropertiesChanged(0);
+			OnPropertiesChanged(1);
+
+			// parent?.ChildMeasureChanged(0, this);
+			// parent?.ChildMeasureChanged(1, this);
 		}
 	}
 	protected virtual void OnAttached() { }
@@ -49,36 +52,6 @@ public abstract class UIWidget
 	#region Layout
 
 	internal Vector2<float> _layoutFlashTime;
-
-	public Vector2<UISizing> actualSizing
-	{
-		get
-		{
-			var result = new Vector2<UISizing>();
-			for (int i = 0; i < 2; i++)
-			{
-				switch (_sizing[i])
-				{
-					case UISizing.Fix:
-						result[i] = UISizing.Fix;
-						break;
-					case UISizing.Hug:
-						break;
-					case UISizing.Fill:
-						if (parent is not null && parent.sizing[i] == UISizing.Hug)
-						{
-							result[i] = UISizing.Fix;
-						}
-						else
-						{
-							result[i] = UISizing.Fill;
-						}
-						break;
-				}
-			}
-			return result;
-		}
-	}
 
 	[Prop] Vector2<UISizing> _sizing;
 	public Vector2<UISizing> sizing
@@ -90,17 +63,6 @@ public abstract class UIWidget
 			{
 				if (_sizing[i] != value[i])
 				{
-					// switch (value[i])
-					// {
-					// 	case UISizing.Fix:
-					// 		_actualSize[i] = _fixedSize[i];
-					// 		break;
-					// 	case UISizing.Hug:
-					// 		break;
-					// 	case UISizing.Fill:
-					// 		break;
-					// }
-
 					_sizing[i] = value[i];
 					OnPropertiesChanged(i);
 				}
@@ -118,15 +80,12 @@ public abstract class UIWidget
 
 			for (int i = 0; i < 2; i++)
 			{
-				// If the parent is null or sizing is set to fix or the parent is hug which treats this to act like fix
-				if (parent is null || _sizing[i] == UISizing.Fix || (_sizing[i] == UISizing.Fill && parent.sizing[i] == UISizing.Hug))
-					if (_fixedSize[i] != value[i])
-					{
-						_actualSize[i] = value[i];
-						OnPropertiesChanged(i);
-					}
-
-				_fixedSize[i] = value[i];
+				if (_fixedSize[i] != value[i])
+				{
+					_fixedSize[i] = value[i];
+					// _actualSize[i] = value[i];
+					OnPropertiesChanged(i);
+				}
 			}
 		}
 	}
@@ -154,7 +113,7 @@ public abstract class UIWidget
 	public Vector2Int absolutePosition => _absolutePosition;
 	// public Vector2Int absolutePosition => parent is null ? _relativePosition : parent.absolutePosition + _relativePosition;
 
-	Vector2Int _actualSize;
+	internal Vector2Int _actualSize;
 	public Vector2Int actualSize => _actualSize;
 
 	public RectInt relativeRect => new(_relativePosition, _actualSize);
@@ -208,21 +167,63 @@ public abstract class UIWidget
 	{
 		_layoutFlashTime[dir] = 1f;
 
-		// parent?.ChildMeasureChanged(dir, this);
-		// OnMeasureChanged(dir);
+		// for (int i = 0; i < 2; i++)
+		// {
+		// 	switch (GetActualSizing(i))
+		// 	{
+		// 		case UISizing.Fix:
+		// 			_actualSize[i] = _fixedSize[i];
+		// 			break;
+		// 		case UISizing.Hug:
+		// 			break;
+		// 		case UISizing.Fill:
+		// 			break;
+		// 	}
+		// }
 
+		OnMeasureChanged(dir);
 		if (parent is not null)
 		{
 			parent.ChildMeasureChanged(dir, this);
 		}
 		else
 		{
-			OnMeasureChanged(dir);
+			// OnMeasureChanged(dir);
 		}
 	}
 
 	public Action<int> onMeasureChanged = (dir) => { };
 	protected virtual void OnMeasureChanged(int dir) { }
+
+	public UISizing GetActualSizing(int dir)
+	{
+		var sizing = _sizing[dir];
+
+		if (sizing == UISizing.Fix) return UISizing.Fix;
+
+		// TODO  If this widget can't hug then return fix
+		if (_sizing[dir] == UISizing.Hug)
+		{
+			return UISizing.Hug;
+		}
+
+		if (_sizing[dir] == UISizing.Fill)
+		{
+			// Don't fill off into infinity
+			// TODO  Try hug first
+			if (parent is null)
+				return UISizing.Fix;
+
+			// Can't fill if parent is hug
+			// TODO  Try hug first
+			if (parent._sizing[dir] == UISizing.Hug)
+				return UISizing.Fix;
+
+			return UISizing.Fill;
+		}
+
+		throw new NotSupportedException($"{sizing} sizing not supported");
+	}
 
 	#endregion Layout
 
