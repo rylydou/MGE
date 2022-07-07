@@ -62,6 +62,7 @@ public class Player : Actor
 		punchArea = GetChild<Area2D>("Punch area");
 
 		collider = _normalHitbox;
+		collider.color = data.color;
 		collider.CenterOrigin();
 
 		Respawn();
@@ -377,13 +378,40 @@ public class Player : Actor
 			washed = true;
 		}
 
-		batch.Draw(data.skin.texture, offset, pivot, Mathf.Deg2Rad(tilt), scale, color, washed);
+		var sprite = data.skin.spriteSheet.atlas["0"]!.GetClipSubtexture(data.skin.spriteSheet.slices[0].rect);
+
+		for (int y = -1; y <= 1; y++)
+		{
+			for (int x = -1; x <= 1; x++)
+			{
+				batch.Draw(sprite, offset + new Vector2(x, y), pivot, Mathf.Deg2Rad(tilt), scale, data.color, true);
+			}
+		}
+
+		batch.Draw(sprite, offset, pivot, Mathf.Deg2Rad(tilt), scale, color, washed);
+
+		// batch.SetCircle(offset, 4, 8, Color.black);
+		// batch.SetCircle(offset, 2, 8, data.color);
 
 		var holdOffset = new Vector2(8, isCrouching ? 2 : 0);
 
 		const float barWidth = 20;
-		batch.SetBox(new(-barWidth / 2, -18, barWidth, 2), Color.black.translucent);
-		batch.SetBox(new(-barWidth / 2, -18, (float)health / maxHealth * barWidth, 2), Color.green);
+
+		var bgRect = new Rect(-barWidth / 2, -18, barWidth, 2);
+		var fillRect = new Rect(-barWidth / 2, -18, (float)health / maxHealth * barWidth, 2);
+
+		if (health <= 0)
+		{
+			fillRect.width = 0;
+		}
+		else if (fillRect.width < 1 && health > 0)
+		{
+			fillRect.width = 1;
+		}
+
+		batch.SetBox(bgRect, new(0, 0, 0, 256 - 64));
+		batch.SetBox(fillRect, data.color);
+		// batch.SetRect(bgRect, 1, data.color);
 
 		// collider.Render(batch);
 	}

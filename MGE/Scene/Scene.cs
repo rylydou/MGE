@@ -5,6 +5,7 @@ namespace MGE;
 public class Scene : Node
 {
 	public List<Body2D> bodies = new();
+	public bool showColliders = false;
 
 	public Scene()
 	{

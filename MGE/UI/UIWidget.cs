@@ -17,13 +17,31 @@ public abstract class UIWidget
 	public UIContainer? parent { get; private set; }
 	public UICanvas? canvas { get; internal set; }
 
+	/// <summary>
+	// / Is the widget intractable? If true then the widget will consume pointer events
+	/// </summary>
 	public virtual bool isIntractable => true;
 
+	public virtual bool isHoverable => true;
+	public virtual bool isFocusable => true;
+
+	/// <summary>
+	/// Is the widget inert? If true then this widget and it's children can't be interacted with
+	/// </summary>
+	public bool isInert = false;
+
 	public bool isHovered { get => isIntractable && canvas?.hoveredWidget == this; }
+
 
 	protected virtual void RegisterCallbacks()
 	{
 		onMeasureChanged += OnMeasureChanged;
+
+		onPointerEnter += OnPointerEnter;
+		onPointerExit += OnPointerExit;
+		onPointerMove += OnPointerMove;
+
+		onMousePress += OnMousePress;
 	}
 
 	#region Widget Management
@@ -226,6 +244,38 @@ public abstract class UIWidget
 	}
 
 	#endregion Layout
+
+	#region Interaction
+
+	public Action? onPointerEnter;
+	protected virtual void OnPointerEnter() { }
+
+	public Action? onPointerExit;
+	protected virtual void OnPointerExit() { }
+
+	public Action<Vector2>? onPointerMove;
+	protected virtual void OnPointerMove(Vector2 position) { }
+
+	public Action<Vector2, MouseButtons>? onMousePress;
+	protected virtual void OnMousePress(Vector2 position, MouseButtons mouseButton) { }
+
+	public Action? onActivate;
+	protected virtual bool OnActivate() { return false; }
+
+	public Action<Keys>? onKeyPress;
+	protected virtual bool OnKeyPress(Keys key)
+	{
+		if (key == Keys.Enter)
+		{
+			if (OnActivate())
+			{
+				return false;
+			}
+		}
+		return false;
+	}
+
+	#endregion Interaction
 
 	internal virtual void DoRender(Batch2D batch)
 	{

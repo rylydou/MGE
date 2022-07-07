@@ -2,571 +2,624 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace MGE
+namespace MGE;
+
+/// <summary>
+/// Parses the Contents of an Aseprite file
+///
+/// Aseprite File Spec: https://github.com/aseprite/aseprite/blob/master/docs/ase-file-specs.md
+///
+/// TODO  This is not a true or full implementation, and is missing several features (ex. blendmodes)
+///
+/// </summary>
+public class Aseprite
 {
-	/// <summary>
-	/// Parses the Contents of an Aseprite file
-	///
-	/// Aseprite File Spec: https://github.com/aseprite/aseprite/blob/master/docs/ase-file-specs.md
-	///
-	/// TODO  This is not a true or full implementation, and is missing several features (ex. blendmodes)
-	///
-	/// </summary>
-	public class Aseprite
+	public enum Modes
 	{
-		public enum Modes
+		Indexed = 1,
+		Grayscale = 2,
+		RGBA = 4
+	}
+
+	enum Chunks
+	{
+		OldPaletteA = 0x0004,
+		OldPaletteB = 0x0011,
+		Layer = 0x2004,
+		Cel = 0x2005,
+		CelExtra = 0x2006,
+		Mask = 0x2016,
+		Path = 0x2017,
+		FrameTags = 0x2018,
+		Palette = 0x2019,
+		UserData = 0x2020,
+		Slice = 0x2022
+	}
+
+	public Modes mode { get; set; }
+	public int width { get; set; }
+	public int height { get; set; }
+	int _frameCount;
+
+	public readonly List<Layer> layers = new List<Layer>();
+	public readonly List<Frame> frames = new List<Frame>();
+	public readonly List<Tag> tags = new List<Tag>();
+	public readonly List<Slice> slices = new List<Slice>();
+
+	public Aseprite(File file)
+	{
+		using var stream = file.OpenRead();
+		Parse(stream);
+	}
+
+	public Aseprite(Stream stream)
+	{
+		Parse(stream);
+	}
+
+	#region Data Structures
+
+	public class Frame
+	{
+		public Aseprite sprite;
+		public int duration;
+		public Bitmap bitmap;
+		public Color[] pixels => bitmap.pixels;
+		public List<Cel> cels;
+
+		public Frame(Aseprite sprite)
 		{
-			Indexed = 1,
-			Grayscale = 2,
-			RGBA = 4
+			this.sprite = sprite;
+			cels = new List<Cel>();
+			bitmap = new Bitmap(sprite.width, sprite.height);
+		}
+	}
+
+	public class Tag
+	{
+		public enum LoopDirections
+		{
+			Forward = 0,
+			Reverse = 1,
+			PingPong = 2
 		}
 
-		enum Chunks
+		public string name = "";
+		public LoopDirections loopDirection;
+		public int from;
+		public int to;
+		public Color color;
+	}
+
+	public interface IUserData
+	{
+		string userDataText { get; set; }
+		Color userDataColor { get; set; }
+	}
+
+	public class Slice : IUserData
+	{
+		public int frame;
+		public string name = "";
+		public int originX;
+		public int originY;
+		public int width;
+		public int height;
+		public Vector2Int? pivot;
+		public RectInt? nineSlice;
+		public string userDataText { get; set; } = "";
+		public Color userDataColor { get; set; }
+	}
+
+	public class Cel : IUserData
+	{
+		public Layer layer;
+		public Color[] pixels;
+		public Cel? link;
+
+		public int x;
+		public int y;
+		public int width;
+		public int height;
+		public float alpha;
+
+		public string userDataText { get; set; } = "";
+		public Color userDataColor { get; set; }
+
+		public Cel(Layer layer, Color[] pixels)
 		{
-			OldPaletteA = 0x0004,
-			OldPaletteB = 0x0011,
-			Layer = 0x2004,
-			Cel = 0x2005,
-			CelExtra = 0x2006,
-			Mask = 0x2016,
-			Path = 0x2017,
-			FrameTags = 0x2018,
-			Palette = 0x2019,
-			UserData = 0x2020,
-			Slice = 0x2022
+			this.layer = layer;
+			this.pixels = pixels;
+		}
+	}
+
+	public class Layer : IUserData
+	{
+		[Flags]
+		public enum Flags
+		{
+			Visible = 1,
+			Editable = 2,
+			LockMovement = 4,
+			Background = 8,
+			PreferLinkedCels = 16,
+			Collapsed = 32,
+			Reference = 64
 		}
 
-		public Modes mode { get; set; }
-		public int width { get; set; }
-		public int height { get; set; }
-		int _frameCount;
-
-		public readonly List<Layer> layers = new List<Layer>();
-		public readonly List<Frame> frames = new List<Frame>();
-		public readonly List<Tag> tags = new List<Tag>();
-		public readonly List<Slice> slices = new List<Slice>();
-
-		public Aseprite(File file)
+		public enum Types
 		{
-			using var stream = file.OpenRead();
-			Parse(stream);
+			Normal = 0,
+			Group = 1
 		}
 
-		public Aseprite(Stream stream)
+		public enum BlendMode : ushort
 		{
-			Parse(stream);
+			Normal = 0,
+			Multiply = 1,
+			Screen = 2,
+			Overlay = 3,
+			Darken = 4,
+			Lighten = 5,
+			ColorDodge = 6,
+			ColorBurn = 7,
+			HardLight = 8,
+			SoftLight = 9,
+			Difference = 10,
+			Exclusion = 11,
+			Hue = 12,
+			Saturation = 13,
+			Color = 14,
+			Luminosity = 15,
+			Addition = 16,
+			Subtract = 17,
+			Divide = 18,
 		}
 
-		#region Data Structures
+		public Flags flag;
+		public Types type;
+		public string name = "";
+		public int childLevel;
+		public int blendMode;
+		public float alpha;
+		public bool visible { get { return flag.HasFlag(Flags.Visible); } }
 
-		public class Frame
+		public string userDataText { get; set; } = "";
+		public Color userDataColor { get; set; }
+	}
+
+	#endregion
+
+	#region .ase Parser
+
+	void Parse(Stream stream)
+	{
+		var reader = new BinaryReader(stream);
+
+		// wrote these to match the documentation names so it's easier (for me, anyway) to parse
+		byte BYTE() => reader.ReadByte();
+		ushort WORD() => reader.ReadUInt16();
+		short SHORT() => reader.ReadInt16();
+		uint DWORD() => reader.ReadUInt32();
+		long LONG() => reader.ReadInt32();
+		string STRING() => Encoding.UTF8.GetString(BYTES(WORD()));
+		byte[] BYTES(int number) => reader.ReadBytes(number);
+		void SEEK(int number) => reader.BaseStream.Position += number;
+
+		// Header
 		{
-			public Aseprite sprite;
-			public int duration;
-			public Bitmap bitmap;
-			public Color[] pixels => bitmap.pixels;
-			public List<Cel> cels;
+			// file size
+			DWORD();
 
-			public Frame(Aseprite sprite)
+			// Magic number (0xA5E0)
+			var magic = WORD();
+			if (magic != 0xA5E0)
+				throw new MGException("File is not in .ase format");
+
+			// Frames / Width / Height / Color Mode
+			_frameCount = WORD();
+			width = WORD();
+			height = WORD();
+			mode = (Modes)(WORD() / 8);
+
+			// Other Info, Ignored
+			DWORD();       // Flags
+			WORD();        // Speed (deprecated)
+			DWORD();       // Set be 0
+			DWORD();       // Set be 0
+			BYTE();        // Palette entry
+			SEEK(3);       // Ignore these bytes
+			WORD();        // Number of colors (0 means 256 for old sprites)
+			BYTE();        // Pixel width
+			BYTE();        // Pixel height
+			SEEK(92);      // For Future
+		}
+
+		// temporary variables
+		var temp = new byte[width * height * (int)mode];
+		var palette = new Color[256];
+		IUserData? last = null;
+
+		// Frames
+		for (int i = 0; i < _frameCount; i++)
+		{
+			var frame = new Frame(this);
+			frames.Add(frame);
+
+			long frameStart, frameEnd;
+			int chunkCount;
+
+			// frame header
 			{
-				this.sprite = sprite;
-				cels = new List<Cel>();
-				bitmap = new Bitmap(sprite.width, sprite.height);
+				frameStart = reader.BaseStream.Position;
+				frameEnd = frameStart + DWORD();
+				WORD();                  // Magic number (always 0xF1FA)
+				chunkCount = WORD();     // Number of "chunks" in this frame
+				frame.duration = WORD(); // Frame duration (in milliseconds)
+				SEEK(6);                 // For future (set to zero)
 			}
-		}
 
-		public class Tag
-		{
-			public enum LoopDirections
+			// chunks
+			for (int j = 0; j < chunkCount; j++)
 			{
-				Forward = 0,
-				Reverse = 1,
-				PingPong = 2
-			}
+				long chunkStart, chunkEnd;
+				Chunks chunkType;
 
-			public string name = "";
-			public LoopDirections loopDirection;
-			public int from;
-			public int to;
-			public Color color;
-		}
-
-		public interface IUserData
-		{
-			string userDataText { get; set; }
-			Color userDataColor { get; set; }
-		}
-
-		public class Slice : IUserData
-		{
-			public int frame;
-			public string name = "";
-			public int originX;
-			public int originY;
-			public int width;
-			public int height;
-			public Vector2Int? pivot;
-			public RectInt? nineSlice;
-			public string userDataText { get; set; } = "";
-			public Color userDataColor { get; set; }
-		}
-
-		public class Cel : IUserData
-		{
-			public Layer layer;
-			public Color[] pixels;
-			public Cel? link;
-
-			public int x;
-			public int y;
-			public int width;
-			public int height;
-			public float alpha;
-
-			public string userDataText { get; set; } = "";
-			public Color userDataColor { get; set; }
-
-			public Cel(Layer layer, Color[] pixels)
-			{
-				this.layer = layer;
-				this.pixels = pixels;
-			}
-		}
-
-		public class Layer : IUserData
-		{
-			[Flags]
-			public enum Flags
-			{
-				Visible = 1,
-				Editable = 2,
-				LockMovement = 4,
-				Background = 8,
-				PreferLinkedCels = 16,
-				Collapsed = 32,
-				Reference = 64
-			}
-
-			public enum Types
-			{
-				Normal = 0,
-				Group = 1
-			}
-
-			public Flags flag;
-			public Types type;
-			public string name = "";
-			public int childLevel;
-			public int blendMode;
-			public float alpha;
-			public bool visible { get { return flag.HasFlag(Flags.Visible); } }
-
-			public string userDataText { get; set; } = "";
-			public Color userDataColor { get; set; }
-		}
-
-		#endregion
-
-		#region .ase Parser
-
-		void Parse(Stream stream)
-		{
-			var reader = new BinaryReader(stream);
-
-			// wrote these to match the documentation names so it's easier (for me, anyway) to parse
-			byte BYTE() => reader.ReadByte();
-			ushort WORD() => reader.ReadUInt16();
-			short SHORT() => reader.ReadInt16();
-			uint DWORD() => reader.ReadUInt32();
-			long LONG() => reader.ReadInt32();
-			string STRING() => Encoding.UTF8.GetString(BYTES(WORD()));
-			byte[] BYTES(int number) => reader.ReadBytes(number);
-			void SEEK(int number) => reader.BaseStream.Position += number;
-
-			// Header
-			{
-				// file size
-				DWORD();
-
-				// Magic number (0xA5E0)
-				var magic = WORD();
-				if (magic != 0xA5E0)
-					throw new MGException("File is not in .ase format");
-
-				// Frames / Width / Height / Color Mode
-				_frameCount = WORD();
-				width = WORD();
-				height = WORD();
-				mode = (Modes)(WORD() / 8);
-
-				// Other Info, Ignored
-				DWORD();       // Flags
-				WORD();        // Speed (deprecated)
-				DWORD();       // Set be 0
-				DWORD();       // Set be 0
-				BYTE();        // Palette entry
-				SEEK(3);       // Ignore these bytes
-				WORD();        // Number of colors (0 means 256 for old sprites)
-				BYTE();        // Pixel width
-				BYTE();        // Pixel height
-				SEEK(92);      // For Future
-			}
-
-			// temporary variables
-			var temp = new byte[width * height * (int)mode];
-			var palette = new Color[256];
-			IUserData? last = null;
-
-			// Frames
-			for (int i = 0; i < _frameCount; i++)
-			{
-				var frame = new Frame(this);
-				frames.Add(frame);
-
-				long frameStart, frameEnd;
-				int chunkCount;
-
-				// frame header
+				// chunk header
 				{
-					frameStart = reader.BaseStream.Position;
-					frameEnd = frameStart + DWORD();
-					WORD();                  // Magic number (always 0xF1FA)
-					chunkCount = WORD();     // Number of "chunks" in this frame
-					frame.duration = WORD(); // Frame duration (in milliseconds)
-					SEEK(6);                 // For future (set to zero)
+					chunkStart = reader.BaseStream.Position;
+					chunkEnd = chunkStart + DWORD();
+					chunkType = (Chunks)WORD();
 				}
 
-				// chunks
-				for (int j = 0; j < chunkCount; j++)
+				// LAYER CHUNK
+				if (chunkType == Chunks.Layer)
 				{
-					long chunkStart, chunkEnd;
-					Chunks chunkType;
+					// create layer
+					var layer = new Layer();
 
-					// chunk header
+					// get layer data
+					layer.flag = (Layer.Flags)WORD();
+					layer.type = (Layer.Types)WORD();
+					layer.childLevel = WORD();
+					WORD(); // width (unused)
+					WORD(); // height (unused)
+					layer.blendMode = WORD();
+					layer.alpha = (BYTE() / 255f);
+					SEEK(3); // for future
+					layer.name = STRING();
+
+					last = layer;
+					layers.Add(layer);
+				}
+				// CEL CHUNK
+				else if (chunkType == Chunks.Cel)
+				{
+					var layer = layers[WORD()];
+					var x = SHORT();
+					var y = SHORT();
+					var alpha = BYTE() / 255f;
+					var celType = WORD();
+					var width = 0;
+					var height = 0;
+					Color[]? pixels = null;
+					Cel? link = null;
+
+					SEEK(7);
+
+					// RAW or DEFLATE
+					if (celType == 0 || celType == 2)
 					{
-						chunkStart = reader.BaseStream.Position;
-						chunkEnd = chunkStart + DWORD();
-						chunkType = (Chunks)WORD();
-					}
+						width = WORD();
+						height = WORD();
 
-					// LAYER CHUNK
-					if (chunkType == Chunks.Layer)
-					{
-						// create layer
-						var layer = new Layer();
+						var count = width * height * (int)mode;
+						if (count > temp.Length)
+							temp = new byte[count];
 
-						// get layer data
-						layer.flag = (Layer.Flags)WORD();
-						layer.type = (Layer.Types)WORD();
-						layer.childLevel = WORD();
-						WORD(); // width (unused)
-						WORD(); // height (unused)
-						layer.blendMode = WORD();
-						layer.alpha = (BYTE() / 255f);
-						SEEK(3); // for future
-						layer.name = STRING();
-
-						last = layer;
-						layers.Add(layer);
-					}
-					// CEL CHUNK
-					else if (chunkType == Chunks.Cel)
-					{
-						var layer = layers[WORD()];
-						var x = SHORT();
-						var y = SHORT();
-						var alpha = BYTE() / 255f;
-						var celType = WORD();
-						var width = 0;
-						var height = 0;
-						Color[]? pixels = null;
-						Cel? link = null;
-
-						SEEK(7);
-
-						// RAW or DEFLATE
-						if (celType == 0 || celType == 2)
+						// RAW
+						if (celType == 0)
 						{
-							width = WORD();
-							height = WORD();
-
-							var count = width * height * (int)mode;
-							if (count > temp.Length)
-								temp = new byte[count];
-
-							// RAW
-							if (celType == 0)
-							{
-								reader.Read(temp, 0, width * height * (int)mode);
-							}
-							// DEFLATE
-							else
-							{
-								SEEK(2);
-
-								using var deflate = new DeflateStream(reader.BaseStream, CompressionMode.Decompress, true);
-								deflate.Read(temp, 0, count);
-							}
-
-							// get pixel data
-							pixels = new Color[width * height];
-							BytesToPixels(temp, pixels, mode, palette);
-
+							reader.Read(temp, 0, width * height * (int)mode);
 						}
-						// REFERENCE
-						else if (celType == 1)
-						{
-							var linkFrame = frames[WORD()];
-							var linkCel = linkFrame.cels[frame.cels.Count];
-
-							width = linkCel.width;
-							height = linkCel.height;
-							pixels = linkCel.pixels;
-							link = linkCel;
-						}
+						// DEFLATE
 						else
 						{
-							throw new NotImplementedException();
+							SEEK(2);
+
+							using var deflate = new DeflateStream(reader.BaseStream, CompressionMode.Decompress, true);
+							deflate.Read(temp, 0, count);
 						}
 
-						var cel = new Cel(layer, pixels)
+						// get pixel data
+						pixels = new Color[width * height];
+						BytesToPixels(temp, pixels, mode, palette);
+
+					}
+					// REFERENCE
+					else if (celType == 1)
+					{
+						var linkFrame = frames[WORD()];
+						var linkCel = linkFrame.cels[frame.cels.Count];
+
+						width = linkCel.width;
+						height = linkCel.height;
+						pixels = linkCel.pixels;
+						link = linkCel;
+					}
+					else
+					{
+						throw new NotImplementedException();
+					}
+
+					var cel = new Cel(layer, pixels)
+					{
+						x = x,
+						y = y,
+						width = width,
+						height = height,
+						alpha = alpha,
+						link = link
+					};
+
+					// draw to frame if visible
+					if (cel.layer.visible)
+						CelToFrame(frame, cel);
+
+					last = cel;
+					frame.cels.Add(cel);
+				}
+				// PALETTE CHUNK
+				else if (chunkType == Chunks.Palette)
+				{
+					var size = DWORD();
+					var start = DWORD();
+					var end = DWORD();
+					SEEK(8); // for future
+
+					for (int p = 0; p < (end - start) + 1; p++)
+					{
+						var hasName = WORD();
+						palette[start + p] = new Color(BYTE(), BYTE(), BYTE(), BYTE());
+
+						if (Calc.IsBitSet(hasName, 0))
+							STRING();
+					}
+				}
+				// USERDATA
+				else if (chunkType == Chunks.UserData)
+				{
+					if (last is not null)
+					{
+						var flags = (int)DWORD();
+
+						// has text
+						if (Calc.IsBitSet(flags, 0))
+							last.userDataText = STRING();
+
+						// has color
+						if (Calc.IsBitSet(flags, 1))
+							last.userDataColor = new Color(BYTE(), BYTE(), BYTE(), BYTE());
+					}
+				}
+				// TAG
+				else if (chunkType == Chunks.FrameTags)
+				{
+					var count = WORD();
+					SEEK(8);
+
+					for (int t = 0; t < count; t++)
+					{
+						var tag = new Tag();
+						tag.from = WORD();
+						tag.to = WORD();
+						tag.loopDirection = (Tag.LoopDirections)BYTE();
+						SEEK(8);
+						tag.color = new Color(BYTE(), BYTE(), BYTE(), (byte)255);
+						SEEK(1);
+						tag.name = STRING();
+						tags.Add(tag);
+					}
+				}
+				// SLICE
+				else if (chunkType == Chunks.Slice)
+				{
+					var count = DWORD();
+					var flags = (int)DWORD();
+					DWORD(); // reserved
+					var name = STRING();
+
+					for (int s = 0; s < count; s++)
+					{
+						var slice = new Slice
 						{
-							x = x,
-							y = y,
-							width = width,
-							height = height,
-							alpha = alpha,
-							link = link
+							name = name,
+							frame = (int)DWORD(),
+							originX = (int)LONG(),
+							originY = (int)LONG(),
+							width = (int)DWORD(),
+							height = (int)DWORD()
 						};
 
-						// draw to frame if visible
-						if (cel.layer.visible)
-							CelToFrame(frame, cel);
-
-						last = cel;
-						frame.cels.Add(cel);
-					}
-					// PALETTE CHUNK
-					else if (chunkType == Chunks.Palette)
-					{
-						var size = DWORD();
-						var start = DWORD();
-						var end = DWORD();
-						SEEK(8); // for future
-
-						for (int p = 0; p < (end - start) + 1; p++)
+						// 9 slice (ignored atm)
+						if (Calc.IsBitSet(flags, 0))
 						{
-							var hasName = WORD();
-							palette[start + p] = new Color(BYTE(), BYTE(), BYTE(), BYTE());
-
-							if (Calc.IsBitSet(hasName, 0))
-								STRING();
+							slice.nineSlice = new RectInt(
+									(int)LONG(),
+									(int)LONG(),
+									(int)DWORD(),
+									(int)DWORD());
 						}
+
+						// pivot point
+						if (Calc.IsBitSet(flags, 1))
+							slice.pivot = new((int)DWORD(), (int)DWORD());
+
+						last = slice;
+						slices.Add(slice);
 					}
-					// USERDATA
-					else if (chunkType == Chunks.UserData)
-					{
-						if (last is not null)
-						{
-							var flags = (int)DWORD();
-
-							// has text
-							if (Calc.IsBitSet(flags, 0))
-								last.userDataText = STRING();
-
-							// has color
-							if (Calc.IsBitSet(flags, 1))
-								last.userDataColor = new Color(BYTE(), BYTE(), BYTE(), BYTE());
-						}
-					}
-					// TAG
-					else if (chunkType == Chunks.FrameTags)
-					{
-						var count = WORD();
-						SEEK(8);
-
-						for (int t = 0; t < count; t++)
-						{
-							var tag = new Tag();
-							tag.from = WORD();
-							tag.to = WORD();
-							tag.loopDirection = (Tag.LoopDirections)BYTE();
-							SEEK(8);
-							tag.color = new Color(BYTE(), BYTE(), BYTE(), (byte)255);
-							SEEK(1);
-							tag.name = STRING();
-							tags.Add(tag);
-						}
-					}
-					// SLICE
-					else if (chunkType == Chunks.Slice)
-					{
-						var count = DWORD();
-						var flags = (int)DWORD();
-						DWORD(); // reserved
-						var name = STRING();
-
-						for (int s = 0; s < count; s++)
-						{
-							var slice = new Slice
-							{
-								name = name,
-								frame = (int)DWORD(),
-								originX = (int)LONG(),
-								originY = (int)LONG(),
-								width = (int)DWORD(),
-								height = (int)DWORD()
-							};
-
-							// 9 slice (ignored atm)
-							if (Calc.IsBitSet(flags, 0))
-							{
-								slice.nineSlice = new RectInt(
-										(int)LONG(),
-										(int)LONG(),
-										(int)DWORD(),
-										(int)DWORD());
-							}
-
-							// pivot point
-							if (Calc.IsBitSet(flags, 1))
-								slice.pivot = new((int)DWORD(), (int)DWORD());
-
-							last = slice;
-							slices.Add(slice);
-						}
-					}
-
-					reader.BaseStream.Position = chunkEnd;
 				}
 
-				reader.BaseStream.Position = frameEnd;
+				reader.BaseStream.Position = chunkEnd;
 			}
+
+			reader.BaseStream.Position = frameEnd;
 		}
+	}
 
-		#endregion
+	#endregion
 
-		#region Blend Modes
+	#region Blend Modes
 
-		// More or less copied from Aseprite's source code:
-		// https://github.com/aseprite/aseprite/blob/master/src/doc/blend_funcs.cpp
+	// More or less copied from Aseprite's source code:
+	// https://github.com/aseprite/aseprite/blob/master/src/doc/blend_funcs.cpp
 
-		delegate void Blend(ref Color dest, Color src, byte opacity);
+	delegate void Blend(ref Color dest, Color src, byte opacity);
 
-		static readonly Blend[] BlendModes = new Blend[]
-	 {
-            // 0 - NORMAL
-            (ref Color dest, Color src, byte opacity) =>
-						{
-								if (src.a != 0)
-								{
-										if (dest.a == 0)
-										{
-												dest = src;
-										}
-										else
-										{
-												var sa = MUL_UN8(src.a, opacity);
-												var ra = dest.a + sa - MUL_UN8(dest.a, sa);
-
-												dest.r = (byte)(dest.r + (src.r - dest.r) * sa / ra);
-												dest.g = (byte)(dest.g + (src.g - dest.g) * sa / ra);
-												dest.b = (byte)(dest.b + (src.b - dest.b) * sa / ra);
-												dest.a = (byte)ra;
-										}
-
-								}
-						}
-	 };
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		static int MUL_UN8(int a, int b)
+	static readonly Blend[] BlendModes = new Blend[]
+	{
+		// 0 - NORMAL
+		(ref Color dest, Color src, byte opacity) =>
 		{
-			var t = (a * b) + 0x80;
-			return (((t >> 8) + t) >> 8);
-		}
-
-		#endregion
-
-		#region Utils
-
-		/// <summary>
-		/// Converts an array of Bytes to an array of Colors, using the specific Aseprite Mode & Palette
-		/// </summary>
-		void BytesToPixels(byte[] bytes, Color[] pixels, Modes mode, Color[] palette)
-		{
-			int len = pixels.Length;
-			if (mode == Modes.RGBA)
+			if (src.a != 0)
 			{
-				for (int p = 0, b = 0; p < len; p++, b += 4)
+				if (dest.a == 0)
 				{
-					pixels[p].r = (byte)(bytes[b + 0] * bytes[b + 3] / 255);
-					pixels[p].g = (byte)(bytes[b + 1] * bytes[b + 3] / 255);
-					pixels[p].b = (byte)(bytes[b + 2] * bytes[b + 3] / 255);
-					pixels[p].a = bytes[b + 3];
+					dest = src;
 				}
-			}
-			else if (mode == Modes.Grayscale)
-			{
-				for (int p = 0, b = 0; p < len; p++, b += 2)
+				else
 				{
-					pixels[p].r = pixels[p].g = pixels[p].b = (byte)(bytes[b + 0] * bytes[b + 1] / 255);
-					pixels[p].a = bytes[b + 1];
-				}
-			}
-			else if (mode == Modes.Indexed)
-			{
-				for (int p = 0; p < len; p++)
-					pixels[p] = palette[bytes[p]];
-			}
-		}
+					var sa = MUL_UN8(src.a, opacity);
+					var ra = dest.a + sa - MUL_UN8(dest.a, sa);
 
-		/// <summary>
-		/// Applies a Cel's pixels to the Frame, using its Layer's BlendMode & Alpha
-		/// </summary>
-		void CelToFrame(Frame frame, Cel cel)
-		{
-			var opacity = (byte)((cel.alpha * cel.layer.alpha) * 255);
-			var pxLen = frame.bitmap.pixels.Length;
-
-			var blend = BlendModes[0];
-			if (cel.layer.blendMode < BlendModes.Length)
-				blend = BlendModes[cel.layer.blendMode];
-
-			for (int sx = Mathf.Max(0, -cel.x), right = Mathf.Min(cel.width, frame.sprite.width - cel.x); sx < right; sx++)
-			{
-				int dx = cel.x + sx;
-				int dy = cel.y * frame.sprite.width;
-
-				for (int sy = Mathf.Max(0, -cel.y), bottom = Mathf.Min(cel.height, frame.sprite.height - cel.y); sy < bottom; sy++, dy += frame.sprite.width)
-				{
-					if (dx + dy >= 0 && dx + dy < pxLen)
-						blend(ref frame.bitmap.pixels[dx + dy], cel.pixels[sx + sy * cel.width], opacity);
+					dest.r = (byte)(dest.r + (src.r - dest.r) * sa / ra);
+					dest.g = (byte)(dest.g + (src.g - dest.g) * sa / ra);
+					dest.b = (byte)(dest.b + (src.b - dest.b) * sa / ra);
+					dest.a = (byte)ra;
 				}
 			}
 		}
+	};
 
-		/// <summary>
-		/// Adds all Aseprite Frames to the Atlas, using the naming format (ex. "mySprite/{0}" where {0} becomes the frame index)
-		/// </summary>
-		public void Pack(string namingFormat, Packer packer)
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	static int MUL_UN8(int a, int b)
+	{
+		var t = (a * b) + 0x80;
+		return (((t >> 8) + t) >> 8);
+	}
+
+	#endregion
+
+	#region Utils
+
+	/// <summary>
+	/// Converts an array of Bytes to an array of Colors, using the specific Aseprite Mode & Palette
+	/// </summary>
+	void BytesToPixels(byte[] bytes, Color[] pixels, Modes mode, Color[] palette)
+	{
+		int len = pixels.Length;
+		if (mode == Modes.RGBA)
 		{
-			if (!namingFormat.Contains("{0}"))
-				throw new MGException("naming format must contain {0} for frame index");
-
-			int frameIndex = 0;
-			foreach (var frame in frames)
+			for (int p = 0, b = 0; p < len; p++, b += 4)
 			{
-				var name = string.Format(namingFormat, frameIndex);
-				packer.AddPixels(name, width, height, frame.bitmap.pixels);
-
-				frameIndex++;
+				pixels[p].r = (byte)(bytes[b + 0] * bytes[b + 3] / 255);
+				pixels[p].g = (byte)(bytes[b + 1] * bytes[b + 3] / 255);
+				pixels[p].b = (byte)(bytes[b + 2] * bytes[b + 3] / 255);
+				pixels[p].a = bytes[b + 3];
 			}
 		}
+		else if (mode == Modes.Grayscale)
+		{
+			for (int p = 0, b = 0; p < len; p++, b += 2)
+			{
+				pixels[p].r = pixels[p].g = pixels[p].b = (byte)(bytes[b + 0] * bytes[b + 1] / 255);
+				pixels[p].a = bytes[b + 1];
+			}
+		}
+		else if (mode == Modes.Indexed)
+		{
+			for (int p = 0; p < len; p++)
+				pixels[p] = palette[bytes[p]];
+		}
+	}
 
-		#endregion
+	/// <summary>
+	/// Applies a Cel's pixels to the Frame, using its Layer's BlendMode & Alpha
+	/// </summary>
+	void CelToFrame(Frame frame, Cel cel)
+	{
+		var opacity = (byte)((cel.alpha * cel.layer.alpha) * 255);
+		var pxLen = frame.bitmap.pixels.Length;
+
+		var blend = BlendModes[0];
+		if (cel.layer.blendMode < BlendModes.Length)
+			blend = BlendModes[cel.layer.blendMode];
+
+		for (int sx = Mathf.Max(0, -cel.x), right = Mathf.Min(cel.width, frame.sprite.width - cel.x); sx < right; sx++)
+		{
+			int dx = cel.x + sx;
+			int dy = cel.y * frame.sprite.width;
+
+			for (int sy = Mathf.Max(0, -cel.y), bottom = Mathf.Min(cel.height, frame.sprite.height - cel.y); sy < bottom; sy++, dy += frame.sprite.width)
+			{
+				if (dx + dy >= 0 && dx + dy < pxLen)
+					blend(ref frame.bitmap.pixels[dx + dy], cel.pixels[sx + sy * cel.width], opacity);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Adds all Aseprite Frames to the Atlas, using the naming format (ex. "mySprite/{0}" where {0} becomes the frame index)
+	/// </summary>
+	public void Pack(string namingFormat, Packer packer)
+	{
+		if (!namingFormat.Contains("{0}"))
+			throw new MGException("naming format must contain {0} for frame index");
+
+		int frameIndex = 0;
+		foreach (var frame in frames)
+		{
+			var name = string.Format(namingFormat, frameIndex);
+			packer.AddPixels(name, width, height, frame.bitmap.pixels);
+
+			frameIndex++;
+		}
+	}
+
+	#endregion
+
+	public SpriteSheet ToSpriteSheet()
+	{
+		var packer = new Packer();
+
+
+		var frameIndex = 0;
+		foreach (var frame in frames)
+		{
+			packer.AddBitmap(frameIndex.ToString(), frame.bitmap);
+			frameIndex++;
+		}
+
+		var spriteSheet = new SpriteSheet(new Atlas(packer));
+
+		foreach (var slice in slices)
+		{
+			spriteSheet.slices.Add(new()
+			{
+				color = slice.userDataColor,
+				userData = slice.userDataText,
+
+				name = slice.name,
+				rect = new(slice.originX, slice.originY, slice.width, slice.height),
+				nineSlice = slice.nineSlice,
+				pivot = slice.pivot,
+			});
+		}
+
+		return spriteSheet;
 	}
 }

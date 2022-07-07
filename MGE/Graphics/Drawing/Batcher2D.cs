@@ -1032,9 +1032,10 @@ public class Batch2D
 
 	public void Draw(Texture texture, Vector2 position, in Color color, bool washed = false)
 	{
-		SetTexture(texture);
 		var halfWidth = (float)texture.width / 2;
 		var halfHeight = (float)texture.height / 2;
+
+		SetTexture(texture);
 		SetQuad(
 			new(position.x - halfWidth, position.y - halfHeight),
 			new(position.x + halfWidth, position.y - halfHeight),
@@ -1066,6 +1067,104 @@ public class Batch2D
 			new(1, 0),
 			new(1, 1),
 			new(0, 1),
+		color, washed);
+	}
+
+	public void Draw(Texture texture, Rect src, Vector2 position, in Color color, bool washed = false)
+	{
+		var tx0 = src.x / texture.width;
+		var ty0 = src.y / texture.height;
+		var tx1 = src.right / texture.width;
+		var ty1 = src.bottom / texture.height;
+
+		var halfWidth = src.width / 2;
+		var halfHeight = src.height / 2;
+
+		SetTexture(texture);
+		SetQuad(
+			new(position.x - halfWidth, position.y - halfHeight),
+			new(position.x + halfWidth, position.y - halfHeight),
+			new(position.x + halfWidth, position.y + halfHeight),
+			new(position.x - halfWidth, position.y + halfHeight),
+			new(tx0, ty0), new(tx1, ty0), new(tx1, ty1), new(tx0, ty1),
+		color, washed);
+	}
+
+	public void Draw(Texture texture, Rect src, Vector2 position, Vector2 pivot, float rotation, Vector2 scale, in Color color, bool washed = false)
+	{
+		var tx0 = src.x / texture.width;
+		var ty0 = src.y / texture.height;
+		var tx1 = src.right / texture.width;
+		var ty1 = src.bottom / texture.height;
+
+		var halfWidth = src.width / 2;
+		var halfHeight = src.height / 2;
+
+		SetTexture(texture);
+		SetQuad(
+			// position + Vector2.Transform(new(-halfWidth, -halfHeight), t),
+			// position + Vector2.Transform(new(+halfWidth, -halfHeight), t),
+			// position + Vector2.Transform(new(+halfWidth, +halfHeight), t),
+			// position + Vector2.Transform(new(-halfWidth, +halfHeight), t),
+			Vector2.RotateAroundPoint(pivot, new Vector2(position.x - halfWidth, position.y - halfHeight) * scale, rotation),
+			Vector2.RotateAroundPoint(pivot, new Vector2(position.x + halfWidth, position.y - halfHeight) * scale, rotation),
+			Vector2.RotateAroundPoint(pivot, new Vector2(position.x + halfWidth, position.y + halfHeight) * scale, rotation),
+			Vector2.RotateAroundPoint(pivot, new Vector2(position.x - halfWidth, position.y + halfHeight) * scale, rotation),
+			new(tx0, ty0), new(tx1, ty0), new(tx1, ty1), new(tx0, ty1),
+		color, washed);
+	}
+
+	public void Draw(Subtexture subtex, Vector2 position, in Color color, bool washed = false)
+	{
+		var offset = subtex.frame.size / 2;
+		// var halfWidth = subtex.source.width / 2;
+		// var halfHeight = subtex.source.height / 2;
+
+		SetTexture(subtex.texture);
+		SetQuad(
+			subtex.drawCoords[0] - offset + position,
+			subtex.drawCoords[1] - offset + position,
+			subtex.drawCoords[2] - offset + position,
+			subtex.drawCoords[3] - offset + position,
+			subtex.texCoords[0], subtex.texCoords[1], subtex.texCoords[2], subtex.texCoords[3],
+		color, washed);
+
+		return;
+
+		// // var halfWidth = subtex.source.width / 2;
+		// // var halfHeight = subtex.source.height / 2;
+
+		// SetTexture(subtex.texture);
+		// SetQuad(
+		// 	new(position.x - halfWidth, position.y - halfHeight),
+		// 	new(position.x + halfWidth, position.y - halfHeight),
+		// 	new(position.x + halfWidth, position.y + halfHeight),
+		// 	new(position.x - halfWidth, position.y + halfHeight),
+		// 	subtex.texCoords[0], subtex.texCoords[1], subtex.texCoords[2], subtex.texCoords[3],
+		// color, washed);
+	}
+
+	public void Draw(Subtexture subtex, Vector2 position, Vector2 pivot, float rotation, Vector2 scale, in Color color, bool washed = false)
+	{
+		// Draw(subtex, position, color, washed);
+		// return;
+		var offset = subtex.frame.size / 2;
+
+		SetTexture(subtex.texture);
+		SetQuad(
+			Vector2.RotateAroundPoint(pivot, subtex.drawCoords[0] - offset + position, rotation),
+			Vector2.RotateAroundPoint(pivot, subtex.drawCoords[1] - offset + position, rotation),
+			Vector2.RotateAroundPoint(pivot, subtex.drawCoords[2] - offset + position, rotation),
+			Vector2.RotateAroundPoint(pivot, subtex.drawCoords[3] - offset + position, rotation),
+			// position + Vector2.Transform(new(-halfWidth, -halfHeight), t),
+			// position + Vector2.Transform(new(+halfWidth, -halfHeight), t),
+			// position + Vector2.Transform(new(+halfWidth, +halfHeight), t),
+			// position + Vector2.Transform(new(-halfWidth, +halfHeight), t),
+			// Vector2.RotateAroundPoint(pivot, new Vector2(position.x - halfWidth, position.y - halfHeight) * scale, rotation),
+			// Vector2.RotateAroundPoint(pivot, new Vector2(position.x + halfWidth, position.y - halfHeight) * scale, rotation),
+			// Vector2.RotateAroundPoint(pivot, new Vector2(position.x + halfWidth, position.y + halfHeight) * scale, rotation),
+			// Vector2.RotateAroundPoint(pivot, new Vector2(position.x - halfWidth, position.y + halfHeight) * scale, rotation),
+			subtex.texCoords[0], subtex.texCoords[1], subtex.texCoords[2], subtex.texCoords[3],
 		color, washed);
 	}
 

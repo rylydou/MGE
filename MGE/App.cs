@@ -86,6 +86,8 @@ public static class App
 	/// </summary>
 	static Window? primaryWindow;
 
+	public static int ticksThisFrame;
+
 	public static string shortEnvName
 	{
 		get
@@ -225,8 +227,10 @@ public static class App
 					fixedAccumulator = Time.tickMaxElapsedTime;
 
 				// do as many fixed updates as we can
+				ticksThisFrame = 0;
 				while (fixedAccumulator >= fixedTarget)
 				{
+					ticksThisFrame++;
 					Time.tickDuration += fixedTarget;
 					fixedAccumulator -= fixedTarget;
 

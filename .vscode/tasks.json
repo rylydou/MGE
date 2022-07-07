@@ -1,39 +1,45 @@
 {
 	"version": "2.0.0",
+	"presentation": {
+		"echo": true,
+		"reveal": "silent",
+		"focus": false,
+		"panel": "shared",
+		"showReuseMessage": false,
+		"clear": true
+	},
 	"tasks": [
 		{
-			"label": "Build Game",
+			"label": "Game: Watch",
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
 			"command": "dotnet",
 			"type": "process",
 			"args": [
-				"build",
+				"watch",
+				// "run",
+				"--project",
 				"${workspaceFolder}/Game/Game.csproj",
-				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary",
-				"--nologo"
+				// "/property:GenerateFullPaths=true",
+				// "/consoleloggerparameters:NoSummary",
+				// "--nologo"
 			],
-			"problemMatcher": "$msCompile"
+			// "problemMatcher": "$msCompile",
 		},
 		{
-			"label": "Build UIDemo",
+			"label": "UIDemo: Watch",
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
 			"command": "dotnet",
 			"type": "process",
 			"args": [
 				"build",
+				"run",
 				"${workspaceFolder}/UIDemo/UIDemo.csproj",
-				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary",
-				"--nologo"
-			],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"label": "Build Editor",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
-				"${workspaceFolder}/Editor/MGE.Editor.csproj",
 				"/property:GenerateFullPaths=true",
 				"/consoleloggerparameters:NoSummary",
 				"--nologo"

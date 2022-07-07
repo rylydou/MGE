@@ -80,7 +80,6 @@ public abstract class CanvasItem : Node
 	public Action onTransformChanged = () => { };
 	protected virtual void OnTransformChanged() { }
 
-	public delegate void DrawDelegate(Batch2D batch);
-	public DrawDelegate onDraw = (batch) => { };
+	public Action<Batch2D> onDraw = (batch) => { };
 	protected virtual void Render(Batch2D batch) { }
 }

@@ -63,7 +63,7 @@ public class UICanvas : UIBox
 			var time = _focusTransitionTime / focusTransitionDuration;
 			var rect = Rect.LerpClamped(previousRect, currentRect, time);
 
-			batch.SetRect(rect, 1, new(0x0A84FFFF));
+			batch.SetRect(rect, 1, new(0x3584E4FF));
 		}
 	}
 }

@@ -34,21 +34,26 @@ public class MainModule : Module
 	protected override void Update(float delta)
 	{
 		var kb = App.input.keyboard;
-		if (kb.Pressed(Keys.F11) || (kb.Pressed(Keys.RightAlt) && kb.Pressed(Keys.Enter)))
+		if (kb.Pressed(Keys.F11) || (kb.alt && kb.Pressed(Keys.Enter)))
 		{
 			App.window.fullscreen = !App.window.fullscreen;
-			return;
+			// return;
+		}
+
+		if (kb.Pressed(Keys.F2))
+		{
+			Main.scene.showColliders = !Main.scene.showColliders;
 		}
 
 		var topColor = new Color(0x3978A8FF);
 		var bottomColor = new Color(0x394778FF);
 		Batch2D.current.SetBox(new(Main.screenSize), topColor, topColor, bottomColor, bottomColor);
+		Batch2D.current.SetBox(new(Main.screenSize), new(0x302C2EFF));
 
 		Main.screen.Update(delta);
 		Main.scene.onUpdate(delta);
 
-		var info = Batch2D.current.Render(gameFramebuffer);
-		App.profiler.batch2DRenderInfo = info;
+		Batch2D.current.Render(gameFramebuffer);
 	}
 
 	protected override void Tick(float delta)

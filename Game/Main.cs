@@ -44,12 +44,12 @@ public static class Main
 	public static List<PlayerSkin> skins = new();
 	public static void LoadSkins(Folder folder)
 	{
-		var aseLoader = new MGE.Loaders.AsepriteTextureLoader();
+		var aseLoader = new MGE.Loaders.AsepriteSpriteSheetLoader();
 
 		foreach (var file in folder.GetFiles("*.ase"))
 		{
-			var tex = (Texture)aseLoader.Load(file, string.Empty);
-			var skin = new PlayerSkin(file.name, tex);
+			var spriteSheet = (SpriteSheet)aseLoader.Load(file, string.Empty);
+			var skin = new PlayerSkin(file.name, spriteSheet);
 			skins.Add(skin);
 			Log.Info("Loaded skin: " + file);
 		}

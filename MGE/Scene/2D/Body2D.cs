@@ -8,7 +8,6 @@ public abstract class Body2D : Node2D
 	[Prop] public bool collidable = true;
 	[Prop] public Layer layer = new Layer(1);
 
-
 	Collider2D? _collider;
 	[Prop]
 	public Collider2D? collider
@@ -151,4 +150,17 @@ public abstract class Body2D : Node2D
 	}
 
 	#endregion Utilities
+
+	protected override void RegisterCallbacks()
+	{
+		base.RegisterCallbacks();
+
+		onDraw += (batch) =>
+		{
+			if (scene.showColliders)
+			{
+				collider?.Render(batch);
+			}
+		};
+	}
 }

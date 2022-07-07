@@ -18,7 +18,8 @@ public class Projectile : Body2D
 	{
 		base.Ready();
 
-		collider = new HitboxCollider2D(new(8), new(-4));
+		collider = new HitboxCollider2D(new(2), new(-4)) { color = Color.red };
+		collider.CenterOrigin();
 	}
 
 	protected override void Tick(float delta)
@@ -96,8 +97,9 @@ public class Projectile : Body2D
 
 	protected override void Render(Batch2D batch)
 	{
-		batch.SetBox(new(0, 0, speed * Time.tickDelta * 4 * -scale.y, 1), Color.yellow, new(255, 0, 0, 0), new(255, 0, 0, 0), Color.yellow);
+		batch.SetBox(new(0, 0, speed * Time.tickDelta * 4 * -scale.y, 1), Color.white, new(255, 0, 0, 0), new(255, 0, 0, 0), Color.white);
 
-		batch.Draw(sprite, Vector2.zero, Color.white);
+		batch.SetCircle(Vector2.zero, collider!.size.x, 8, new(0xFF0000FF));
+		// batch.Draw(sprite, Vector2.zero, Color.white);
 	}
 }

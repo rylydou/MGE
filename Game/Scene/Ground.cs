@@ -103,8 +103,13 @@ public class Ground : Solid
 					key.bottom = (y == mapSize.y - 1) ? true : tilemap.data[x, y + 1];
 					key.left = (x == 0) ? true : tilemap.data[x - 1, y];
 
-					var src = new RectInt(lut[key] * 8, 8, 8);
-					batch.DrawImage(_tileset, src, new Vector2(x, y) * tileSize, Color.white);
+					var clip = new RectInt(lut[key] * 8, 8, 8);
+					// if (key.top && key.right && key.bottom && key.left)
+					// {
+					// clip = new(clip.x + Math.Sign(HashCode.Combine(x, y, 0) % 2) * 2, clip.y + Math.Sign(HashCode.Combine(x, y, 1) % 2) * 2, clip.width, clip.height);
+					// }
+
+					batch.DrawImage(_tileset, clip, new Vector2(x, y) * tileSize, Color.white);
 				}
 			}
 		}

@@ -141,10 +141,16 @@ public class SetupScreen : GameScreen
 				}
 				else
 				{
-					batch.SetRect(cardRect, 2, color);
+					batch.SetRect(cardRect, -2, color);
 				}
 
-				batch.Draw(data.skin.texture, new(x + cardWidth / 2, (canvasSize.y - cardHeight - cardGap * 2) / 2), Color.white);
+				var iconPos = new Vector2(x + cardWidth / 2, (canvasSize.y - cardHeight - cardGap * 2) / 2);
+
+				var sprite = data.skin.spriteSheet.atlas["0"]!.GetClipSubtexture(data.skin.spriteSheet.slices[0].rect);
+				batch.Draw(sprite, iconPos, Color.white);
+
+				// batch.SetCircle(iconPos, 2, 8, Color.black);
+				// batch.SetCircle(iconPos, 1, 8, data.color);
 
 				batch.DrawString(_font, data.controls!.name, new(x, canvasSize.y - cardHeight - cardGap, cardWidth, cardHeight), TextAlignment.Center, fg, 4);
 			}

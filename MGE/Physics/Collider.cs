@@ -8,6 +8,8 @@ public abstract class Collider2D
 
 	public virtual bool ignoreBounds { get => false; }
 
+	public Color color = Color.lime;
+
 	protected Collider2D(Vector2? position = null)
 	{
 		if (!position.HasValue) position = Vector2.zero;
@@ -33,8 +35,8 @@ public abstract class Collider2D
 
 	public void Render(Batch2D batch)
 	{
-		if (!ignoreBounds) batch.SetRect(new(position, size), -1, Color.yellow);
-		Render(batch, Color.green);
+		if (!ignoreBounds) batch.SetRect(new(position, size), -1, color.translucent);
+		Render(batch, color);
 	}
 	protected abstract void Render(Batch2D batch, Color color);
 

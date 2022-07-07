@@ -1,5 +1,3 @@
-using MGE;
-
 namespace Game.Screens;
 
 public class PlayingScreen : GameScreen

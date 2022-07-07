@@ -165,6 +165,18 @@ public class MainModule : Module
 			_container.fixedSize = _container.fixedSize.With(1, _container.fixedSize[1] + mod);
 		}
 
+		if (App.input.mouse.Pressed(MouseButtons.Left))
+		{
+			if (canvas.hoveredWidget is UIContainer container)
+			{
+				_lastItemRect = _item.absoluteRect;
+				_index = 0;
+
+				_rectTransitionTime = _rectTransitionDuration;
+				_container = container;
+			}
+		}
+
 		canvas.UpdateInputs(App.window.mouse, App.input.mouse, App.input.keyboard);
 		canvas.Update(delta);
 	}
@@ -211,15 +223,14 @@ public class MainModule : Module
 
 		batch.DrawString(App.content.font, text, new(8, 488), Color.white, 16);
 
-		batch.SetRect(((Rect)_container.absoluteRect).Expanded(2), 1, new(0x0A84FFFF));
+		batch.SetRect(((Rect)_container.absoluteRect).Expanded(2), 1, new(0x3584E4FF));
 		if (_container.children.Count > 0)
 		{
 			var rect = Rect.LerpClamped(_item.absoluteRect, _lastItemRect, _rectTransitionTime / _rectTransitionDuration);
-			batch.SetRect(rect.Expanded(2), 1, new(0x0A84FFFF));
+			batch.SetRect(rect.Expanded(2), 1, new(0x3584E4FF));
 		}
-
+		// FF9B7B 1b53bd
 		App.graphics.Clear(window, new Color(0x202020FF));
-		var renderInfo = batch.Render(window);
-		App.profiler.batch2DRenderInfo = renderInfo;
+		batch.Render(window);
 	}
 }

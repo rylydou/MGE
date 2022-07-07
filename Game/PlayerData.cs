@@ -2,6 +2,9 @@ namespace Game;
 
 public class PlayerData
 {
+	public int index => Array.IndexOf(Main.players, this);
+	public Color color => Main.playerColors[index];
+
 	public int skinIndex;
 	public PlayerSkin skin { get => Main.skins[skinIndex]; }
 
@@ -21,11 +24,11 @@ public class PlayerData
 public class PlayerSkin
 {
 	public string name;
-	public Texture texture;
+	public SpriteSheet spriteSheet;
 
-	public PlayerSkin(string name, Texture texture)
+	public PlayerSkin(string name, SpriteSheet spriteSheet)
 	{
 		this.name = name;
-		this.texture = texture;
+		this.spriteSheet = spriteSheet;
 	}
 }
