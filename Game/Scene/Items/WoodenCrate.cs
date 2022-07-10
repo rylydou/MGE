@@ -4,11 +4,11 @@ namespace Game.Items;
 
 public class WoodenCrate : Item
 {
-	public Prefab item = App.content.Get<Prefab>("Scene/Items/Shotgun/Shotgun.node");
+	public Prefab item = App.content.Get<Prefab>("Nodes/Items/Shotgun/Shotgun.node");
 
 	public WoodenCrate()
 	{
-		sprite = App.content.Get<Texture>("Scene/Items/Wooden Crate/Sprite.ase");
+		sprite = App.content.Get<Texture>("Nodes/Items/Wooden Crate/Sprite.ase");
 	}
 
 	protected override void Ready()
@@ -24,7 +24,7 @@ public class WoodenCrate : Item
 
 		ApplyImpulseForce(new(256 * globalScale.x, -96));
 
-		return false;
+		return true;
 	}
 
 	protected override void OnDeath()

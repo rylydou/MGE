@@ -26,7 +26,7 @@ public class SDFFont : IFont
 		}
 	}
 
-	readonly Texture _texture;
+	internal readonly Texture _texture;
 	readonly Material _material;
 
 	readonly int _baseline;
@@ -43,7 +43,8 @@ public class SDFFont : IFont
 
 	public SDFFont(Texture texture, MemlValue def)
 	{
-		this._texture = texture;
+		_texture = texture;
+		_texture.filter = TextureFilter.Linear;
 
 		var shader = new Shader(App.graphics.CreateShaderSourceMSDF());
 		_material = new Material(shader);

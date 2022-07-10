@@ -5,39 +5,20 @@ public class Ground : Solid
 	public Vector2Int mapSize;
 	public float tileSize;
 
-	public Dictionary<(bool top, bool right, bool bottom, bool left), Vector2Int> lut = new(){
-		{(false, true, true, false), new(0, 0)},
-		{(false, true, true, true), new(1, 0)},
-		{(false, false, true, true), new(2, 0)},
-		{(false, false, true, false), new(3, 0)},
-
-		{(true, true, true, false), new(0, 1)},
-		{(true, true, true, true), new(1, 1)},
-		{(true, false, true, true), new(2, 1)},
-		{(true, false, true, false), new(3, 1)},
-
-		{(true, true, false, false), new(0, 2)},
-		{(true, true, false, true), new(1, 2)},
-		{(true, false, false, true), new(2, 2)},
-		{(true, false, false, false), new(3, 2)},
-
-		{(false, true, false, false), new(0, 3)},
-		{(false, true, false, true), new(1, 3)},
-		{(false, false, false, true), new(2, 3)},
-		{(false, false, false, false), new(3, 3)},
-	};
 	GridCollider2D? tilemap;
 
-	Vector2 lastTileMousePosition;
+	readonly Tileset _tileset = App.content.Get<Tileset>("Tilesets/Grass.ase");
 
-	Texture _tileset = App.content.Get<Texture>("Scene/Ground/Grass.ase");
-
-	Vector2 worldMousePosition;
-	Vector2 tileMousePosition;
+	Vector2 _worldMousePosition;
+	Vector2 _tileMousePosition;
+	Vector2 _lastTileMousePosition;
 
 	protected override void Ready()
 	{
-		tilemap = new GridCollider2D(mapSize, tileSize);
+		tilemap = new GridCollider2D(mapSize, tileSize)
+		{
+			dontDraw = true,
+		};
 		collider = tilemap;
 
 		var noise = new Noise();
@@ -60,19 +41,19 @@ public class Ground : Solid
 	protected override void Update(float delta)
 	{
 		var screenScale = App.window.size / Main.screenSize;
-		worldMousePosition = App.window.renderMouse / screenScale;
-		tileMousePosition = worldMousePosition / tileSize;
-		tileMousePosition = new(Mathf.Clamp(tileMousePosition.x, 0, mapSize.x - 1), Mathf.Clamp(tileMousePosition.y, 0, mapSize.y - 1));
+		_worldMousePosition = App.window.renderMouse / screenScale;
+		_tileMousePosition = _worldMousePosition / tileSize;
+		_tileMousePosition = new(Mathf.Clamp(_tileMousePosition.x, 0, mapSize.x - 1), Mathf.Clamp(_tileMousePosition.y, 0, mapSize.y - 1));
 
 		if (!App.input.keyboard.alt)
 		{
 			if (App.input.mouse.Down(MouseButtons.Left))
-				SetTiles(tileMousePosition, lastTileMousePosition, !App.input.keyboard.shift);
+				SetTiles(_tileMousePosition, _lastTileMousePosition, !App.input.keyboard.shift);
 			else if (App.input.mouse.Down(MouseButtons.Right))
-				SetTiles(tileMousePosition, lastTileMousePosition, false);
+				SetTiles(_tileMousePosition, _lastTileMousePosition, false);
 		}
 
-		lastTileMousePosition = tileMousePosition;
+		_lastTileMousePosition = _tileMousePosition;
 	}
 
 	void SetTiles(Vector2 from, Vector2 to, bool value)
@@ -85,8 +66,8 @@ public class Ground : Solid
 
 	protected override void Render(Batch2D batch)
 	{
-		var pos = (Vector2Int)tileMousePosition * tileSize;
-		var guideColor = new Color(255, 255, 255, 25);
+		var pos = (Vector2Int)_tileMousePosition * tileSize;
+		var guideColor = new Color(0x5A5353FF);
 
 		batch.SetBox(new(0, pos.y + tileSize / 2, mapSize.x * tileSize, 1), guideColor);
 		batch.SetBox(new(pos.x + tileSize / 2, 0, 1, mapSize.y * tileSize), guideColor);
@@ -95,25 +76,40 @@ public class Ground : Solid
 		{
 			for (int y = 0; y < mapSize.y; y++)
 			{
-				if (tilemap!.data[x, y])
+				if (!tilemap!.data[x, y]) continue;
+
+				var connection = Tileset.Connection.None;
+
+				if (y == 0 || tilemap.data[x, y - 1])
+					connection |= Tileset.Connection.Top;
+				if (y == mapSize.y - 1 || tilemap.data[x, y + 1])
+					connection |= Tileset.Connection.Bottom;
+				if (x == 0 || tilemap.data[x - 1, y])
+					connection |= Tileset.Connection.Left;
+				if (x == mapSize.x - 1 || tilemap.data[x + 1, y])
+					connection |= Tileset.Connection.Right;
+
+				var tile = _tileset.tiles[connection];
+
+				var clipX = tile.x;
+				var clipY = tile.y;
+
+				if (tile.properties.HasFlag(Tileset.Tile.Properties.ScrollX))
 				{
-					(bool top, bool right, bool bottom, bool left) key = new();
-					key.top = (y == 0) ? true : tilemap.data[x, y - 1];
-					key.right = (x == mapSize.x - 1) ? true : tilemap.data[x + 1, y];
-					key.bottom = (y == mapSize.y - 1) ? true : tilemap.data[x, y + 1];
-					key.left = (x == 0) ? true : tilemap.data[x - 1, y];
-
-					var clip = new RectInt(lut[key] * 8, 8, 8);
-					// if (key.top && key.right && key.bottom && key.left)
-					// {
-					// clip = new(clip.x + Math.Sign(HashCode.Combine(x, y, 0) % 2) * 2, clip.y + Math.Sign(HashCode.Combine(x, y, 1) % 2) * 2, clip.width, clip.height);
-					// }
-
-					batch.DrawImage(_tileset, clip, new Vector2(x, y) * tileSize, Color.white);
+					clipX += Math.Abs(HashCode.Combine(x, y, 0)) % (tile.width - _tileset.tileSize.x);
 				}
+
+				if (tile.properties.HasFlag(Tileset.Tile.Properties.ScrollY))
+				{
+					clipY += Math.Abs(HashCode.Combine(x, y, 1)) % (tile.height - _tileset.tileSize.y);
+				}
+
+				var clip = new RectInt(clipX, clipY, 8, 8);
+
+				batch.DrawImage(_tileset.texture, clip, new Vector2(x, y) * tileSize, Color.white);
 			}
 		}
 
-		batch.SetRect(new(pos, tileSize), 1, Color.green.translucent);
+		batch.SetRect(new(pos, tileSize), 1, new Color(0xE6482EFF));
 	}
 }

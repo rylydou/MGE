@@ -6,7 +6,7 @@ public static class Main
 {
 	static Main()
 	{
-		ChangeScreen(new SetupScreen());
+		ChangeScreen(new MainMenuScreen());
 	}
 
 	public static Color[] playerColors = new Color[] {
@@ -26,6 +26,14 @@ public static class Main
 		new Controls(1),
 		new Controls(2),
 		new Controls(3),
+	};
+
+	public static Tileset?[] tilesets = new Tileset?[]
+	{
+		null,
+		App.content.Get<Tileset>("Tilesets/Block.ase"),
+		App.content.Get<Tileset>("Tilesets/Grass.ase"),
+		App.content.Get<Tileset>("Tilesets/Dirt.ase"),
 	};
 
 	public static Rect renderRect;

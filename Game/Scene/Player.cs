@@ -109,7 +109,6 @@ public class Player : Actor
 			else
 			{
 				// Use/Punch
-
 				if (heldItem is not null)
 				{
 					// Use item

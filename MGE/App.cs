@@ -86,8 +86,6 @@ public static class App
 	/// </summary>
 	static Window? primaryWindow;
 
-	public static int ticksThisFrame;
-
 	public static string shortEnvName
 	{
 		get
@@ -108,6 +106,9 @@ public static class App
 			return "dll";
 		}
 	}
+
+	public static TimeSpan tickDuration;
+	public static TimeSpan updateDuration;
 
 	/// <summary>
 	/// Starts running the Application
@@ -178,6 +179,8 @@ public static class App
 		var framecount = 0;
 		var frameticks = 0L;
 
+		var sw = new Stopwatch();
+
 		while (running)
 		{
 			var forceFixedTimestep = App.forceFixedTimestep;
@@ -189,6 +192,7 @@ public static class App
 			// get current time & diff
 			var currTime = TimeSpan.FromTicks(timer.Elapsed.Ticks);
 			var diffTime = (currTime - lastTime);
+			Time.diffTime = diffTime;
 			lastTime = currTime;
 
 			// fixed timestep update
@@ -227,10 +231,8 @@ public static class App
 					fixedAccumulator = Time.tickMaxElapsedTime;
 
 				// do as many fixed updates as we can
-				ticksThisFrame = 0;
 				while (fixedAccumulator >= fixedTarget)
 				{
-					ticksThisFrame++;
 					Time.tickDuration += fixedTarget;
 					fixedAccumulator -= fixedTarget;
 
@@ -239,12 +241,20 @@ public static class App
 						Time.duration += fixedTarget;
 
 						windowing.input.Step();
+
+						sw.Restart();
 						modules.Tick(Time.tickDelta);
+						tickDuration = sw.Elapsed;
+
+						sw.Restart();
 						modules.Update(Time.delta);
+						updateDuration = sw.Elapsed;
 					}
 					else
 					{
+						sw.Restart();
 						modules.Tick(Time.tickDelta);
+						tickDuration = sw.Elapsed;
 					}
 
 					if (exiting)
@@ -261,7 +271,9 @@ public static class App
 				Time.delta = Time.variableDelta = Time.rawDelta * Time.deltaScale;
 
 				// update
+				sw.Restart();
 				modules.Update(Time.delta);
+				updateDuration = sw.Elapsed;
 			}
 
 			modules.FrameEnd();

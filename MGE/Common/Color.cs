@@ -16,29 +16,38 @@ public struct Color : IEquatable<Color>
 
 	public static readonly Color white = new Color(0xFFFFFFFF);
 	public static readonly Color lightGray = new Color(0xC0C0C0FF);
-	// public static readonly Color lightGray = new Color(0x5E5C64FF);
 	public static readonly Color gray = new Color(0x808080FF);
-	// public static readonly Color gray = new Color(0x3d3846FF);
 	public static readonly Color darkGray = new Color(0x404040FF);
-	// public static readonly Color darkGray = new Color(0x241F31FF);
 	public static readonly Color black = new Color(0x000000FF);
 
 	// public static readonly Color red = new Color(0xFF0000FF);
-	public static readonly Color red = new Color(0xE01B24FF);
 	// public static readonly Color green = new Color(0x00FF00FF);
+	// public static readonly Color blue = new Color(0x0000FFFF);
+	// public static readonly Color yellow = new Color(0xFFFF00FF);
+	// public static readonly Color cyan = new Color(0x00FFFFFF);
+	// public static readonly Color magenta = new Color(0xFF00FFFF);
+
+	public static readonly Color red = new Color(0xE01B24FF);
 	public static readonly Color lime = new Color(0x33D17AFF);
 	public static readonly Color green = new Color(0x26A269FF);
-	// public static readonly Color blue = new Color(0x0000FFFF);
 	public static readonly Color blue = new Color(0x3584E4FF);
-	// public static readonly Color yellow = new Color(0xFFFF00FF);
 	public static readonly Color yellow = new Color(0xF5c211FF);
 	public static readonly Color orange = new Color(0xFF7800FF);
-	// public static readonly Color cyan = new Color(0x00FFFFFF);
 	public static readonly Color cyan = new Color(0x62A0EAFF);
-	// public static readonly Color magenta = new Color(0xFF00FFFF);
 	public static readonly Color magenta = new Color(0xC061CBFF);
 	public static readonly Color purple = new Color(0x9141ACFF);
 	public static readonly Color brown = new Color(0x986A44FF);
+
+	// public static readonly Color red = new Color(0xE6482EFF);
+	// public static readonly Color lime = new Color(0xB6d53CFF);
+	// public static readonly Color green = new Color(0x71AA34FF);
+	// public static readonly Color blue = new Color(0x3978A8FF);
+	// public static readonly Color yellow = new Color(0xF5c211FF);
+	// public static readonly Color orange = new Color(0xFF7800FF);
+	// public static readonly Color cyan = new Color(0x28CCDFFF);
+	// public static readonly Color magenta = new Color(0xCD6093FF);
+	// public static readonly Color purple = new Color(0x8E478CFF);
+	// public static readonly Color brown = new Color(0xA05B53FF);
 
 	#endregion Constants
 

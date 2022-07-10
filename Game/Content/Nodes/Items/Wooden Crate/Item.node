@@ -2,3 +2,4 @@
 name: 'Wooden Crate'
 
 maxHealth: 30
+useCooldown: 0.0

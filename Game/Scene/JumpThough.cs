@@ -15,7 +15,7 @@ public class JumpThough : Semisolid
 
 	Vector2 lastTileMousePosition;
 
-	Texture _tileset = App.content.Get<Texture>("Scene/Ground/Platform.ase");
+	Texture _tileset = App.content.Get<Texture>("Nodes/Ground/Platform.ase");
 
 	Vector2 worldMousePosition;
 	Vector2 tileMousePosition;

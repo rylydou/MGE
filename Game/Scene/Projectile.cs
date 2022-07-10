@@ -10,7 +10,7 @@ public class Projectile : Body2D
 
 	[Prop] public Damage damage;
 
-	public Texture sprite = App.content.Get<Texture>("Scene/Projectile/Sprite.ase");
+	public Texture sprite = App.content.Get<Texture>("Nodes/Projectile/Sprite.ase");
 
 	public List<Actor> hitActors = new();
 

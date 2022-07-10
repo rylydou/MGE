@@ -65,6 +65,8 @@ public static class Time
 	/// </summary>
 	public static float rawVariableDelta { get; internal set; }
 
+	public static TimeSpan diffTime { get; internal set; }
+
 	/// <summary>
 	/// A rough estimate of the current Frames Per Second
 	/// </summary>

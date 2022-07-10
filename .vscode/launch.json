@@ -1,61 +1,71 @@
 {
 	"version": "0.2.0",
 	"configurations": [
-		// {
-		// 	"name": "Run Game",
-		// 	"presentation": {
-		// 		"hidden": false,
-		// 		"group": "Run",
-		// 		"order": 0
-		// 	},
-		// 	"type": "dotnetwatchattach",
-		// 	"request": "launch",
-		// 	"task": "Game: Watch",
-		// 	// "preLaunchTask": "Game: Watch",
-		// 	"program": "${workspaceFolder}/Game/bin/Debug/Game.dll",
-		// 	"args": {
-		// 		"env": {},
-		// 		"cwd": "${workspaceFolder}/Game",
-		// 		"console": "internalConsole",
-		// 		"stopAtEntry": false,
-		// 		"logging": {
-		// 			"browserStdOut": false,
-		// 			"elapsedTiming": false,
-		// 			"engineLogging": false,
-		// 			"exceptions": false,
-		// 			"moduleLoad": false,
-		// 			"processExit": false,
-		// 			"programOutput": true,
-		// 			"threadExit": false
-		// 		}
-		// 	},
-		// },
-		// {
-		// 	"name": "Run UIDemo",
-		// 	"presentation": {
-		// 		"hidden": false,
-		// 		"group": "Run",
-		// 		"order": 1
-		// 	},
-		// 	"type": "coreclr",
-		// 	"request": "launch",
-		// 	"preLaunchTask": "UIDemo: Watch",
-		// 	"program": "${workspaceFolder}/UIDemo/bin/Debug/UIDemo.dll",
-		// 	"args": [],
-		// 	"env": {},
-		// 	"cwd": "${workspaceFolder}/UIDemo",
-		// 	"console": "internalConsole",
-		// 	"stopAtEntry": false,
-		// 	"logging": {
-		// 		"browserStdOut": false,
-		// 		"elapsedTiming": false,
-		// 		"engineLogging": false,
-		// 		"exceptions": false,
-		// 		"moduleLoad": false,
-		// 		"processExit": false,
-		// 		"programOutput": true,
-		// 		"threadExit": false
-		// 	}
-		// }
+		{
+			"name": "Game: Run",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "Game: Build",
+			"program": "${workspaceFolder}/Game/bin/Debug/Game.dll",
+			"args": [],
+			"env": {},
+			"cwd": "${workspaceFolder}/Game",
+			"console": "internalConsole",
+			"stopAtEntry": false,
+			"logging": {
+				"browserStdOut": false,
+				"elapsedTiming": false,
+				"engineLogging": false,
+				"exceptions": false,
+				"moduleLoad": false,
+				"processExit": false,
+				"programOutput": true,
+				"threadExit": false
+			}
+		},
+		{
+			"name": "UIDemo: Run",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "UIDemo: Build",
+			"program": "${workspaceFolder}/UIDemo/bin/Debug/UIDemo.dll",
+			"args": [],
+			"env": {},
+			"cwd": "${workspaceFolder}/UIDemo",
+			"console": "internalConsole",
+			"stopAtEntry": false,
+			"logging": {
+				"browserStdOut": false,
+				"elapsedTiming": false,
+				"engineLogging": false,
+				"exceptions": false,
+				"moduleLoad": false,
+				"processExit": false,
+				"programOutput": true,
+				"threadExit": false
+			}
+		},
+		{
+			"name": "Editor: Run",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "Editor: Build",
+			"program": "${workspaceFolder}/Editor/bin/Debug/MGE.Editor.dll",
+			"args": [],
+			"env": {},
+			"cwd": "${workspaceFolder}/Editor",
+			"console": "internalConsole",
+			"stopAtEntry": false,
+			"logging": {
+				"browserStdOut": false,
+				"elapsedTiming": false,
+				"engineLogging": false,
+				"exceptions": false,
+				"moduleLoad": false,
+				"processExit": false,
+				"programOutput": true,
+				"threadExit": false
+			}
+		}
 	]
 }

@@ -10,23 +10,61 @@
 	},
 	"tasks": [
 		{
+			"label": "Game: Build",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/Game/Game.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary",
+				"--nologo"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "UIDemo: Build",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/UIDemo/UIDemo.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary",
+				"--nologo"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Editor: Build",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/Editor/MGE.Editor.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary",
+				"--nologo"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
 			"label": "Game: Watch",
 			"group": {
 				"kind": "build",
 				"isDefault": false
 			},
+			"icon": {
+				"id": "eye-watch",
+				"color": "terminal.ansiBlue"
+			},
 			"command": "dotnet",
 			"type": "process",
 			"args": [
 				"watch",
-				// "run",
 				"--project",
-				"${workspaceFolder}/Game/Game.csproj",
-				// "/property:GenerateFullPaths=true",
-				// "/consoleloggerparameters:NoSummary",
-				// "--nologo"
-			],
-			// "problemMatcher": "$msCompile",
+				"${workspaceFolder}/Game/Game.csproj"
+			]
 		},
 		{
 			"label": "UIDemo: Watch",
@@ -38,11 +76,7 @@
 			"type": "process",
 			"args": [
 				"build",
-				"run",
-				"${workspaceFolder}/UIDemo/UIDemo.csproj",
-				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary",
-				"--nologo"
+				"${workspaceFolder}/UIDemo/UIDemo.csproj"
 			],
 			"problemMatcher": "$msCompile"
 		}

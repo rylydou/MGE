@@ -9,6 +9,7 @@ public abstract class Collider2D
 	public virtual bool ignoreBounds { get => false; }
 
 	public Color color = Color.lime;
+	public bool dontDraw = false;
 
 	protected Collider2D(Vector2? position = null)
 	{
@@ -35,6 +36,7 @@ public abstract class Collider2D
 
 	public void Render(Batch2D batch)
 	{
+		if (dontDraw) return;
 		if (!ignoreBounds) batch.SetRect(new(position, size), -1, color.translucent);
 		Render(batch, color);
 	}

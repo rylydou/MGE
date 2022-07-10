@@ -1,16 +1,18 @@
 #nullable disable
 
+using Game.Screens;
+
 namespace Game;
 
-public class MainModule : Module
+public class MainLoop : Module
 {
 #nullable disable
-	public static MainModule instance;
+	public static MainLoop instance;
 #nullable restore
 
 	public FrameBuffer gameFramebuffer = new(Main.screenSize.x, Main.screenSize.y);
 
-	public MainModule()
+	public MainLoop()
 	{
 		instance = this;
 
@@ -37,12 +39,21 @@ public class MainModule : Module
 		if (kb.Pressed(Keys.F11) || (kb.alt && kb.Pressed(Keys.Enter)))
 		{
 			App.window.fullscreen = !App.window.fullscreen;
-			// return;
 		}
 
 		if (kb.Pressed(Keys.F2))
 		{
 			Main.scene.showColliders = !Main.scene.showColliders;
+		}
+
+		if (kb.shift && kb.Pressed(Keys.Escape))
+		{
+			Main.ChangeScreen(new MainMenuScreen());
+		}
+
+		if (kb.Pressed(Keys.V))
+		{
+			App.window.vsync = !App.window.vsync;
 		}
 
 		var topColor = new Color(0x3978A8FF);

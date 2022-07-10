@@ -16,7 +16,7 @@ App.modules.Register<AL_Audio>();
 App.modules.Register<Content>();
 
 // Register the custom Main Module to run your code
-App.modules.Register<MainModule>();
+App.modules.Register<MainLoop>();
 
 // Profiler Module
 App.modules.Register<Profiler>();

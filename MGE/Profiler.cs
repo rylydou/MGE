@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace MGE;
@@ -15,20 +15,14 @@ public class Profiler : Module
 
 	public Visibility visibility;
 
-	public Color backgroundColor = new(0x00000080);
-	public Color foregroundColor = new(0xFFFFFFFF);
+	public TimeSpan[] deltaHistory = new TimeSpan[256];
+	public TimeSpan[] tickHistory = new TimeSpan[256];
+	public TimeSpan[] updateHistory = new TimeSpan[256];
 
-	public Color timeGraphColor = new(0x26A269FF);
-	public double currentTime;
-	public double[] timeHistory = new double[256];
-
-	public Color memoryGraphColor = new(0x3584E4FF);
-	public Color memoryDotColor = new(0xE01B24FF);
 	public long availableMemory = 1; // To prevent divide by zero
 
 	public long memoryUsage;
 	public long[] memoryUsageHistory = new long[256];
-	public Queue<int> ticksPerFrameHistory = new();
 
 	public long[] memoryUsageHistoryHistorical = new long[256];
 
@@ -61,18 +55,13 @@ public class Profiler : Module
 
 		_next++;
 
-		currentTime = Time.rawVariableDelta;
-		timeHistory[_next] = currentTime;
+		deltaHistory[_next] = Time.diffTime;
+		tickHistory[_next] = App.tickDuration;
+		updateHistory[_next] = App.updateDuration;
 
 		availableMemory = Environment.WorkingSet;
 		memoryUsage = GC.GetTotalMemory(false);
 		memoryUsageHistory[_next] = memoryUsage;
-
-		ticksPerFrameHistory.Enqueue(App.ticksThisFrame);
-		while (ticksPerFrameHistory.Count > 10)
-		{
-			ticksPerFrameHistory.Dequeue();
-		}
 
 		if (_next != 0) return;
 
@@ -100,50 +89,81 @@ public class Profiler : Module
 			case Visibility.Summary:
 				{
 					var text =
-						$"{1.0 / currentTime:F0}fps {1.0 / timeHistory.Average():F0}avg {1.0 / timeHistory.Max():F0}min\n" +
-						$"{(double)memoryUsage / 1048576:F2}MB / {availableMemory / 1048576}MB";
-					batch.DrawString(App.content.font, text, new(4, 4), foregroundColor, 16);
+						$"{1.0 / deltaHistory.Average(ts => ts.TotalSeconds):F0} / {1.0 / deltaHistory.Max(ts => ts.TotalSeconds):F0}\n" +
+						$"{(double)memoryUsage / 1048576:F0}MB";
+
+					for (int y = -1; y <= 1; y++)
+					{
+						for (int x = -1; x <= 1; x++)
+						{
+							batch.DrawString(App.content.font, text, new(4 + x, 4 + y), Color.black.translucent, 16);
+						}
+					}
+
+					batch.DrawString(App.content.font, text, new(4, 4), Color.white, 16);
 				}
 				break;
 
 			case Visibility.Full:
 				{
-					// batch.SetBox(new(0, 0, 512, 128), backgroundColor);
+					var info = GC.GetGCMemoryInfo();
+
+					batch.SetBox(new(0, 0, 512, 128), Color.black.translucent);
 
 					// Frame time Graph
 					// var fpsMax = frameTimeHistory.Min() / 2;
 					// var fpsMax = 1.0 / Time.tickStepTarget / 2;
-					var fpsMax = timeHistory.Average() / 2;
-					for (int i = 0; i < timeHistory.Length; i++)
+					var timeAverage = deltaHistory.Average(ts => ts.TotalSeconds);
+					// var timeCeil = timeAverage * 1.1;
+					var timeCeil = 1.0 / 60;
+					var timeMax = deltaHistory.Max();
+					for (int i = 0; i < deltaHistory.Length; i++)
 					{
-						var height = (float)(fpsMax / timeHistory[i] * 128);
-						batch.SetBox(i, 0, 1, height, i == _next ? foregroundColor : timeGraphColor);
+						var yOffset = 0f;
+						var height = (float)(deltaHistory[i].TotalSeconds / timeCeil * 128);
+						batch.SetBox(i, 0, 1, height, Color.clear, Color.clear, Color.blue.translucent, Color.blue.translucent);
+						height = 0f;
+
+						height += (float)(updateHistory[i].TotalSeconds / timeCeil * 128);
+						batch.SetBox(i, yOffset, 1, height, Color.yellow);
+						yOffset += height;
+
+						height += (float)(updateHistory[i].TotalSeconds / timeCeil * 128);
+						batch.SetBox(i, yOffset, 1, height, Color.green);
+						yOffset += height;
 					}
+					batch.SetBox(_next, 0, 1, 128, Color.white);
 
 					// Memory Graph
-					var memMax = Mathf.Max(memoryUsageHistory.Max(), memoryUsageHistoryHistorical.Max());
+					var memCeil = Mathf.Max(memoryUsageHistory.Max(), memoryUsageHistoryHistorical.Max());
 					// var memMax = memAvailable;
 					for (int i = 0; i < memoryUsageHistory.Length; i++)
 					{
-						var height = (float)((double)memoryUsageHistory[i] / memMax * 128);
-						batch.SetBox(256 + i, 0, 1, height, i == _next ? foregroundColor : memoryGraphColor);
+						var height = (float)((double)memoryUsageHistory[i] / memCeil * 128);
+						batch.SetBox(256 + i, 0, 1, height, Color.blue);
 
 						var memUsageLong = memoryUsageHistoryHistorical[i];
 						if (memUsageLong == 0) continue;
-						height = (float)((double)memUsageLong / memMax * 128);
-						batch.SetBox(256 + i, height, 1, 1, memoryDotColor);
+						height = (float)((double)memUsageLong / memCeil * 128);
+						batch.SetBox(256 + i, height, 1, 4, Color.cyan);
 					}
+					batch.SetBox(256 + _next, 0, 1, 128, Color.white);
+
+					batch.SetBox(new(256, (float)((double)info.HeapSizeBytes / memCeil * 128), 256, 1), Color.white);
 
 					var text =
-						$"{1.0 / currentTime:F0}fps {1.0 / timeHistory.Average():F0}avg {1.0 / timeHistory.Max():F0}min\n" +
-						$"ttf: {string.Join(' ', ticksPerFrameHistory.Select(n => n.ToString()))}";
+						$"{1.0 / timeAverage:F0} / {1.0 / timeMax.TotalSeconds:F0}\n" +
+						$"{timeAverage * 1000:F2}ms / {timeMax.TotalMilliseconds:F2}ms";
 
-					batch.DrawString(App.content.font, text, new(4, 4), foregroundColor, 16);
-					batch.DrawString(App.content.font, $"{(double)memoryUsage / 1048576:F2}MB / {availableMemory / 1048576}MB", new(256 + 4, 4), foregroundColor, 16);
+					batch.DrawString(App.content.font, text, new(4, 4), Color.white, 16);
+
+					text =
+						$"{(double)memoryUsage / 1048576:F2}MB / {availableMemory / 1048576}MB\n" +
+						$"#{info.Index}: {(double)info.HeapSizeBytes / 1048576:F2}MB";
+					batch.DrawString(App.content.font, text, new(256 + 4, 4), Color.white, 16);
 				}
 				break;
 		}
-
 
 		batch.Render(window);
 	}

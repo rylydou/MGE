@@ -25,7 +25,7 @@ public partial class Gun : Item
 		_projPrefab = projectile.CreatePrefab();
 
 		_shootPoint = GetChild<Node2D>("Shoot point");
-		sprite = App.content.Get<Texture>("Scene/Items/Shotgun/Sprite.ase");
+		sprite = App.content.Get<Texture>("Nodes/Items/Shotgun/Sprite.ase");
 	}
 
 	protected override bool OnUse()

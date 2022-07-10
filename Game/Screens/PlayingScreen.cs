@@ -2,7 +2,8 @@ namespace Game.Screens;
 
 public class PlayingScreen : GameScreen
 {
-	public Prefab playerPrefab = App.content.Get<Prefab>("Scene/Player/Player.node");
+	Prefab playerPrefab = App.content.Get<Prefab>("Nodes/Player/Player.node");
+	Prefab cratePrefab = App.content.Get<Prefab>("Nodes/Items/Wooden Crate/Item.node");
 
 	public override void Start()
 	{
@@ -28,11 +29,15 @@ public class PlayingScreen : GameScreen
 			Main.scene.AddChild(playerNode);
 		}
 
-		var gun = App.content.Get<Prefab>("Scene/Items/Wooden Crate/Item.node");
-		Main.scene.AddChild(gun.CreateInstance());
-		Main.scene.AddChild(gun.CreateInstance());
-		Main.scene.AddChild(gun.CreateInstance());
-		Main.scene.AddChild(gun.CreateInstance());
+		for (int i = 0; i < 4; i++)
+		{
+			SpawnCrate();
+		}
+	}
+
+	public void SpawnCrate()
+	{
+		Main.scene.AddChild(cratePrefab.CreateInstance());
 	}
 
 	public override void Tick(float delta)
@@ -41,6 +46,19 @@ public class PlayingScreen : GameScreen
 
 	public override void Update(float delta)
 	{
+		var kb = App.input.keyboard;
+
+		if (kb.Pressed(Keys.Escape))
+		{
+			Main.ChangeScreen(new MainMenuScreen());
+			return;
+		}
+
+		if (kb.Pressed(Keys.C))
+		{
+			SpawnCrate();
+			return;
+		}
 	}
 
 	public override void Render(Batch2D batch)
