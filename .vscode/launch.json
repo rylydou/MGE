@@ -6,9 +6,12 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "Game: Build",
-			"program": "${workspaceFolder}/bin/Game/Debug/Game.dll",
+			"program": "${workspaceFolder}/samples/Game/bin/Debug/Game.dll",
 			"args": [],
-			"env": {},
+			"env": {
+				// "MGE_HERE": "${workspaceFolder}/samples/Game/data",
+				// "MGE_APPDATA": "${workspaceFolder}/samples/Game/data"
+			},
 			"cwd": "${workspaceFolder}/samples/Game",
 			"console": "internalConsole",
 			"stopAtEntry": false,

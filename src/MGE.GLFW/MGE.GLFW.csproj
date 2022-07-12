@@ -1,11 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<!-- <AnalysisLevel>latest-Recommended</AnalysisLevel> -->
 
 		<Nullable>enable</Nullable>
-		<ImplicitUsings>false</ImplicitUsings>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -13,20 +12,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="../MEML/MEML.csproj" />
+		<ProjectReference Include="../MGE/MGE.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="StbImageSharp" Version="2.27.8" />
-		<PackageReference Include="StbImageWriteSharp" Version="1.13.5" />
+		<EmbeddedResource Include="../../thirdparty/SDL_GameControllerDB/gamecontrollerdb.txt" Link="gamecontrollerdb.csv" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="res\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Include="res\**" />
+		<None Include="data/**" Link="%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 </Project>

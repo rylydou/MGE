@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-
 		<TargetFramework>net6.0</TargetFramework>
 		<!-- <AnalysisLevel>latest-Recommended</AnalysisLevel> -->
 
@@ -13,26 +12,18 @@
 
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-
-		<BaseOutputPath>../../../bin/MGE.OpenGL</BaseOutputPath>
-		<BaseIntermediateOutputPath>../../../obj/MGE.OpenGL</BaseIntermediateOutputPath>
-
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="Resources\batch2d.vert" />
-		<None Remove="Resources\batch2d.frag" />
-		<None Remove="Resources\msdf.frag" />
+		<ProjectReference Include="../MGE/MGE.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="Resources\batch2d.vert" />
-		<EmbeddedResource Include="Resources\batch2d.frag" />
-		<EmbeddedResource Include="Resources\msdf.frag" />
+		<None Remove="res\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="../../MGE/MGE.csproj" />
+		<EmbeddedResource Include="res/**" />
 	</ItemGroup>
 
 </Project>

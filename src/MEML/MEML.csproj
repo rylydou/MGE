@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-
 		<TargetFramework>net6.0</TargetFramework>
 		<!-- <AnalysisLevel>latest-Recommended</AnalysisLevel> -->
 
@@ -11,10 +10,6 @@
 
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-		
-		<BaseOutputPath>../../bin/MEML</BaseOutputPath>
-		<BaseIntermediateOutputPath>../../obj/MEML</BaseIntermediateOutputPath>
-
 	</PropertyGroup>
 
 </Project>

@@ -30,8 +30,8 @@ public class Content : AppModule
 	public IFont font = null!;
 	void LoadEmbeddedFont()
 	{
-		var fontJson = Util.EmbeddedResource("Resources/Inter.json");
-		var fontPng = Util.EmbeddedResource("Resources/Inter.json.png");
+		var fontJson = Util.EmbeddedResource("res/Inter.json");
+		var fontPng = Util.EmbeddedResource("res/Inter.json.png");
 
 		font = new SDFFont(new Texture(fontPng, "png"), new JsonTextReader(fontJson).ReadObject());
 	}

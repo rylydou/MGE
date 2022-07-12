@@ -13,16 +13,13 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 
-		<BaseOutputPath>../../bin/Game</BaseOutputPath>
-		<BaseIntermediateOutputPath>../../obj/Game</BaseIntermediateOutputPath>
-
 	</PropertyGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="../../src/MGE/MGE.csproj" />
-		<ProjectReference Include="../../src/Platforms/GLFW/MGE.GLFW.csproj" />
-		<ProjectReference Include="../../src/Platforms/OpenGL/MGE.OpenGL.csproj" />
-		<ProjectReference Include="../../src/Platforms/OpenAL/MGE.OpenAL.csproj" />
+		<ProjectReference Include="../../src/MGE.GLFW/MGE.GLFW.csproj" />
+		<ProjectReference Include="../../src/MGE.OpenGL/MGE.OpenGL.csproj" />
+		<ProjectReference Include="../../src/MGE.OpenAL/MGE.OpenAL.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -161,16 +161,16 @@ public class GL_Graphics : Graphics, IGraphicsOpenGL
 
 	protected override ShaderSource CreateShaderSourceBatch2D()
 	{
-		var vertexSource = Util.EmbeddedResourceText("Resources/batch2d.vert");
-		var fragmentSource = Util.EmbeddedResourceText("Resources/batch2d.frag");
+		var vertexSource = Util.EmbeddedResourceText("res/batch2d.vert");
+		var fragmentSource = Util.EmbeddedResourceText("res/batch2d.frag");
 
 		return new ShaderSource(vertexSource, fragmentSource);
 	}
 
 	protected override ShaderSource CreateShaderSourceMSDF()
 	{
-		var vertexSource = Util.EmbeddedResourceText("Resources/batch2d.vert");
-		var fragmentSource = Util.EmbeddedResourceText("Resources/msdf.frag");
+		var vertexSource = Util.EmbeddedResourceText("res/batch2d.vert");
+		var fragmentSource = Util.EmbeddedResourceText("res/msdf.frag");
 
 		return new ShaderSource(vertexSource, fragmentSource);
 	}

@@ -1,0 +1,13 @@
+# Project structure
+- `bin`: Build output, executable program
+- `build`: Build scripts
+- `doc`: Documentation, written in markdown files
+- `data`: Data/Content
+- `obj`: Build artifacts/temporary files
+- `res`: Resources, like `data` but embedded if possible
+- `samples`: Examples
+- `src`: Source code, can contain nested projects
+- `test`: Automated tests
+- `thirdparty`: Third party git repositories
+- `LICENSE`: License info
+- `README.md`: Summary/Description
