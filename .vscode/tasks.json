@@ -12,37 +12,15 @@
 	"tasks": [
 		{
 			"label": "Game: Build",
+			"icon": {
+				"id": "tools",
+				"color": "terminal.ansiMagenta"
+			},
 			"command": "dotnet",
 			"type": "process",
 			"args": [
 				"build",
-				"${workspaceFolder}/Game/Game.csproj",
-				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary",
-				"--nologo"
-			],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"label": "UIDemo: Build",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
-				"${workspaceFolder}/UIDemo/UIDemo.csproj",
-				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary",
-				"--nologo"
-			],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"label": "Editor: Build",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
-				"${workspaceFolder}/Editor/MGE.Editor.csproj",
+				"${workspaceFolder}/samples/Game/Game.csproj",
 				"/property:GenerateFullPaths=true",
 				"/consoleloggerparameters:NoSummary",
 				"--nologo"
@@ -51,35 +29,17 @@
 		},
 		{
 			"label": "Game: Watch",
-			"group": {
-				"kind": "build",
-				"isDefault": false
-			},
 			"icon": {
 				"id": "eye-watch",
-				"color": "terminal.ansiBlue"
+				"color": "terminal.ansiMagenta"
 			},
 			"command": "dotnet",
 			"type": "process",
 			"args": [
 				"watch",
 				"--project",
-				"${workspaceFolder}/Game/Game.csproj"
+				"${workspaceFolder}/samples/Game/Game.csproj"
 			]
-		},
-		{
-			"label": "UIDemo: Watch",
-			"group": {
-				"kind": "build",
-				"isDefault": false
-			},
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
-				"${workspaceFolder}/UIDemo/UIDemo.csproj"
-			],
-			"problemMatcher": "$msCompile"
 		}
 	]
 }

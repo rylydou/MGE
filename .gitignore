@@ -7,11 +7,7 @@
 *~
 ~*~
 
-# Build
+# Artifacts
 bin/
 obj/
-
 appdata/
-
-# Others
-**/Fonts/*/Resources

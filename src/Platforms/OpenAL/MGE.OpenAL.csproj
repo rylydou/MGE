@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+
+		<TargetFramework>net6.0</TargetFramework>
+		<!-- <AnalysisLevel>latest-Recommended</AnalysisLevel> -->
+
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>false</ImplicitUsings>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+		<RootNamespace>MGE.OpenAL</RootNamespace>
+		<AssemblyName>MGE.OpenAL</AssemblyName>
+
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+		<BaseOutputPath>../../../bin/MGE.OpenAL</BaseOutputPath>
+		<BaseIntermediateOutputPath>../../../obj/MGE.OpenAL</BaseIntermediateOutputPath>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="../../MGE/MGE.csproj" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="($([MSBuild]::IsOsPlatform(Windows)) and '$(RuntimeIdentifier)'=='') or '$(RuntimeIdentifier)'=='win-x64'">
+		<TargetOS>win</TargetOS>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="($([MSBuild]::IsOsPlatform(Linux)) and '$(RuntimeIdentifier)'=='') or '$(RuntimeIdentifier)'=='linux-x64'">
+		<TargetOS>linux</TargetOS>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="($([MSBuild]::IsOsPlatform(OSX)) and '$(RuntimeIdentifier)'=='') or '$(RuntimeIdentifier)'=='osx-x64'">
+		<TargetOS>osx</TargetOS>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(TargetOS)'=='win'">
+		<None Update="Runtimes/OpenAL/win.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetOS)'=='linux'">
+		<None Update="Runtimes/OpenAL/linux.so">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetOS)'=='osx'">
+		<None Update="Runtimes/OpenAL/osx.dylib">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+</Project>

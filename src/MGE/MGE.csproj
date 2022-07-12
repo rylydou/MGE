@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+
+		<TargetFramework>net6.0</TargetFramework>
+		<!-- <AnalysisLevel>latest-Recommended</AnalysisLevel> -->
+
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>false</ImplicitUsings>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+		<BaseOutputPath>../../bin/MGE</BaseOutputPath>
+		<BaseIntermediateOutputPath>../../obj/MGE</BaseIntermediateOutputPath>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Resources\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Resources\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="../MEML/MEML.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="StbImageSharp" Version="2.27.8" />
+		<PackageReference Include="StbImageWriteSharp" Version="1.13.5" />
+	</ItemGroup>
+
+</Project>
