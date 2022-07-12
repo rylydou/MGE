@@ -13,11 +13,13 @@ public enum TextAlignment
 
 public interface IFont
 {
-	int baseline { get; }
-	int lineHeight { get; }
+	// float baseline { get; }
+	float lineHeight { get; }
+	float ascender { get; }
+	float descender { get; }
 
-	bool TryGetGlyphMetrics(char ch, out int width, out int advance);
-	bool TryGetKerning(char first, char second, out int amount);
+	bool TryGetGlyphMetrics(char ch, out float width, out float advance);
+	bool TryGetKerning(char first, char second, out float amount);
 	float GetScale(float fontSize);
 
 	void RenderChar(Batch2D batch, char ch, float x, float y, float scale, Color color);
@@ -32,7 +34,7 @@ public interface IFont
 		str.lines.Add(line);
 
 		var prevCh = '\0';
-		var nextAdvance = 0;
+		var nextAdvance = 0f;
 
 		foreach (var ch in text)
 		{
@@ -76,7 +78,7 @@ public interface IFont
 
 public class StringBuildInfo
 {
-	public int width = 0;
+	public float width;
 
 	public List<LineBuildInfo> lines = new();
 
@@ -85,7 +87,7 @@ public class StringBuildInfo
 
 public class LineBuildInfo
 {
-	public int width = 0;
+	public float width;
 
 	public List<GlyphBuildInfo> chars = new();
 
@@ -95,9 +97,9 @@ public class LineBuildInfo
 public class GlyphBuildInfo
 {
 	public char ch;
-	public int x;
+	public float x;
 
-	public GlyphBuildInfo(char ch, int x)
+	public GlyphBuildInfo(char ch, float x)
 	{
 		this.ch = ch;
 		this.x = x;

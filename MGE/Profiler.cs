@@ -132,6 +132,7 @@ public class Profiler : Module
 						batch.SetBox(i, yOffset, 1, height, Color.green);
 						yOffset += height;
 					}
+					batch.SetBox(new(0, (float)(timeAverage / timeCeil * 128), 256, 1), Color.cyan.translucent);
 					batch.SetBox(_next, 0, 1, 128, Color.white);
 
 					// Memory Graph
@@ -145,11 +146,10 @@ public class Profiler : Module
 						var memUsageLong = memoryUsageHistoryHistorical[i];
 						if (memUsageLong == 0) continue;
 						height = (float)((double)memUsageLong / memCeil * 128);
-						batch.SetBox(256 + i, height, 1, 4, Color.cyan);
+						batch.SetBox(256 + i, height, 1, 4, Color.yellow.translucent);
 					}
+					batch.SetBox(new(256, (float)((double)info.HeapSizeBytes / memCeil * 128), 256, 1), Color.lime);
 					batch.SetBox(256 + _next, 0, 1, 128, Color.white);
-
-					batch.SetBox(new(256, (float)((double)info.HeapSizeBytes / memCeil * 128), 256, 1), Color.white);
 
 					var text =
 						$"{1.0 / timeAverage:F0} / {1.0 / timeMax.TotalSeconds:F0}\n" +

@@ -5,6 +5,7 @@
 		"reveal": "silent",
 		"focus": false,
 		"panel": "shared",
+		"revealProblems": "onProblem",
 		"showReuseMessage": false,
 		"clear": true
 	},

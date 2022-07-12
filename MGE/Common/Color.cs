@@ -259,6 +259,25 @@ public struct Color : IEquatable<Color>
 	public Color translucent => new(r, g, b, (byte)128);
 	public Color opaque => new(r, g, b, (byte)255);
 
+	public float grayscale => 0.299f * ((float)r / 255) + 0.587f * ((float)g / 255) + 0.114f * ((float)b / 255);
+	public Color grayscaleColor
+	{
+		get
+		{
+			var g = grayscale;
+			return new(g, g, g, 1f);
+		}
+	}
+
+	public Color contrastColor
+	{
+		get
+		{
+			var g = Mathf.Round(grayscale);
+			return new(g, g, g, 1f);
+		}
+	}
+
 	// /// <summary>
 	// /// Creates a color given the int32 RGB data
 	// /// </summary>

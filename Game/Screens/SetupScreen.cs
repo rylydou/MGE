@@ -8,8 +8,6 @@ public class SetupScreen : GameScreen
 
 	public UICanvas canvas = new();
 
-	SDFFont _font = App.content.Get<SDFFont>("Fonts/Regular.json");
-
 	public SetupScreen()
 	{
 		canvas.fixedSize = canvasSize;
@@ -152,7 +150,7 @@ public class SetupScreen : GameScreen
 				// batch.SetCircle(iconPos, 2, 8, Color.black);
 				// batch.SetCircle(iconPos, 1, 8, data.color);
 
-				batch.DrawString(_font, data.controls!.name, new(x, canvasSize.y - cardHeight - cardGap, cardWidth, cardHeight), TextAlignment.Center, fg, 4);
+				batch.DrawString(App.content.font, data.controls!.name, new(x, canvasSize.y - cardHeight - cardGap, cardWidth, cardHeight), TextAlignment.Center, fg, 4);
 			}
 			x += cardWidth + cardGap;
 		}

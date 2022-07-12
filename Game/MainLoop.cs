@@ -26,6 +26,8 @@ public class MainLoop : Module
 
 		App.window.SetAspectRatio(new(320, 180));
 		App.window.SetMinSize(new(320, 180));
+
+		App.content.font = App.content.Get<SDFFont>("Fonts/Montserrat.json");
 	}
 
 	protected override void Shutdown()
@@ -82,6 +84,10 @@ public class MainLoop : Module
 
 		// Render screen
 		Main.screen.Render(Batch2D.current);
+
+		// batch.SetMaterial(((SDFFont)App.content.font)._material);
+		// batch.DrawImage(((SDFFont)App.content.font)._texture, Vector2.zero, new(2f), Vector2.zero, 0, Color.white);
+		// batch.SetMaterial(null);
 
 		batch.Render(window);
 	}

@@ -1368,7 +1368,7 @@ public class Batch2D
 
 	public void DrawString(IFont font, StringBuildInfo str, Vector2 position, in Color color, float scale, float lineSpacing = 1.15f)
 	{
-		var y = 0;
+		var y = 0f;
 
 		font.BeginRender(this);
 		foreach (var line in str.lines)

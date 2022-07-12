@@ -8,37 +8,44 @@ public class SDFFont : IFont
 {
 	readonly struct GlyphInfo
 	{
-		public readonly int x;
-		public readonly int y;
-		public readonly int width;
-		public readonly int height;
-		public readonly int xOffset;
-		public readonly int yOffset;
+		public readonly float x;
+		public readonly float y;
+		public readonly float width;
+		public readonly float height;
+		public readonly float xOffset;
+		public readonly float yOffset;
+		public readonly float advance;
 
-		public GlyphInfo(MemlValue value)
+		public GlyphInfo(MemlValue meml)
 		{
-			this.x = value["x"];
-			this.y = value["y"];
-			this.width = value["width"];
-			this.height = value["height"];
-			this.xOffset = value["xoffset"];
-			this.yOffset = value["yoffset"];
+			var atlasBounds = meml["atlasBounds"];
+			var planeBounds = meml["planeBounds"];
+			this.x = atlasBounds["left"];
+			this.y = atlasBounds["top"];
+			this.width = atlasBounds["right"] - atlasBounds["left"];
+			this.height = atlasBounds["bottom"] - atlasBounds["top"];
+			this.xOffset = planeBounds["left"];
+			this.yOffset = planeBounds["top"];
+			this.advance = meml["advance"];
 		}
 	}
 
-	internal readonly Texture _texture;
-	readonly Material _material;
+	public readonly Texture _texture;
+	public readonly Material _material;
 
-	readonly int _baseline;
-	public int baseline => _baseline;
+	readonly float _lineHeight;
+	public float lineHeight => _lineHeight;
 
-	readonly int _lineHeight;
-	public int lineHeight => _lineHeight;
+	readonly float _ascender;
+	public float ascender => _ascender;
 
-	readonly int _baseGlyphSize;
+	readonly float _descender;
+	public float descender => _descender;
+
+	readonly float _baseGlyphSize;
 
 	readonly Dictionary<char, GlyphInfo> _glyphs = new();
-	readonly Dictionary<char, (int width, int advance)> _mertics = new();
+	// readonly Dictionary<char, (int width, int advance)> _mertics = new();
 	readonly Dictionary<(char first, char second), int> _kernings = new();
 
 	public SDFFont(Texture texture, MemlValue def)
@@ -48,33 +55,35 @@ public class SDFFont : IFont
 
 		var shader = new Shader(App.graphics.CreateShaderSourceMSDF());
 		_material = new Material(shader);
-		_material["u_pxRange"].SetFloat(def["distanceField"]["distanceRange"]);
+		_material["u_pxRange"].SetFloat(def["atlas"]["distanceRange"]);
 
-		_baseline = def["common"]["base"];
-		_lineHeight = def["common"]["lineHeight"];
-		_baseGlyphSize = def["info"]["size"];
+		_baseGlyphSize = def["atlas"]["size"];
+		_lineHeight = def["metrics"]["lineHeight"] * _baseGlyphSize;
+		_ascender = def["metrics"]["ascender"] * _baseGlyphSize;
+		_descender = def["metrics"]["descender"] * _baseGlyphSize;
 
-		foreach (var item in def["chars"].values)
+		foreach (var item in def["glyphs"].values)
 		{
-			var ch = item["char"];
+			var ch = (char)item["unicode"].@ushort;
 
-			_mertics.Add(ch, (width: item["width"], advance: item["xadvance"]));
+			// _mertics.Add((char)ch.@ushort, (width: item["width"], advance: item["xadvance"]));
 
 			var glyph = new GlyphInfo(item);
 			_glyphs.Add(ch, glyph);
 		}
 
-		foreach (var item in def["kernings"].values)
-		{
-			_kernings.Add((item["first"], item["second"]), item["amount"]);
-		}
+		// foreach (var item in def["kernings"].values)
+		// {
+		// 	_kernings.Add((item["first"], item["second"]), item["amount"]);
+		// }
 	}
 
-	public bool TryGetGlyphMetrics(char ch, [MaybeNullWhen(false)] out int width, out int advance)
+	public bool TryGetGlyphMetrics(char ch, [MaybeNullWhen(false)] out float width, out float advance)
 	{
-		if (_mertics.TryGetValue(ch, out var glyph))
+		if (_glyphs.TryGetValue(ch, out var glyph))
 		{
-			(width, advance) = glyph;
+			width = glyph.width;
+			advance = glyph.advance * _baseGlyphSize;
 			return true;
 		}
 
@@ -83,9 +92,11 @@ public class SDFFont : IFont
 		return false;
 	}
 
-	public bool TryGetKerning(char first, char second, out int amount)
+	public bool TryGetKerning(char first, char second, out float amount)
 	{
-		return _kernings.TryGetValue((first, second), out amount);
+		amount = 0;
+		return false;
+		// return _kernings.TryGetValue((first, second), out amount);
 	}
 
 	public float GetScale(float fontSize) => fontSize / _baseGlyphSize;
@@ -105,14 +116,16 @@ public class SDFFont : IFont
 	{
 		var glyph = _glyphs[ch];
 
-		var clip = new RectInt(glyph.x, glyph.y, glyph.width, glyph.height);
+		var clip = new Rect(glyph.x, glyph.y, glyph.width, glyph.height);
 
-		var xx = glyph.xOffset * scale;
-		var yy = glyph.yOffset * scale;
+		var xx = glyph.xOffset * _baseGlyphSize * scale;
+		var yy = glyph.yOffset * _baseGlyphSize * scale;
 
 		var pos = new Vector2(x + xx, y + yy);
-		var rect = new Rect(pos.x, pos.y, glyph.width * scale, glyph.height * scale);
+		var rect = new Rect(pos.x, pos.y + _baseGlyphSize * scale, glyph.width * scale, glyph.height * scale);
 
 		batch.DrawImage(_texture, clip, rect, color);
+		// batch.SetBox(x, y, 4, 4, color.contrastColor);
+		// batch.SetRect(rect, 1, color);
 	}
 }
