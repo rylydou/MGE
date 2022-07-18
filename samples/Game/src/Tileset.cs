@@ -1,6 +1,6 @@
 namespace Game;
 
-public class Tileset
+public class Tileset : IEquatable<Tileset>
 {
 	[Flags]
 	public enum Connection : byte
@@ -39,16 +39,15 @@ public class Tileset
 		public Properties properties;
 	}
 
-	public readonly Texture texture;
-	public readonly Vector2Int tileSize;
+	[Prop] public string id = "null";
+	[Prop] public string name = "Unnamed tileset";
+	[Prop] public Vector2Int tileSize;
 
-	public readonly AutoDictionary<Connection, Tile> tiles = new(t => t.connection);
+	[Prop] public IPhysicalTileBehavior physicalBehavior = new SolidTile();
 
-	public Tileset(Texture texture, Vector2Int tileSize)
-	{
-		this.texture = texture;
-		this.tileSize = tileSize;
-	}
+	public Texture texture = null!;
+
+	public AutoDictionary<Connection, Tile> tiles = new(t => t.connection);
 
 	// public void DrawMap(Vector2 position, Vector2Int mapSize, Func<int, int, bool> isSolid, bool treatOutofBoundsAsSolid = true)
 	// {
@@ -60,4 +59,50 @@ public class Tileset
 	// 		}
 	// 	}
 	// }
+
+	public override bool Equals(object? obj)
+	{
+		return obj is Tileset tileset && Equals(tileset);
+	}
+
+	public bool Equals(Tileset? tileset)
+	{
+		return tileset is not null && GetHashCode() == tileset.GetHashCode();
+	}
+
+	public override int GetHashCode()
+	{
+		return id.GetHashCode();
+	}
+}
+
+public class TilesetLoader : IContentLoader
+{
+	public object Load(File file, string filename)
+	{
+		var tileset = file.ReadMeml<Tileset>();
+		var ase = new Aseprite(file + ".ase");
+		tileset.texture = new(ase.frames[0].bitmap);
+
+		foreach (var slice in ase.slices)
+		{
+			var tile = new Tileset.Tile()
+			{
+				x = slice.originX,
+				y = slice.originY,
+				width = slice.width,
+				height = slice.height,
+				connection = Enum.Parse<Tileset.Connection>(slice.name),
+			};
+
+			if (!string.IsNullOrEmpty(slice.userDataText))
+			{
+				tile.properties = Enum.Parse<Tileset.Tile.Properties>(slice.userDataText);
+			}
+
+			tileset.tiles.Add(tile);
+		}
+
+		return tileset;
+	}
 }

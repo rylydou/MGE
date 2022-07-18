@@ -16,8 +16,7 @@ public class MainLoop : Module
 	{
 		instance = this;
 
-		Main.LoadSkins(Folder.here / "Skins");
-		Main.LoadSkins(Folder.data / "Skins");
+		App.content.font = App.content.Get<SDFFont>("Fonts/Montserrat.json");
 	}
 
 	protected override void Startup()
@@ -27,7 +26,13 @@ public class MainLoop : Module
 		App.window.SetAspectRatio(new(320, 180));
 		App.window.SetMinSize(new(320, 180));
 
-		App.content.font = App.content.Get<SDFFont>("Fonts/Montserrat.json");
+		Main.LoadSkins(Folder.here / "Skins");
+		Main.LoadSkins(Folder.data / "Skins");
+
+		Main.tilesets.Add(App.content.Get<Tileset>("Tilesets/Block.meml"));
+		Main.tilesets.Add(App.content.Get<Tileset>("Tilesets/Grass.meml"));
+		Main.tilesets.Add(App.content.Get<Tileset>("Tilesets/Dirt.meml"));
+		Main.tilesets.Add(App.content.Get<Tileset>("Tilesets/Stone.meml"));
 	}
 
 	protected override void Shutdown()

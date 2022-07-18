@@ -73,16 +73,16 @@ public class Projectile : Body2D
 				hitActors.Add(actor);
 			}
 
-			var solid = CollideFirst<Solid>(step);
+			var platform = CollideFirst<Platform>(step);
 
-			if (solid is not null)
+			if (platform is not null && platform.IsSolid(position, right * dir))
 			{
 				return new CollisionInfo()
 				{
 					direction = right * (float)dir,
 					moved = right * (float)move,
 					targetPosition = target,
-					hit = (Platform)solid,
+					hit = platform,
 				};
 			}
 

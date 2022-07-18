@@ -1,7 +1,7 @@
 # What is meml?
 
-## Introduction
-
+Introduction
+---
 Meml stands for Mangrove Engine Markup Langauge. It is the language used for storing data in a readable format in Mangrove.
 
 Meml is based off of [Hjson](https://hjson.github.io), a more human readable version of json.
@@ -29,8 +29,8 @@ myOtherArray: [
 ]
 ```
 
-## Types
-
+Types
+---
 Meml also has support for many of the primitive types in C#
 
 ```meml
@@ -65,8 +65,8 @@ Plus byte arrays to store binary data.
 data: *SGVsbG8gd29ybGQ=* # Encoded as base64 https://en.wikipedia.org/wiki/Base64
 ```
 
-## Object
-
+Object
+---
 Types of objects are defined like this
 
 ```meml
@@ -76,8 +76,8 @@ Types of objects are defined like this
 }
 ```
 
-## Arrays
-
+Arrays
+---
 ```meml
 myArray: [ 2 4 6 8 ]
 
@@ -101,8 +101,8 @@ table: [
 ]
 ```
 
-## Variables
-
+Variables
+---
 All variables must be defining at the start of the file (ignoring comments), they must start with a $ sign.
 
 ```meml

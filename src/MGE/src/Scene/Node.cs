@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace MGE;
 
-public abstract class Node
+public class Node
 {
 	[HiddenProp] public string name;
 

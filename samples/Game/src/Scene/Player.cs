@@ -226,7 +226,7 @@ public class Player : Actor
 			isCrouching = false;
 			collider = _normalHitbox;
 
-			var isBlocked = CollideCheck<Solid>();
+			var isBlocked = CollideCheck<Platform>();
 
 			// If you can't then crouch again
 			if (isBlocked)
@@ -246,7 +246,6 @@ public class Player : Actor
 			isCrouching ? crouchMoveClamp : moveClamp,
 			(isCrouching ? moveClampDeAceleration : moveClampAceleration) * delta
 		);
-
 
 		if (data.controls.move.intValue != 0)
 		{

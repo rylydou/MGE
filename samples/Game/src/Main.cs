@@ -9,6 +9,23 @@ public static class Main
 		ChangeScreen(new MainMenuScreen());
 	}
 
+	#region Screen
+
+	public static Scene scene = new();
+	public static GameScreen screen { get; private set; }
+	[MemberNotNull(nameof(screen))]
+	public static void ChangeScreen(GameScreen screen)
+	{
+		scene.RemoveAllChildren();
+
+		Main.screen = screen;
+		screen.Start();
+	}
+
+	#endregion Screen
+
+	#region Player
+
 	public static Color[] playerColors = new Color[] {
 		new(0xEF4A3AFF),
 		new(0x3385B8FF),
@@ -28,27 +45,6 @@ public static class Main
 		new Controls(3),
 	};
 
-	public static Tileset?[] tilesets = new Tileset?[]
-	{
-		null,
-		App.content.Get<Tileset>("Tilesets/Block.ase"),
-		App.content.Get<Tileset>("Tilesets/Grass.ase"),
-		App.content.Get<Tileset>("Tilesets/Dirt.ase"),
-	};
-
-	public static Rect renderRect;
-	public static readonly Vector2Int screenSize = new(320 * 2, 180 * 2);
-	public static Scene scene = new();
-	public static GameScreen screen { get; private set; }
-	[MemberNotNull(nameof(screen))]
-	public static void ChangeScreen(GameScreen screen)
-	{
-		scene.RemoveAllChildren();
-
-		Main.screen = screen;
-		screen.Start();
-	}
-
 	public static List<PlayerSkin> skins = new();
 	public static void LoadSkins(Folder folder)
 	{
@@ -62,4 +58,19 @@ public static class Main
 			Log.Info("Loaded skin: " + file);
 		}
 	}
+
+	#endregion Player
+
+	#region Rendering
+
+	public static Rect renderRect;
+	public static readonly Vector2Int screenSize = new(320 * 2, 180 * 2);
+
+	#endregion Rendering
+
+	#region Tileset
+
+	public static readonly AutoDictionary<int, Tileset> tilesets = new(ts => ts.GetHashCode());
+
+	#endregion Tileset
 }

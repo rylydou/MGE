@@ -8,5 +8,5 @@ public struct CollisionInfo
 	public Vector2 moved;
 	public Vector2 targetPosition;
 	public Platform hit;
-	public Solid? pusher;
+	public Platform? pusher;
 }

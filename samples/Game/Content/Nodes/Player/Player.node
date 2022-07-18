@@ -43,6 +43,7 @@ _children: [
 
 		collider: {
 			!MGE: 'MGE.HitboxCollider2D'
+			color: '#FFFFFF'
 			_size: [ 48.0 48.0 ]
 			position: [ -24.0 -24.0 ]
 		}
@@ -55,6 +56,7 @@ _children: [
 
 		collider: {
 			!MGE: 'MGE.HitboxCollider2D'
+			color: '#FFFF00'
 			_size: [ 32.0 16.0 ]
 			position: [ -16.0 -8.0 ]
 		}

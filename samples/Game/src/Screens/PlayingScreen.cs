@@ -7,18 +7,6 @@ public class PlayingScreen : GameScreen
 
 	public override void Start()
 	{
-		// Spawn ground
-		var ground = new Ground();
-		ground.tileSize = 8;
-		ground.mapSize = Main.screenSize / 8 + 0.5f;
-		Main.scene.AddChild(ground);
-
-		// Spawn jumpthough
-		var jumpthough = new JumpThough();
-		jumpthough.tileSize = 8;
-		jumpthough.mapSize = Main.screenSize / 8 + 0.5f;
-		Main.scene.AddChild(jumpthough);
-
 		// Spawn players
 		foreach (var player in Main.players)
 		{

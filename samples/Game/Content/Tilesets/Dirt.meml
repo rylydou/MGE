@@ -1,0 +1,7 @@
+id: 'dirt'
+name: 'Dirt'
+tileSize: [ 8 8 ]
+
+physicalBehavior: {
+	!Game: 'Game.SolidTile'
+}

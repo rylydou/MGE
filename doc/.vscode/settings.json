@@ -1,0 +1,6 @@
+{
+	"explorer.sortOrder": "mixed",
+	"files.exclude": {
+		".vscode/": true
+	}
+}

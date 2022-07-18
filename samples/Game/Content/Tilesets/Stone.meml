@@ -1,0 +1,7 @@
+id: 'stone'
+name: 'Stone'
+tileSize: [ 8 8 ]
+
+physicalBehavior: {
+	!Game: 'Game.SolidTile'
+}

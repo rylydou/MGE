@@ -1,7 +1,5 @@
 #nullable disable
 
-using System;
-
 namespace Game;
 
 public class Actor : Body2D
@@ -21,11 +19,11 @@ public class Actor : Body2D
 	public Vector2 positionRemainder => _movementCounter;
 	public Vector2 exactPosition => position + _movementCounter;
 
-	public void ZeroRemainderX() => _movementCounter.x = 0.0f;
-	public void ZeroRemainderY() => _movementCounter.y = 0.0f;
+	public void ZeroRemainderX() => _movementCounter.x = 0f;
+	public void ZeroRemainderY() => _movementCounter.y = 0f;
 
 	public bool treatNaive;
-	public bool ignoreJumpThrus;
+	// public bool ignoreJumpThrus;
 	public bool allowPushing = true;
 
 	public float timeSinceLastDamage = float.PositiveInfinity;
@@ -100,7 +98,7 @@ public class Actor : Body2D
 						for (int j = 1; j >= -1; j -= 2)
 						{
 							var vec = new Vector2(x * i, y * j);
-							if (!CollideCheck<Solid>(position + vec))
+							if (!CollideCheck<Platform>(position + vec))
 							{
 								position = position + vec;
 								if (info.pusher is not null)
@@ -124,7 +122,7 @@ public class Actor : Body2D
 						for (int j = 1; j >= -1; j -= 2)
 						{
 							var vec = new Vector2(x * i, y * j);
-							if (!CollideCheck<Solid>(info.targetPosition + vec))
+							if (!CollideCheck<Platform>(info.targetPosition + vec))
 							{
 								position = info.targetPosition + vec;
 								if (info.pusher is not null)
@@ -143,14 +141,13 @@ public class Actor : Body2D
 		return false;
 	}
 
-	public virtual bool IsRiding(Semisolid semisolid) => !ignoreJumpThrus && CollideCheckOutside(semisolid, position + Vector2.down);
-	public virtual bool IsRiding(Solid solid) => CollideCheck(solid, position + Vector2.down);
+	// public virtual bool IsRiding(Semisolid semisolid) => !ignoreJumpThrus && CollideCheckOutside(semisolid, position + Vector2.down);
+	public virtual bool IsRiding(Platform solid) => CollideCheck(solid, position + Vector2.down);
 
 	public bool OnGround(int downCheck = 1)
 	{
-		if (CollideCheck<Solid>(position + Vector2.down * downCheck))
-			return true;
-		return !ignoreJumpThrus && CollideCheckOutside<Semisolid>(position + Vector2.down * downCheck);
+		return CollideCheck<Platform>(position + Vector2.down * downCheck);
+		// return !ignoreJumpThrus && CollideCheckOutside<Semisolid>(position + Vector2.down * downCheck);
 	}
 
 	public bool OnGround(Vector2 at, int downCheck = 1)
@@ -162,7 +159,7 @@ public class Actor : Body2D
 		return hit;
 	}
 
-	public CollisionInfo? MoveH(float moveH, Solid pusher = null)
+	public CollisionInfo? MoveH(float moveH, Platform pusher = null)
 	{
 		_movementCounter.x += moveH;
 		var moveH1 = (int)System.Math.Round(_movementCounter.x, MidpointRounding.ToEven);
@@ -176,7 +173,7 @@ public class Actor : Body2D
 		return MoveHExact(moveH1, pusher);
 	}
 
-	public CollisionInfo? MoveV(float moveV, Solid pusher = null)
+	public CollisionInfo? MoveV(float moveV, Platform pusher = null)
 	{
 		_movementCounter.y += moveV;
 		var moveV1 = (int)System.Math.Round(_movementCounter.y, MidpointRounding.ToEven);
@@ -190,7 +187,7 @@ public class Actor : Body2D
 		return MoveVExact(moveV1, pusher);
 	}
 
-	public CollisionInfo? MoveHExact(int moveH, Solid pusher = null)
+	public CollisionInfo? MoveHExact(int moveH, Platform pusher = null)
 	{
 		hitLeft = false;
 		hitRight = false;
@@ -202,20 +199,20 @@ public class Actor : Body2D
 		while (moveH != 0)
 		{
 			var step = position + Vector2.right * dir;
-			var solid = CollideFirst<Solid>(step);
+			var platform = CollideFirst<Platform>(step);
 
-			if (solid is not null)
+			if (platform is not null && platform.IsSolid(position, Vector2.right * dir))
 			{
-				_movementCounter.x = 0.0f;
-				if (dir > 0) hitRight = true;
-				else hitLeft = true;
+				_movementCounter.x = 0f;
+				hitRight = dir > 0;
+				hitLeft = dir < 0;
 
 				return new CollisionInfo()
 				{
 					direction = Vector2.right * (float)dir,
 					moved = Vector2.right * (float)move,
 					targetPosition = target,
-					hit = (Platform)solid,
+					hit = (Platform)platform,
 					pusher = pusher
 				};
 			}
@@ -229,7 +226,7 @@ public class Actor : Body2D
 		return null;
 	}
 
-	public CollisionInfo? MoveVExact(int moveV, Solid pusher = null)
+	public CollisionInfo? MoveVExact(int moveV, Platform pusher = null)
 	{
 		hitTop = false;
 		hitBottom = false;
@@ -241,41 +238,22 @@ public class Actor : Body2D
 		while (moveV != 0)
 		{
 			var step = position + Vector2.down * dir;
-			var solid = CollideFirst<Solid>(step);
-			if (solid is not null)
+			var platform = CollideFirst<Platform>(step);
+
+			if (platform is not null && platform.IsSolid(position, Vector2.down * dir))
 			{
-				_movementCounter.y = 0.0f;
-				if (dir > 0) hitBottom = true;
-				else hitTop = true;
+				_movementCounter.y = 0f;
+				hitBottom = dir >= 0;
+				hitTop = dir < 0;
 
 				return new CollisionInfo()
 				{
 					direction = Vector2.down * dir,
 					moved = Vector2.down * move,
 					targetPosition = target,
-					hit = solid,
+					hit = platform,
 					pusher = pusher
 				};
-			}
-
-			if (moveV > 0 && !ignoreJumpThrus)
-			{
-				var semisolid = this.CollideFirstOutside<Semisolid>(step);
-
-				if (semisolid is not null)
-				{
-					_movementCounter.y = 0.0f;
-					hitBottom = true;
-
-					return new CollisionInfo()
-					{
-						direction = Vector2.down * dir,
-						moved = Vector2.down * move,
-						targetPosition = target,
-						hit = semisolid,
-						pusher = pusher
-					};
-				}
 			}
 
 			move += dir;
