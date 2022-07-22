@@ -177,6 +177,7 @@ public class Node
 			Ready();
 			GetChildren<Node>().ToArray().ForEach(c =>
 			{
+				// Skip the child if it was removed
 				if (c.parent != this) return;
 
 				c.onReady();
@@ -198,6 +199,7 @@ public class Node
 			OnEnterScene();
 			GetChildren<Node>().ToArray().ForEach(c =>
 			{
+				// Skip the child if it was removed
 				if (c.parent != this) return;
 
 				c.onEnterScene();
@@ -210,6 +212,7 @@ public class Node
 			OnExitScene();
 			GetChildren<Node>().ToArray().ForEach(c =>
 			{
+				// Skip the child if it was removed
 				if (c.parent != this) return;
 
 				c.onExitScene();
@@ -246,6 +249,7 @@ public class Node
 			Tick(delta);
 			GetChildren<Node>().ToArray().ForEach(c =>
 			{
+				// Skip the child if it was removed
 				if (c.parent != this) return;
 
 				c.onTick(delta);
@@ -257,6 +261,7 @@ public class Node
 			Update(delta);
 			GetChildren<Node>().ToArray().ForEach(c =>
 			{
+				// Skip the child if it was removed
 				if (c.parent != this) return;
 
 				c.onUpdate(delta);

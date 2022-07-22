@@ -2,6 +2,7 @@
 
 namespace Game;
 
+// Based on https://maddythorson.medium.com/celeste-and-towerfall-physics-d24bd2ae0fc5
 public class Actor : Body2D
 {
 	[Prop] public int maxHealth = 100;
