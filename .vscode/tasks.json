@@ -39,7 +39,8 @@
 				"watch",
 				"--project",
 				"${workspaceFolder}/samples/Game/Game.csproj"
-			]
+			],
+			"problemMatcher": []
 		}
 	]
 }

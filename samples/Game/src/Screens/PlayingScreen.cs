@@ -5,8 +5,18 @@ public class PlayingScreen : GameScreen
 	Prefab playerPrefab = App.content.Get<Prefab>("Nodes/Player/Player.node");
 	Prefab cratePrefab = App.content.Get<Prefab>("Nodes/Items/Wooden Crate/Item.node");
 
+	public Stage stage = new();
+
 	public override void Start()
 	{
+		// Load stage
+		stage = Folder.data.GetFile("test.stage").ReadMeml<Stage>();
+		stage.UnpackTilemap();
+
+		// Spawn in the stage
+		Main.scene.AddChild(stage);
+		stage.Spawn();
+
 		// Spawn players
 		foreach (var player in Main.players)
 		{
@@ -35,12 +45,6 @@ public class PlayingScreen : GameScreen
 	public override void Update(float delta)
 	{
 		var kb = App.input.keyboard;
-
-		if (kb.Pressed(Keys.Escape))
-		{
-			Main.ChangeScreen(new MainMenuScreen());
-			return;
-		}
 
 		if (kb.Pressed(Keys.C))
 		{

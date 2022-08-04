@@ -351,7 +351,10 @@ namespace MGE.GLFW
 
 		protected override void SetAspectRatio(Vector2Int? aspectRatio)
 		{
-			GLFW.SetWindowAspectRatio(_pointer, size.x, size.y);
+			if (aspectRatio.HasValue)
+				GLFW.SetWindowAspectRatio(_pointer, aspectRatio.Value.x, aspectRatio.Value.y);
+			else
+				GLFW.SetWindowAspectRatio(_pointer, (int)GLFW_Enum.GLFW_DONT_CARE, (int)GLFW_Enum.GLFW_DONT_CARE);
 		}
 	}
 }

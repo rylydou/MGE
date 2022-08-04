@@ -4,13 +4,11 @@ namespace Game.Screens;
 
 public class SetupScreen : GameScreen
 {
-	public Vector2 canvasSize = new(320, 180);
-
 	public UICanvas canvas = new();
 
 	public SetupScreen()
 	{
-		canvas.fixedSize = canvasSize;
+		canvas.fixedSize = Main.screenSize;
 	}
 
 	public override void Start()
@@ -116,13 +114,11 @@ public class SetupScreen : GameScreen
 		var bg = new Color(0xFAB23AFF);
 		var fg = new Color(0x343032FF);
 
-		var scale = (Vector2)App.window.size / canvasSize;
-		batch.PushMatrix(Vector2.zero, scale, Vector2.zero, 0);
-		batch.SetBox(new(canvasSize), bg);
+		batch.SetBox(new(Main.screenSize), bg);
 
-		var cardGap = 4f;
-		var cardHeight = 120f - cardGap * 2;
-		var cardWidth = (canvasSize.x - cardGap * 5) / 4;
+		var cardGap = 8f;
+		var cardHeight = 240f - cardGap * 2;
+		var cardWidth = (Main.screenSize.x - cardGap * 5) / 4;
 
 		var x = cardGap;
 		for (int i = 0; i < 4; i++)
@@ -132,7 +128,7 @@ public class SetupScreen : GameScreen
 
 			if (data is not null)
 			{
-				var cardRect = new Rect(x, canvasSize.y - cardHeight - cardGap, cardWidth, cardHeight);
+				var cardRect = new Rect(x, Main.screenSize.y - cardHeight - cardGap, cardWidth, cardHeight);
 				if (data.isReady)
 				{
 					batch.SetBox(cardRect, color);
@@ -142,21 +138,19 @@ public class SetupScreen : GameScreen
 					batch.SetRect(cardRect, -2, color);
 				}
 
-				var iconPos = new Vector2(x + cardWidth / 2, (canvasSize.y - cardHeight - cardGap * 2) / 2);
+				var iconPos = new Vector2(x + cardWidth / 2, (Main.screenSize.y - cardHeight - cardGap * 2) / 2);
 
-				var sprite = data.skin.spriteSheet.atlas["0"]!.GetClipSubtexture(data.skin.spriteSheet.slices[0].rect);
-				batch.Draw(sprite, iconPos, Color.white);
+				var sprite = data.skin.spriteSheet.GetSprite(0);
+				batch.Draw(sprite, iconPos, Vector2.zero, 0, new(2), Color.white);
 
 				// batch.SetCircle(iconPos, 2, 8, Color.black);
 				// batch.SetCircle(iconPos, 1, 8, data.color);
 
-				batch.DrawString(App.content.font, data.controls!.name, new(x, canvasSize.y - cardHeight - cardGap, cardWidth, cardHeight), TextAlignment.Center, fg, 4);
+				batch.DrawString(App.content.font, data.controls!.name, new(x, Main.screenSize.y - cardHeight - cardGap, cardWidth, cardHeight), TextAlignment.Center, fg, 8);
 			}
 			x += cardWidth + cardGap;
 		}
 
 		// canvas.RenderCanvas(batch);
-
-		batch.PopMatrix();
 	}
 }

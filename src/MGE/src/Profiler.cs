@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 
 namespace MGE;
@@ -14,6 +13,7 @@ public class Profiler : Module
 	}
 
 	public Visibility visibility;
+	public int targetFps = 60;
 
 	public TimeSpan[] deltaHistory = new TimeSpan[256];
 	public TimeSpan[] tickHistory = new TimeSpan[256];
@@ -115,7 +115,7 @@ public class Profiler : Module
 					// var fpsMax = 1.0 / Time.tickStepTarget / 2;
 					var timeAverage = deltaHistory.Average(ts => ts.TotalSeconds);
 					// var timeCeil = timeAverage * 1.1;
-					var timeCeil = 1.0 / 60;
+					var timeCeil = 1.0 / targetFps;
 					var timeMax = deltaHistory.Max();
 					for (int i = 0; i < deltaHistory.Length; i++)
 					{

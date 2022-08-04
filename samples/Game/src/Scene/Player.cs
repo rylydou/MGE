@@ -376,7 +376,7 @@ public class Player : Actor
 			washed = true;
 		}
 
-		var sprite = data.skin.spriteSheet.atlas["0"]!.GetClipSubtexture(data.skin.spriteSheet.slices[0].rect);
+		var sprite = data.skin.spriteSheet.GetSprite(0);
 
 		for (int y = -1; y <= 1; y++)
 		{

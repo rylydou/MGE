@@ -669,4 +669,207 @@ public static class Calc
 			yield return t;
 		}
 	}
+
+	#region Screen Scaling
+
+	public static Vector2 ScaleScreenFit(float areaWidth, float areaHeight, float imageWidth, float imageHeight)
+	{
+		var innerAspectRatio = imageWidth / imageHeight;
+		var outerAspectRatio = areaWidth / areaHeight;
+
+		var resizeFactor = (innerAspectRatio >= outerAspectRatio) ?
+		(areaWidth / (float)imageWidth) :
+		(areaHeight / (float)imageHeight);
+
+		var newWidth = imageWidth * resizeFactor;
+		var newHeight = imageHeight * resizeFactor;
+		// var newLeft = outer.left + (areaWidth - newWidth) / 2f;
+		// var newTop = outer.top + (areaHeight - newHeight) / 2f;
+
+		return new(newWidth, newHeight);
+	}
+
+	#endregion Screen Scaling
+
+	public static float ScaleScreenIntegerRatio(float areaWidth, float areaHeight, float imageWidth, float imageHeight)
+	{
+		float areaSize, imageSize;
+
+		if (areaHeight * imageWidth < areaWidth * imageHeight)
+		{
+			areaSize = areaHeight;
+			imageSize = imageHeight;
+		}
+		else
+		{
+			areaSize = areaWidth;
+			imageSize = imageWidth;
+		}
+
+		var ratio = Mathf.Floor(areaSize / imageSize);
+
+		if (ratio < 1)
+		{
+			ratio = 1;
+		}
+
+		return ratio;
+	}
+
+	public static Vector2 ScaleScreenIntegerRatios(float areaWidth, float areaHeight, float imageWidth, float imageHeight, float aspectX, float aspectY)
+	{
+		if (imageWidth * aspectY == imageHeight * aspectX)
+		{
+			return new(ScaleScreenIntegerRatio(areaWidth, areaHeight, imageWidth, imageHeight));
+		}
+
+		float maxRatioX = Mathf.Floor(areaWidth / imageWidth),
+				maxRatioY = Mathf.Floor(areaHeight / imageHeight),
+				maxWidth = imageWidth * maxRatioX,
+				maxHeight = imageHeight * maxRatioY,
+				maxWidthAspectY = maxWidth * aspectY,
+				maxHeightAspectX = maxHeight * aspectX;
+
+		float ratioX, ratioY;
+
+		if (maxWidthAspectY == maxHeightAspectX)
+		{
+			ratioX = maxRatioX;
+			ratioY = maxRatioY;
+		}
+		else
+		{
+			var maxAspectLessThanTarget = maxWidthAspectY < maxHeightAspectX;
+
+			float ratioA, maxSizeA, imageSizeB, aspectA, aspectB;
+
+			if (maxAspectLessThanTarget)
+			{
+				ratioA = maxRatioX;
+				maxSizeA = maxWidth;
+				imageSizeB = imageHeight;
+				aspectA = aspectX;
+				aspectB = aspectY;
+			}
+			else
+			{
+				ratioA = maxRatioY;
+				maxSizeA = maxHeight;
+				imageSizeB = imageWidth;
+				aspectA = aspectY;
+				aspectB = aspectX;
+			}
+
+			float ratioBFract = maxSizeA * aspectB / aspectA / imageSizeB,
+					ratioBFloor = Mathf.Floor(ratioBFract),
+					ratioBCeil = Mathf.Ceil(ratioBFract),
+					parFloor = ratioBFloor / ratioA,
+					parCeil = ratioBCeil / ratioA;
+
+			if (maxAspectLessThanTarget)
+			{
+				parFloor = 1 / parFloor;
+				parCeil = 1 / parCeil;
+			}
+
+			float commonFactor = imageWidth * aspectY / aspectX / imageHeight,
+					errorFloor = Mathf.Abs(1 - commonFactor * parFloor),
+					errorCeil = Mathf.Abs(1 - commonFactor * parCeil);
+
+			float ratioB;
+
+			if (Math.Abs(errorFloor - errorCeil) < .001)
+			{
+				ratioB = Math.Abs(ratioA - ratioBFloor) < Math.Abs(ratioA - ratioBCeil)
+							 ? ratioBFloor
+							 : ratioBCeil;
+			}
+			else
+			{
+				ratioB = errorFloor < errorCeil
+							 ? ratioBFloor
+							 : ratioBCeil;
+			}
+
+			if (maxAspectLessThanTarget)
+			{
+				ratioX = ratioA;
+				ratioY = ratioB;
+			}
+			else
+			{
+				ratioX = ratioB;
+				ratioY = ratioA;
+			}
+		}
+
+		if (ratioX < 1)
+		{
+			ratioX = 1;
+		}
+
+		if (ratioY < 1)
+		{
+			ratioY = 1;
+		}
+
+		return new(ratioX, ratioY);
+	}
+
+	public static Vector2 ScaleScreenInteger(float areaWidth, float areaHeight, float imageWidth, float imageHeight)
+	{
+		var ratio = ScaleScreenIntegerRatio(areaWidth, areaHeight, imageWidth, imageHeight);
+
+		return new(
+			imageWidth * ratio,
+			imageHeight * ratio
+		);
+	}
+
+	public static Vector2 ScaleScreenIntegerCorrected(float areaWidth, float areaHeight, float imageWidth, float imageHeight, float aspectX, float aspectY)
+	{
+		var ratios = ScaleScreenIntegerRatios(areaWidth, areaHeight, imageWidth, imageHeight, aspectX, aspectY);
+
+		return new(
+			imageWidth * ratios.x,
+			imageHeight * ratios.y
+		);
+	}
+
+	public static Vector2 ScaleScreenIntegerCorrectedPerfectY(int areaWidth, int areaHeight, int imageHeight, float aspectX, float aspectY)
+	{
+		float imageWidth = imageHeight * aspectX / aspectY;
+
+		float imageSize, areaSize;
+
+		if (areaHeight * imageWidth < areaWidth * imageHeight)
+		{
+			areaSize = areaHeight;
+			imageSize = imageHeight;
+		}
+		else
+		{
+			areaSize = areaWidth;
+			imageSize = imageWidth;
+		}
+
+		var ratio = Mathf.Floor(areaSize / imageSize);
+
+		if (ratio < 1)
+		{
+			ratio = 1;
+		}
+
+		var width = Mathf.Round(imageWidth * ratio);
+
+		if (width > areaWidth)
+		{
+			width--;
+		}
+
+		return new(
+		 width,
+			 imageHeight * ratio
+		);
+	}
 }

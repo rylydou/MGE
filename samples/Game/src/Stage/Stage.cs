@@ -9,31 +9,31 @@ public class Stage : Node
 {
 	public const float TILE_SIZE = 8f;
 
-	[Prop] public int width = 80;
-	[Prop] public int height = 45;
+	[Save] public int width = 80;
+	[Save] public int height = 45;
 
-	[Prop] PaletteIndex[] _tileData = new PaletteIndex[80 * 45];
-	[Prop] int[] _tileDataPalette = new int[PaletteIndex.MaxValue];
+	[Save] PaletteIndex[] _tileData = new PaletteIndex[80 * 45];
+	[Save] List<string> _tileDataPalette = new() { null };
 
 	#region Tilemap
 
-	int[,] _tilemap = new int[80, 45];
+	string[,] _tilemap = new string[80, 45];
 
-	Dictionary<int, StageTilemap> _instancedTilemaps = new();
-	Dictionary<int, int> _tilemapTileStats = new();
+	Dictionary<string, StageTilemap> _instancedTilemaps = new();
+	// Dictionary<int, int> _tilemapTileStats = new();
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public void SetTile(int x, int y, int id)
+	public void SetTile(int x, int y, in string id)
 	{
 		var prevTileId = _tilemap[x, y];
 
 		_tilemap[x, y] = id;
 
-		if (id == 0)
+		if (id is null)
 		{
-			if (prevTileId != 0)
+			if (prevTileId is not null)
 			{
-				_tilemapTileStats[prevTileId]--;
+				// _tilemapTileStats[prevTileId]--;
 			}
 		}
 		else
@@ -41,16 +41,16 @@ public class Stage : Node
 			// If the tilemap is not instanced then instance it into the scene
 			if (!_instancedTilemaps.ContainsKey(id))
 			{
-				_tilemapTileStats.Add(id, 0);
+				// _tilemapTileStats.Add(id, 0);
 
 				SpawnTilemap(id);
 			}
-			_tilemapTileStats[id]++;
+			// _tilemapTileStats[id]++;
 		}
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public int GetTile(int x, int y)
+	public string GetTile(int x, int y)
 	{
 		return _tilemap[x, y];
 	}
@@ -84,31 +84,25 @@ public class Stage : Node
 		}
 	}
 
-	public PaletteIndex GetTileFromPallet(int id)
+	public PaletteIndex GetTileFromPallet(string id)
 	{
-		if (id == 0)
+		if (id is null)
 		{
 			return 0;
 		}
 
-		for (PaletteIndex i = 1; i < PaletteIndex.MaxValue; i++)
-		{
-			// Tile is already in the palette
-			var lutTileId = _tileDataPalette[i];
-			if (lutTileId == id)
-			{
-				return i;
-			}
+		var index = _tileDataPalette.FindIndex(t => t == id);
 
-			// Add the tile to the palette
-			if (lutTileId == 0)
-			{
-				_tileDataPalette[i] = id;
-				return i;
-			}
+		// Add the tile to the palette
+		if (index == -1)
+		{
+			Debug.Assert(_tileDataPalette.Count < PaletteIndex.MaxValue, "Ran out of space for tiles in stage tile palette");
+
+			_tileDataPalette.Add(id);
+			return (PaletteIndex)(_tileDataPalette.Count - 1);
 		}
 
-		throw new Exception("Ran out of space for tiles in stage tile palette");
+		return (PaletteIndex)index;
 	}
 
 	#endregion Tilemap
@@ -129,21 +123,26 @@ public class Stage : Node
 
 	public void Spawn()
 	{
-		// `int i = 1` to skip the first palette index that is always zero
-		for (int i = 1; i < PaletteIndex.MaxValue; i++)
+		// var i = 0;
+		foreach (var item in _tileDataPalette)
 		{
-			var id = _tileDataPalette[i];
+			if (item is null) continue;
 
-			// Stop if reached end? palette layout ex: [ 0 # # # ... 0 0 0 ]
-			if (id == 0) break;
-
-			SpawnTilemap(id);
+			SpawnTilemap(item);
+			// i++;
 		}
+		// // `int i = 1` to skip the first palette index that is always zero
+		// for (int i = 1; i < PaletteIndex.MaxValue; i++)
+		// {
+		// 	var id = _tileDataPalette[i];
+
+		// 	// Stop if reached end? palette layout ex: [ 0 # # # ... 0 0 0 ]
+		// }
 	}
 
-	void SpawnTilemap(int id)
+	void SpawnTilemap(string id)
 	{
-		Debug.Assert(id != 0, "Id cannot be zero");
+		Debug.Assert(id is not null, "Id cannot be null");
 		Debug.Assert(!_instancedTilemaps.ContainsKey(id), "Tilemap is already instanced");
 
 		var tilemap = new StageTilemap(this, id);

@@ -6,11 +6,19 @@ namespace Game;
 
 public class MainLoop : Module
 {
+	public enum ScreenScalingMode
+	{
+		Fit,
+		IntegerScale,
+	}
+
 #nullable disable
 	public static MainLoop instance;
 #nullable restore
 
 	public FrameBuffer gameFramebuffer = new(Main.screenSize.x, Main.screenSize.y);
+
+	public ScreenScalingMode screenScalingMode = ScreenScalingMode.Fit;
 
 	public MainLoop()
 	{
@@ -23,16 +31,33 @@ public class MainLoop : Module
 	{
 		App.window.onRender += Render;
 
-		App.window.SetAspectRatio(new(320, 180));
-		App.window.SetMinSize(new(320, 180));
+		// App.window.SetAspectRatio(Main.screenSize);
+		App.window.SetMinSize(Main.screenSize);
 
 		Main.LoadSkins(Folder.here / "Skins");
 		Main.LoadSkins(Folder.data / "Skins");
 
-		Main.tilesets.Add(App.content.Get<Tileset>("Tilesets/Block.meml"));
-		Main.tilesets.Add(App.content.Get<Tileset>("Tilesets/Grass.meml"));
-		Main.tilesets.Add(App.content.Get<Tileset>("Tilesets/Dirt.meml"));
-		Main.tilesets.Add(App.content.Get<Tileset>("Tilesets/Stone.meml"));
+		Main.tilesets.Add(App.content.Get<Tileset>("Tiles/Block.meml"));
+		Main.tilesets.Add(App.content.Get<Tileset>("Tiles/Grass.meml"));
+		Main.tilesets.Add(App.content.Get<Tileset>("Tiles/Dirt.meml"));
+		Main.tilesets.Add(App.content.Get<Tileset>("Tiles/Stone.meml"));
+
+		App.window.onResize += UpdateRenderRect;
+		UpdateRenderRect(App.window);
+	}
+
+	public void UpdateRenderRect(Window window)
+	{
+		var size = screenScalingMode switch
+		{
+			ScreenScalingMode.IntegerScale => Calc.ScaleScreenInteger(window.size.x, App.window.size.y, Main.screenSize.x, Main.screenSize.y),
+			ScreenScalingMode.Fit => Calc.ScaleScreenFit(window.size.x, App.window.size.y, Main.screenSize.x, Main.screenSize.y),
+			_ => throw new Exception("Unsupported screen scaling mode " + screenScalingMode),
+		};
+
+		var rect = new RectInt((int)(window.size.x - size.x) / 2, (int)(window.size.y - size.y) / 2, (int)size.x, (int)size.y);
+
+		Main.renderRect = rect;
 	}
 
 	protected override void Shutdown()
@@ -67,6 +92,7 @@ public class MainLoop : Module
 		var bottomColor = new Color(0x394778FF);
 		Batch2D.current.SetBox(new(Main.screenSize), topColor, topColor, bottomColor, bottomColor);
 		Batch2D.current.SetBox(new(Main.screenSize), new(0x302C2EFF));
+		Batch2D.current.SetBox(new(Main.screenSize), new(0x394778FF));
 
 		Main.screen.Update(delta);
 		Main.scene.onUpdate(delta);
@@ -84,15 +110,20 @@ public class MainLoop : Module
 	{
 		var batch = Batch2D.current;
 
+		var scale = Main.renderRect.size / (Vector2)Main.screenSize;
+
+		batch.PushMatrix(Main.renderRect.topLeft / scale, Vector2.zero, scale, 0f);
+		Main.mouse = (App.window.mouse - Main.renderRect.position) / scale;
+
 		// Draw game framebuffer onto window
-		batch.DrawImage(gameFramebuffer, new Rect(window.width, window.height), Color.white);
+		batch.DrawImage(gameFramebuffer, new Rect(Main.screenSize), Color.white);
 
 		// Render screen
 		Main.screen.Render(Batch2D.current);
 
-		// batch.SetMaterial(((SDFFont)App.content.font)._material);
-		// batch.DrawImage(((SDFFont)App.content.font)._texture, Vector2.zero, new(2f), Vector2.zero, 0, Color.white);
-		// batch.SetMaterial(null);
+		batch.PopMatrix();
+
+		App.graphics.Clear(window, Color.black);
 
 		batch.Render(window);
 	}

@@ -29,10 +29,7 @@ public class MainMenuScreen : GameScreen
 
 	public override void Render(Batch2D batch)
 	{
-		var text =
-			"Unnamed Party Game\n" +
-			"S - Start\n" +
-			"E - Editor";
+		batch.SetBox(new(Main.screenSize), new(0x302C2EFF));
 
 		var time = (float)Time.duration.TotalSeconds;
 		var color = new Color(
@@ -41,8 +38,17 @@ public class MainMenuScreen : GameScreen
 			Math.Abs(Mathf.Sin(time + Mathf.TAU * 2 / 3)),
 		1f);
 
-		batch.DrawString(App.content.font, text, new(Mathf.Sin(time) * 64, Mathf.Cos(time) * 16, App.window.size.x, App.window.size.y), TextAlignment.Center, color, 96 + Mathf.Sin(time * 0.67f) * 16);
+		var text =
+			"Unnamed Party Game\n" +
+			"\n";
+		batch.DrawString(App.content.font, text, new(0, 0, Main.screenSize.x, Main.screenSize.y), TextAlignment.Center, color, 24);
 
-		batch.DrawString(App.content.font, "(press [Shift+Escape] to come back here)", new(8, App.window.height - 42), Color.white, 24);
+		text =
+			"\n" +
+			"S - Start\n" +
+			"E - Editor";
+		batch.DrawString(App.content.font, text, new(0, 0, Main.screenSize.x, Main.screenSize.y), TextAlignment.Center, color, 24);
+
+		batch.DrawString(App.content.font, "(press [Shift+Escape] to come back here)", new(8, Main.screenSize.y - 18), Color.white, 8);
 	}
 }

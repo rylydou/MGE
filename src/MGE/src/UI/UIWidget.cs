@@ -32,7 +32,6 @@ public abstract class UIWidget
 
 	public bool isHovered { get => isIntractable && canvas?.hoveredWidget == this; }
 
-
 	protected virtual void RegisterCallbacks()
 	{
 		onMeasureChanged += OnMeasureChanged;

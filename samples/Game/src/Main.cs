@@ -22,6 +22,8 @@ public static class Main
 		screen.Start();
 	}
 
+	public static Vector2 mouse;
+
 	#endregion Screen
 
 	#region Player
@@ -70,7 +72,7 @@ public static class Main
 
 	#region Tileset
 
-	public static readonly AutoDictionary<int, Tileset> tilesets = new(ts => ts.GetHashCode());
+	public static readonly AutoDictionary<string, Tileset> tilesets = new(ts => ts.id);
 
 	#endregion Tileset
 }

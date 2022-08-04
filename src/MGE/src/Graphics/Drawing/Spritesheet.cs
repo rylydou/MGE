@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace MGE;
 
@@ -68,10 +70,27 @@ public class SpriteSheet
 
 	public Atlas atlas;
 
-	public List<Slice> slices = new();
+	public AutoDictionary<string, Slice> slices = new(s => s.name);
 
 	public SpriteSheet(Atlas atlas)
 	{
 		this.atlas = atlas;
+	}
+
+	// TODO Optimize or remove
+	public Subtexture GetSprite(int sliceIndex, int frameIndex = 0)
+	{
+		var frame = atlas[frameIndex.ToString()];
+		Debug.Assert(frame is not null, "Frame does not exist");
+
+		return frame.GetClipSubtexture(slices.Values.ElementAt(sliceIndex).rect);
+	}
+
+	public Subtexture GetSprite(string sliceName, int frameIndex = 0)
+	{
+		var frame = atlas[frameIndex.ToString()];
+		Debug.Assert(frame is not null, "Frame does not exist");
+
+		return frame.GetClipSubtexture(slices[sliceName].rect);
 	}
 }

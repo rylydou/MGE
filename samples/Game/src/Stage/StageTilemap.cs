@@ -1,22 +1,32 @@
 namespace Game;
 
-// TODO Update collider
+// TODO Update collider when map is changed
 public class StageTilemap : Platform
 {
 	public Stage stage;
-	public int id;
+	public string id;
 	public Tileset tileset;
 	public GridCollider2D? tilemap;
 
-	public StageTilemap(Stage stage, int id)
+	public StageTilemap(Stage stage, string id)
 	{
 		this.stage = stage;
 		this.id = id;
 		this.tileset = Main.tilesets[id];
 
+		var map = new VirtualMap<bool>(stage.width, stage.height, false);
+
+		for (int y = 0; y < stage.height; y++)
+		{
+			for (int x = 0; x < stage.width; x++)
+			{
+				map[x, y] = stage.GetTile(x, y) == id;
+			}
+		}
+
 		tilemap = new GridCollider2D(new(stage.width, stage.height), Stage.TILE_SIZE)
 		{
-			data = new VirtualMap<bool>(stage.width, stage.height, false),
+			data = map,
 			dontDraw = true,
 		};
 		collider = tilemap;
@@ -37,19 +47,19 @@ public class StageTilemap : Platform
 
 				var connection = Tileset.Connection.None;
 
-				if (y == 0 || stage.GetTile(x, y - 1) != 0)
+				if (y == 0 || stage.GetTile(x, y - 1) is not null)
 				{
 					connection |= Tileset.Connection.Top;
 				}
-				if (y == stage.height - 1 || stage.GetTile(x, y + 1) != 0)
+				if (y == stage.height - 1 || stage.GetTile(x, y + 1) is not null)
 				{
 					connection |= Tileset.Connection.Bottom;
 				}
-				if (x == 0 || stage.GetTile(x - 1, y) != 0)
+				if (x == 0 || stage.GetTile(x - 1, y) is not null)
 				{
 					connection |= Tileset.Connection.Left;
 				}
-				if (x == stage.width - 1 || stage.GetTile(x + 1, y) != 0)
+				if (x == stage.width - 1 || stage.GetTile(x + 1, y) is not null)
 				{
 					connection |= Tileset.Connection.Right;
 				}

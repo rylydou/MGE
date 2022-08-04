@@ -80,6 +80,11 @@ public abstract class Input
 	public abstract void SetMouseCursor(Cursors cursors);
 
 	/// <summary>
+	/// Sets the Mouse Cursor Mode
+	/// </summary>
+	public abstract void SetMouseCursorMode(CursorModes modes);
+
+	/// <summary>
 	/// Gets the Clipboard String, if it is a String
 	/// </summary>
 	public abstract string? GetClipboardString();

@@ -232,6 +232,7 @@ public class MemlTextWriter : IMemlWriter, IDisposable
 
 	public void Dispose()
 	{
+		_writer.Close();
 		_writer.Dispose();
 	}
 }

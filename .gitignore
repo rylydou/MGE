@@ -11,3 +11,6 @@
 bin/
 obj/
 appdata/
+
+# Editor files
+.obsidian/

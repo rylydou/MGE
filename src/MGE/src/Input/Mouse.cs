@@ -42,6 +42,16 @@ public enum Cursors
 }
 
 /// <summary>
+/// Mouse Cursor Modes
+/// </summary>
+public enum CursorModes
+{
+	Normal,
+	Hidden,
+	LockedAndHidden,
+}
+
+/// <summary>
 /// Stores a Mouse State
 /// </summary>
 public class Mouse

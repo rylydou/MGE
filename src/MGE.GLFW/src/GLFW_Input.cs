@@ -91,8 +91,34 @@ internal class GLFW_Input : Input
 		for (int i = 0; i < App.windowing.windows.Count; i++)
 		{
 			if (App.windowing.windows[i].implementation is GLFW_Window window)
+			{
 				GLFW.SetCursor(window._pointer, cursor);
+			}
 		}
+	}
+
+	public override void SetMouseCursorMode(CursorModes modes)
+	{
+		var mode = GetMouseCursorMode(modes);
+
+		for (int i = 0; i < App.windowing.windows.Count; i++)
+		{
+			if (App.windowing.windows[i].implementation is GLFW_Window window)
+			{
+				GLFW.SetInputMode(window._pointer, (int)GLFW_Enum.CURSOR, mode);
+			}
+		}
+	}
+
+	int GetMouseCursorMode(CursorModes mode)
+	{
+		return mode switch
+		{
+			CursorModes.Normal => (int)GLFW_Enum.CURSOR_NORMAL,
+			CursorModes.Hidden => (int)GLFW_Enum.CURSOR_HIDDEN,
+			CursorModes.LockedAndHidden => (int)GLFW_Enum.CURSOR_DISABLED,
+			_ => throw new Exception("Unsupported cursor mode " + mode),
+		};
 	}
 
 	public override string? GetClipboardString()

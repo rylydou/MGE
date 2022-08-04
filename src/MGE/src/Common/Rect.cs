@@ -55,22 +55,22 @@ public struct Rect : IEquatable<Rect>
 		return rect;
 	}
 
-	public static Rect Fit(Vector2 inner, Rect outer)
-	{
-		var innerAspectRatio = inner.x / inner.y;
-		var outerAspectRatio = outer.width / outer.height;
+	// public static Rect Fit(Vector2 inner, Rect outer)
+	// {
+	// 	var innerAspectRatio = inner.x / inner.y;
+	// 	var outerAspectRatio = outer.width / outer.height;
 
-		var resizeFactor = (innerAspectRatio >= outerAspectRatio) ?
-		(outer.width / (float)inner.x) :
-		(outer.height / (float)inner.y);
+	// 	var resizeFactor = (innerAspectRatio >= outerAspectRatio) ?
+	// 	(outer.width / (float)inner.x) :
+	// 	(outer.height / (float)inner.y);
 
-		var newWidth = inner.x * resizeFactor;
-		var newHeight = inner.y * resizeFactor;
-		var newLeft = outer.left + (outer.width - newWidth) / 2f;
-		var newTop = outer.top + (outer.height - newHeight) / 2f;
+	// 	var newWidth = inner.x * resizeFactor;
+	// 	var newHeight = inner.y * resizeFactor;
+	// 	var newLeft = outer.left + (outer.width - newWidth) / 2f;
+	// 	var newTop = outer.top + (outer.height - newHeight) / 2f;
 
-		return new(newLeft, newTop, newWidth, newHeight);
-	}
+	// 	return new(newLeft, newTop, newWidth, newHeight);
+	// }
 
 	#endregion Methods
 
@@ -134,6 +134,14 @@ public struct Rect : IEquatable<Rect>
 		_yMin = position.y;
 		_width = width;
 		_height = height;
+	}
+
+	public Rect(float x, float y, Vector2 size)
+	{
+		_xMin = x;
+		_yMin = y;
+		_width = size.x;
+		_height = size.y;
 	}
 
 	public Rect(Vector2 position, float size)

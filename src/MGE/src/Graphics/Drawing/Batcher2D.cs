@@ -344,7 +344,7 @@ public class Batch2D
 		SetScissor(scissor);
 	}
 
-	public Transform2D PushMatrix(in Vector2 position, in Vector2 scale, in Vector2 origin, float rotation, bool relative = true)
+	public Transform2D PushMatrix(in Vector2 position, in Vector2 origin, in Vector2 scale, float rotation, bool relative = true)
 	{
 		return PushMatrix(Transform2D.CreateMatrix(position, origin, scale, rotation), relative);
 	}
@@ -360,7 +360,7 @@ public class Batch2D
 
 		if (relative)
 		{
-			matrixStack = matrix * matrixStack;
+			matrixStack = matrixStack * matrix;
 		}
 		else
 		{
@@ -1144,6 +1144,7 @@ public class Batch2D
 		// color, washed);
 	}
 
+	// TODO Get scale working
 	public void Draw(Subtexture subtex, Vector2 position, Vector2 pivot, float rotation, Vector2 scale, in Color color, bool washed = false)
 	{
 		// Draw(subtex, position, color, washed);
