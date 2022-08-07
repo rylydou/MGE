@@ -1,6 +1,5 @@
 id: 'grass'
 name: 'Grass'
-tileSize: [ 8 8 ]
 
 physicalBehavior: {
 	!Game: 'Game.SolidTile'

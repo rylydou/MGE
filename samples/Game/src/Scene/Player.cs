@@ -156,6 +156,12 @@ public class Player : Actor
 		MoveV(vSpeed + (hitBottom ? 1 : 0));
 		MoveH(hMoveSpeed + hSpeed - (hitLeft ? 1 : 0) + (hitRight ? 1 : 0));
 
+		// If a wall was hit then get ride of extra knockback velocity
+		if (hitLeft || hitRight)
+		{
+			hSpeed = 0;
+		}
+
 		if (position.y > Main.screenSize.y + 16) OnDeath();
 	}
 
@@ -267,18 +273,52 @@ public class Player : Actor
 		{
 			// Don't walk through walls
 			hMoveSpeed = 0;
-			hSpeed = 0;
 		}
+
+		// Experimental Terraria 'block step-up'
+		// if (hitBottom)
+		// {
+		// 	if (CollideCheck<Platform>(position + Vector2.right * Mathf.Sign(hMoveSpeed) * 2))
+		// 	{
+		// 		if (!CollideCheck<Platform>(position + Vector2.right * Mathf.Sign(hMoveSpeed) * 2 + Vector2.up * 8))
+		// 		{
+		// 			position += Vector2.right * Mathf.Sign(hMoveSpeed) * 2 + Vector2.up * 8;
+		// 		}
+		// 	}
+		// }
 	}
 
 	void CalcGravity(float delta)
 	{
 		if (hitTop)
 		{
-			if (vSpeed < 0)
+			bool TryBonkNudge(int distance)
 			{
-				// Move out of the celling
-				vSpeed = bonkSpeed * delta;
+				var abs = Mathf.Abs(distance);
+				var dir = Mathf.Sign(distance);
+				for (int i = 0; i <= abs; i++)
+				{
+					if (!CollideCheck<Platform>(position + new Vector2(i * dir, -1)))
+					{
+						position += new Vector2(i * dir, 0);
+						return true;
+					}
+				}
+
+				return false;
+			}
+
+			var nudgeDist = 7;
+			// Try to nudge the player left and right
+			if (TryBonkNudge(nudgeDist)) { }
+			else if (TryBonkNudge(-nudgeDist)) { }
+			else
+			{
+				if (vSpeed < 0)
+				{
+					// Move out of the celling
+					vSpeed = bonkSpeed * delta;
+				}
 			}
 		}
 

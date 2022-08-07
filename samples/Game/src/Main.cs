@@ -1,5 +1,3 @@
-using Game.Screens;
-
 namespace Game;
 
 public static class Main
@@ -8,6 +6,9 @@ public static class Main
 	{
 		ChangeScreen(new MainMenuScreen());
 	}
+
+	public static Color bg = new(0xFAB23Aff);
+	public static Color fg = new(0x302C2Eff);
 
 	#region Screen
 
@@ -37,14 +38,14 @@ public static class Main
 
 	public static PlayerData?[] players = new PlayerData[4];
 
-	public static Controls[] controls = new Controls[]
+	public static PlayerControls[] controls = new PlayerControls[]
 	{
-		new Controls(-2),
-		new Controls(-1),
-		new Controls(0),
-		new Controls(1),
-		new Controls(2),
-		new Controls(3),
+		new PlayerControls(-2),
+		new PlayerControls(-1),
+		new PlayerControls(0),
+		new PlayerControls(1),
+		new PlayerControls(2),
+		new PlayerControls(3),
 	};
 
 	public static List<PlayerSkin> skins = new();

@@ -3,6 +3,7 @@ using System.Linq;
 
 namespace MGE;
 
+// TODO Cleanup
 public class Profiler : Module
 {
 	public enum Visibility
@@ -28,6 +29,8 @@ public class Profiler : Module
 
 	byte _next = 255;
 	byte _nextHistorical = 255;
+
+	long _lastGCIndex;
 
 	public Profiler() : base(int.MaxValue - 100)
 	{
@@ -63,11 +66,14 @@ public class Profiler : Module
 		memoryUsage = GC.GetTotalMemory(false);
 		memoryUsageHistory[_next] = memoryUsage;
 
-		if (_next != 0) return;
+		var info = GC.GetGCMemoryInfo();
+		if (info.Index > _lastGCIndex)
+		{
+			_nextHistorical++;
 
-		_nextHistorical++;
-
-		memoryUsageHistoryHistorical[_nextHistorical] = (long)memoryUsageHistory.Average();
+			memoryUsageHistoryHistorical[_nextHistorical] = info.HeapSizeBytes;
+			_lastGCIndex = info.Index;
+		}
 	}
 
 	void Render(Window window)
@@ -136,8 +142,8 @@ public class Profiler : Module
 					batch.SetBox(_next, 0, 1, 128, Color.white);
 
 					// Memory Graph
-					var memCeil = Mathf.Max(memoryUsageHistory.Max(), memoryUsageHistoryHistorical.Max());
-					// var memMax = memAvailable;
+					// var memCeil = Mathf.Max(memoryUsageHistory.Max(), memoryUsageHistoryHistorical.Max());
+					var memCeil = availableMemory;
 					for (int i = 0; i < memoryUsageHistory.Length; i++)
 					{
 						var height = (float)((double)memoryUsageHistory[i] / memCeil * 128);

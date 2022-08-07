@@ -6,8 +6,8 @@ public abstract class Item : Actor
 {
 	[Prop] public float useCooldown = 0.5f;
 
-	[Prop] public float fallSpeed = 16;
-	[Prop] public float fallClamp = 384;
+	[Prop] public float fallSpeed = 12;
+	[Prop] public float fallClamp = 360;
 
 	[Prop] public float deAcceration = 16;
 	[Prop] public float deAccerationAir = 8;

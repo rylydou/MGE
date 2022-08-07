@@ -26,8 +26,8 @@ public enum Buttons
 	B = 1,
 	X = 2,
 	Y = 3,
-	Back = 4,
-	Select = 5,
+	Select = 4,
+	Home = 5,
 	Start = 6,
 	LeftStick = 7,
 	RightStick = 8,
@@ -143,7 +143,7 @@ public class Controller
 
 		if (Down(button))
 		{
-			var time = Timestamp(button) / 1000.0;
+			var time = Timestamp(button) / 10000000.0;
 			return (Time.duration.TotalSeconds - time) > delay && Time.OnInterval(interval, time);
 		}
 

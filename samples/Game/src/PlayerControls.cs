@@ -1,6 +1,6 @@
 namespace Game;
 
-public class Controls
+public class PlayerControls
 {
 	public PlayerData? player;
 
@@ -47,15 +47,15 @@ public class Controls
 
 	// Menu
 	public VirtualStick navigation = new(App.input, 0.15f);
-	public VirtualButton navigateLeft = new(App.input);
-	public VirtualButton navigateRight = new(App.input);
-	public VirtualButton navigateUp = new(App.input);
-	public VirtualButton navigateDown = new(App.input);
+	public VirtualButton navigateLeft = new(App.input) { repeatDelay = 0.33f, repeatInterval = 1f / 10, };
+	public VirtualButton navigateRight = new(App.input) { repeatDelay = 0.33f, repeatInterval = 1f / 10, };
+	public VirtualButton navigateUp = new(App.input) { repeatDelay = 0.33f, repeatInterval = 1f / 10, };
+	public VirtualButton navigateDown = new(App.input) { repeatDelay = 0.33f, repeatInterval = 1f / 10, };
 
 	public VirtualButton confirm = new(App.input);
 	public VirtualButton back = new(App.input);
 
-	public Controls(int id)
+	public PlayerControls(int id)
 	{
 		this.id = id;
 
@@ -115,20 +115,20 @@ public class Controls
 	void InitController(int index)
 	{
 		anyButton.Add(id, Buttons.A, Buttons.Start);
-
 		pause.Add(id, Buttons.Start);
 
-		move.Add(id, Axes.LeftX).Add(id, Buttons.Left, Buttons.Right);
 		jump.Add(id, Buttons.A);
-		crouch.Add(id, Axes.RightY, 0.15f).Add(id, Axes.LeftTrigger, 0.15f);
-		action.Add(id, Buttons.Y);
-		altAction.Add(id, Buttons.X);
+		action.Add(id, Buttons.X);
+		altAction.Add(id, Buttons.B);
+
+		move.Add(id, Axes.LeftX, 0.25f).Add(id, Buttons.Left, Buttons.Right);
+		crouch.Add(id, Axes.LeftY, 0.85f).Add(id, Axes.LeftTrigger, 0.50f);
 
 		navigation.Add(id, Axes.LeftX, Axes.LeftY, 0.15f, 0.15f).Add(id, Buttons.Left, Buttons.Right, Buttons.Up, Buttons.Down);
-		navigateLeft.Add(id, Axes.LeftX, -0.15f).Add(id, Buttons.Left);
-		navigateRight.Add(id, Axes.LeftX, 0.15f).Add(id, Buttons.Right);
-		navigateUp.Add(id, Axes.LeftY, -0.15f).Add(id, Buttons.Up);
-		navigateDown.Add(id, Axes.LeftY, 0.15f).Add(id, Buttons.Down);
+		navigateLeft.Add(id, Axes.LeftX, -0.9f).Add(id, Buttons.Left);
+		navigateRight.Add(id, Axes.LeftX, 0.9f).Add(id, Buttons.Right);
+		navigateUp.Add(id, Axes.LeftY, -0.9f).Add(id, Buttons.Up);
+		navigateDown.Add(id, Axes.LeftY, 0.9f).Add(id, Buttons.Down);
 
 		confirm.Add(id, Buttons.A);
 		back.Add(id, Buttons.B);

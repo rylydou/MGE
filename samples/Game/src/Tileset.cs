@@ -1,6 +1,6 @@
 namespace Game;
 
-public class Tileset : IEquatable<Tileset>
+public class Tileset : IEquatable<Tileset>, IEditorItem
 {
 	[Flags]
 	public enum Connection : byte
@@ -40,8 +40,9 @@ public class Tileset : IEquatable<Tileset>
 	}
 
 	[Prop] public string id = "null";
+	int _hash;
 	[Prop] public string name = "Unnamed tileset";
-	[Prop] public Vector2Int tileSize;
+	[Prop] public Vector2Int tileSize = new(8, 8);
 
 	[Prop] public IPhysicalTileBehavior physicalBehavior = new SolidTile();
 
@@ -72,7 +73,14 @@ public class Tileset : IEquatable<Tileset>
 
 	public override int GetHashCode()
 	{
-		return id.GetHashCode();
+		if (_hash == 0)
+			_hash = Calc.StaticStringHash(id);
+		return _hash;
+	}
+
+	public Subtexture GetEditorIcon()
+	{
+		return new Subtexture(texture, new(16, 16));
 	}
 }
 

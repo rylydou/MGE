@@ -3,7 +3,7 @@ name: 'Shotgun'
 
 # sprite: '@res://./Sprite.ase'
 
-useCooldown: 0.5
+useCooldown: 0.75
 
 spread: 7.5
 minSpeedVariation: 0.67

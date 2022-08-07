@@ -8,7 +8,7 @@
 
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>false</ImplicitUsings>
-		<!-- <AllowUnsafeBlocks>true</AllowUnsafeBlocks> -->
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>

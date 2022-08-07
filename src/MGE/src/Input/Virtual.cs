@@ -321,8 +321,9 @@ public class VirtualButton
 		public Axes axis;
 		public float threshold;
 
-		float _pressedTimestamp;
+		long _pressedTimestamp;
 		const float AXIS_EPSILON = 0.00001f;
+		// const float AXIS_EPSILON = 0.15f;
 
 		public bool Pressed(float buffer, long lastBufferConsumedTime)
 		{
@@ -365,9 +366,33 @@ public class VirtualButton
 			}
 		}
 
+		// TODO Implement repeating
 		public bool Repeated(float delay, float interval)
 		{
-			throw new NotImplementedException();
+			if (Pressed())
+				return true;
+
+			if (down)
+			{
+				// Log.Trace(_pressedTimestamp.ToString());
+				var time = _pressedTimestamp / 10000000.0;
+				// Log.Trace($"{time}");
+
+				// Map the input value to 0 - 1 to account for the amopunt lost from the threshold
+				var value = Mathf.Abs(input.lastState.controllers[index].Axis(axis));
+				var thresh = Mathf.Abs(threshold);
+				var t = (value - thresh) / (1 - thresh);
+				// Log.Trace(t.ToString());
+
+				// Speed up the further the stick is pushed
+				interval = Mathf.Lerp(1f / 4, 1f / 15, t);
+				// Log.Trace($"{Time.duration.TotalSeconds - time}");
+				return (Time.duration.TotalSeconds - time) > 0.33 && Time.OnInterval(interval, time);
+			}
+
+			return false;
+			// return Pressed();
+			// throw new NotImplementedException();
 		}
 
 		bool Pressed()

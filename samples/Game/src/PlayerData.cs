@@ -8,7 +8,7 @@ public class PlayerData
 	public int skinIndex;
 	public PlayerSkin skin { get => Main.skins[skinIndex]; }
 
-	public Controls controls;
+	public PlayerControls controls;
 
 	public Player? player;
 
@@ -17,7 +17,7 @@ public class PlayerData
 	public PlayerData()
 	{
 		skinIndex = RNG.shared.RandomInt(Main.skins.Count - 1);
-		controls = new Controls(0);
+		controls = new PlayerControls(0);
 	}
 }
 

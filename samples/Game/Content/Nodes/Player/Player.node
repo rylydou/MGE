@@ -9,15 +9,15 @@ punchDamage: {
 punchCooldown: 0.2
 
 # Movement
-fallSpeed: 16.0
-fallClamp: 384.0
+fallSpeed: 12.0
+fallClamp: 360.0
 
-acceleration: 48.0
-deAcceleration: 48.0
-accelerationAir: 32.0
-deAccelerationAir: 16.0
-moveClamp: 192.0
-crouchMoveClamp: 96.0
+acceleration: 32.0
+deAcceleration: 16.0
+accelerationAir: 24.0
+deAccelerationAir: 8.0
+moveClamp: 128.0
+crouchMoveClamp: 48.0
 moveClampAceleration: 768
 moveClampDeAceleration: 384
 

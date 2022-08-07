@@ -7,8 +7,6 @@
 // {
 // 	public class MenuButtonData
 // 	{
-
-
 // 		internal MenuButtonData(MenuData menu, string text)
 // 		{
 // 			this.menu = menu;

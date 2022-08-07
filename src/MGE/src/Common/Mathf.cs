@@ -19,6 +19,7 @@ public static class Mathf
 	public const float GOLDEN_RATIO = 1.61803398875f;
 
 	public const float PI = MathF.PI;
+	public const float HALF_PI = MathF.PI / 2;
 	public const float TAU = PI * 2;
 
 	public const float POSITIVE_INFINITY = float.PositiveInfinity;

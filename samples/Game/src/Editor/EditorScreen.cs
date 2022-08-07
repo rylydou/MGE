@@ -1,20 +1,40 @@
-using MGE.UI;
+using Game.Editor;
 
-namespace Game.Screens;
+namespace Game;
 
 public class EditorScreen : GameScreen
 {
-	public Vector2 canvasSize = Main.screenSize;
-
 	public Stage stage = new();
 
-	public Tileset selectedTile = Main.tilesets.First();
+	public List<IEditorItem> items = new();
+	public int selection;
 
-	Vector2Int _prevTilePosition;
+	public EditorHotbar toolbar;
 
-	public UICanvas canvas = new() { fixedSize = Main.screenSize };
+	SpriteSheet _icons = App.content.Get<SpriteSheet>("Icons.ase");
 
-	List<Tileset> _recentTilesets = new();
+	public Vector2 cursor = Main.screenSize / 2 + Stage.TILE_SIZE / 2;
+	Vector2Int _tileCursor => cursor / Stage.TILE_SIZE;
+	Vector2Int _prevTileCursor;
+
+	public bool controllerMode = false;
+
+	public float tooltipAge;
+
+	public string tooltipText = "";
+	public float tooltipLifetime;
+
+	public void ShowTooltip(string text)
+	{
+		tooltipAge = 0;
+		tooltipText = text;
+		tooltipLifetime = 1;
+	}
+
+	public EditorScreen()
+	{
+		toolbar = new(this);
+	}
 
 	public override void Start()
 	{
@@ -22,76 +42,118 @@ public class EditorScreen : GameScreen
 
 		Main.scene.AddChild(stage);
 
+		// items.Add(Main.tilesets.First());
 		foreach (var tileset in Main.tilesets)
 		{
-			_recentTilesets.Add(tileset);
+			items.Add(tileset);
 		}
 	}
 
-	public override void Tick(float delta)
-	{
-	}
+	public override void Tick(float delta) { }
 
 	public override void Update(float delta)
 	{
-		// selectedTile = Main.tilesets.ElementAt(1);
-
 		var kb = App.input.keyboard;
 		var mouse = App.input.mouse;
 
-		var cursor = (Vector2Int)(Main.mouse / Stage.TILE_SIZE);
+		var con = App.input.controllers[0];
 
-		// if (Mathf.Abs(mouse.wheel.y) > 0.5f)
-		// {
-		// 	selectedTileIndex += (int)Mathf.Sign(mouse.wheel.y);
-		// }
-
-		// selectedTileIndex = Math.Min(selectedTileIndex, Main.tilesets.Count - 1);
-
-		if (mouse.leftDown)
+		if ((kb.alt && kb.Pressed(Keys.G)) || con.Pressed(Buttons.Select))
 		{
-			foreach (var pos in Calc.GetTilesOnLine(_prevTilePosition, cursor))
+			controllerMode = !controllerMode;
+			if (controllerMode)
 			{
-				if (IsInBounds(pos.x, pos.y))
+				ShowTooltip("Switched to controller mode");
+				App.input.SetMouseCursorMode(CursorModes.Normal);
+			}
+			else
+			{
+				ShowTooltip("Switched to mouse mode");
+				App.input.SetMouseCursorMode(CursorModes.Hidden);
+			}
+		}
+
+		toolbar.Update(delta);
+
+		if (controllerMode)
+		{
+			var value = con.leftStick;
+			var speed = Mathf.Lerp(96, 320, con.Axis(Axes.LeftTrigger) / 2 + 0.5f);
+			value = value.normalized * Mathf.Pow(Vector2.ClampLength(value, 1f).length, 2.0f);
+			cursor += value * speed * delta;
+			cursor = new(Mathf.Clamp(cursor.x, 0, Main.screenSize.x - 1), Mathf.Clamp(cursor.y, 0, Main.screenSize.y - 1));
+		}
+		else
+		{
+			cursor = Main.mouse;
+		}
+
+		if (controllerMode)
+		{
+			if (con.Repeated(Buttons.LeftShoulder, 0.2f, 1f / 15))
+			{
+				if (selection > 0)
 				{
-					stage.SetTile(pos.x, pos.y, selectedTile.id);
+					selection--;
+				}
+				else if (con.Pressed(Buttons.LeftShoulder))
+				{
+					selection--;
+				}
+			}
+
+			if (con.Repeated(Buttons.RightShoulder, 0.2f, 1f / 15))
+			{
+				if (selection < items.Count - 1)
+				{
+					selection++;
+				}
+				else if (con.Pressed(Buttons.RightShoulder))
+				{
+					selection++;
 				}
 			}
 		}
-		else if (mouse.rightDown)
+		else
 		{
-			foreach (var pos in Calc.GetTilesOnLine(_prevTilePosition, cursor))
+			if (Mathf.Abs(mouse.wheel.y) > 0.5f)
 			{
-				if (IsInBounds(pos.x, pos.y))
-				{
-					stage.SetTile(pos.x, pos.y, null);
-				}
+				selection += (int)Mathf.Sign(mouse.wheel.y);
 			}
 		}
-		else if (mouse.middlePressed)
+
+		if (selection < 0)
 		{
-			if (IsInBounds(cursor.x, cursor.y))
+			selection = items.Count - 1;
+		}
+
+		if (selection >= items.Count)
+		{
+			selection = 0;
+		}
+
+		if (items[selection] is Tileset selectedTileset)
+		{
+			UpdateTile(selectedTileset);
+		}
+
+		if (controllerMode ? con.Pressed(Buttons.Y) : mouse.middlePressed)
+		{
+			if (IsInBounds(_tileCursor.x, _tileCursor.y))
 			{
-				var pickedTileId = stage.GetTile(cursor.x, cursor.y);
+				var pickedTileId = stage.GetTile(_tileCursor.x, _tileCursor.y);
 
 				// Don't pick air
 				if (pickedTileId is not null)
 				{
-					SelectTileset(Main.tilesets[pickedTileId]);
+					var tileset = Main.tilesets[pickedTileId];
+					ShowTooltip(tileset.name);
+					PickItem(tileset, controllerMode ? con.Axis(Axes.LeftTrigger) > 0.5f : kb.ctrl);
 				}
 			}
 		}
 
-		if (kb.Pressed(Keys.D1))
-			SelectTileset(_recentTilesets[0]);
-		if (kb.Pressed(Keys.D2))
-			SelectTileset(_recentTilesets[1]);
-		if (kb.Pressed(Keys.D3))
-			SelectTileset(_recentTilesets[2]);
-		if (kb.Pressed(Keys.D4))
-			SelectTileset(_recentTilesets[3]);
-
-		if (kb.shift && kb.Pressed(Keys.Delete))
+		if (kb.ctrl && kb.Pressed(Keys.Delete))
 		{
 			// Delete old stage
 			stage.RemoveSelf();
@@ -127,41 +189,87 @@ public class EditorScreen : GameScreen
 			stage.Spawn();
 		}
 
-		_prevTilePosition = cursor;
+		_prevTileCursor = _tileCursor;
+
+		if (tooltipAge < tooltipLifetime)
+		{
+			tooltipAge += delta;
+		}
+	}
+
+	public void UpdateTile(Tileset selectedTile)
+	{
+		var kb = App.input.keyboard;
+		var mouse = App.input.mouse;
+		var con = App.input.controllers[0];
+
+		if (kb.ctrl && kb.Pressed(Keys.F))
+		{
+			for (int y = 0; y < stage.height; y++)
+			{
+				for (int x = 0; x < stage.width; x++)
+				{
+					stage.SetTile(x, y, selectedTile.id);
+				}
+			}
+		}
+
+		if (controllerMode ? con.Down(Buttons.A) : mouse.leftDown)
+		{
+			foreach (var pos in Calc.GetTilesOnLine(_prevTileCursor, _tileCursor))
+			{
+				if (IsInBounds(pos.x, pos.y))
+				{
+					stage.SetTile(pos.x, pos.y, selectedTile.id);
+				}
+			}
+		}
+
+		if (controllerMode ? con.Down(Buttons.B) : mouse.rightDown)
+		{
+			foreach (var pos in Calc.GetTilesOnLine(_prevTileCursor, _tileCursor))
+			{
+				if (IsInBounds(pos.x, pos.y))
+				{
+					stage.SetTile(pos.x, pos.y, null);
+				}
+			}
+		}
 	}
 
 	public override void Render(Batch2D batch)
 	{
-		// var bg = new Color(0x3978A8ff);
-		// var fg = new Color(0xDFF6F5ff);
-		var bg = new Color(0xFAB23Aff);
-		var fg = new Color(0x302C2Eff);
-
 		var mouse = App.input.mouse;
+		var con = App.input.controllers[0];
 
-		var tilePos = (Vector2Int)(Main.mouse / Stage.TILE_SIZE);
+		var tilePos = (Vector2Int)(cursor / Stage.TILE_SIZE);
 		var mouseTilePos = (Vector2)tilePos * Stage.TILE_SIZE;
 
-		// UI
-		canvas.RenderCanvas(batch);
-
-		var i = 0;
-		foreach (var tileset in _recentTilesets)
-		{
-			batch.Draw(tileset.texture, GetTilesetPreview(tileset), new(6 + i * (8 + 6), 6), Color.white);
-			i++;
-		}
+		// var i = 0;
+		// foreach (var tileset in _tiles)
+		// {
+		// 	batch.Draw(tileset.texture, GetTilesetPreview(tileset), new(6 + i * (8 + 6), 6), Color.white);
+		// 	i++;
+		// }
 
 		// Cursor
-		if (App.window.mouseOver)
+
+		toolbar.Render(batch);
+
+		if (controllerMode || App.window.mouseOver)
 		{
 			// Selection Box
 			batch.SetRect(new(mouseTilePos, Stage.TILE_SIZE), 1, Color.white.WithAlpha(64));
 
 			// Cursor
-			batch.PushMatrix(Main.mouse - 0.5f, Vector2.zero, Vector2.one, 0);
+			batch.PushMatrix(cursor - 0.5f, Vector2.zero, Vector2.one, 0);
 			{
-				if (mouse.leftDown || mouse.rightDown)
+				if (tooltipAge < tooltipLifetime)
+				{
+					batch.DrawString(App.content.font, tooltipText, new(4), Color.white.WithAlpha(1 - tooltipAge / tooltipLifetime), 8);
+				}
+
+				if (controllerMode ? (con.Down(Buttons.A) || con.Down(Buttons.B)) : (mouse.leftDown || mouse.rightDown))
 				{
 					// Dot
 					batch.SetBox(new(0, 0, 1, 1), Color.white);
@@ -169,7 +277,7 @@ public class EditorScreen : GameScreen
 				else
 				{
 					// Tool text
-					batch.DrawString(App.content.font, selectedTile.name, new(Stage.TILE_SIZE), Color.white, 8);
+					// batch.DrawString(App.content.font, selectedTile.name, new(Stage.TILE_SIZE), Color.white, 8);
 
 					// Crosshair
 					batch.SetBox(new(-3, 0, 2, 1), Color.white);
@@ -188,23 +296,26 @@ public class EditorScreen : GameScreen
 		return x >= 0 && y >= 0 && x < stage.width && y < stage.height;
 	}
 
-	Rect GetTilesetPreview(Tileset tileset)
+	public bool PickItem(IEditorItem item, bool addNew = false)
 	{
-		var tile = tileset.tiles[Tileset.Connection.None];
-		return new(tile.x, tile.y, tile.width, tile.height);
-	}
+		var index = items.IndexOf(item);
 
-	void SelectTileset(in string id)
-	{
-		var tileset = Main.tilesets[id];
-		SelectTileset(tileset);
-	}
+		// Select the item if it already in the hotbar
+		if (index >= 0)
+		{
+			selection = index;
+			return true;
+		}
 
-	void SelectTileset(Tileset tileset)
-	{
-		selectedTile = tileset;
+		if (addNew)
+		{
+			// Add new item to hotbar
+			selection = items.Count;
+			items.Add(item);
+		}
 
-		_recentTilesets.Remove(tileset);
-		_recentTilesets.Insert(0, tileset);
+		// Swap out the selected item with the new item
+		items[selection] = item;
+		return false;
 	}
 }

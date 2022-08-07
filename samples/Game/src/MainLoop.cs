@@ -1,7 +1,5 @@
 #nullable disable
 
-using Game.Screens;
-
 namespace Game;
 
 public class MainLoop : Module
@@ -91,8 +89,8 @@ public class MainLoop : Module
 		var topColor = new Color(0x3978A8FF);
 		var bottomColor = new Color(0x394778FF);
 		Batch2D.current.SetBox(new(Main.screenSize), topColor, topColor, bottomColor, bottomColor);
-		Batch2D.current.SetBox(new(Main.screenSize), new(0x302C2EFF));
-		Batch2D.current.SetBox(new(Main.screenSize), new(0x394778FF));
+		// Batch2D.current.SetBox(new(Main.screenSize), new(0x302C2EFF));
+		// Batch2D.current.SetBox(new(Main.screenSize), new(0x394778FF));
 
 		Main.screen.Update(delta);
 		Main.scene.onUpdate(delta);
@@ -120,6 +118,13 @@ public class MainLoop : Module
 
 		// Render screen
 		Main.screen.Render(Batch2D.current);
+
+		if (!App.window.focused)
+		{
+			// batch.SetBox(new(Main.screenSize), Color.black.translucent);
+			batch.DrawString(App.content.font, "Unfocused", new(0, 0, Main.screenSize), TextAlignment.Center, Color.white, 8);
+			batch.DrawString(App.content.font, "Click to focus", new(0, 12, Main.screenSize), TextAlignment.Center, Color.white, 8);
+		}
 
 		batch.PopMatrix();
 

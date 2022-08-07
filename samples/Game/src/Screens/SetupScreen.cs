@@ -1,6 +1,6 @@
 using MGE.UI;
 
-namespace Game.Screens;
+namespace Game;
 
 public class SetupScreen : GameScreen
 {

@@ -1,4 +1,4 @@
-namespace Game.Screens;
+namespace Game;
 
 public class PlayingScreen : GameScreen
 {

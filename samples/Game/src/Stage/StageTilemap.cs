@@ -39,6 +39,8 @@ public class StageTilemap : Platform
 
 	protected override void Render(Batch2D batch)
 	{
+		batch.SetTexture(tileset.texture);
+
 		for (int x = 0; x < stage.width; x++)
 		{
 			for (int y = 0; y < stage.height; y++)
@@ -71,12 +73,12 @@ public class StageTilemap : Platform
 
 				if (tile.properties.HasFlag(Tileset.Tile.Properties.ScrollX))
 				{
-					clipX += Math.Abs(HashCode.Combine(x, y, 0)) % (tile.width - tileset.tileSize.x);
+					clipX += Math.Abs(Calc.Hash(x, y, 0, tileset.GetHashCode())) % (tile.width - tileset.tileSize.x);
 				}
 
 				if (tile.properties.HasFlag(Tileset.Tile.Properties.ScrollY))
 				{
-					clipY += Math.Abs(HashCode.Combine(x, y, 1)) % (tile.height - tileset.tileSize.y);
+					clipY += Math.Abs(Calc.Hash(x, y, 1, tileset.GetHashCode())) % (tile.height - tileset.tileSize.y);
 				}
 
 				var clip = new RectInt(clipX, clipY, 8, 8);

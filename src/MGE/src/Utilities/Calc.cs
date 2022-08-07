@@ -607,6 +607,21 @@ public static class Calc
 		return MemoryMarshal.Cast<T, byte>(span);
 	}
 
+	public static int Cantor(int a, int b)
+	{
+		return (a + b + 1) * (a + b) / 2 + b;
+	}
+
+	public static int Hash(int a, int b, int c)
+	{
+		return Cantor(a, Cantor(b, c));
+	}
+
+	public static int Hash(int a, int b, int c, int d)
+	{
+		return Cantor(Cantor(a, b), Cantor(c, d));
+	}
+
 	#endregion
 
 	#region Paths
